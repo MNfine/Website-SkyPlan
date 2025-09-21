@@ -1,0 +1,35 @@
+# === Python / Flask ===
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+instance/
+.venv/
+env/
+venv/
+.Python
+*.log
+
+# Env files
+.env
+*.env
+
+# === Frontend (HTML/CSS/JS) ===
+node_modules/
+dist/
+build/
+.cache/
+*.lock
+
+# === VSCode / Editor ===
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+desktop.ini
