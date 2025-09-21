@@ -27,6 +27,8 @@
 ## 2. Quy trình làm việc
 
 ### Update `dev` trước khi tạo nhánh mới
+- Mỗi dev không code trực tiếp trên main hoặc dev.
+- Khi làm task → tạo nhánh mới từ dev:
 ```bash
 git checkout dev
 git pull origin dev
@@ -34,7 +36,7 @@ git checkout -b feature/<ten-tinh-nang>
 ```
 
 ### Commit rõ ràng, ngắn gọn
-- Dùng tiếng Anh hoặc tiếng Việt nhất quán.
+- Dùng tiếng Anh.
 - Cấu trúc:
   ```
   <scope>: <mô tả thay đổi>
@@ -78,10 +80,10 @@ git push -u origin feature/<ten-tinh-nang>
 ## 4. Pull Request checklist
 
 Trước khi merge PR:
-- [ ] Đã chạy code và test cơ bản.
-- [ ] Không còn file rác (`.env`, `*.db`, `__pycache__`).
-- [ ] Cập nhật doc nếu có thay đổi API hoặc flow.
-- [ ] Commit message rõ ràng.
+- Đã chạy code và test cơ bản.
+- Không còn file rác (`.env`, `*.db`, `__pycache__`).
+- Cập nhật doc nếu có thay đổi API hoặc flow.
+- Commit message rõ ràng.
 
 ---
 
