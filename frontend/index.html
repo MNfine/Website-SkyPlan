@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="metaTitle">SkyPlan - Ưu đãi tốt nhất đang chờ đón bạn</title>
+  <meta name="description" data-i18n="metaDescription" content="Tìm các chuyến bay nội địa giá tốt nhất tại Việt Nam với SkyPlan. Đặt chuyến đi tiếp theo của bạn với sự tự tin.">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  
+  <!-- Font Awesome CDN for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="assets/styles/reset.css">
+  <link rel="stylesheet" href="assets/styles/index.css">
+  <link rel="stylesheet" href="assets/styles/flags.css">
+  <link rel="stylesheet" href="assets/styles/header.css">
+  <link rel="stylesheet" href="assets/styles/footer.css">
+</head>
+<body>
+  <!-- Header -->
+  <div id="header-container"></div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <img src="assets/images/hero.jpg" alt="Airplane on runway" class="hero-image">
+    <div class="hero-content">
+      <div class="container">
+        <h1 class="hero-title" data-i18n="heroTitle">Ưu đãi tốt nhất đang chờ đón bạn</h1>
+      </div>
+    </div>
+  </section>
+
+  <!-- Search Box -->
+  <div class="container">
+    <div class="search-container">
+      <form class="search-box" action="search.html" method="GET">
+        <div class="search-form">
+          <div class="search-field">
+            <label for="from" data-i18n="search.from">Từ</label>
+            <select id="from" name="from" class="search-value">
+              <option value="Hanoi" data-i18n="search.from_value">Hà Nội</option>
+              <option value="HoChiMinh">Hồ Chí Minh</option>
+              <option value="DaNang">Đà Nẵng</option>
+              <option value="CanTho">Cần Thơ</option>
+              <option value="LamDong">Lâm Đồng</option>
+              <option value="QuangTri">Quảng Trị</option>
+              <option value="DakLak">Đắk Lắk</option>
+              <option value="KhanhHoa">Khánh Hòa</option>
+              <option value="HaiPhong">Hải Phòng</option>
+              <option value="Hue">Huế</option>
+              <option value="DienBien">Điện Biên</option>
+              <option value="GiaLai">Gia Lai</option>
+              <option value="AnGiang">An Giang</option>
+              <option value="ThanhHoa">Thanh Hóa</option>
+              <option value="NgheAn">Nghệ An</option>
+              <option value="QuangNinh">Quảng Ninh</option>
+              <option value="SonLa">Sơn La</option>
+            </select>
+          </div>
+          <div class="search-field">
+            <label for="to" data-i18n="search.to">Đến</label>
+            <select id="to" name="to" class="search-value">
+              <option value="HoChiMinh" data-i18n="search.to_value">Hồ Chí Minh</option>
+              <option value="Hanoi">Hà Nội</option>
+              <option value="DaNang">Đà Nẵng</option>
+              <option value="CanTho">Cần Thơ</option>
+              <option value="LamDong">Lâm Đồng</option>
+              <option value="QuangTri">Quảng Trị</option>
+              <option value="DakLak">Đắk Lắk</option>
+              <option value="KhanhHoa">Khánh Hòa</option>
+              <option value="HaiPhong">Hải Phòng</option>
+              <option value="Hue">Huế</option>
+              <option value="DienBien">Điện Biên</option>
+              <option value="GiaLai">Gia Lai</option>
+              <option value="AnGiang">An Giang</option>
+              <option value="ThanhHoa">Thanh Hóa</option>
+              <option value="NgheAn">Nghệ An</option>
+              <option value="QuangNinh">Quảng Ninh</option>
+              <option value="SonLa">Sơn La</option>
+            </select>
+          </div>
+          <div class="search-field">
+            <label for="departure" data-i18n="search.departure">Ngày đi</label>
+            <input type="date" id="departure" name="departure" class="search-value-date" value="2023-06-10">
+          </div>
+          <div class="search-field">
+            <label for="return" data-i18n="search.return">Ngày về</label>
+            <input type="date" id="return" name="return" class="search-value-date" value="2023-08-18">
+          </div>
+        </div>
+        <button type="submit" class="search-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Popular Routes Section -->
+  <section class="popular-routes">
+    <div class="container">
+      <h2 class="section-title" data-i18n="popularRoutesTitle">Điểm đến phổ biến</h2>
+      <div class="routes-grid" id="routes-container">
+        <div class="route-card" data-lang="en" style="display: none;">
+          <img src="assets/images/Ho_Chi_Minh.avif" alt="Ho Chi Minh" class="route-img">
+          <div class="route-info">
+            <h3 class="route-name">Hồ Chí Minh</h3>
+            <p class="route-price">From 799,000 ₫</p>
+          </div>
+        </div>
+        
+        <div class="route-card" data-lang="en" style="display: none;">
+          <img src="assets/images/Da_Nang.avif" alt="Da Nang" class="route-img">
+          <div class="route-info">
+            <h3 class="route-name">Đà Nẵng</h3>
+            <p class="route-price">From 899,000 ₫</p>
+          </div>
+        </div>
+        
+        <div class="route-card" data-lang="en" style="display: none;">
+          <img src="assets/images/Phu_Quoc.jpg" alt="Phu Quoc" class="route-img">
+          <div class="route-info">
+            <h3 class="route-name">Phú Quốc</h3>
+            <p class="route-price">From 1,399,000 ₫</p>
+          </div>
+        </div>
+        
+        <div class="route-card" data-lang="en" style="display: none;">
+          <img src="assets/images/Da_Lat.jpg" alt="Da Lat" class="route-img">
+          <div class="route-info">
+            <h3 class="route-name">Đà Lạt</h3>
+            <p class="route-price">From 999,000 ₫</p>
+          </div>
+        </div>
+        
+        <!-- Vietnamese routes (default display for domestic flights) -->
+        <div class="route-card" data-lang="vi">
+          <img src="assets/images/Ho_Chi_Minh.avif" alt="Hồ Chí Minh" class="route-img">
+          <div class="route-info">
+            <h3 class="route-name">Hồ Chí Minh</h3>
+            <p class="route-price">Từ 799.000 ₫</p>
+          </div>
+        </div>
+        
+        <div class="route-card" data-lang="vi">
+          <img src="assets/images/Da_Nang.avif" alt="Đà Nẵng" class="route-img">
+          <div class="route-info">
+            <h3 class="route-name">Đà Nẵng</h3>
+            <p class="route-price">Từ 899.000 ₫</p>
+          </div>
+        </div>
+        
+        <div class="route-card" data-lang="vi">
+          <img src="assets/images/Phu_Quoc.jpg" alt="Phú Quốc" class="route-img">
+          <div class="route-info">
+            <h3 class="route-name">Phú Quốc</h3>
+            <p class="route-price">Từ 1.399.000 ₫</p>
+          </div>
+        </div>
+        
+        <div class="route-card" data-lang="vi">
+          <img src="assets/images/Da_Lat.jpg" alt="Đà Lạt" class="route-img">
+          <div class="route-info">
+            <h3 class="route-name">Đà Lạt</h3>
+            <p class="route-price">Từ 999.000 ₫</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="container">
+    <div class="features">
+      <!-- Feature 1 -->
+      <div class="feature">
+        <div class="feature-icon">
+          <i class="fas fa-medal"></i>
+        </div>
+        <h3 class="feature-title" data-i18n="feature1Title">Đảm bảo giá tốt nhất</h3>
+        <p class="feature-desc" data-i18n="feature1Desc">Chúng tôi cung cấp giá vé máy bay rẻ nhất và nếu bạn tìm thấy giá vé thấp hơn ở nơi khác, chúng tôi sẽ hoàn lại khoản chênh lệch.</p>
+      </div>
+      
+      <!-- Feature 2 -->
+      <div class="feature">
+        <div class="feature-icon">
+          <i class="fas fa-exchange-alt"></i>
+        </div>
+        <h3 class="feature-title" data-i18n="feature2Title">Hoàn tiền & Hủy vé</h3>
+        <p class="feature-desc" data-i18n="feature2Desc">Kiểm tra các quy định về chuyến bay và chỗ ở trước khi đặt với chính sách hoàn tiền chi tiết của chúng tôi.</p>
+      </div>
+      
+      <!-- Feature 3 -->
+      <div class="feature">
+        <div class="feature-icon">
+          <i class="fas fa-credit-card"></i>
+        </div>
+        <h3 class="feature-title" data-i18n="feature3Title">Thanh toán linh hoạt</h3>
+        <p class="feature-desc" data-i18n="feature3Desc">Giờ đây bạn có thể mua trải nghiệm du lịch ngay lập tức và thanh toán theo thời gian với các ưu đãi không có phí ẩn của chúng tôi.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- App Promotion -->
+  <section class="container">
+    <div class="app-promo">
+      <div class="promo-content">
+        <div class="promo-text">
+          <h2 class="promo-title" data-i18n="appPromoTitle">Tải ứng dụng di động và đặt vé với ưu đãi giảm giá 10%!</h2>
+          <p class="promo-desc" data-i18n="appPromoDesc">Tải xuống ứng dụng SkyPlan mới và kiểm soát các chuyến đi của bạn trong túi. Với ứng dụng của chúng tôi, bạn sẽ nhận được ưu đãi bí mật và giảm giá đặt vé thêm.</p>
+          <a href="#" class="app-btn" data-i18n="appButtonText">Tải về từ Mobile Store</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div id="footer-container"></div>
+
+  <!-- JavaScript -->
+  <script src="assets/scripts/index_translations.js"></script>
+  <script src="assets/scripts/index.js"></script>
+
+  <!-- Load Components -->
+  <script>
+    // Function to handle component loading errors
+    function handleComponentError(componentName) {
+      console.error(`Failed to load ${componentName} component`);
+    }
+    
+    // Wait for translations.js to load before using functions
+    function initializeApp() {
+      // Load header
+      fetch('components/header.html')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        })
+        .then(data => {
+          document.getElementById('header-container').innerHTML = data;
+          
+          // After header loads, initialize language functionality
+          initializeLanguage();
+        })
+        .catch(error => {
+          handleComponentError('header');
+          // Still initialize language even if header fails
+          initializeLanguage();
+        });
+      
+      // Load footer
+      fetch('components/footer.html')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        })
+        .then(data => {
+          document.getElementById('footer-container').innerHTML = data;
+        })
+        .catch(error => {
+          handleComponentError('footer');
+        });
+    }
+    
+    // Initialize language functionality
+    function initializeLanguage() {
+      // Set Vietnamese as default language if not already set
+      let currentLang = localStorage.getItem('preferredLanguage');
+      if (!currentLang) {
+        currentLang = 'vi';
+        localStorage.setItem('preferredLanguage', 'vi');
+      }
+      
+      document.documentElement.lang = currentLang;
+      
+      // Apply translations when page loads (check if function exists)
+      if (typeof applyTranslations === 'function') {
+        applyTranslations(currentLang);
+        console.log('Applied translations for:', currentLang);
+      } else {
+        console.error('applyTranslations function not found');
+      }
+      
+      // Initialize language selector ONLY after header is loaded and language is set
+      if (typeof initializeLanguageSelector === 'function') {
+        initializeLanguageSelector();
+      }
+    }
+    
+    // Language initialization
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeApp();
+    });
+  </script>
+</body>
+</html>
