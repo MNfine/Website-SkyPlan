@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyPlan - Tổng quan chuyến đi</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  
+  <!-- Font Awesome CDN for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="assets/styles/reset.css">
+  <link rel="stylesheet" href="assets/styles/index.css">
+  <link rel="stylesheet" href="assets/styles/flags.css">
+  <link rel="stylesheet" href="assets/styles/header.css">
+  <link rel="stylesheet" href="assets/styles/footer.css">
+  <link rel="stylesheet" href="assets/styles/overview.css">
+</head>
+<body>
+  <!-- Header -->
+  <div id="header-container"></div>
+
+  <!-- Progress Bar -->
+  <div class="container">
+    <div class="progress-bar">
+      <div class="progress-step completed">
+        <div class="step-number">1</div>
+        <div class="step-label">Tìm kiếm</div>
+      </div>
+      <div class="progress-step completed">
+        <div class="step-number">2</div>
+        <div class="step-label">Kết quả</div>
+      </div>
+      <div class="progress-step completed">
+        <div class="step-number">3</div>
+        <div class="step-label">Chi tiết</div>
+      </div>
+      <div class="progress-step completed">
+        <div class="step-number">4</div>
+        <div class="step-label">Giá vé</div>
+      </div>
+      <div class="progress-step completed">
+        <div class="step-number">5</div>
+        <div class="step-label">Thông tin cá nhân</div>
+      </div>
+      <div class="progress-step completed">
+        <div class="step-number">6</div>
+        <div class="step-label">Dịch vụ thêm</div>
+      </div>
+      <div class="progress-step active">
+        <div class="step-number">7</div>
+        <div class="step-label">Tổng quan</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="overview-content">
+      <!-- Trip Summary -->
+      <div class="trip-summary">
+        <h2>Hà Nội đến Hồ Chí Minh - Tổng quan chuyến đi</h2>
+        
+        <!-- Flight Information -->
+        <div class="flight-info">
+          <div class="flight-segment">
+            <div class="flight-header">
+              <span class="flight-date">Ngày 10 thg 6, 2023 - Chiều đi</span>
+              <span class="flight-type">Phổ thông</span>
+            </div>
+            <div class="flight-details">
+              <div class="departure">
+                <div class="time">10:45</div>
+                <div class="location">HAN</div>
+                <div class="city">Hà Nội</div>
+              </div>
+              <div class="flight-path">
+                <div class="duration">2h 15m</div>
+                <div class="route-line">
+                  <div class="route-dot"></div>
+                  <div class="route-dash"></div>
+                  <div class="route-dot"></div>
+                </div>
+                <div class="stops">Bay thẳng</div>
+              </div>
+              <div class="arrival">
+                <div class="time">13:00</div>
+                <div class="location">SGN</div>
+                <div class="city">Hồ Chí Minh</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flight-segment">
+            <div class="flight-header">
+              <span class="flight-date">Ngày 18 thg 8, 2023 - Chiều về</span>
+              <span class="flight-type">Phổ thông</span>
+            </div>
+            <div class="flight-details">
+              <div class="departure">
+                <div class="time">16:20</div>
+                <div class="location">SGN</div>
+                <div class="city">Hồ Chí Minh</div>
+              </div>
+              <div class="flight-path">
+                <div class="duration">2h 10m</div>
+                <div class="route-line">
+                  <div class="route-dot"></div>
+                  <div class="route-dash"></div>
+                  <div class="route-dot"></div>
+                </div>
+                <div class="stops">Bay thẳng</div>
+              </div>
+              <div class="arrival">
+                <div class="time">18:30</div>
+                <div class="location">HAN</div>
+                <div class="city">Hà Nội</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+          <div class="summary-card">
+            <h3>Phổ thông</h3>
+            <div class="card-content">
+              <div class="passenger-info">
+                <i class="fas fa-user"></i>
+                <span>1 hành khách</span>
+              </div>
+              <div class="luggage-info">
+                <i class="fas fa-suitcase"></i>
+                <span>Hành lý xách tay: 7kg</span>
+              </div>
+              <div class="luggage-info">
+                <i class="fas fa-luggage-cart"></i>
+                <span>Hành lý ký gửi: 23kg</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-card services-card">
+            <h3>Không có dịch vụ thêm</h3>
+            <div class="card-content">
+              <div class="service-illustration">
+                <img src="assets/images/no-extras.png" alt="No additional services" class="service-img">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Price -->
+        <div class="total-section">
+          <div class="total-price">
+            <span class="price-label">Tổng cộng</span>
+            <span class="price-amount">1.598.000 ₫</span>
+          </div>
+          <button class="confirm-btn">
+            <span>Xác nhận đặt vé</span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div id="footer-container"></div>
+
+  <!-- JavaScript -->
+  <script src="assets/scripts/index_translations.js"></script>
+  <script src="assets/scripts/index.js"></script>
+
+  <!-- Load Components -->
+  <script>
+    // Function to handle component loading errors
+    function handleComponentError(componentName) {
+      console.error(`Failed to load ${componentName} component`);
+    }
+    
+    // Load header
+    fetch('components/header.html')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.text();
+      })
+      .then(data => {
+        document.getElementById('header-container').innerHTML = data;
+        
+        // After header loads, initialize language functionality if available
+        if (typeof initializeLanguageSelector === 'function') {
+          initializeLanguageSelector();
+        }
+      })
+      .catch(error => {
+        handleComponentError('header');
+      });
+    
+    // Load footer
+    fetch('components/footer.html')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.text();
+      })
+      .then(data => {
+        document.getElementById('footer-container').innerHTML = data;
+      })
+      .catch(error => {
+        handleComponentError('footer');
+      });
+  </script>
+</body>
+</html>
