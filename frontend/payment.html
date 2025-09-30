@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyPlan - Thanh toán</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+  <!-- Font Awesome CDN for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="assets/styles/reset.css" />
+  <link rel="stylesheet" href="assets/styles/index.css" />
+  <link rel="stylesheet" href="assets/styles/flags.css" />
+  <link rel="stylesheet" href="assets/styles/header.css" />
+  <link rel="stylesheet" href="assets/styles/footer.css" />
+  <link rel="stylesheet" href="assets/styles/payment.css" />
+</head>
+<body>
+  <!-- Header -->
+  <div id="header-container"></div>
+
+  <!-- Progress Bar -->
+  <div class="container payment-flow">
+    <div class="steps">
+      <div class="step completed">
+        <div class="dot">1</div>
+        <div class="label">Tìm kiếm</div>
+      </div>
+      <div class="step completed">
+        <div class="dot">2</div>
+        <div class="label">Chọn chuyến bay</div>
+      </div>
+      <div class="step completed">
+        <div class="dot">3</div>
+        <div class="label">Chọn giá</div>
+      </div>
+      <div class="step completed">
+        <div class="dot">4</div>
+        <div class="label">Thông tin khách hàng</div>
+      </div>
+      <div class="step completed">
+        <div class="dot">5</div>
+        <div class="label">Dịch vụ thêm</div>
+      </div>
+      <div class="step active">
+        <div class="dot">6</div>
+        <div class="label">Thanh toán</div>
+      </div>
+      <div class="progress"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="payment-content">
+      <div class="payment-container">
+        <!-- Left Column - Payment Methods -->
+        <div class="payment-section">
+          <div class="section-header">
+            <h2><i class="fas fa-credit-card"></i> Chọn phương thức thanh toán</h2>
+          </div>
+
+          <div class="some-payment-methods">
+            <!-- Row 1: Credit/Debit Card (Full Width) -->
+            <div class="payment-row">
+              <div class="payment-method active full-width">
+                <input type="radio" id="card" name="payment" value="card" checked />
+                <label for="card" class="method-header">
+                  <i class="fas fa-credit-card"></i>
+                  <span>Thẻ tín dụng / Thẻ ghi nợ</span>
+                </label>
+
+                <div class="method-content">
+                  <div class="card-logos">
+                    <img src="assets/images/visa.png" alt="Visa" class="card-logo" />
+                    <img src="assets/images/mastercard.png" alt="Mastercard" class="card-logo" />
+                    <img src="assets/images/jcb.png" alt="JCB" class="card-logo" />
+                  </div>
+
+                  <form class="card-form">
+                    <div class="form-group">
+                      <label for="cardNumber">Số thẻ</label>
+                      <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" />
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="expiryDate">Ngày hết hạn</label>
+                        <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" />
+                      </div>
+                      <div class="form-group">
+                        <label for="cvv">CVV</label>
+                        <input type="text" id="cvv" placeholder="123" maxlength="4" />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="cardName">Tên trên thẻ</label>
+                      <input type="text" id="cardName" placeholder="NGUYEN VAN A" />
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 2: Bank Transfer & E-Wallet (Two Columns) -->
+            <div class="payment-row two-columns">
+              <!-- Bank Transfer -->
+              <div class="payment-method">
+                <input type="radio" id="bank" name="payment" value="bank" />
+                <label for="bank" class="method-header">
+                  <i class="fas fa-university"></i>
+                  <span>Ngân hàng</span>
+                </label>
+                <div class="method-content">
+                  <div class="bank-info">
+                    <p><strong>Ngân hàng:</strong> Vietcombank</p>
+                    <p><strong>Số tài khoản:</strong> 1234567890</p>
+                    <p><strong>Tên tài khoản:</strong> CONG TY SKYPLAN</p>
+                    <p><strong>Nội dung:</strong> [Mã đặt vé] - [Họ tên]</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- E-Wallet -->
+              <div class="payment-method">
+                <input type="radio" id="ewallet" name="payment" value="ewallet" />
+                <label for="ewallet" class="method-header">
+                  <i class="fas fa-mobile-alt"></i>
+                  <span>Ví điện tử</span>
+                </label>
+                <div class="method-content">
+                  <div class="ewallet-info">
+                    <p><strong>Hướng dẫn thanh toán:</strong></p>
+                    <div class="ewallet-steps">
+                      <p>1. Quét mã QR hoặc chuyển tiền theo thông tin:</p>
+                      <p><strong>Số điện thoại:</strong> 0123 456 789</p>
+                      <p><strong>Tên:</strong> CONG TY SKYPLAN</p>
+                      <p><strong>Nội dung:</strong> [Mã đặt vé] - [Họ tên]</p>
+                      <p>2. Chọn ví điện tử phù hợp:</p>
+                    </div>
+
+                    <div class="ewallet-options">
+                      <button class="ewallet-btn" data-wallet="momo">
+                        <img src="assets/images/momo.png" alt="MoMo" class="ewallet-logo" />
+                        <span>MoMo</span>
+                      </button>
+                      <button class="ewallet-btn" data-wallet="zalopay">
+                        <img src="assets/images/zalopay.png" alt="ZaloPay" class="ewallet-logo" />
+                        <span>ZaloPay</span>
+                      </button>
+                      <button class="ewallet-btn active" data-wallet="vnpay">
+                        <img src="assets/images/vnpay.png" alt="VNPay" class="ewallet-logo" />
+                        <span>VNPay (Khả dụng)</span>
+                      </button>
+                    </div>
+
+                    <!-- VNPay Integration Form -->
+                    <div class="vnpay-form" id="vnpayForm" style="display: none;">
+                      <div class="vnpay-info">
+                        <h4><i class="fas fa-shield-alt"></i> Thanh toán qua VNPay</h4>
+                        <p>Bạn sẽ được chuyển hướng đến trang thanh toán VNPay để hoàn tất giao dịch.</p>
+
+                        <div class="payment-details">
+                          <div class="detail-row">
+                            <span>Số tiền:</span>
+                            <strong>1.598.000 ₫</strong>
+                          </div>
+                          <div class="detail-row">
+                            <span>Mã đặt vé:</span>
+                            <strong id="bookingCode">SP2025001</strong>
+                          </div>
+                          <div class="detail-row">
+                            <span>Nội dung:</span>
+                            <strong>Ve may bay HAN-SGN</strong>
+                          </div>
+                        </div>
+
+                        <button class="vnpay-checkout-btn" onclick="processVNPayPayment()">
+                          <i class="fas fa-credit-card"></i>
+                          <span>Thanh toán với VNPay</span>
+                        </button>
+                      </div>
+                    </div>
+                    <!-- /VNPay -->
+                  </div>
+                </div>
+              </div>
+              <!-- /E-Wallet -->
+            </div>
+            <!-- /Row 2 -->
+          </div>
+          <!-- /payment-methods -->
+        </div>
+        <!-- /payment-section -->
+
+        <!-- Right Column - Order Summary (NOW inside .payment-container) -->
+        <div class="summary-section">
+          <div class="section-header">
+            <h2><i class="fas fa-receipt"></i> Tóm tắt đơn hàng</h2>
+          </div>
+
+          <div class="order-summary">
+            <div class="booking-details">
+              <div class="flight-summary">
+                <h4>Hà Nội → Hồ Chí Minh</h4>
+                <p>Ngày 10 thg 6, 2023 - 10:45 → 13:00</p>
+                <p>Phổ thông • 1 hành khách</p>
+              </div>
+
+              <div class="flight-summary">
+                <h4>Hồ Chí Minh → Hà Nội</h4>
+                <p>Ngày 18 thg 8, 2023 - 16:20 → 18:30</p>
+                <p>Phổ thông • 1 hành khách</p>
+              </div>
+            </div>
+
+            <div class="price-breakdown">
+              <div class="price-item">
+                <span>Vé máy bay (2 chiều)</span>
+                <span>1.398.000 ₫</span>
+              </div>
+              <div class="price-item">
+                <span>Thuế và phí</span>
+                <span>200.000 ₫</span>
+              </div>
+              <div class="price-item total">
+                <span>Tổng cộng</span>
+                <span>1.598.000 ₫</span>
+              </div>
+            </div>
+
+            <button class="pay-btn">
+              <i class="fas fa-lock"></i>
+              <span>Thanh toán ngay</span>
+            </button>
+
+            <div class="security-info">
+              <i class="fas fa-shield-alt"></i>
+              <span>Giao dịch được bảo mật bằng SSL 256-bit</span>
+            </div>
+          </div>
+        </div>
+        <!-- /summary-section -->
+      </div>
+      <!-- /payment-container -->
+    </div>
+    <!-- /payment-content -->
+  </div>
+  <!-- /container payment-flow -->
+
+  <!-- Footer -->
+  <div id="footer-container"></div>
+
+  <!-- JavaScript -->
+   <script src="assets/scripts/index.js"></script>
+  <script src="assets/scripts/config.js"></script>
+  <script src="assets/scripts/payment.js"></script>
+  <script src="assets/scripts/payment-vnpay.js"></script>
+
+  <!-- Load Components -->
+  <script>
+    fetch('components/header.html')
+      .then((res) => res.ok ? res.text() : Promise.reject())
+      .then((html) => {
+        document.getElementById('header-container').innerHTML = html;
+        if (typeof initializeLanguageSelector === 'function') {
+          initializeLanguageSelector();
+        }
+      });
+
+    fetch('components/footer.html')
+      .then((res) => res.ok ? res.text() : Promise.reject())
+      .then((html) => {
+        document.getElementById('footer-container').innerHTML = html;
+      });
+  </script>
+</body>
+</html>
