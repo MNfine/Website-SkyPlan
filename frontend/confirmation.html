@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyPlan - Xác nhận thanh toán</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/styles/reset.css" />
+  <link rel="stylesheet" href="assets/styles/index.css" />
+  <link rel="stylesheet" href="assets/styles/header.css" />
+  <link rel="stylesheet" href="assets/styles/flags.css" />
+  <link rel="stylesheet" href="assets/styles/footer.css" />
+  <link rel="stylesheet" href="assets/styles/confirmation.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <div id="header-container"></div>
+  <div class="confirmation-container">
+    <div class="confirmation-icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <div class="confirmation-title">Thanh toán thành công!</div>
+    <div class="confirmation-message">
+      Cảm ơn bạn đã sử dụng dịch vụ của SkyPlan.<br />
+      Thông tin đặt vé của bạn đã được xác nhận.
+    </div>
+    <div class="confirmation-details" id="confirmationDetails">
+      <div><strong>Mã vé:</strong> <span id="bookingCode">Đang cập nhật...</span></div>
+      <div><strong>Mã giao dịch:</strong> <span id="txnRef">Đang cập nhật...</span></div>
+      <div><strong>Số tiền:</strong> <span id="amount">Đang cập nhật...</span></div>
+    </div>
+    <div class="confirmation-actions">
+      <a href="index.html"><i class="fas fa-home"></i> Về trang chủ</a>
+      <a href="overview.html"><i class="fas fa-ticket-alt"></i> Xem vé của tôi</a>
+    </div>
+  </div>
+  <div id="footer-container"></div>
+  <script src="assets/scripts/config.js"></script>
+  <script>
+    // Load header/footer
+    fetch('components/header.html').then(r=>r.text()).then(html=>{
+      document.getElementById('header-container').innerHTML = html;
+    });
+    fetch('components/footer.html').then(r=>r.text()).then(html=>{
+      document.getElementById('footer-container').innerHTML = html;
+    });
+    // Lấy thông tin từ query string
+    function getQueryParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+    // Nếu không có trên URL, lấy từ localStorage (lưu từ payment.js)
+    let txnRef = getQueryParam('txnRef');
+    let amount = getQueryParam('amount');
+    if (!txnRef || !amount) {
+      txnRef = localStorage.getItem('lastTxnRef') || 'Không có';
+      amount = localStorage.getItem('lastAmount') || 'Không có';
+    }
+    document.getElementById('txnRef').textContent = txnRef;
+    document.getElementById('amount').textContent = amount !== 'Không có' ? Number(amount).toLocaleString('vi-VN') + ' ₫' : 'Không có';
+    // Lấy mã vé từ localStorage (ưu tiên), hoặc từ URL nếu có
+    let bookingCode = getQueryParam('bookingCode');
+    if (!bookingCode) {
+      bookingCode = localStorage.getItem('lastTxnRef') || 'Không có';
+    }
+    document.getElementById('bookingCode').textContent = bookingCode;
+  </script>
+</body>
+</html>
