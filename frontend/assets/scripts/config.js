@@ -32,7 +32,7 @@ class Config {
   getFrontendUrl() {
     switch (this.environment) {
       case 'development':
-        return 'http://localhost:3000';
+        return 'http://localhost:5000';
       case 'production':
         return 'https://your-production-domain.com'; // Replace with actual domain
       default:
