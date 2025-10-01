@@ -21,8 +21,7 @@
 
 .page-title {
   font-size: 2.5rem;
-  font-weight: 6
-  00;
+  font-weight: 6 00;
   color: #1fb6a0;
   margin-bottom: 0.5rem;
 }
@@ -52,7 +51,7 @@
 
 /* Airplane Shape */
 .airplane {
-  background: #E8F4F8;
+  background: #e8f4f8;
   border-radius: 80px 80px 20px 20px;
   padding: 2rem 1.5rem;
   position: relative;
@@ -62,13 +61,15 @@
 }
 
 .airplane::before {
-  content: '';
+  content: "";
   position: absolute;
-  top: -10px;
+  top: -15px;
   left: 50%;
   transform: translateX(-50%);
-  width: 60px;
-  height: 20px;
+  width: 60%;
+  max-width: 200px;
+  min-width: 120px;
+  height: 15px;
   background: #1fb6a0;
   border-radius: 30px 30px 0 0;
 }
@@ -86,72 +87,49 @@
   color: #2d3748;
   margin-bottom: 1rem;
   padding: 0.75rem 1rem;
-  border-radius: 12px;
+  border-radius: 30px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   position: relative;
 }
 
-.section-header::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 3px;
-  border-radius: 2px;
-}
-
 .business-class-section {
-  border-bottom: 3px solid #ecc94b;
+  border-bottom: 3px solid #c9c4c4;
   padding-bottom: 1.5rem;
-  background: rgba(254, 245, 231, 0.3);
+  background: #f1f8f8;
   border-radius: 12px;
   padding: 1rem;
 }
 
 .business-class-section .section-header {
-  background: #FD9D85;
+  background: #fd9d85;
   color: white;
 }
 
-.business-class-section .section-header::after {
-  background: #ecc94b;
-}
-
 .premium-economy-section {
-  border-bottom: 3px solid #1fb6a0;
+  border-bottom: 3px solid #c9c4c4;
   padding-bottom: 1.5rem;
-  background: rgba(230, 255, 250, 0.4);
+  background: #f1f8f8;
   border-radius: 12px;
   padding: 1rem;
 }
 
 .premium-economy-section .section-header {
-  background: #60A5FA;
+  background: #60a5fa;
   color: white;
 }
 
-.premium-economy-section .section-header::after {
-  background: #1fb6a0;
-}
-
 .economy-section {
-  border-bottom: 3px solid #68d391;
+  border-bottom: 3px solid #c9c4c4;
   padding-bottom: 1.5rem;
-  background: rgba(240, 255, 244, 0.4);
+  background: #f1f8f8;
   border-radius: 12px;
   padding: 1rem;
 }
 
 .economy-section .section-header {
-  background: #08B9E4;
+  background: #08b9e4;
   color: #fff;
-}
-
-.economy-section .section-header::after {
-  background: #68d391;
 }
 
 .first-class {
@@ -180,7 +158,41 @@
   justify-content: center;
 }
 
-/* Business Class specific layout (3-3) */
+/* Emergency Exits */
+.emergency-exits {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+}
+
+.exit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.exit-door {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ffa000c7;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  min-width: 80px;
+  justify-content: center;
+}
+
+.exit-door i {
+  font-size: 1rem;
+}
+
+
 .business-class-section .seats {
   gap: 0.3rem;
 }
@@ -189,7 +201,7 @@
   width: 2rem;
 }
 
-/* Premium Economy & Economy layout (3-3) */
+
 .premium-economy-section .seats,
 .economy-section .seats {
   gap: 0.25rem;
@@ -216,26 +228,26 @@
   margin: 0.1rem;
 }
 
-/* Business Class seats - larger and more premium */
+/* Business Class seats */
 .seat.business-class {
-  width: 3rem;
-  height: 3rem;
-  font-size: 0.85rem;
-  border-radius: 10px;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 0.8rem;
+  border-radius: 8px;
 }
 
-/* Premium Economy seats - medium size */
+/* Premium Economy seats */
 .seat.premium-economy {
-  width: 2.7rem;
-  height: 2.7rem;
+  width: 2.5rem;
+  height: 2.5rem;
   font-size: 0.8rem;
 }
 
-/* Economy seats - standard size */
+/* Economy seats */
 .seat.economy {
   width: 2.5rem;
   height: 2.5rem;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
 }
 
 .seat:hover:not(.occupied) {
@@ -246,27 +258,27 @@
 /* Seat Types */
 .seat.business-class {
   background-color: #fff;
-  color: #b7791f;
-  border-color: #FD9D85;
+  color: #000;
+  border-color: #fd9d85;
 }
 
 .seat.premium-economy {
   background-color: #fff;
-  color: #0a969d;
-  border-color: #60A5FA;
+  color: #000;
+  border-color: #60a5fa;
 }
 
 .seat.economy {
   background-color: #fff;
-  color: #2f855a;
-  border-color: #08B9E4;
+  color: #000;
+  border-color: #08b9e4;
 }
 
 /* Seat States */
 .seat.occupied {
-  background-color: #e2e8f0;
-  color: #a0aec0;
-  border-color: #cbd5e0;
+  background-color: #ff6b6b;
+  color: white;
+  border-color: #ff5252;
   cursor: not-allowed;
 }
 
@@ -307,14 +319,15 @@
 }
 
 .selected-label {
-  font-weight: 500;
-  color: #4a5568;
+  font-weight: 600;
+  color: #2d3748;
   margin-bottom: 0.5rem;
+  font-size: 1.1rem;
 }
 
 .seat-numbers {
   font-weight: 600;
-  color: #2d3748;
+  color: #1fb6a0;
   font-size: 1.1rem;
 }
 
@@ -350,23 +363,23 @@
 }
 
 .legend-color.business-class {
-  background-color: #fef5e7;
-  border-color: #ecc94b;
+  background-color: #fff;
+  border-color: #fd9d85;
 }
 
 .legend-color.premium-economy {
-  background-color: #e6fffa;
-  border-color: #1fb6a0;
+  background-color: #fff;
+  border-color: #60a5fa;
 }
 
 .legend-color.economy {
-  background-color: #f0fff4;
-  border-color: #68d391;
+  background-color: #fff;
+  border-color: #08b9e4;
 }
 
 .legend-color.occupied {
-  background-color: #e2e8f0;
-  border-color: #cbd5e0;
+  background-color: #ff6b6b;
+  border-color: #ff5252;
 }
 
 .legend-color.selected {
@@ -382,7 +395,7 @@
 /* Continue Button */
 .continue-btn {
   width: 100%;
-  background: linear-gradient(135deg, #1fb6a0 0%, #0a969d 100%);
+  background: #1fb6a0;
   color: white;
   border: none;
   border-radius: 8px;
@@ -395,11 +408,7 @@
   letter-spacing: 0.5px;
 }
 
-.continue-btn:hover {
-  background: linear-gradient(135deg, #0a969d 0%, #065f5c 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(31, 182, 160, 0.3);
-}
+
 
 .continue-btn:active {
   transform: translateY(0);
@@ -408,14 +417,14 @@
 /* Responsive Design */
 @media (max-width: 1200px) {
   .main-content {
-    padding-top: calc(75px + 2rem); /* Adjust for medium screen header */
+    padding-top: calc(75px + 2rem); 
   }
-  
+
   .seat-layout {
     grid-template-columns: 1fr 300px;
     gap: 1.5rem;
   }
-  
+
   .page-title {
     font-size: 2rem;
   }
@@ -425,21 +434,21 @@
   .main-content {
     padding-top: calc(70px + 1.5rem); /* Adjust for tablet header */
   }
-  
+
   .seat-layout {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  
+
   .selection-panel {
     position: static;
     order: -1;
   }
-  
+
   .seat-map-container {
     padding: 1.5rem;
   }
-  
+
   .airplane {
     padding: 1.5rem 1rem;
     min-width: 350px;
@@ -449,81 +458,99 @@
 @media (max-width: 768px) {
   .main-content {
     padding: 1rem 0;
-    padding-top: calc(70px + 1rem); /* Adjust for smaller header on mobile */
+    padding-top: calc(70px + 1rem); 
   }
-  
+
   .page-title {
     font-size: 1.75rem;
   }
-  
+
   .flight-info {
     font-size: 1rem;
   }
-  
+
   .seat-map-container {
     padding: 1rem;
     border-radius: 15px;
   }
-  
+
   .airplane {
     min-width: 320px;
     padding: 2rem 1rem;
   }
-  
+
+  .airplane::before {
+    top: -12px;
+    width: 55%;
+    max-width: 150px;
+    min-width: 100px;
+    height: 12px;
+  }
+
   .section-header {
     font-size: 0.95rem;
     padding: 0.5rem 0.75rem;
     margin-bottom: 0.75rem;
   }
-  
-  .section-header::after {
-    width: 40px;
-    height: 2px;
-  }
-  
+
   .business-class-section,
   .premium-economy-section,
   .economy-section {
     padding: 0.75rem;
     margin-bottom: 1rem;
   }
-  
+
+  .emergency-exits {
+    margin: 0.75rem 0;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .exit-door {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+    min-width: 70px;
+  }
+
+  .exit-door i {
+    font-size: 0.9rem;
+  }
+
   .seat {
     width: 2rem;
     height: 2rem;
     font-size: 0.7rem;
   }
-  
+
   .seat.business-class {
-    width: 2.3rem;
-    height: 2.3rem;
+    width: 2rem;
+    height: 2rem;
     font-size: 0.7rem;
   }
-  
+
   .seat.premium-economy {
-    width: 2.1rem;
-    height: 2.1rem;
-    font-size: 0.65rem;
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.7rem;
   }
-  
+
   .seat.economy {
     width: 2rem;
     height: 2rem;
-    font-size: 0.6rem;
+    font-size: 0.7rem;
   }
-  
+
   .business-class-section .seat-gap {
     width: 1.5rem;
   }
-  
+
   .seat-gap {
     width: 1.5rem;
   }
-  
+
   .selection-panel {
     padding: 1rem;
   }
-  
+
   .panel-title {
     font-size: 1.1rem;
   }
@@ -531,68 +558,87 @@
 
 @media (max-width: 480px) {
   .main-content {
-    padding-top: calc(65px + 0.75rem); /* Adjust for smallest mobile header */
+    padding-top: calc(65px + 0.75rem);
   }
-  
+
   .airplane {
     min-width: 280px;
     padding: 1.5rem 0.75rem;
   }
-  
+
+  .airplane::before {
+    top: -10px;
+    width: 50%;
+    max-width: 120px;
+    min-width: 80px;
+    height: 10px;
+  }
+
   .section-header {
     font-size: 0.85rem;
     padding: 0.4rem 0.6rem;
     margin-bottom: 0.5rem;
   }
-  
-  .section-header::after {
-    width: 30px;
-    height: 2px;
-  }
-  
+
   .business-class-section,
   .premium-economy-section,
   .economy-section {
     padding: 0.5rem;
     margin-bottom: 0.75rem;
   }
-  
+
+  .emergency-exits {
+    margin: 0.5rem 0;
+    padding: 0.4rem 0.5rem;
+  }
+
+  .exit-door {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+    min-width: 60px;
+    gap: 0.3rem;
+  }
+
+  .exit-door i {
+    font-size: 0.8rem;
+  }
+
   .seat {
     width: 1.75rem;
     height: 1.75rem;
     font-size: 0.6rem;
   }
-  
+
   .seat.business-class {
-    width: 2rem;
-    height: 2rem;
+    width: 1.75rem;
+    height: 1.75rem;
     font-size: 0.6rem;
   }
-  
+
   .seat.premium-economy {
-    width: 1.8rem;
-    height: 1.8rem;
-    font-size: 0.55rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.6rem;
   }
-  
+
   .seat.economy {
     width: 1.75rem;
     height: 1.75rem;
-    font-size: 0.5rem;
+    font-size: 0.6rem;
   }
-  
+
   .business-class-section .seat-gap {
     width: 1.2rem;
   }
-  
+
   .seat-gap {
     width: 1.2rem;
   }
-  
+
   .page-title {
     font-size: 1.5rem;
   }
-  
+
   .flight-info {
     font-size: 0.9rem;
     padding: 0 1rem;

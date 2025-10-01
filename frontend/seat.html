@@ -35,6 +35,20 @@
           <div class="seat-map-container">
             <!-- Airplane Shape -->
             <div class="airplane">
+              <!-- Front Emergency Exits -->
+              <div class="emergency-exits front-exits">
+                <div class="exit-row">
+                  <div class="exit-door left-exit">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>EXIT</span>
+                  </div>
+                  <div class="exit-door right-exit">
+                    <span>EXIT</span>
+                    <i class="fas fa-arrow-right"></i>
+                  </div>
+                </div>
+              </div>
+
               <!-- Business Class Section -->
               <div class="cabin-section business-class-section">
                 <h3 class="section-header">Business Class</h3>
@@ -77,24 +91,24 @@
                     <div class="seat business-class" data-seat="3F">3F</div>
                   </div>
                 </div>
-                
-                <!-- Row 4 -->
-                <div class="seat-row">
-                  <div class="seats">
-                    <div class="seat business-class" data-seat="4A">4A</div>
-                    <div class="seat business-class" data-seat="4B">4B</div>
-                    <div class="seat business-class" data-seat="4C">4C</div>
-                    <div class="seat-gap"></div>
-                    <div class="seat business-class" data-seat="4D">4D</div>
-                    <div class="seat business-class" data-seat="4E">4E</div>
-                    <div class="seat business-class" data-seat="4F">4F</div>
-                  </div>
-                </div>
               </div>
 
               <!-- Premium Economy Section -->
               <div class="cabin-section premium-economy-section">
-                <h3 class="section-header">Premium Economy</h3>
+                <h3 class="section-header">Premium Economy Class</h3>
+                
+                <!-- Row 4 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat premium-economy" data-seat="4A">4A</div>
+                    <div class="seat premium-economy" data-seat="4B">4B</div>
+                    <div class="seat premium-economy" data-seat="4C">4C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat premium-economy" data-seat="4D">4D</div>
+                    <div class="seat premium-economy" data-seat="4E">4E</div>
+                    <div class="seat premium-economy" data-seat="4F">4F</div>
+                  </div>
+                </div>
                 
                 <!-- Row 5 -->
                 <div class="seat-row">
@@ -309,6 +323,20 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Rear Emergency Exits -->
+              <div class="emergency-exits rear-exits">
+                <div class="exit-row">
+                  <div class="exit-door left-exit">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>EXIT</span>
+                  </div>
+                  <div class="exit-door right-exit">
+                    <span>EXIT</span>
+                    <i class="fas fa-arrow-right"></i>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -319,7 +347,7 @@
               
               <div class="selected-seats">
                 <p class="selected-label">Selected seats:</p>
-                <p class="seat-numbers">1A, 2E, 5D</p>
+                <p class="seat-numbers">No seats selected</p>
               </div>
 
               <div class="annotation">
@@ -331,7 +359,7 @@
                   </div>
                   <div class="legend-item">
                     <div class="legend-color premium-economy"></div>
-                    <span>Premium Economy</span>
+                    <span>Premium Economy Class</span>
                   </div>
                   <div class="legend-item">
                     <div class="legend-color economy"></div>
@@ -429,14 +457,20 @@
       const seats = document.querySelectorAll('.seat:not(.occupied)');
       const selectedSeatsDisplay = document.querySelector('.seat-numbers');
       const continueBtn = document.querySelector('.continue-btn');
-      let selectedSeats = ['1A', '2E', '5D']; // Pre-selected seats from design
+      
+      // Initialize with already selected seats from HTML
+      let selectedSeats = [];
+      document.querySelectorAll('.seat.selected').forEach(seat => {
+        selectedSeats.push(seat.dataset.seat);
+      });
 
       // Update selected seats display
       function updateSelectedDisplay() {
         if (selectedSeats.length === 0) {
-          selectedSeatsDisplay.textContent = '—';
+          selectedSeatsDisplay.textContent = 'No seats selected';
         } else {
-          selectedSeatsDisplay.textContent = selectedSeats.sort().join(', ');
+          selectedSeats.sort();
+          selectedSeatsDisplay.textContent = selectedSeats.join(', ');
         }
       }
 
