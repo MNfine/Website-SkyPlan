@@ -156,7 +156,7 @@
             <span class="price-label">Tổng cộng</span>
             <span class="price-amount">1.598.000 ₫</span>
           </div>
-          <a href="payment.html" class="confirm-btn">
+          <a href="payment.html" class="confirm-btn pay-btn">
             <span>Xác nhận đặt vé</span>
             <i class="fas fa-arrow-right"></i>
           </a>
@@ -212,6 +212,31 @@
       .catch(error => {
         handleComponentError('footer');
       });
+  </script>
+
+  <script>
+  // Ẩn nút thanh toán nếu đã thanh toán thành công (dựa vào localStorage hoặc query string)
+  (function() {
+    const paid = localStorage.getItem('lastTxnRef') && localStorage.getItem('lastAmount');
+    if (paid) {
+      const payBtn = document.querySelector('.pay-btn');
+      if (payBtn) payBtn.style.display = 'none';
+    }
+  })();
+  </script>
+
+  <script>
+  // Ẩn nút thanh toán cho từng vé đã thanh toán thành công
+  (function() {
+    // Giả sử mỗi vé có 1 container với id hoặc class chứa bookingCode
+    document.querySelectorAll('[data-booking-code]').forEach(function(ticket) {
+      const code = ticket.getAttribute('data-booking-code');
+      if (code && localStorage.getItem('paid_' + code) === 'true') {
+        const payBtn = ticket.querySelector('.pay-btn');
+        if (payBtn) payBtn.style.display = 'none';
+      }
+    });
+  })();
   </script>
 </body>
 </html>
