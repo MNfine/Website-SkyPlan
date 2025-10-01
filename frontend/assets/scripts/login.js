@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const eyeIcon = document.getElementById('eyeIcon');
   const btnGoogle = document.getElementById('btnGoogle');
   const btnFacebook = document.getElementById('btnFacebook');
+  const backButton = document.getElementById('backButton');
 
   /* Helpers */
   const getErrorEl = (fieldId) => document.getElementById(fieldId + 'Error');
@@ -113,6 +114,14 @@ document.addEventListener('DOMContentLoaded', () => {
     btnFacebook.addEventListener('click', () => {
       alert('Đăng nhập với Facebook');
       console.log('Facebook login clicked');
+    });
+  }
+
+  /* Back button functionality */
+  if (backButton) {
+    backButton.addEventListener('click', () => {
+      // Navigate to home page (index.html)
+      window.location.href = './index.html';
     });
   }
 });
