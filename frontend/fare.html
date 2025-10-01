@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyPlan - Chọn giá vé</title>
+  <meta name="description" content="Chọn hạng giá vé phù hợp cho chuyến bay của bạn.">
+
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <link rel="stylesheet" href="assets/styles/reset.css">
+  <link rel="stylesheet" href="assets/styles/index.css">
+  <link rel="stylesheet" href="assets/styles/flags.css">
+  <link rel="stylesheet" href="assets/styles/header.css">
+  <link rel="stylesheet" href="assets/styles/footer.css">
+  <link rel="stylesheet" href="assets/styles/fare.css">
+</head>
+<body>
+  <div id="header-container"></div>
+
+  <section class="container fare-flow">
+    <div class="steps">
+      <div class="step completed">
+        <div class="dot">1</div>
+        <div class="label">Tìm kiếm</div>
+      </div>
+      <div class="step completed">
+        <div class="dot">2</div>
+        <div class="label">Chọn chuyến bay</div>
+      </div>
+      <div class="step active">
+        <div class="dot">3</div>
+        <div class="label">Chọn giá</div>
+      </div>
+      <div class="step">
+        <div class="dot">4</div>
+        <div class="label">Thông tin khách hàng</div>
+      </div>
+      <div class="step">
+        <div class="dot">5</div>
+        <div class="label">Dịch vụ thêm</div>
+      </div>
+      <div class="step">
+        <div class="dot">6</div>
+        <div class="label">Thanh toán</div>
+      </div>
+      <div class="progress"></div>
+    </div>
+
+    <h2 class="route-title">Từ London tới Stockholm</h2>
+
+    <div class="fare-grid">
+      <article class="fare-card">
+        <h3 class="fare-name">Lowfare</h3>
+        <ul class="fare-features">
+          <li>
+            <span class="feat-title">Hạng ghế:</span>
+            <span class="feat-desc">Phổ thông</span>
+          </li>
+          <li>
+            <span class="feat-title">Chỗ ngồi</span>
+            <span class="feat-desc">Phân bổ tự động</span>
+          </li>
+          <li>
+            <span class="feat-title">Hành lý</span>
+            <span class="feat-desc">1 kiện xách tay</span>
+          </li>
+          <li>
+            <span class="feat-title">Giải pháp</span>
+            <span class="feat-desc">Không hoàn tiền</span>
+          </li>
+        </ul>
+         <div class="fare-footer">
+           <div class="price">$90</div>
+           <a href="passenger.html" class="btn-select">Chọn</a>
+         </div>
+      </article>
+
+      <article class="fare-card">
+        <h3 class="fare-name">Economy</h3>
+        <ul class="fare-features">
+          <li>
+            <span class="feat-title">Hạng ghế:</span>
+            <span class="feat-desc">Phổ thông đặc biệt</span>
+          </li>
+          <li>
+            <span class="feat-title">Chỗ ngồi</span>
+            <span class="feat-desc">Được chọn chỗ</span>
+          </li>
+          <li>
+            <span class="feat-title">Hành lý</span>
+            <span class="feat-desc">1 kiện xách tay<br>1 kiện ký gửi</span>
+          </li>
+          <li>
+            <span class="feat-title">Giải pháp</span>
+            <span class="feat-desc">Không hoàn tiền</span>
+          </li>
+        </ul>
+         <div class="fare-footer">
+           <div class="price">$120</div>
+           <a href="passenger.html" class="btn-select">Chọn</a>
+         </div>
+      </article>
+
+      <article class="fare-card">
+        <h3 class="fare-name">Premium</h3>
+        <ul class="fare-features">
+          <li>
+            <span class="feat-title">Hạng ghế</span>
+            <span class="feat-desc">Thương gia</span>
+          </li>
+          <li>
+            <span class="feat-title">Chỗ ngồi</span>
+            <span class="feat-desc">Được chọn chỗ</span>
+          </li>
+          <li>
+            <span class="feat-title">Hành lý</span>
+            <span class="feat-desc">2 kiện xách tay<br>2 kiện ký gửi</span>
+          </li>
+          <li>
+            <span class="feat-title">Giải pháp</span>
+            <span class="feat-desc">Được đổi ngày bay</span>
+          </li>
+        </ul>
+         <div class="fare-footer">
+           <div class="price">$350</div>
+           <a href="passenger.html" class="btn-select">Chọn</a>
+         </div>
+      </article>
+    </div>
+  </section>
+
+  <div id="footer-container"></div>
+
+  <script src="assets/scripts/index_translations.js"></script>
+  <script src="assets/scripts/index.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      fetch('components/header.html')
+        .then(r => r.text())
+        .then(html => {
+          document.getElementById('header-container').innerHTML = html;
+          initializeLanguageSelector();
+        });
+
+      fetch('components/footer.html')
+        .then(r => r.text())
+        .then(html => {
+          document.getElementById('footer-container').innerHTML = html;
+        });
+    });
+  </script>
+</body>
+</html>

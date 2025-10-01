@@ -1,0 +1,600 @@
+/* Seat Selection Page Styles */
+
+/* Main Content */
+.main-content {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  padding: 2rem 0;
+  padding-top: calc(80px + 2rem); /* Account for fixed header height */
+}
+
+.seat-selection-page {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Page Header */
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.flight-info {
+  font-size: 1.1rem;
+  color: #718096;
+  margin: 0;
+}
+
+/* Seat Layout Container */
+.seat-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Seat Map Container */
+.seat-map-container {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+/* Airplane Shape */
+.airplane {
+  background: #E8F4F8;
+  border-radius: 80px 80px 20px 20px;
+  padding: 2rem 1.5rem;
+  position: relative;
+  min-width: 400px;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+.airplane::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 20px;
+  background: #1fb6a0;
+  border-radius: 30px 30px 0 0;
+}
+
+/* Cabin Sections */
+.cabin-section {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.section-header {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.section-header::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.business-class-section {
+  border-bottom: 3px solid #ecc94b;
+  padding-bottom: 1.5rem;
+  background: rgba(254, 245, 231, 0.3);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.business-class-section .section-header {
+  background: #FD9D85;
+  color: white;
+}
+
+.business-class-section .section-header::after {
+  background: #ecc94b;
+}
+
+.premium-economy-section {
+  border-bottom: 3px solid #1fb6a0;
+  padding-bottom: 1.5rem;
+  background: rgba(230, 255, 250, 0.4);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.premium-economy-section .section-header {
+  background: #60A5FA;
+  color: white;
+}
+
+.premium-economy-section .section-header::after {
+  background: #1fb6a0;
+}
+
+.economy-section {
+  border-bottom: 3px solid #68d391;
+  padding-bottom: 1.5rem;
+  background: rgba(240, 255, 244, 0.4);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.economy-section .section-header {
+  background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 20%);
+  color: #2f855a;
+  border: 2px solid #68d391;
+}
+
+.economy-section .section-header::after {
+  background: #68d391;
+}
+
+.first-class {
+  border-bottom: 2px solid #d1d5db;
+  padding-bottom: 1rem;
+}
+
+.rear-section {
+  border-bottom: 2px solid #d1d5db;
+  padding-bottom: 1rem;
+}
+
+/* Seat Rows */
+.seat-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  gap: 0.25rem;
+}
+
+.seats {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Business Class specific layout (3-3) */
+.business-class-section .seats {
+  gap: 0.3rem;
+}
+
+.business-class-section .seat-gap {
+  width: 2rem;
+}
+
+/* Premium Economy & Economy layout (3-3) */
+.premium-economy-section .seats,
+.economy-section .seats {
+  gap: 0.25rem;
+}
+
+.seat-gap {
+  width: 2rem;
+}
+
+/* Seat Styles */
+.seat {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.1rem;
+}
+
+/* Business Class seats - larger and more premium */
+.seat.business-class {
+  width: 3rem;
+  height: 3rem;
+  font-size: 0.85rem;
+  border-radius: 10px;
+}
+
+/* Premium Economy seats - medium size */
+.seat.premium-economy {
+  width: 2.7rem;
+  height: 2.7rem;
+  font-size: 0.8rem;
+}
+
+/* Economy seats - standard size */
+.seat.economy {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 0.75rem;
+}
+
+.seat:hover:not(.occupied) {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Seat Types */
+.seat.business-class {
+  background-color: #fff;
+  color: #b7791f;
+  border-color: #FD9D85;
+}
+
+.seat.premium-economy {
+  background-color: #fff;
+  color: #0a969d;
+  border-color: #60A5FA;
+}
+
+.seat.economy {
+  background-color: #fff;
+  color: #2f855a;
+  border-color: #68d391;
+}
+
+/* Seat States */
+.seat.occupied {
+  background-color: #e2e8f0;
+  color: #a0aec0;
+  border-color: #cbd5e0;
+  cursor: not-allowed;
+}
+
+.seat.occupied:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.seat.selected {
+  background-color: #1fb6a0;
+  color: white;
+  border-color: #0a969d;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(31, 182, 160, 0.4);
+}
+
+/* Selection Panel */
+.selection-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+  position: sticky;
+  top: 2rem;
+}
+
+.panel-title {
+  color: #1fb6a0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.selected-seats {
+  margin-bottom: 2rem;
+}
+
+.selected-label {
+  font-weight: 500;
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+}
+
+.seat-numbers {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 1.1rem;
+}
+
+/* Annotation */
+.annotation {
+  margin-bottom: 2rem;
+}
+
+.annotation-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1rem;
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.legend-color {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 4px;
+  border: 2px solid transparent;
+}
+
+.legend-color.business-class {
+  background-color: #fef5e7;
+  border-color: #ecc94b;
+}
+
+.legend-color.premium-economy {
+  background-color: #e6fffa;
+  border-color: #1fb6a0;
+}
+
+.legend-color.economy {
+  background-color: #f0fff4;
+  border-color: #68d391;
+}
+
+.legend-color.occupied {
+  background-color: #e2e8f0;
+  border-color: #cbd5e0;
+}
+
+.legend-color.selected {
+  background-color: #1fb6a0;
+  border-color: #0a969d;
+}
+
+.legend-item span {
+  font-size: 0.9rem;
+  color: #4a5568;
+}
+
+/* Continue Button */
+.continue-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #1fb6a0 0%, #0a969d 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.continue-btn:hover {
+  background: linear-gradient(135deg, #0a969d 0%, #065f5c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(31, 182, 160, 0.3);
+}
+
+.continue-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .main-content {
+    padding-top: calc(75px + 2rem); /* Adjust for medium screen header */
+  }
+  
+  .seat-layout {
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+  }
+  
+  .page-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 968px) {
+  .main-content {
+    padding-top: calc(70px + 1.5rem); /* Adjust for tablet header */
+  }
+  
+  .seat-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .selection-panel {
+    position: static;
+    order: -1;
+  }
+  
+  .seat-map-container {
+    padding: 1.5rem;
+  }
+  
+  .airplane {
+    padding: 1.5rem 1rem;
+    min-width: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem 0;
+    padding-top: calc(70px + 1rem); /* Adjust for smaller header on mobile */
+  }
+  
+  .page-title {
+    font-size: 1.75rem;
+  }
+  
+  .flight-info {
+    font-size: 1rem;
+  }
+  
+  .seat-map-container {
+    padding: 1rem;
+    border-radius: 15px;
+  }
+  
+  .airplane {
+    min-width: 320px;
+    padding: 2rem 1rem;
+  }
+  
+  .section-header {
+    font-size: 0.95rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .section-header::after {
+    width: 40px;
+    height: 2px;
+  }
+  
+  .business-class-section,
+  .premium-economy-section,
+  .economy-section {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  .seat {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.7rem;
+  }
+  
+  .seat.business-class {
+    width: 2.3rem;
+    height: 2.3rem;
+    font-size: 0.7rem;
+  }
+  
+  .seat.premium-economy {
+    width: 2.1rem;
+    height: 2.1rem;
+    font-size: 0.65rem;
+  }
+  
+  .seat.economy {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.6rem;
+  }
+  
+  .business-class-section .seat-gap {
+    width: 1.5rem;
+  }
+  
+  .seat-gap {
+    width: 1.5rem;
+  }
+  
+  .selection-panel {
+    padding: 1rem;
+  }
+  
+  .panel-title {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding-top: calc(65px + 0.75rem); /* Adjust for smallest mobile header */
+  }
+  
+  .airplane {
+    min-width: 280px;
+    padding: 1.5rem 0.75rem;
+  }
+  
+  .section-header {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .section-header::after {
+    width: 30px;
+    height: 2px;
+  }
+  
+  .business-class-section,
+  .premium-economy-section,
+  .economy-section {
+    padding: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .seat {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.6rem;
+  }
+  
+  .seat.business-class {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.6rem;
+  }
+  
+  .seat.premium-economy {
+    width: 1.8rem;
+    height: 1.8rem;
+    font-size: 0.55rem;
+  }
+  
+  .seat.economy {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.5rem;
+  }
+  
+  .business-class-section .seat-gap {
+    width: 1.2rem;
+  }
+  
+  .seat-gap {
+    width: 1.2rem;
+  }
+  
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .flight-info {
+    font-size: 0.9rem;
+    padding: 0 1rem;
+  }
+}
