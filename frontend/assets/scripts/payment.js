@@ -191,6 +191,16 @@ function hideLoadingState() {
 
 // Show payment success
 function showPaymentSuccess() {
+  // Lưu trạng thái thanh toán thành công theo từng mã vé
+  // Lấy mã vé (bookingCode) và số tiền
+  const bookingCode = document.getElementById('bookingCode')?.textContent || window.lastTxnRef || '';
+  const amount = window.lastAmount || 1598000;
+  if (bookingCode) {
+    localStorage.setItem('paid_' + bookingCode, 'true');
+    localStorage.setItem('amount_' + bookingCode, amount);
+  }
+  localStorage.setItem('lastTxnRef', bookingCode);
+  localStorage.setItem('lastAmount', amount);
   window.location.href = 'confirmation.html';
 }
 
@@ -425,6 +435,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // --- SỬA LOGIC CHUYỂN HƯỚNG VNPay ---
 function showPaymentSuccess() {
+  // Lưu trạng thái thanh toán thành công theo từng mã vé
+  // Lấy mã vé (bookingCode) và số tiền
+  const bookingCode = document.getElementById('bookingCode')?.textContent || window.lastTxnRef || '';
+  const amount = window.lastAmount || 1598000;
+  if (bookingCode) {
+    localStorage.setItem('paid_' + bookingCode, 'true');
+    localStorage.setItem('amount_' + bookingCode, amount);
+  }
+  localStorage.setItem('lastTxnRef', bookingCode);
+  localStorage.setItem('lastAmount', amount);
   window.location.href = 'confirmation.html';
 }
 
