@@ -350,6 +350,13 @@
                 <p class="seat-numbers">No seats selected</p>
               </div>
 
+              <!-- Simple Countdown Timer -->
+              <div class="countdown-box" id="countdownBox" style="display: none;">
+                <div class="countdown-title">⏰ Ghế được giữ trong:</div>
+                <div class="countdown-display" id="countdownDisplay">0:30</div>
+                <div class="countdown-note">Vui lòng hoàn thành việc chọn ghế!</div>
+              </div>
+
               <div class="annotation">
                 <h4 class="annotation-title">Annotation</h4>
                 <div class="legend">
@@ -457,6 +464,12 @@
       const seats = document.querySelectorAll('.seat:not(.occupied)');
       const selectedSeatsDisplay = document.querySelector('.seat-numbers');
       const continueBtn = document.querySelector('.continue-btn');
+      const countdownBox = document.getElementById('countdownBox');
+      const countdownDisplay = document.getElementById('countdownDisplay');
+      
+      // Simple countdown variables
+      let countdownTimer = null;
+      let timeLeft = 30; // 30 seconds
       
       // Initialize with already selected seats from HTML
       let selectedSeats = [];
@@ -474,6 +487,60 @@
         }
       }
 
+      // Start simple countdown
+      function startCountdown() {
+        // Reset timer if already running
+        if (countdownTimer) {
+          clearInterval(countdownTimer);
+        }
+        
+        timeLeft = 30;
+        countdownBox.style.display = 'block';
+        countdownBox.classList.remove('warning');
+        
+        countdownTimer = setInterval(function() {
+          timeLeft = timeLeft - 1;
+          
+          // Format time display (minutes:seconds)
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+          countdownDisplay.textContent = minutes + ':' + (seconds < 10 ? '0' + seconds : seconds);
+          
+          // Show warning when less than 10 seconds
+          if (timeLeft <= 10) {
+            countdownBox.classList.add('warning');
+          }
+          
+          // Time's up!
+          if (timeLeft <= 0) {
+            clearInterval(countdownTimer);
+            
+            // Clear all selected seats
+            selectedSeats.forEach(function(seatCode) {
+              const seat = document.querySelector('[data-seat="' + seatCode + '"]');
+              if (seat) {
+                seat.classList.remove('selected');
+              }
+            });
+            
+            selectedSeats = [];
+            updateSelectedDisplay();
+            hideCountdown();
+            alert('Hết thời gian! Vui lòng chọn ghế lại.');
+          }
+        }, 1000); // Update every 1 second
+      }
+
+      // Hide countdown
+      function hideCountdown() {
+        if (countdownTimer) {
+          clearInterval(countdownTimer);
+          countdownTimer = null;
+        }
+        countdownBox.style.display = 'none';
+        countdownBox.classList.remove('warning');
+      }
+
       // Add click handlers to seats
       seats.forEach(seat => {
         seat.addEventListener('click', function() {
@@ -483,10 +550,18 @@
             // Deselect seat
             this.classList.remove('selected');
             selectedSeats = selectedSeats.filter(s => s !== seatCode);
+            
+            // Hide countdown if no seats selected
+            if (selectedSeats.length === 0) {
+              hideCountdown();
+            }
           } else {
             // Select seat
             this.classList.add('selected');
             selectedSeats.push(seatCode);
+            
+            // Start countdown when first seat is selected or restart it
+            startCountdown();
           }
           
           updateSelectedDisplay();
@@ -497,10 +572,12 @@
       continueBtn.addEventListener('click', function(e) {
         if (selectedSeats.length === 0) {
           e.preventDefault();
-          alert('Please select at least one seat before continuing.');
+          alert('Vui lòng chọn ít nhất một ghế trước khi tiếp tục.');
         } else {
-          // Navigate to next page or handle selection
-          window.location.href = 'extras.html';
+          // Stop countdown when continuing
+          hideCountdown();
+          // Navigate to next page
+          window.location.href = 'passenger.html';
         }
       });
 

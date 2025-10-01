@@ -644,3 +644,81 @@
     padding: 0 1rem;
   }
 }
+
+/* Simple Countdown Timer Styles */
+.countdown-box {
+  background-color: #e6f7f8;
+  border: 2px solid #0a969d;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 15px 0;
+  text-align: center;
+}
+
+.countdown-box.warning {
+  background-color: #fff3e6;
+  border-color: #ff8a00;
+}
+
+.countdown-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0a969d;
+  margin-bottom: 8px;
+}
+
+.countdown-box.warning .countdown-title {
+  color: #cc6e00;
+}
+
+.countdown-display {
+  font-size: 32px;
+  font-weight: bold;
+  color: #0a969d;
+  font-family: 'Courier New', monospace;
+  margin: 10px 0;
+}
+
+.countdown-box.warning .countdown-display {
+  color: #ff8a00;
+}
+
+.countdown-note {
+  font-size: 12px;
+  color: #087278;
+  font-style: italic;
+}
+
+.countdown-box.warning .countdown-note {
+  color: #cc6e00;
+}
+
+/* Blinking effect for warning */
+.countdown-box.warning .countdown-display {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.5; }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .countdown-box {
+    padding: 12px;
+    margin: 12px 0;
+  }
+  
+  .countdown-display {
+    font-size: 24px;
+  }
+  
+  .countdown-title {
+    font-size: 13px;
+  }
+  
+  .countdown-note {
+    font-size: 11px;
+  }
+}
