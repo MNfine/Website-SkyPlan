@@ -352,7 +352,7 @@
 
               <!-- Simple Countdown Timer -->
               <div class="countdown-box" id="countdownBox" style="display: none;">
-                <div class="countdown-title">⏰ Ghế được giữ trong:</div>
+                <div class="countdown-title"><i class="far fa-clock"></i> Ghế được giữ trong:</div>
                 <div class="countdown-display" id="countdownDisplay">0:30</div>
                 <div class="countdown-note">Vui lòng hoàn thành việc chọn ghế!</div>
               </div>
@@ -480,7 +480,7 @@
       // Update selected seats display
       function updateSelectedDisplay() {
         if (selectedSeats.length === 0) {
-          selectedSeatsDisplay.textContent = 'No seats selected';
+          selectedSeatsDisplay.textContent = 'Chưa chọn ghế';
         } else {
           selectedSeats.sort();
           selectedSeatsDisplay.textContent = selectedSeats.join(', ');

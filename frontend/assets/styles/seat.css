@@ -684,9 +684,8 @@
 }
 
 .countdown-note {
-  font-size: 12px;
+  font-size: 15px;
   color: #087278;
-  font-style: italic;
 }
 
 .countdown-box.warning .countdown-note {
