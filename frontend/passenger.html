@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyPlan - Thông Tin Hành Khách</title>
+
+    <link rel = "icon" href = "favicon.ico" type = "image/x-icon">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="assets/styles/reset.css">
+    <link rel="stylesheet" href="assets/styles/index.css">
+    <link rel="stylesheet" href="assets/styles/flags.css">
+    <link rel="stylesheet" href="assets/styles/header.css">
+    <link rel="stylesheet" href="assets/styles/footer.css">
+    <link rel="stylesheet" href="assets/styles/passenger.css">
+  
+</head>
+<body>
+      <div id="header-container"></div>
+
+    <!-- Main content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Progress bar -->
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-container">
+                        <!-- Starting line (teal) -->
+                        <div class="progress-line-start"></div>
+                        
+                        <!-- Step 1 -->
+                        <div class="progress-step">
+                            <div class="step-circle completed">
+                                <span>1</span>
+                            </div>
+                            <span class="step-label">Tìm kiếm</span>
+                        </div>
+                        <div class="step-line completed"></div>
+                        
+                        <!-- Step 2 -->
+                        <div class="progress-step">
+                            <div class="step-circle completed">
+                                <span>2</span>
+                            </div>
+                            <span class="step-label">Chọn chuyến bay</span>
+                        </div>
+                        <div class="step-line completed"></div>
+                        
+                        <!-- Step 3 -->
+                        <div class="progress-step">
+                            <div class="step-circle completed">
+                                <span>3</span>
+                            </div>
+                            <span class="step-label">Chọn giá</span>
+                        </div>
+                        <div class="step-line completed"></div>
+                        
+                        <!-- Step 4 - active -->
+                        <div class="progress-step">
+                            <div class="step-circle completed">
+                                <span>4</span>
+                            </div>
+                            <span class="step-label">Thông tin khách hàng</span>
+                        </div>
+                        <div class="step-line incomplete"></div>
+                        
+                        <!-- Step 5 -->
+                        <div class="progress-step">
+                            <div class="step-circle">
+                                <span>5</span>
+                            </div>
+                            <span class="step-label">Dịch vụ thêm</span>
+                        </div>
+                        <div class="step-line incomplete"></div>
+                        
+                        <!-- Step 6 -->
+                        <div class="progress-step">
+                            <div class="step-circle">
+                                <span>6</span>
+                            </div>
+                            <span class="step-label">Thanh toán</span>
+                        </div>
+                        
+                        <!-- Ending line (gray) -->
+                        <div class="progress-line-end"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passenger form -->
+            <div class="form-card">
+                <div class="form-header">
+                    <h2>THÔNG TIN HÀNH KHÁCH</h2>
+                    <div class="form-header-line"></div>
+                </div>
+
+                <form id="passengerForm">
+                    <div class="form-grid">
+                        <!-- Last name -->
+                        <div class="form-group">
+                            <label for="lastname">Họ <span class="required">*</span></label>
+                            <input type="text" id="lastname" name="lastname" placeholder="Nhập họ">
+                            <span class="error-message" id="lastname-error"></span>
+                        </div>
+
+                        <!-- First name -->
+                        <div class="form-group">
+                            <label for="firstname">Tên <span class="required">*</span></label>
+                            <input type="text" id="firstname" name="firstname" placeholder="Nhập tên">
+                            <span class="error-message" id="firstname-error"></span>
+                        </div>
+
+                        <!-- National ID (CCCD/CMND) -->
+                        <div class="form-group full-width">
+                            <label for="cccd">Số CCCD/CMND <span class="required">*</span></label>
+                            <input type="text" id="cccd" name="cccd" placeholder="Nhập số CCCD/CMND" maxlength="12">
+                            <span class="error-message" id="cccd-error"></span>
+                        </div>
+
+                        <!-- Date of birth -->
+                        <div class="form-group">
+                            <label for="dob">Ngày sinh <span class="required">*</span></label>
+                            <input type="text" id="dob" name="dob" placeholder="MM/DD/YYYY">
+                            <span class="error-message" id="dob-error"></span>
+                        </div>
+
+                        <!-- Gender -->
+                        <div class="form-group">
+                            <label for="gender">Giới tính <span class="required">*</span></label>
+                            <select id="gender" name="gender">
+                                <option value="">Chọn giới tính</option>
+                                <option value="male">Nam</option>
+                                <option value="female">Nữ</option>
+                                <option value="other">Khác</option>
+                            </select>
+                            <span class="error-message" id="gender-error"></span>
+                        </div>
+
+                        <!-- Phone number -->
+                        <div class="form-group">
+                            <label for="phoneNumber">Số điện thoại <span class="required">*</span></label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Nhập số điện thoại" maxlength="10">
+                            <span class="error-message" id="phoneNumber-error"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-group">
+                            <label for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" placeholder="Nhập email">
+                            <span class="error-message" id="email-error"></span>
+                        </div>
+
+                        <!-- Permanent address -->
+                        <div class="form-group full-width">
+                            <label for="address">Địa chỉ thường trú <span class="required">*</span></label>
+                            <input type="text" id="address" name="address" placeholder="Nhập địa chỉ thường trú">
+                            <span class="error-message" id="address-error"></span>
+                        </div>
+
+                        <!-- City/Province -->
+                        <div class="form-group" id="city-group">
+                            <label for="city">Tỉnh/Thành phố <span class="required">*</span></label>
+                            <select id="city" name="city">
+                                <option value="">Chọn tỉnh/thành phố</option>
+                                <option value="Hà Nội">Hà Nội</option>
+                                <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+                                <option value="Đà Nẵng">Đà Nẵng</option>
+                                <option value="Hải Phòng">Hải Phòng</option>
+                                <option value="Cần Thơ">Cần Thơ</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                            <span class="error-message" id="city-error"></span>
+                        </div>
+
+                        <!-- Custom city input -->
+                        <div class="form-group" id="customCity-group" style="display: none;">
+                            <label for="customCity">Nhập tỉnh/thành phố <span class="required">*</span></label>
+                            <input type="text" id="customCity" name="customCity" placeholder="Nhập tỉnh/thành phố của bạn">
+                            <span class="error-message" id="customCity-error"></span>
+                        </div>
+
+                        <!-- Nationality -->
+                        <div class="form-group" id="nationality-group">
+                            <label for="nationality">Quốc tịch <span class="required">*</span></label>
+                            <select id="nationality" name="nationality">
+                                <option value="Việt Nam">Việt Nam</option>
+                                <option value="Lào">Lào</option>
+                                <option value="Campuchia">Campuchia</option>
+                                <option value="Thái Lan">Thái Lan</option>
+                                <option value="Singapore">Singapore</option>
+                                <option value="Malaysia">Malaysia</option>
+                                <option value="Indonesia">Indonesia</option>
+                                <option value="Philippines">Philippines</option>
+                                <option value="Myanmar">Myanmar</option>
+                                <option value="Brunei">Brunei</option>
+                                <option value="Hàn Quốc">Hàn Quốc</option>
+                                <option value="Nhật Bản">Nhật Bản</option>
+                                <option value="Trung Quốc">Trung Quốc</option>
+                                <option value="Hoa Kỳ">Hoa Kỳ</option>
+                                <option value="Anh">Anh</option>
+                                <option value="Pháp">Pháp</option>
+                                <option value="Đức">Đức</option>
+                                <option value="Úc">Úc</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                            <span class="error-message" id="nationality-error"></span>
+                        </div>
+
+                        <!-- Custom nationality input -->
+                        <div class="form-group" id="customNationality-group" style="display: none;">
+                            <label for="customNationality">Nhập quốc tịch <span class="required">*</span></label>
+                            <input type="text" id="customNationality" name="customNationality" placeholder="Nhập quốc tịch của bạn">
+                            <span class="error-message" id="customNationality-error"></span>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="form-group full-width">
+                            <label for="notes">Ghi chú</label>
+                            <textarea id="notes" name="notes" rows="4" placeholder="Nhập ghi chú (nếu có)"></textarea>
+                            <div class="char-counter">Đối đa 500 ký tự</div>
+                        </div>
+                    </div>
+
+                    <!-- Confirmation checkbox -->
+                    <div class="form-checkbox">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="confirm" name="confirm" class="custom-checkbox">
+                            <span class="checkbox-text">Tôi đồng ý với điều khoản</span>
+                        </label>
+                        <span class="error-message" id="confirm-error"></span>
+                    </div>
+
+                    <!-- Submit button -->
+                    <div class="form-submit">
+                        <button type="submit" class="btn-submit">Xác nhận thông tin</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer placeholder (component will be injected here) -->
+    <div id="footer-container"></div>
+
+    <script src="./assets/scripts/passenger.js"></script>
+    <script>
+        // Load header and footer components
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load header
+            fetch('./components/header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                })
+                .catch(error => console.error('Error loading header:', error));
+            
+            // Load footer
+            fetch('./components/footer.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('footer-container').innerHTML = data;
+                })
+                .catch(error => console.error('Error loading footer:', error));
+        });
+    </script>
+</body>
+</html>
