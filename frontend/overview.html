@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SkyPlan - Tổng quan chuyến đi</title>
+  <title data-i18n="overviewTitle">SkyPlan - Tổng quan chuyến đi</title>
   
   <!-- Favicon -->
   <link rel="icon" href="favicon.ico" type="image/x-icon">
@@ -28,27 +28,27 @@
     <div class="steps">
       <div class="step completed">
         <div class="dot">1</div>
-        <div class="label">Tìm kiếm</div>
+        <div class="label" data-i18n="step1">Tìm kiếm</div>
       </div>
       <div class="step completed">
         <div class="dot">2</div>
-        <div class="label">Chọn chuyến bay</div>
+        <div class="label" data-i18n="step2">Chọn chuyến bay</div>
       </div>
       <div class="step completed">
         <div class="dot">3</div>
-        <div class="label">Chọn giá</div>
+        <div class="label" data-i18n="step3">Chọn giá</div>
       </div>
       <div class="step completed">
         <div class="dot">4</div>
-        <div class="label">Thông tin khách hàng</div>
+        <div class="label" data-i18n="step4">Thông tin khách hàng</div>
       </div>
       <div class="step completed">
         <div class="dot">5</div>
-        <div class="label">Dịch vụ thêm</div>
+        <div class="label" data-i18n="step5">Dịch vụ thêm</div>
       </div>
       <div class="step active">
         <div class="dot">6</div>
-        <div class="label">Thanh toán</div>
+        <div class="label" data-i18n="step6">Thanh toán</div>
       </div>
       <div class="progress"></div>
     </div>
@@ -59,14 +59,16 @@
     <div class="overview-content">
       <!-- Trip Summary -->
       <div class="trip-summary">
-        <h2>Hà Nội đến Hồ Chí Minh - Tổng quan chuyến đi</h2>
+        <h2>
+          Hà Nội đến Hồ Chí Minh - <span data-i18n="overviewTitle">Tổng quan chuyến đi</span>
+        </h2>
         
         <!-- Flight Information -->
         <div class="flight-info">
           <div class="flight-segment">
             <div class="flight-header">
               <span class="flight-date">Ngày 10 thg 6, 2023 - Chiều đi</span>
-              <span class="flight-type">Phổ thông</span>
+              <span class="flight-type" data-i18n="passengerClass">Phổ thông</span>
             </div>
             <div class="flight-details">
               <div class="departure">
@@ -81,7 +83,7 @@
                   <div class="route-dash"></div>
                   <div class="route-dot"></div>
                 </div>
-                <div class="stops">Bay thẳng</div>
+                <div class="stops" data-i18n="directFlight">Bay thẳng</div>
               </div>
               <div class="arrival">
                 <div class="time">13:00</div>
@@ -94,7 +96,7 @@
           <div class="flight-segment">
             <div class="flight-header">
               <span class="flight-date">Ngày 18 thg 8, 2023 - Chiều về</span>
-              <span class="flight-type">Phổ thông</span>
+              <span class="flight-type" data-i18n="passengerClass">Phổ thông</span>
             </div>
             <div class="flight-details">
               <div class="departure">
@@ -109,7 +111,7 @@
                   <div class="route-dash"></div>
                   <div class="route-dot"></div>
                 </div>
-                <div class="stops">Bay thẳng</div>
+                <div class="stops" data-i18n="directFlight">Bay thẳng</div>
               </div>
               <div class="arrival">
                 <div class="time">18:30</div>
@@ -123,25 +125,25 @@
         <!-- Summary Cards -->
         <div class="summary-cards">
           <div class="summary-card">
-            <h3>Phổ thông</h3>
+            <h3 data-i18n="passengerClass">Phổ thông</h3>
             <div class="card-content">
               <div class="passenger-info">
                 <i class="fas fa-user"></i>
-                <span>1 hành khách</span>
+                <span data-i18n="passenger">1 hành khách</span>
               </div>
               <div class="luggage-info">
                 <i class="fas fa-suitcase"></i>
-                <span>Hành lý xách tay: 7kg</span>
+                <span data-i18n="handLuggage">Hành lý xách tay: 7kg</span>
               </div>
               <div class="luggage-info">
                 <i class="fas fa-luggage-cart"></i>
-                <span>Hành lý ký gửi: 23kg</span>
+                <span data-i18n="checkedLuggage">Hành lý ký gửi: 23kg</span>
               </div>
             </div>
           </div>
 
           <div class="summary-card services-card">
-            <h3>Không có dịch vụ thêm</h3>
+            <h3 data-i18n="noExtras">Không có dịch vụ thêm</h3>
             <div class="card-content">
               <div class="service-illustration">
                 <img src="assets/images/no-extras.png" alt="No additional services" class="service-img">
@@ -153,11 +155,11 @@
         <!-- Total Price -->
         <div class="total-section">
           <div class="total-price">
-            <span class="price-label">Tổng cộng</span>
+            <span class="price-label" data-i18n="totalLabel">Tổng cộng</span>
             <span class="price-amount">1.598.000 ₫</span>
           </div>
           <a href="payment.html" class="confirm-btn pay-btn">
-            <span>Xác nhận đặt vé</span>
+            <span data-i18n="confirmBooking">Xác nhận đặt vé</span>
             <i class="fas fa-arrow-right"></i>
           </a>
         </div>
@@ -169,7 +171,8 @@
   <div id="footer-container"></div>
 
   <!-- JavaScript -->
-  <script src="assets/scripts/index.js"></script>
+  <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/overview_translations.js"></script>
 
   <!-- Load Components -->
   <script>
@@ -188,10 +191,18 @@
       })
       .then(data => {
         document.getElementById('header-container').innerHTML = data;
-        
         // After header loads, initialize language functionality if available
         if (typeof initializeLanguageSelector === 'function') {
           initializeLanguageSelector();
+        }
+        // Initialize mobile menu after header loads
+        if (typeof initializeMobileMenu === 'function') {
+          initializeMobileMenu();
+        }
+        // Re-apply translations for header
+        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        if (typeof applyOverviewTranslations === 'function') {
+          applyOverviewTranslations(lang);
         }
       })
       .catch(error => {
@@ -237,6 +248,16 @@
       }
     });
   })();
+  </script>
+
+  <script>
+    // Tự động dịch khi trang load
+    document.addEventListener('DOMContentLoaded', function() {
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      if (typeof applyOverviewTranslations === 'function') {
+        applyOverviewTranslations(lang);
+      }
+    });
   </script>
 </body>
 </html>
