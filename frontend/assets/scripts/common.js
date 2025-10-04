@@ -44,6 +44,8 @@ function initializeLanguageSelector() {
           changeOverviewLanguage(selectedLangValue);
         } else if (typeof changeLanguage === 'function') {
           changeLanguage(selectedLangValue);
+        } else if (typeof changeFareLanguage === 'function' && window.location.pathname.includes('fare.html')) {
+          changeFareLanguage(selectedLangValue);
         }
         updateSelectedLanguage(selectedLangValue);
       });
