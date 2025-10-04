@@ -287,6 +287,20 @@
   box-shadow: none;
 }
 
+/* Restricted seats (not available for selected fare class) */
+.seat.restricted {
+  background-color: #e0e0e0;
+  color: #999;
+  border-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+.seat.restricted:hover {
+  transform: none;
+  box-shadow: none;
+}
+
 .seat.selected {
   background-color: #1fb6a0;
   color: white;
@@ -387,9 +401,36 @@
   border-color: #0a969d;
 }
 
+.legend-color.restricted {
+  background-color: #e0e0e0;
+  border-color: #ccc;
+}
+
 .legend-item span {
   font-size: 0.9rem;
   color: #4a5568;
+}
+
+/* Fare Class Info */
+.fare-class-info {
+  background-color: #f0f8ff;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.fare-class-label {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin: 0 0 0.25rem 0;
+}
+
+.fare-class-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
 }
 
 /* Continue Button */
