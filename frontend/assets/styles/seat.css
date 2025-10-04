@@ -665,10 +665,25 @@
   font-weight: 600;
   color: #0a969d;
   margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.countdown-title i {
+  font-size: 16px;
+  color: #0a969d;
+  animation: tick-rotation 2s ease-in-out infinite;
 }
 
 .countdown-box.warning .countdown-title {
   color: #cc6e00;
+}
+
+.countdown-box.warning .countdown-title i {
+  color: #ff8a00;
+  animation: warning-pulse 0.8s ease-in-out infinite alternate;
 }
 
 .countdown-display {
@@ -684,8 +699,9 @@
 }
 
 .countdown-note {
-  font-size: 15px;
+  font-size: 12px;
   color: #087278;
+  font-style: italic;
 }
 
 .countdown-box.warning .countdown-note {
@@ -700,6 +716,26 @@
 @keyframes blink {
   0%, 50% { opacity: 1; }
   51%, 100% { opacity: 0.5; }
+}
+
+/* Clock icon animations */
+@keyframes tick-rotation {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes warning-pulse {
+  from { 
+    transform: scale(1) rotate(0deg);
+    color: #ff8a00;
+  }
+  to { 
+    transform: scale(1.1) rotate(3deg);
+    color: #ff6b00;
+  }
 }
 
 /* Mobile responsive */
