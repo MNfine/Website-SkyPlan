@@ -178,15 +178,24 @@ document.addEventListener('DOMContentLoaded', function() {
 // Show loading state
 function showLoadingState() {
   const payBtn = document.querySelector('.pay-btn');
+  if (!payBtn) return;
   payBtn.disabled = true;
-  payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Đang xử lý...</span>';
+  // keep icon and update text using translation helper if available
+  const iconHtml = '<i class="fas fa-spinner fa-spin"></i>';
+  const lang = localStorage.getItem('preferredLanguage') || 'vi';
+  const text = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('processing', lang) : 'Đang xử lý...';
+  payBtn.innerHTML = iconHtml + '<span>' + text + '</span>';
 }
 
 // Hide loading state
 function hideLoadingState() {
   const payBtn = document.querySelector('.pay-btn');
+  if (!payBtn) return;
   payBtn.disabled = false;
-  payBtn.innerHTML = '<i class="fas fa-lock"></i><span>Thanh toán ngay</span>';
+  const iconHtml = '<i class="fas fa-lock"></i>';
+  const lang = localStorage.getItem('preferredLanguage') || 'vi';
+  const text = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('payNow', lang) : 'Thanh toán ngay';
+  payBtn.innerHTML = iconHtml + '<span>' + text + '</span>';
 }
 
 // Show payment success
@@ -387,29 +396,53 @@ function updatePayBtnUI() {
   const payBtn = document.querySelector('.pay-btn');
   const selectedPayment = document.querySelector('input[name="payment"]:checked');
   if (!payBtn || !selectedPayment) return;
-
+  const mainPayBtn = document.getElementById('mainPayBtn');
+  const mainPayBtnText = document.getElementById('mainPayBtnText');
+  const lang = localStorage.getItem('preferredLanguage') || 'vi';
+  if (!mainPayBtn) return;
   if (selectedPayment.value === 'card') {
-    if (isCardFormValid()) {
-      payBtn.innerHTML = '<span>Thanh toán ngay</span>';
-    } else {
-      payBtn.innerHTML = '<i class="fas fa-lock"></i><span>Thanh toán ngay</span>';
+    mainPayBtn.style.display = '';
+    mainPayBtn.style.background = '';
+    mainPayBtn.style.color = '';
+    if (mainPayBtnText) {
+      // choose icon only when card form invalid
+      if (isCardFormValid()) {
+        // when form valid, remove lock icon
+        mainPayBtnText.textContent = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('payNow', lang) : 'Thanh toán ngay';
+        const icon = mainPayBtn.querySelector('i');
+        if (icon) icon.remove();
+      } else {
+        // when invalid, ensure lock icon exists
+        mainPayBtnText.textContent = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('payNow', lang) : 'Thanh toán ngay';
+        let icon = mainPayBtn.querySelector('i');
+        if (!icon) {
+          icon = document.createElement('i');
+          icon.className = 'fas fa-lock';
+          mainPayBtn.insertBefore(icon, mainPayBtn.firstChild);
+        } else {
+          icon.className = 'fas fa-lock';
+        }
+      }
     }
-    payBtn.style.display = '';
-    payBtn.style.background = '';
-    payBtn.style.color = '';
   } else if (selectedPayment.value === 'bank') {
-    payBtn.innerHTML = '<span>Đến trang xác nhận</span>';
-    payBtn.style.display = '';
-    payBtn.style.background = '#ff9800';
-    payBtn.style.color = '#fff';
+    mainPayBtn.style.display = '';
+    mainPayBtn.style.background = '#ff9800';
+    mainPayBtn.style.color = '#fff';
+    if (mainPayBtnText) {
+      mainPayBtnText.textContent = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('bankConfirm', lang) : 'Đến trang xác nhận';
+    }
+    // remove icon for bank confirmation
+    const iconEl = mainPayBtn.querySelector('i');
+    if (iconEl) iconEl.remove();
   } else if (selectedPayment.value === 'ewallet') {
-    payBtn.style.display = 'none'; // Ẩn nút khi chọn ví điện tử
+    mainPayBtn.style.display = 'none';
   } else {
-    payBtn.innerHTML = '<i class="fas fa-lock"></i><span>Thanh toán ngay</span>';
-    payBtn.style.display = '';
-    payBtn.style.background = '';
-    payBtn.style.color = '';
+    mainPayBtn.style.display = '';
+    mainPayBtn.style.background = '';
+    mainPayBtn.style.color = '';
+    if (mainPayBtnText) mainPayBtnText.textContent = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('payNow', lang) : 'Thanh toán ngay';
   }
+  // Do not call page-level updater here to avoid conflicting DOM updates
 }
 
 // Theo dõi thay đổi input thẻ để cập nhật nút
@@ -419,6 +452,16 @@ function listenCardFormChange() {
     if (el) el.addEventListener('input', updatePayBtnUI);
   });
 }
+
+// make sure input changes also trigger the page-level updater (in case it's preferred)
+document.addEventListener('DOMContentLoaded', function() {
+  ['cardNumber','expiryDate','cvv','cardName'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', function() {
+      try { if (typeof window.updatePayBtn === 'function') window.updatePayBtn(); } catch (e) {}
+    });
+  });
+});
 
 // Theo dõi thay đổi phương thức thanh toán
 function listenPaymentMethodChange() {
