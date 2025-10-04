@@ -35,10 +35,17 @@ const seatTranslations = {
         yourSelection: "Your Seat Selection",
         selectedSeats: "Selected seats:",
         noSeatsSelected: "No seats selected",
+        selectedFareClass: "Selected fare class:",
         annotation: "Annotation",
         occupied: "Occupied",
         selecting: "Selecting",
+        notAvailable: "Not Available",
         continue: "Continue",
+        
+        // Fare classes
+        economy: "Economy",
+        premiumEconomy: "Premium Economy", 
+        business: "Business",
         
         // Countdown Timer
         seatReserved: "Seat reserved for:",
@@ -82,10 +89,17 @@ const seatTranslations = {
         yourSelection: "Ghế bạn đã chọn",
         selectedSeats: "Ghế đã chọn:",
         noSeatsSelected: "Chưa chọn ghế nào",
+        selectedFareClass: "Hạng vé đã chọn:",
         annotation: "Chú thích",
         occupied: "Đã có người",
         selecting: "Đang chọn",
+        notAvailable: "Không khả dụng",
         continue: "Tiếp tục",
+        
+        // Fare classes
+        economy: "Hạng phổ thông",
+        premiumEconomy: "Hạng phổ thông đặc biệt",
+        business: "Hạng thương gia",
         
         // Countdown Timer
         seatReserved: "Ghế được giữ trong:",

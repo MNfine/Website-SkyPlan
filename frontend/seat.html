@@ -83,7 +83,7 @@
                 <div class="seat-row">
                   <div class="seats">
                     <div class="seat business-class" data-seat="3A">3A</div>
-                    <div class="seat business-class selected" data-seat="3B">3B</div>
+                    <div class="seat business-class" data-seat="3B">3B</div>
                     <div class="seat business-class" data-seat="3C">3C</div>
                     <div class="seat-gap"></div>
                     <div class="seat business-class" data-seat="3D">3D</div>
@@ -128,7 +128,7 @@
                   <div class="seats">
                     <div class="seat premium-economy" data-seat="6A">6A</div>
                     <div class="seat premium-economy" data-seat="6B">6B</div>
-                    <div class="seat premium-economy selected" data-seat="6C">6C</div>
+                    <div class="seat premium-economy" data-seat="6C">6C</div>
                     <div class="seat-gap"></div>
                     <div class="seat premium-economy" data-seat="6D">6D</div>
                     <div class="seat premium-economy" data-seat="6E">6E</div>
@@ -345,6 +345,12 @@
             <div class="panel-content">
               <h3 class="panel-title" data-i18n="yourSelection">Chọn ghế của bạn</h3>
               
+              <!-- Fare Class Info -->
+              <div class="fare-class-info" id="fareClassInfo" style="display: none;">
+                <p class="fare-class-label" data-i18n="selectedFareClass">Hạng vé đã chọn:</p>
+                <p class="fare-class-value" id="fareClassName"></p>
+              </div>
+              
               <div class="selected-seats">
                 <p class="selected-label" data-i18n="selectedSeats">Ghế đã chọn:</p>
                 <p class="seat-numbers" data-i18n="noSeatsSelected">Chưa có ghế nào được chọn</p>
@@ -379,6 +385,10 @@
                   <div class="legend-item">
                     <div class="legend-color selected"></div>
                     <span data-i18n="selecting">Đang Chọn</span>
+                  </div>
+                  <div class="legend-item" id="restrictedLegend" style="display: none;">
+                    <div class="legend-color restricted"></div>
+                    <span data-i18n="notAvailable">Không khả dụng</span>
                   </div>
                 </div>
               </div>
@@ -459,8 +469,108 @@
       }
     }
 
+    // Function to get URL parameter
+    function getUrlParameter(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    // Function to restrict seats based on fare class
+    function restrictSeatsByFareClass(fareClass) {
+      const allSeats = document.querySelectorAll('.seat');
+      const businessSection = document.querySelector('.business-class-section');
+      const premiumEconomySection = document.querySelector('.premium-economy-section');
+      const economySection = document.querySelector('.economy-section');
+      const fareClassInfo = document.getElementById('fareClassInfo');
+      const fareClassName = document.getElementById('fareClassName');
+      const restrictedLegend = document.getElementById('restrictedLegend');
+      
+      // Remove any existing restrictions first
+      allSeats.forEach(seat => {
+        seat.classList.remove('restricted');
+        seat.style.pointerEvents = 'auto';
+        seat.style.opacity = '1';
+      });
+      
+      // Reset section opacities
+      if (businessSection) businessSection.style.opacity = '1';
+      if (premiumEconomySection) premiumEconomySection.style.opacity = '1';
+      if (economySection) economySection.style.opacity = '1';
+      
+      // Display fare class info
+      if (fareClassInfo && fareClassName) {
+        const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+        let fareDisplayName = '';
+        
+        switch(fareClass) {
+          case 'economy':
+            fareDisplayName = seatTranslations[currentLang]['economy'] || 'Economy';
+            break;
+          case 'premium-economy':
+            fareDisplayName = seatTranslations[currentLang]['premiumEconomy'] || 'Premium Economy';
+            break;
+          case 'business':
+            fareDisplayName = seatTranslations[currentLang]['business'] || 'Business';
+            break;
+        }
+        
+        fareClassName.textContent = fareDisplayName;
+        fareClassInfo.style.display = 'block';
+      }
+      
+      // Apply restrictions based on fare class
+      let hasRestrictions = false;
+      switch(fareClass) {
+        case 'economy':
+          // Only allow economy seats
+          document.querySelectorAll('.seat.business-class, .seat.premium-economy').forEach(seat => {
+            seat.classList.add('restricted');
+            seat.style.pointerEvents = 'none';
+            seat.style.opacity = '0.3';
+          });
+          // Dim the section headers for restricted sections
+          if (businessSection) businessSection.style.opacity = '0.5';
+          if (premiumEconomySection) premiumEconomySection.style.opacity = '0.5';
+          hasRestrictions = true;
+          break;
+          
+        case 'premium-economy':
+          // Allow premium economy and economy seats
+          document.querySelectorAll('.seat.business-class').forEach(seat => {
+            seat.classList.add('restricted');
+            seat.style.pointerEvents = 'none';
+            seat.style.opacity = '0.3';
+          });
+          // Dim business class section
+          if (businessSection) businessSection.style.opacity = '0.5';
+          hasRestrictions = true;
+          break;
+          
+        case 'business':
+          // Allow all seats (business can choose any seat)
+          break;
+          
+        default:
+          // No restrictions if no fare class specified
+          break;
+      }
+      
+      // Show/hide restricted legend
+      if (restrictedLegend) {
+        restrictedLegend.style.display = hasRestrictions ? 'flex' : 'none';
+      }
+    }
+
     // Seat selection functionality
     function initializeSeatSelection() {
+      // Get fare class from URL parameter
+      const fareClass = getUrlParameter('class');
+      
+      // Apply seat restrictions based on fare class
+      if (fareClass) {
+        restrictSeatsByFareClass(fareClass);
+      }
+      
       const seats = document.querySelectorAll('.seat:not(.occupied)');
       const selectedSeatsDisplay = document.querySelector('.seat-numbers');
       const continueBtn = document.querySelector('.continue-btn');
@@ -550,6 +660,11 @@
       // Add click handlers to seats
       seats.forEach(seat => {
         seat.addEventListener('click', function() {
+          // Check if seat is restricted
+          if (this.classList.contains('restricted')) {
+            return; // Do nothing if seat is restricted
+          }
+          
           const seatCode = this.dataset.seat;
           
           if (this.classList.contains('selected')) {
