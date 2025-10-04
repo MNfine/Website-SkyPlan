@@ -42,6 +42,10 @@ function initializeLanguageSelector() {
         // Change language: use correct function for each page
         if (typeof changeOverviewLanguage === 'function' && window.location.pathname.includes('overview.html')) {
           changeOverviewLanguage(selectedLangValue);
+        } else if (typeof changeSeatLanguage === 'function' && window.location.pathname.includes('seat.html')) {
+          changeSeatLanguage(selectedLangValue);
+        } else if (typeof changeFareLanguage === 'function' && window.location.pathname.includes('fare.html')) {
+          changeFareLanguage(selectedLangValue);
         } else if (typeof changeLanguage === 'function') {
           changeLanguage(selectedLangValue);
         }
