@@ -1,10 +1,12 @@
 // Translations for SkyPlan - Overview page
 const overviewTranslations = {
     en: {
-        // Header (from index_translations.js)
-        metaTitle: "SkyPlan - Best deals are waiting for you",
-        metaDescription: "Find the best flight deals with SkyPlan. Book your next trip with confidence.",
-        // Footer (from index_translations.js)
+        // Header 
+        helpText: "Help",
+        myTripsText: "My Trips",
+        signInText: "Sign Up",
+        logInText: "Sign In",
+        // Footer 
         footerDesc: "Your trusted travel companion for the best flight deals and unforgettable journeys.",
         quickLinksTitle: "Quick Links",
         aboutUs: "About Us",
@@ -15,6 +17,12 @@ const overviewTranslations = {
         helpCenter: "Help Center",
         customerService: "Customer Service",
         bookingHelp: "Booking Help",
+        faq: "FAQ",
+        paymentMethodsTitle: "Payment Methods",
+        downloadAppTitle: "Download our app",
+        appStore: "App Store",
+        googlePlay: "Google Play",
+        copyright: "© 2024 SkyPlan. All rights reserved.",
         // Titles & Labels
         overviewTitle: "Trip Overview",
         tripSummary: "Trip Summary",
@@ -24,16 +32,6 @@ const overviewTranslations = {
         handLuggage: "Hand luggage",
         checkedLuggage: "Checked luggage",
         noExtras: "No additional services",
-        helpText: "Help",
-        myTripsText: "My Trips",
-        signInText: "Sign Up",
-        logInText: "Sign In",
-        faq: "FAQ",
-        paymentMethodsTitle: "Payment Methods",
-        downloadAppTitle: "Download our app",
-        appStore: "App Store",
-        googlePlay: "Google Play",
-        copyright: "© 2024 SkyPlan. All rights reserved.",
         passengerClass: "Economy",
         // Steps
         step1: "Search",
