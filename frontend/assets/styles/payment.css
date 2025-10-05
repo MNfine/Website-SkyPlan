@@ -15,21 +15,33 @@ body {
 .steps {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 24px;
+  gap: 0;
   padding: 10px 0 30px;
 }
 
 .steps .progress {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 22px;
+  left: 8.33%;
+  right: 8.33%;
+  top: 26px;
   height: 4px;
   background: #e6e6e6;
   border-radius: 2px;
   z-index: 1;
+}
+
+.steps .progress::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #0a969d 0%, #1fb6a0 100%);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  width: 100%; /* Step 6 active = 100% */
 }
 
 .step {
@@ -37,6 +49,10 @@ body {
   z-index: 2;
   text-align: center;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
 }
 
 .step .dot {
@@ -45,25 +61,55 @@ body {
   border-radius: 50%;
   background: #cfd8dc;
   color: #fff;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  margin: 0 auto 8px;
+  margin: 0 0 8px 0;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  font-size: 12px;
+  position: relative;
 }
 
 .step .label {
   font-size: 14px;
   color: #6b6f72;
+  font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 .step.completed .dot {
   background: #0a969d;
+  border-color: #0a969d;
+  transform: scale(1.05);
+}
+
+.step.completed .label {
+  color: #0a969d;
+  font-weight: 600;
 }
 
 .step.active .dot {
   background: #1fb6a0;
+  border-color: #1fb6a0;
   box-shadow: 0 0 0 4px rgba(31, 182, 160, 0.15);
+  transform: scale(1.1);
+}
+
+.step.active .label {
+  color: #1fb6a0;
+  font-weight: 700;
+}
+
+/* Hover effects for interactive steps */
+.step:not(.active):hover .dot {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.step:not(.active):hover .label {
+  color: #2b2f32;
 }
 
 /* Main Content */
@@ -687,17 +733,83 @@ body {
   }
 }
 
+@media (max-width: 768px) {
+  .payment-flow {
+    padding: 20px 0 40px;
+    padding-top: calc(var(--header-height, 80px) + 20px);
+  }
+  
+  .steps {
+    gap: 0;
+    padding: 10px 0 20px;
+  }
+  
+  .step .dot {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  
+  .step .label {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+  
+  .steps .progress {
+    top: 21px;
+    height: 3px;
+  }
+  
+  .steps .progress::before {
+    height: 3px;
+  }
+}
+
 @media (max-width: 480px) {
+  .payment-flow {
+    padding: 15px 0 30px;
+    padding-top: calc(var(--header-height, 80px) + 15px);
+  }
+  
+  .steps {
+    gap: 0;
+    padding: 10px 0 15px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .steps::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .step .dot {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+  
+  .step .label {
+    font-size: 10px;
+    max-width: 45px;
+    word-wrap: break-word;
+    hyphens: auto;
+    line-height: 1.1;
+  }
+  
+  .steps .progress {
+    top: 19px;
+    height: 2px;
+  }
+  
+  .steps .progress::before {
+    height: 2px;
+  }
+  
   .payment-container {
     padding: 0 12px;
-  }
-
-  .steps {
-    gap: 8px;
-  }
-
-  .step .label {
-    display: none;
   }
 
   .section-header h2 {
