@@ -6,6 +6,74 @@ document.addEventListener('DOMContentLoaded', function() {
   initializePaymentValidation();
 });
 
+// Small notification helper: prefer showToast; if it's not loaded, try to load toast.js dynamically once,
+// then use showToast. Falls back to alert() when toast is not available or fails to load.
+(function() {
+  let toastState = 'idle'; // 'idle' | 'loading' | 'ready' | 'failed'
+  function ensureToastReady(cb) {
+    if (typeof window.showToast === 'function') {
+      toastState = 'ready';
+      return cb(true);
+    }
+    if (toastState === 'failed') return cb(false);
+    if (toastState === 'loading') {
+      // wait for ready or failed
+      const waitStart = Date.now();
+      const interval = setInterval(() => {
+        if (typeof window.showToast === 'function') {
+          clearInterval(interval);
+          toastState = 'ready';
+          cb(true);
+        } else if (toastState === 'failed' || Date.now() - waitStart > 5000) {
+          clearInterval(interval);
+          toastState = 'failed';
+          cb(false);
+        }
+      }, 100);
+      return;
+    }
+
+    // start loading
+    toastState = 'loading';
+    const script = document.createElement('script');
+    script.src = 'assets/scripts/toast.js';
+    script.async = true;
+    script.onload = function() {
+      if (typeof window.showToast === 'function') {
+        toastState = 'ready';
+        cb(true);
+      } else {
+        toastState = 'failed';
+        cb(false);
+      }
+    };
+    script.onerror = function() {
+      toastState = 'failed';
+      cb(false);
+    };
+    document.head.appendChild(script);
+  }
+
+  window.notify = function(msg, type = 'info', duration = 5000) {
+    try {
+      if (typeof window.showToast === 'function') {
+        window.showToast(msg, { type: type, duration: duration });
+        return;
+      }
+      // try to load toast.js and then show
+      ensureToastReady(function(ready) {
+        if (ready && typeof window.showToast === 'function') {
+          try { window.showToast(msg, { type: type, duration: duration }); } catch (e) { alert(msg); }
+        } else {
+          alert(msg);
+        }
+      });
+    } catch (e) {
+      try { alert(msg); } catch (er) { /* ignore */ }
+    }
+  };
+})();
+
 // Initialize payment method selection
 function initializePaymentMethods() {
   const paymentMethods = document.querySelectorAll('.payment-method');
@@ -83,7 +151,7 @@ function initializePaymentValidation() {
       const selectedPayment = document.querySelector('input[name="payment"]:checked');
       
       if (!selectedPayment) {
-        alert('Vui lòng chọn phương thức thanh toán');
+        notify('Vui lòng chọn phương thức thanh toán', 'info', 4000);
         return;
       }
       
@@ -112,22 +180,22 @@ function validateCardForm() {
   const cardName = document.getElementById('cardName').value;
   
   if (!cardNumber || cardNumber.length < 13) {
-    alert('Vui lòng nhập số thẻ hợp lệ');
+    notify('Vui lòng nhập số thẻ hợp lệ', 'info', 4000);
     return false;
   }
   
   if (!expiryDate || !expiryDate.match(/^\d{2}\/\d{2}$/)) {
-    alert('Vui lòng nhập ngày hết hạn hợp lệ (MM/YY)');
+    notify('Vui lòng nhập ngày hết hạn hợp lệ (MM/YY)', 'info', 4000);
     return false;
   }
   
   if (!cvv || cvv.length < 3) {
-    alert('Vui lòng nhập mã CVV hợp lệ');
+    notify('Vui lòng nhập mã CVV hợp lệ', 'info', 4000);
     return false;
   }
   
   if (!cardName.trim()) {
-    alert('Vui lòng nhập tên trên thẻ');
+    notify('Vui lòng nhập tên trên thẻ', 'info', 4000);
     return false;
   }
   
@@ -153,7 +221,7 @@ function processBankTransfer() {
 
 // Process e-wallet payment
 function processEWalletPayment() {
-  alert('Vui lòng chọn ví điện tử để tiếp tục');
+  notify('Vui lòng chọn ví điện tử để tiếp tục', 'info', 4000);
 }
 
 // E-wallet button handlers
@@ -168,9 +236,11 @@ document.addEventListener('DOMContentLoaded', function() {
       const ewalletRadio = document.getElementById('ewallet');
       ewalletRadio.checked = true;
       ewalletRadio.dispatchEvent(new Event('change'));
-      
-      // Show selected wallet
-      alert(`Đã chọn ${walletName}. Nhấn "Thanh toán với ${walletName}" để tiếp tục.`);
+
+      // Show selected wallet using toast
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const msg = (lang === 'vi') ? `Đã chọn ${walletName}. Nhấn "Thanh toán với ${walletName}" để tiếp tục.` : `Selected ${walletName}. Click "Pay with ${walletName}" to continue.`;
+      notify(msg, 'info', 5000);
     });
   });
 });
@@ -279,7 +349,7 @@ function processVNPayPayment() {
   })
   .catch(error => {
     console.error('VNPay Error:', error);
-    alert('Lỗi: ' + error.message);
+    notify('Lỗi: ' + error.message, 'error', 6000);
     btnElement.innerHTML = originalContent;
     btnElement.disabled = false;
   });
@@ -345,7 +415,10 @@ function simulateVNPayTest(paymentData) {
   // Listen for messages from test window
   window.addEventListener('message', function(event) {
     if (event.data.type === 'vnpay_success') {
-      alert('✅ Thanh toán VNPay thành công!\\nMã giao dịch: ' + event.data.txnRef);
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const successMsg = (lang === 'vi') ? `✅ Thanh toán VNPay thành công!\nMã giao dịch: ${event.data.txnRef}` : `✅ VNPay payment successful!\nTxn: ${event.data.txnRef}`;
+  // Use notify wrapper which will dynamically load toast.js if needed
+  notify(successMsg, 'success', 4000);
       showPaymentSuccess();
     } else if (event.data.type === 'vnpay_cancel') {
       // Reset button

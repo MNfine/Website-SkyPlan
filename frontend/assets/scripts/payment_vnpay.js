@@ -46,7 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .catch(error => {
       console.error('VNPay Error:', error);
-      alert('Lỗi: ' + error.message);
+      if (typeof showToast === 'function') { try { showToast('Lỗi: ' + error.message, { type: 'error', duration: 6000 }); } catch (e) { alert('Lỗi: ' + error.message); } }
+      else alert('Lỗi: ' + error.message);
       btnElement.innerHTML = originalContent;
       btnElement.disabled = false;
     });
