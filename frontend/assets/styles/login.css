@@ -1,4 +1,4 @@
-   * {
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -74,12 +74,80 @@
   .back-button:active {
     transform: translateY(0);
   }
+
+  /* Language Toggle */
+  .lang-toggle-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+  }
+
+  .lang-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    font-family: inherit;
+  }
+
+  .lang-toggle-btn:hover {
+    border-color: var(--skyplan-primary);
+    box-shadow: 0 4px 12px rgba(0, 168, 150, 0.15);
+    transform: translateY(-1px);
+  }
+
+  .lang-option {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    opacity: 0.5;
+  }
+
+  .lang-option.active {
+    opacity: 1;
+    background: var(--skyplan-primary);
+    color: white;
+  }
+
+  .lang-option:not(.active):hover {
+    opacity: 0.8;
+    background: #f3f4f6;
+  }
+
+  .flag-icon {
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .lang-text {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .lang-divider {
+    color: #d1d5db;
+    font-weight: 300;
+    user-select: none;
+  }
   
   /*  Header / Logo */
   
   .logo-section {
     text-align: center;
     margin-bottom: 18px;
+    margin-top: 40px;
   }
   
   .logo-wrapper {
@@ -369,5 +437,21 @@
     .login-content {
       padding: 24px;
     }
+
+    .lang-toggle-container {
+      top: 15px;
+      right: 15px;
+    }
+    
+    .lang-toggle-btn {
+      padding: 6px 10px;
+    }
+    
+    .flag-icon {
+      font-size: 14px;
+    }
+    
+    .lang-text {
+      font-size: 12px;
+    }
   }
-  
