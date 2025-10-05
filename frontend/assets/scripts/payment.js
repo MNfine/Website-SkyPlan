@@ -6,6 +6,74 @@ document.addEventListener('DOMContentLoaded', function() {
   initializePaymentValidation();
 });
 
+// Small notification helper: prefer showToast; if it's not loaded, try to load toast.js dynamically once,
+// then use showToast. Falls back to alert() when toast is not available or fails to load.
+(function() {
+  let toastState = 'idle'; // 'idle' | 'loading' | 'ready' | 'failed'
+  function ensureToastReady(cb) {
+    if (typeof window.showToast === 'function') {
+      toastState = 'ready';
+      return cb(true);
+    }
+    if (toastState === 'failed') return cb(false);
+    if (toastState === 'loading') {
+      // wait for ready or failed
+      const waitStart = Date.now();
+      const interval = setInterval(() => {
+        if (typeof window.showToast === 'function') {
+          clearInterval(interval);
+          toastState = 'ready';
+          cb(true);
+        } else if (toastState === 'failed' || Date.now() - waitStart > 5000) {
+          clearInterval(interval);
+          toastState = 'failed';
+          cb(false);
+        }
+      }, 100);
+      return;
+    }
+
+    // start loading
+    toastState = 'loading';
+    const script = document.createElement('script');
+    script.src = 'assets/scripts/toast.js';
+    script.async = true;
+    script.onload = function() {
+      if (typeof window.showToast === 'function') {
+        toastState = 'ready';
+        cb(true);
+      } else {
+        toastState = 'failed';
+        cb(false);
+      }
+    };
+    script.onerror = function() {
+      toastState = 'failed';
+      cb(false);
+    };
+    document.head.appendChild(script);
+  }
+
+  window.notify = function(msg, type = 'info', duration = 5000) {
+    try {
+      if (typeof window.showToast === 'function') {
+        window.showToast(msg, { type: type, duration: duration });
+        return;
+      }
+      // try to load toast.js and then show
+      ensureToastReady(function(ready) {
+        if (ready && typeof window.showToast === 'function') {
+          try { window.showToast(msg, { type: type, duration: duration }); } catch (e) { alert(msg); }
+        } else {
+          alert(msg);
+        }
+      });
+    } catch (e) {
+      try { alert(msg); } catch (er) { /* ignore */ }
+    }
+  };
+})();
+
 // Initialize payment method selection
 function initializePaymentMethods() {
   const paymentMethods = document.querySelectorAll('.payment-method');
@@ -83,7 +151,7 @@ function initializePaymentValidation() {
       const selectedPayment = document.querySelector('input[name="payment"]:checked');
       
       if (!selectedPayment) {
-        alert('Vui lòng chọn phương thức thanh toán');
+        notify('Vui lòng chọn phương thức thanh toán', 'info', 4000);
         return;
       }
       
@@ -112,22 +180,22 @@ function validateCardForm() {
   const cardName = document.getElementById('cardName').value;
   
   if (!cardNumber || cardNumber.length < 13) {
-    alert('Vui lòng nhập số thẻ hợp lệ');
+    notify('Vui lòng nhập số thẻ hợp lệ', 'info', 4000);
     return false;
   }
   
   if (!expiryDate || !expiryDate.match(/^\d{2}\/\d{2}$/)) {
-    alert('Vui lòng nhập ngày hết hạn hợp lệ (MM/YY)');
+    notify('Vui lòng nhập ngày hết hạn hợp lệ (MM/YY)', 'info', 4000);
     return false;
   }
   
   if (!cvv || cvv.length < 3) {
-    alert('Vui lòng nhập mã CVV hợp lệ');
+    notify('Vui lòng nhập mã CVV hợp lệ', 'info', 4000);
     return false;
   }
   
   if (!cardName.trim()) {
-    alert('Vui lòng nhập tên trên thẻ');
+    notify('Vui lòng nhập tên trên thẻ', 'info', 4000);
     return false;
   }
   
@@ -153,7 +221,7 @@ function processBankTransfer() {
 
 // Process e-wallet payment
 function processEWalletPayment() {
-  alert('Vui lòng chọn ví điện tử để tiếp tục');
+  notify('Vui lòng chọn ví điện tử để tiếp tục', 'info', 4000);
 }
 
 // E-wallet button handlers
@@ -168,9 +236,11 @@ document.addEventListener('DOMContentLoaded', function() {
       const ewalletRadio = document.getElementById('ewallet');
       ewalletRadio.checked = true;
       ewalletRadio.dispatchEvent(new Event('change'));
-      
-      // Show selected wallet
-      alert(`Đã chọn ${walletName}. Nhấn "Thanh toán với ${walletName}" để tiếp tục.`);
+
+      // Show selected wallet using toast
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const msg = (lang === 'vi') ? `Đã chọn ${walletName}. Nhấn "Thanh toán với ${walletName}" để tiếp tục.` : `Selected ${walletName}. Click "Pay with ${walletName}" to continue.`;
+      notify(msg, 'info', 5000);
     });
   });
 });
@@ -178,15 +248,24 @@ document.addEventListener('DOMContentLoaded', function() {
 // Show loading state
 function showLoadingState() {
   const payBtn = document.querySelector('.pay-btn');
+  if (!payBtn) return;
   payBtn.disabled = true;
-  payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Đang xử lý...</span>';
+  // keep icon and update text using translation helper if available
+  const iconHtml = '<i class="fas fa-spinner fa-spin"></i>';
+  const lang = localStorage.getItem('preferredLanguage') || 'vi';
+  const text = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('processing', lang) : 'Đang xử lý...';
+  payBtn.innerHTML = iconHtml + '<span>' + text + '</span>';
 }
 
 // Hide loading state
 function hideLoadingState() {
   const payBtn = document.querySelector('.pay-btn');
+  if (!payBtn) return;
   payBtn.disabled = false;
-  payBtn.innerHTML = '<i class="fas fa-lock"></i><span>Thanh toán ngay</span>';
+  const iconHtml = '<i class="fas fa-lock"></i>';
+  const lang = localStorage.getItem('preferredLanguage') || 'vi';
+  const text = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('payNow', lang) : 'Thanh toán ngay';
+  payBtn.innerHTML = iconHtml + '<span>' + text + '</span>';
 }
 
 // Show payment success
@@ -270,7 +349,7 @@ function processVNPayPayment() {
   })
   .catch(error => {
     console.error('VNPay Error:', error);
-    alert('Lỗi: ' + error.message);
+    notify('Lỗi: ' + error.message, 'error', 6000);
     btnElement.innerHTML = originalContent;
     btnElement.disabled = false;
   });
@@ -336,7 +415,10 @@ function simulateVNPayTest(paymentData) {
   // Listen for messages from test window
   window.addEventListener('message', function(event) {
     if (event.data.type === 'vnpay_success') {
-      alert('✅ Thanh toán VNPay thành công!\\nMã giao dịch: ' + event.data.txnRef);
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const successMsg = (lang === 'vi') ? `✅ Thanh toán VNPay thành công!\nMã giao dịch: ${event.data.txnRef}` : `✅ VNPay payment successful!\nTxn: ${event.data.txnRef}`;
+  // Use notify wrapper which will dynamically load toast.js if needed
+  notify(successMsg, 'success', 4000);
       showPaymentSuccess();
     } else if (event.data.type === 'vnpay_cancel') {
       // Reset button
@@ -387,29 +469,53 @@ function updatePayBtnUI() {
   const payBtn = document.querySelector('.pay-btn');
   const selectedPayment = document.querySelector('input[name="payment"]:checked');
   if (!payBtn || !selectedPayment) return;
-
+  const mainPayBtn = document.getElementById('mainPayBtn');
+  const mainPayBtnText = document.getElementById('mainPayBtnText');
+  const lang = localStorage.getItem('preferredLanguage') || 'vi';
+  if (!mainPayBtn) return;
   if (selectedPayment.value === 'card') {
-    if (isCardFormValid()) {
-      payBtn.innerHTML = '<span>Thanh toán ngay</span>';
-    } else {
-      payBtn.innerHTML = '<i class="fas fa-lock"></i><span>Thanh toán ngay</span>';
+    mainPayBtn.style.display = '';
+    mainPayBtn.style.background = '';
+    mainPayBtn.style.color = '';
+    if (mainPayBtnText) {
+      // choose icon only when card form invalid
+      if (isCardFormValid()) {
+        // when form valid, remove lock icon
+        mainPayBtnText.textContent = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('payNow', lang) : 'Thanh toán ngay';
+        const icon = mainPayBtn.querySelector('i');
+        if (icon) icon.remove();
+      } else {
+        // when invalid, ensure lock icon exists
+        mainPayBtnText.textContent = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('payNow', lang) : 'Thanh toán ngay';
+        let icon = mainPayBtn.querySelector('i');
+        if (!icon) {
+          icon = document.createElement('i');
+          icon.className = 'fas fa-lock';
+          mainPayBtn.insertBefore(icon, mainPayBtn.firstChild);
+        } else {
+          icon.className = 'fas fa-lock';
+        }
+      }
     }
-    payBtn.style.display = '';
-    payBtn.style.background = '';
-    payBtn.style.color = '';
   } else if (selectedPayment.value === 'bank') {
-    payBtn.innerHTML = '<span>Đến trang xác nhận</span>';
-    payBtn.style.display = '';
-    payBtn.style.background = '#ff9800';
-    payBtn.style.color = '#fff';
+    mainPayBtn.style.display = '';
+    mainPayBtn.style.background = '#ff9800';
+    mainPayBtn.style.color = '#fff';
+    if (mainPayBtnText) {
+      mainPayBtnText.textContent = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('bankConfirm', lang) : 'Đến trang xác nhận';
+    }
+    // remove icon for bank confirmation
+    const iconEl = mainPayBtn.querySelector('i');
+    if (iconEl) iconEl.remove();
   } else if (selectedPayment.value === 'ewallet') {
-    payBtn.style.display = 'none'; // Ẩn nút khi chọn ví điện tử
+    mainPayBtn.style.display = 'none';
   } else {
-    payBtn.innerHTML = '<i class="fas fa-lock"></i><span>Thanh toán ngay</span>';
-    payBtn.style.display = '';
-    payBtn.style.background = '';
-    payBtn.style.color = '';
+    mainPayBtn.style.display = '';
+    mainPayBtn.style.background = '';
+    mainPayBtn.style.color = '';
+    if (mainPayBtnText) mainPayBtnText.textContent = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('payNow', lang) : 'Thanh toán ngay';
   }
+  // Do not call page-level updater here to avoid conflicting DOM updates
 }
 
 // Theo dõi thay đổi input thẻ để cập nhật nút
@@ -419,6 +525,16 @@ function listenCardFormChange() {
     if (el) el.addEventListener('input', updatePayBtnUI);
   });
 }
+
+// make sure input changes also trigger the page-level updater (in case it's preferred)
+document.addEventListener('DOMContentLoaded', function() {
+  ['cardNumber','expiryDate','cvv','cardName'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', function() {
+      try { if (typeof window.updatePayBtn === 'function') window.updatePayBtn(); } catch (e) {}
+    });
+  });
+});
 
 // Theo dõi thay đổi phương thức thanh toán
 function listenPaymentMethodChange() {
