@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkyPlan - Đăng ký</title>
     <link rel="stylesheet" href="./assets/styles/register.css">
+    <link rel="stylesheet" href="./assets/styles/login.css">
+
+  <!-- trans.js -->
+  <script src="./assets/scripts/index_translations.js"></script>
+  <script src="./assets/scripts/login_translation.js" defer></script>
+
+
 </head>
 <body>
     <div class="register-container">
@@ -19,11 +26,6 @@
             <!-- Logo & Header -->
             <div class="logo-section">
                 <div class="logo-wrapper">
-                    <div class="logo-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(45deg);">
-                            <path d="M21 16V14L13 9V3.5C13 2.67 12.33 2 11.5 2C10.67 2 10 2.67 10 3.5V9L2 14V16L10 13.5V19L8 20.5V22L11.5 21L15 22V20.5L13 19V13.5L21 16Z" fill="#333333"/>
-                        </svg>
-                    </div>
                     <h1 class="logo-text">SkyPlan</h1>
                 </div>
                 <div>
@@ -31,6 +33,19 @@
                     <p class="page-subtitle">Đăng ký để bắt đầu hành trình của bạn</p>
                 </div>
             </div>
+
+            <!-- Language Toggle -->
+      <div class="lang-toggle-container">
+        <button type="button" class="lang-toggle-btn" id="langToggle" aria-label="Language">
+          <span class="lang-option active" data-lang="vi">
+            <span class="lang-text">VI</span>
+          </span>
+          <span class="lang-divider">|</span>
+          <span class="lang-option" data-lang="en">
+            <span class="lang-text">EN</span>
+          </span>
+        </button>
+      </div>
 
             <!-- Form -->
             <form id="registerForm" class="register-form">
