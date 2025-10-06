@@ -15,21 +15,33 @@ body {
 .steps {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 24px;
+  gap: 0;
   padding: 10px 0 30px;
 }
 
 .steps .progress {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 22px;
+  left: 8.33%;
+  right: 8.33%;
+  top: 26px;
   height: 4px;
   background: #e6e6e6;
   border-radius: 2px;
   z-index: 1;
+}
+
+.steps .progress::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #0a969d 0%, #1fb6a0 100%);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  width: 100%; /* Step 6 active = 100% */
 }
 
 .step {
@@ -37,6 +49,10 @@ body {
   z-index: 2;
   text-align: center;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
 }
 
 .step .dot {
@@ -45,25 +61,55 @@ body {
   border-radius: 50%;
   background: #cfd8dc;
   color: #fff;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  margin: 0 auto 8px;
+  margin: 0 0 8px 0;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  font-size: 12px;
+  position: relative;
 }
 
 .step .label {
   font-size: 14px;
   color: #6b6f72;
+  font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 .step.completed .dot {
   background: #0a969d;
+  border-color: #0a969d;
+  transform: scale(1.05);
+}
+
+.step.completed .label {
+  color: #0a969d;
+  font-weight: 600;
 }
 
 .step.active .dot {
   background: #1fb6a0;
+  border-color: #1fb6a0;
   box-shadow: 0 0 0 4px rgba(31, 182, 160, 0.15);
+  transform: scale(1.1);
+}
+
+.step.active .label {
+  color: #1fb6a0;
+  font-weight: 700;
+}
+
+/* Hover effects for interactive steps */
+.step:not(.active):hover .dot {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.step:not(.active):hover .label {
+  color: #2b2f32;
 }
 
 /* Main Content */
@@ -79,7 +125,6 @@ body {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 20px;
-  min-height: 500px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -91,7 +136,6 @@ body {
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  /* Ensure proper sizing */
   width: 100%;
   box-sizing: border-box;
 }
@@ -99,17 +143,13 @@ body {
 /* Explicit section sizing */
 .payment-section {
   /* Left column - payment methods */
-  grid-column: 1;
+  min-height: 400px;
 }
 
 .summary-section {
   /* Right column - order summary */
-  grid-column: 2;
   height: fit-content;
-  position: sticky;
-  top: calc(var(--header-height) + 20px);
-  display: block;
-  width: 100%;
+  min-height: 300px;
 }
 
 .section-header {
@@ -138,18 +178,22 @@ body {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Payment Rows */
 .payment-row {
   display: flex;
   gap: 20px;
+  width: 100%;
 }
 
 .payment-row.two-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
+  width: 100%;
 }
 
 .payment-method {
@@ -299,6 +343,22 @@ body {
 
 .form-group input:hover {
   border-color: #c5cdd4;
+}
+
+.form-group input.error {
+  border-color: #e74c3c;
+  background-color: #fdf2f2;
+}
+
+.form-group .error-message {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 4px;
+  display: none;
+}
+
+.form-group.has-error .error-message {
+  display: block;
 }
 
 /* Bank Transfer */
@@ -578,42 +638,237 @@ body {
 
 /* Mobile only - Single column */
 @media (max-width: 576px) {
+  .payment-flow {
+    padding: 15px 0 30px;
+    padding-top: calc(var(--header-height, 80px) + 15px);
+  }
+  
   .payment-container {
-    grid-template-columns: 1fr !important;
-    gap: 20px;
-    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 12px;
+    max-width: 100%;
   }
 
   .summary-section {
-    position: static !important;
+    position: static;
     order: -1;
+    margin-bottom: 0;
+  }
+  
+  .payment-section {
+    order: 1;
+  }
+  
+  .payment-content {
+    margin-top: 15px;
+  }
+  
+  .section-header {
+    padding: 12px 16px;
+  }
+  
+  .section-header h2 {
+    font-size: 16px;
+  }
+  
+  .section-header h2 i {
+    font-size: 18px;
+  }
+  
+  .some-payment-methods {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .payment-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .payment-row.two-columns {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .payment-method {
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .method-header {
+    padding: 10px 12px;
+  }
+  
+  .method-header span {
+    font-size: 14px;
+  }
+  
+  .method-header i {
+    font-size: 16px;
+    margin-right: 10px;
+    width: 20px;
+  }
+  
+  .method-content {
+    padding: 12px;
+  }
+  
+  .form-group {
+    margin-bottom: 12px;
+  }
+  
+  .form-group label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  
+  .form-group input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .card-logos {
+    padding: 8px;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .card-logo {
+    height: 20px;
+  }
+  
+  /* Order Summary responsive */
+  .order-summary {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .booking-details {
+    padding: 12px;
+  }
+  
+  .flight-summary {
+    margin-bottom: 12px;
+    padding: 12px;
+  }
+  
+  .flight-summary h4 {
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  
+  .flight-summary p {
+    font-size: 12px;
+    margin: 2px 0;
+  }
+  
+  .price-breakdown {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .price-item {
+    padding: 8px 0;
+    font-size: 13px;
+  }
+  
+  .price-item.total {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  
+  .security-info {
+    padding: 8px;
+    font-size: 11px;
+    flex-wrap: wrap;
+  }
+  
+  .pay-btn {
+    padding: 12px 16px;
+    font-size: 14px;
   }
 }
 
 /* Tablet - 2 equal columns */  
 @media (min-width: 577px) and (max-width: 991px) {
   .payment-container {
-    grid-template-columns: 1fr 1fr !important;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
     padding: 0 16px;
   }
   
   .summary-section {
-    position: static !important;
+    position: static;
+  }
+  
+  .payment-content {
+    margin-top: 25px;
+  }
+  
+  .section-header {
+    padding: 16px 20px;
+  }
+  
+  .section-header h2 {
+    font-size: 20px;
+  }
+  
+  .some-payment-methods {
+    padding: 20px;
+    gap: 18px;
+  }
+  
+  .method-content {
+    padding: 18px;
+  }
+  
+  .payment-row.two-columns {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .form-group input {
+    padding: 13px 15px;
+    font-size: 15px;
+  }
+  
+  .order-summary {
+    padding: 20px;
+    gap: 18px;
+  }
+  
+  .flight-summary h4 {
+    font-size: 15px;
+  }
+  
+  .flight-summary p {
+    font-size: 13px;
   }
 }
 
 /* Desktop - 2 columns with 1.3:0.7 ratio */
 @media (min-width: 992px) {
   .payment-container {
-    grid-template-columns: 1.3fr 0.7fr !important;
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr;
     gap: 30px;
     padding: 0 20px;
   }
   
   .summary-section {
-    position: sticky !important;
-    top: calc(var(--header-height) + 20px);
+    position: sticky;
+    top: calc(var(--header-height, 80px) + 20px);
+    height: fit-content;
   }
 }
 
@@ -687,17 +942,83 @@ body {
   }
 }
 
+@media (max-width: 768px) {
+  .payment-flow {
+    padding: 20px 0 40px;
+    padding-top: calc(var(--header-height, 80px) + 20px);
+  }
+  
+  .steps {
+    gap: 0;
+    padding: 10px 0 20px;
+  }
+  
+  .step .dot {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  
+  .step .label {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+  
+  .steps .progress {
+    top: 21px;
+    height: 3px;
+  }
+  
+  .steps .progress::before {
+    height: 3px;
+  }
+}
+
 @media (max-width: 480px) {
+  .payment-flow {
+    padding: 15px 0 30px;
+    padding-top: calc(var(--header-height, 80px) + 15px);
+  }
+  
+  .steps {
+    gap: 0;
+    padding: 10px 0 15px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .steps::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .step .dot {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+  
+  .step .label {
+    font-size: 10px;
+    max-width: 45px;
+    word-wrap: break-word;
+    hyphens: auto;
+    line-height: 1.1;
+  }
+  
+  .steps .progress {
+    top: 19px;
+    height: 2px;
+  }
+  
+  .steps .progress::before {
+    height: 2px;
+  }
+  
   .payment-container {
     padding: 0 12px;
-  }
-
-  .steps {
-    gap: 8px;
-  }
-
-  .step .label {
-    display: none;
   }
 
   .section-header h2 {
@@ -755,5 +1076,142 @@ body {
   .pay-btn {
     font-size: 16px;
     padding: 16px 20px;
+  }
+}
+
+/* Extra small screens (under 400px) */
+@media (max-width: 400px) {
+  .payment-flow {
+    padding: 10px 0 20px;
+    padding-top: calc(var(--header-height, 80px) + 10px);
+  }
+  
+  .payment-container {
+    padding: 0 8px;
+    gap: 12px;
+  }
+  
+  .section-header {
+    padding: 12px 16px;
+  }
+  
+  .section-header h2 {
+    font-size: 16px;
+    gap: 8px;
+  }
+  
+  .some-payment-methods {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .method-header {
+    padding: 10px 12px;
+  }
+  
+  .method-header span {
+    font-size: 14px;
+  }
+  
+  .method-content {
+    padding: 12px;
+  }
+  
+  .form-group {
+    margin-bottom: 12px;
+  }
+  
+  .form-group label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  
+  .form-group input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  
+  .card-logos {
+    padding: 8px;
+    gap: 6px;
+  }
+  
+  .card-logo {
+    height: 20px;
+  }
+  
+  /* Bank and E-wallet info */
+  .bank-info, .ewallet-info {
+    font-size: 13px;
+  }
+  
+  .ewallet-steps {
+    padding: 10px;
+    margin: 10px 0 12px 0;
+  }
+  
+  .ewallet-steps p {
+    font-size: 12px;
+    margin: 6px 0;
+  }
+  
+  .ewallet-btn {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  
+  .ewallet-logo {
+    height: 24px;
+    margin-right: 8px;
+  }
+  
+  /* Order summary for extra small */
+  .order-summary {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .booking-details {
+    padding: 12px;
+  }
+  
+  .flight-summary {
+    margin-bottom: 12px;
+    padding: 12px;
+  }
+  
+  .flight-summary h4 {
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  
+  .flight-summary p {
+    font-size: 12px;
+    margin: 2px 0;
+  }
+  
+  .price-breakdown {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .price-item {
+    padding: 8px 0;
+    font-size: 13px;
+  }
+  
+  .price-item.total {
+    font-size: 15px;
+  }
+  
+  .security-info {
+    padding: 8px;
+    font-size: 11px;
+  }
+  
+  .pay-btn {
+    padding: 12px 16px;
+    font-size: 14px;
+    gap: 6px;
   }
 }
