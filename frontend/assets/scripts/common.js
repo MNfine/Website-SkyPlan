@@ -6,7 +6,7 @@ function initializeMobileMenu() {
         const menuToggle = document.querySelector('.menu-toggle');
         const navLinks = document.querySelector('.nav-links');
         if (menuToggle && navLinks) {
-            menuToggle.addEventListener('click', function (e) {
+            menuToggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 menuToggle.classList.toggle('active');
                 navLinks.classList.toggle('active');
@@ -15,7 +15,7 @@ function initializeMobileMenu() {
         } else {
             console.error('Menu elements not found');
         }
-        document.addEventListener('click', function (event) {
+        document.addEventListener('click', function(event) {
             if (navLinks && navLinks.classList.contains('active') &&
                 !event.target.closest('.nav-links') &&
                 !event.target.closest('.menu-toggle')) {
@@ -34,7 +34,7 @@ function initializeLanguageSelector() {
         const selectedLang = document.querySelector('.selected-lang');
         const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
         langOptions.forEach(option => {
-            option.addEventListener('click', function (e) {
+            option.addEventListener('click', function(e) {
                 e.preventDefault();
                 const selectedLangValue = this.getAttribute('data-lang');
                 langOptions.forEach(opt => opt.classList.remove('active'));
@@ -49,6 +49,8 @@ function initializeLanguageSelector() {
                     changeSeatLanguage(selectedLangValue);
                 } else if (typeof changeFareLanguage === 'function' && (path.includes('fare.html') || path.endsWith('/fare'))) {
                     changeFareLanguage(selectedLangValue);
+                } else if (typeof changeSearchLanguage === 'function' && (path.includes('search.html') || path.endsWith('/search'))) {
+                    changeSearchLanguage(selectedLangValue);
                 } else if (typeof changeLanguage === 'function') {
                     changeLanguage(selectedLangValue);
                 }
@@ -87,7 +89,7 @@ function updateSelectedLanguage(lang) {
 function initializeSearch() {
     const searchBtn = document.querySelector('.search-btn');
     if (searchBtn) {
-        searchBtn.addEventListener('click', function (event) {
+        searchBtn.addEventListener('click', function(event) {
             // Allow form submission without interruption
         });
     }
@@ -96,7 +98,7 @@ function initializeSearch() {
 // Smooth scrolling for anchor links
 function enableSmoothScrolling() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
+        anchor.addEventListener('click', function(e) {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
