@@ -569,3 +569,5 @@ function processBankTransfer() {
   // Giả lập đã nhận được tiền, chuyển đến trang xác nhận
   window.location.href = 'confirmation.html';
 }
+
+

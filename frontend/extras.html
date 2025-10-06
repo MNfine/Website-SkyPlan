@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Chọn dịch vụ thêm cho chuyến bay của bạn với SkyPlan."
+    />
+    <title>SkyPlan – Dịch vụ thêm</title>
+    <link rel="stylesheet" href="assets/styles/header.css" />
+    <link rel="stylesheet" href="assets/styles/footer.css" />
+    <link rel="stylesheet" href="assets/styles/reset.css" />
+    <link rel="stylesheet" href="assets/styles/index.css" />
+    <link rel="stylesheet" href="assets/styles/flags.css" />
+    <link rel="stylesheet" href="assets/styles/fare.css" />
+    <link rel="stylesheet" href="assets/styles/extras.css" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div id="header-container"></div>
+    <main class="container flow">
+      <div class="steps">
+        <div class="step completed">
+          <div class="dot">1</div>
+          <div class="label" data-i18n="step1">Tìm kiếm</div>
+        </div>
+        <div class="step completed">
+          <div class="dot">2</div>
+          <div class="label" data-i18n="step2">Chọn chuyến bay</div>
+        </div>
+        <div class="step completed">
+          <div class="dot">3</div>
+          <div class="label" data-i18n="step3">Chọn giá</div>
+        </div>
+        <div class="step completed">
+          <div class="dot">4</div>
+          <div class="label" data-i18n="step4">Thông tin khách hàng</div>
+        </div>
+        <div class="step active">
+          <div class="dot">5</div>
+          <div class="label" data-i18n="step5">Dịch vụ thêm</div>
+        </div>
+        <div class="step">
+          <div class="dot">6</div>
+          <div class="label" data-i18n="step6">Thanh toán</div>
+        </div>
+        <div class="progress"></div>
+      </div>
+      <h2 class="route-title" id="routeTitle">Từ Hồ Chí Minh tới Hà Nội</h2>
+
+      <section class="extras-grid">
+        <!-- Meal -->
+        <article class="extra-card" data-key="meal" data-price="150000">
+          <div class="extra-card__img">
+            <img src="assets/images/meal.png" alt="Meal" />
+          </div>
+          <h3 class="extra-card__title" data-i18n="mealTitle">Suất ăn</h3>
+          <p class="extra-card__desc" data-i18n="mealDesc">
+            Suất ăn tiêu chuẩn cho chuyến bay.
+          </p>
+          <button class="extra-card__btn" data-action="toggle">
+            <span class="btn-text" data-i18n="addFor">Thêm với giá</span>
+          </button>
+        </article>
+
+        <!-- Baggage -->
+        <article class="extra-card" data-key="baggageXL" data-price="150000">
+          <div class="extra-card__img">
+            <img src="assets/images/baggage.png" alt="Extra Large Baggage" />
+          </div>
+          <h3 class="extra-card__title" data-i18n="baggageTitle">
+            Hành lý cỡ lớn
+          </h3>
+          <p class="extra-card__desc" data-i18n="baggageDesc">
+            Tăng giới hạn hành lý.
+          </p>
+          <button class="extra-card__btn" data-action="toggle">
+            <span class="btn-text" data-i18n="addFor">Thêm với giá</span>
+          </button>
+        </article>
+
+        <!-- Taxi -->
+        <article class="extra-card" data-key="taxi" data-price="400000">
+          <div class="extra-card__img">
+            <img src="assets/images/taxi.png" alt="Airport Taxi" />
+          </div>
+          <h3 class="extra-card__title" data-i18n="taxiTitle">Taxi sân bay</h3>
+          <p class="extra-card__desc" data-i18n="taxiDesc">
+            Đặt xe đưa đón sân bay trước.
+          </p>
+          <button class="extra-card__btn" data-action="toggle">
+            <span class="btn-text" data-i18n="addFor">Thêm với giá</span>
+          </button>
+        </article>
+      </section>
+
+      <!-- Tổng & điều hướng -->
+      <section class="extras-actions">
+        <div class="extras-total">
+          <span data-i18n="yourExtras">Dịch vụ đã chọn:</span>
+          <strong id="extrasTotal">0 VNĐ</strong>
+        </div>
+
+        <!-- Liên kết sang Payment -->
+        <a id="toPaymentBtn" class="next-btn" href="payment.html">
+          <i class="fas fa-arrow-right"></i>
+          <span data-i18n="continuePayment">Tiếp tục thanh toán</span>
+        </a>
+      </section>
+    </main>
+    <div id="footer-container"></div>
+    <script src="assets/scripts/config.js"></script>
+    <script src="assets/scripts/extras_translations.js"></script>
+    <script src="assets/scripts/extras.js"></script>
+  </body>
+</html>
