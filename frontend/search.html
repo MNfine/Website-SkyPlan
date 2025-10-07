@@ -320,7 +320,6 @@
                     </div>
 
                     <hr class="sp-divider" />
-
                     <div class="sp-date">18/08/2023 · Về</div>
                     <div class="sp-itinerary">
                         <div>
@@ -767,31 +766,105 @@
             }
         })();
     </script>
+    <script src="assets/scripts/common.js"></script>
+    <script src="assets/scripts/search_translations.js"></script>
     <script src="assets/scripts/search_filter.js"></script>
-    <script src="assets/scripts/search_translation.js"></script>
+
 
     <script>
-        document.addEventListener('DOMContentLoaded', async() => {
-            // Khi header/footer đã load xong:
-            // Gọi các init nếu có (đến từ common.js)
-            if (typeof initializeMobileMenu === 'function') initializeMobileMenu();
-            if (typeof initializeLanguageSelector === 'function') {
-                initializeLanguageSelector();
-            } else {
-                // Fallback: nếu chưa có common.js, tự lắng nghe click chọn ngôn ngữ
-                document.body.addEventListener('click', function(e) {
-                    const opt = e.target.closest('.lang-option');
-                    if (!opt) return;
-                    e.preventDefault();
-                    const next = opt.getAttribute('data-lang') || 'vi';
-                    if (typeof changeLanguage === 'function') changeLanguage(next);
-                });
+        function handleComponentError(componentName) {
+            console.error(`Failed to load ${componentName} component`);
+        }
+
+        function initializeLanguage() {
+            // Get or set language
+            let currentLang = localStorage.getItem('preferredLanguage');
+            if (!currentLang) {
+                currentLang = 'vi';
+                localStorage.setItem('preferredLanguage', 'vi');
             }
 
-            // Vẽ lại huy hiệu VI/EN nếu hàm này tồn tại trong common.js
-            if (typeof updateSelectedLanguage === 'function') {
-                updateSelectedLanguage(localStorage.getItem('preferredLanguage') || 'vi');
-            }
+            document.documentElement.lang = currentLang;
+
+            // Initialize components after a short delay
+            setTimeout(() => {
+                if (typeof initializeMobileMenu === 'function') {
+                    initializeMobileMenu();
+                    console.log('Mobile menu initialized');
+                }
+                if (typeof initializeLanguageSelector === 'function') {
+                    initializeLanguageSelector();
+                    console.log('Language selector initialized');
+                }
+
+                if (typeof initializeSearchFilter === 'function') {
+                    initializeSearchFilter();
+                    console.log('Search filter initialized');
+                }
+
+                // Initialize search translations
+                if (typeof initSearchTranslations === 'function') {
+                    initSearchTranslations();
+                    console.log('Search translations initialized');
+                }
+
+                // Apply language to search page
+                if (typeof changeSearchLanguage === 'function') {
+                    changeSearchLanguage(currentLang);
+                    console.log('Search language applied:', currentLang);
+                }
+
+                if (typeof updateSelectedLanguage === 'function') {
+                    updateSelectedLanguage(currentLang);
+                    console.log('Language selector updated:', currentLang);
+                }
+            }, 200);
+        }
+
+        function initializeApp() {
+            // Load header
+            fetch('components/header.html')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                    console.log('Header loaded successfully');
+
+                    // After header loads, initialize language functionality
+                    initializeLanguage();
+                })
+                .catch(error => {
+                    handleComponentError('header');
+                    console.error('Error loading header:', error);
+                    // Still initialize language even if header fails
+                    initializeLanguage();
+                });
+
+            // Load footer
+            fetch('components/footer.html')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById('footer-container').innerHTML = data;
+                    console.log('Footer loaded successfully');
+                })
+                .catch(error => {
+                    handleComponentError('footer');
+                    console.error('Error loading footer:', error);
+                });
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
         });
     </script>
 </body>
