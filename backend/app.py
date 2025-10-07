@@ -13,7 +13,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import payment routes
-from backend.routes.payment import payment_bp
+from backend.routes.payments import payment_bp
 from backend.models.db import init_db
 
 from os import getenv
