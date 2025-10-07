@@ -402,8 +402,10 @@
   <div id="footer-container"></div>
 
   <!-- JavaScript -->
+  <script src="assets/scripts/toast.js"></script>
   <script src="assets/scripts/seat_translations.js"></script>
   <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/seat.js"></script>
 
   <!-- Load Components -->
   <script>
@@ -639,10 +641,14 @@
             updateSelectedDisplay();
             hideCountdown();
             
-            // Show translated alert message
-            const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
-            const timeExpiredMsg = seatTranslations[currentLang]['timeExpired'] || 'Time expired! Please select your seats again.';
-            alert(timeExpiredMsg);
+            // Show toast notification for timeout
+            if (typeof SeatNotifications !== 'undefined') {
+              SeatNotifications.showTimeExpired();
+            } else {
+              const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+              const timeExpiredMsg = seatTranslations[currentLang]['timeExpired'] || 'Time expired! Please select your seats again.';
+              alert(timeExpiredMsg);
+            }
           }
         }, 1000); // Update every 1 second
       }
@@ -662,7 +668,11 @@
         seat.addEventListener('click', function() {
           // Check if seat is restricted
           if (this.classList.contains('restricted')) {
-            return; // Do nothing if seat is restricted
+            // Show restricted seat notification
+            if (typeof SeatNotifications !== 'undefined') {
+              SeatNotifications.showRestrictedSeat();
+            }
+            return;
           }
           
           const seatCode = this.dataset.seat;
@@ -671,6 +681,11 @@
             // Deselect seat
             this.classList.remove('selected');
             selectedSeats = selectedSeats.filter(s => s !== seatCode);
+            
+            // Show deselection notification
+            if (typeof SeatNotifications !== 'undefined') {
+              SeatNotifications.showSeatDeselected(seatCode);
+            }
             
             // Hide countdown if no seats selected
             if (selectedSeats.length === 0) {
@@ -681,6 +696,11 @@
             this.classList.add('selected');
             selectedSeats.push(seatCode);
             
+            // Show selection notification
+            if (typeof SeatNotifications !== 'undefined') {
+              SeatNotifications.showSeatSelected(seatCode);
+            }
+            
             // Start countdown when first seat is selected or restart it
             startCountdown();
           }
@@ -689,16 +709,21 @@
         });
       });
 
-      // Continue button functionality
+      // Continue button functionality (enhanced with toast)
       continueBtn.addEventListener('click', function(e) {
         if (selectedSeats.length === 0) {
           e.preventDefault();
-          const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
-          const selectAtLeastOneMsg = seatTranslations[currentLang]['selectAtLeastOne'] || 'Please select at least one seat before continuing.';
-          alert(selectAtLeastOneMsg);
+          if (typeof SeatNotifications !== 'undefined') {
+            SeatNotifications.showNoSeatsSelected();
+          } else {
+            const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+            const selectAtLeastOneMsg = seatTranslations[currentLang]['selectAtLeastOne'] || 'Please select at least one seat before continuing.';
+            alert(selectAtLeastOneMsg);
+          }
         } else {
           // Stop countdown when continuing
           hideCountdown();
+          
           // Navigate to next page
           window.location.href = 'passenger.html';
         }
