@@ -1,0 +1,63 @@
+"""Database initialization and session management for SkyPlan.
+
+Supports PostgreSQL via DATABASE_URL environment variable.
+Fallback to local SQLite (dev.db) if not set so developers can run quickly.
+"""
+
+from __future__ import annotations
+
+import os
+from contextlib import contextmanager
+from typing import Iterator
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session, DeclarativeBase
+
+
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///dev.db")
+
+
+class Base(DeclarativeBase):
+	pass
+
+
+# Engine config – tune pool only for non-SQLite
+engine_kwargs = {
+	"future": True,
+}
+if not DATABASE_URL.startswith("sqlite"):
+	engine_kwargs.update({
+		"pool_pre_ping": True,
+		"pool_size": 5,
+		"max_overflow": 10,
+	})
+
+engine = create_engine(DATABASE_URL, **engine_kwargs)
+
+SessionLocal = scoped_session(sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False, future=True))
+
+
+def get_session():
+	"""Return a scoped session (for manual control)."""
+	return SessionLocal()
+
+
+@contextmanager
+def session_scope() -> Iterator:
+	"""Provide a transactional scope around a series of operations."""
+	session = get_session()
+	try:
+		yield session
+		session.commit()
+	except Exception:
+		session.rollback()
+		raise
+	finally:
+		session.close()
+
+
+def init_db():
+	"""Create all tables (used at startup)."""
+	from . import payment  # noqa: F401  ensure models imported
+	Base.metadata.create_all(bind=engine)
+

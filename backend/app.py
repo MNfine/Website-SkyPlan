@@ -14,6 +14,24 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import payment routes
 from backend.routes.payment import payment_bp
+from backend.models.db import init_db
+
+from os import getenv
+from sqlalchemy import create_engine
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Get the DATABASE_URL from environment variables
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+# Check if DATABASE_URL is loaded correctly
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL is not set. Please check your .env file.")
+
+# Create the SQLAlchemy engine
+engine = create_engine(DATABASE_URL)
 
 def create_app():
     """Create and configure Flask application"""
@@ -34,7 +52,15 @@ def create_app():
     app.config['SECRET_KEY'] = 'skyplan-secret-key-2025'
     app.config['DEBUG'] = True
     
-    # Register API Blueprints
+    # Initialize database tables
+    with app.app_context():
+        try:
+            init_db()
+            print("[DB] Tables ensured.")
+        except Exception as e:
+            print(f"[DB] Initialization failed: {e}")
+
+    # Register API Blueprints (after DB ready)
     app.register_blueprint(payment_bp, url_prefix='/api/payment')
     
     # Frontend routes
