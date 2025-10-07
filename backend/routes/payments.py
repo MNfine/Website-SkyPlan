@@ -3,7 +3,7 @@ import time
 from decimal import Decimal
 from flask import Blueprint, jsonify, request
 from backend.models.db import session_scope
-from backend.models.payment import Payment
+from backend.models.payments import Payment
 
 payment_bp = Blueprint('payment', __name__)
 
