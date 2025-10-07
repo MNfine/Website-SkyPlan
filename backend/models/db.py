@@ -58,6 +58,6 @@ def session_scope() -> Iterator:
 
 def init_db():
 	"""Create all tables (used at startup)."""
-	from . import payment  # noqa: F401  ensure models imported
+	from . import payments  # noqa: F401  ensure models imported
 	Base.metadata.create_all(bind=engine)
 
