@@ -36,12 +36,12 @@
   <!-- Search Box -->
   <div class="container">
     <div class="search-container">
-      <form class="search-box" action="search.html" method="GET">
+      <form class="search-box" action="/search" method="GET">
         <div class="search-form">
           <div class="search-field">
             <label for="from" data-i18n="search.from">Từ</label>
             <select id="from" name="from" class="search-value">
-              <option value="Hanoi" data-i18n="search.from_value">Hà Nội</option>
+              <option value="HaNoi" data-i18n="search.from_value">Hà Nội</option>
               <option value="HoChiMinh">Hồ Chí Minh</option>
               <option value="DaNang">Đà Nẵng</option>
               <option value="CanTho">Cần Thơ</option>
@@ -64,7 +64,7 @@
             <label for="to" data-i18n="search.to">Đến</label>
             <select id="to" name="to" class="search-value">
               <option value="HoChiMinh" data-i18n="search.to_value">Hồ Chí Minh</option>
-              <option value="Hanoi">Hà Nội</option>
+              <option value="HaNoi">Hà Nội</option>
               <option value="DaNang">Đà Nẵng</option>
               <option value="CanTho">Cần Thơ</option>
               <option value="LamDong">Lâm Đồng</option>
@@ -84,11 +84,11 @@
           </div>
           <div class="search-field">
             <label for="departure" data-i18n="search.departure">Ngày đi</label>
-            <input type="date" id="departure" name="departure" class="search-value-date" value="2023-06-10">
+            <input type="date" id="departure" name="departure" class="search-value-date" placeholder="Ngày đi">
           </div>
           <div class="search-field">
             <label for="return" data-i18n="search.return">Ngày về</label>
-            <input type="date" id="return" name="return" class="search-value-date" value="2023-08-18">
+            <input type="date" id="return" name="return" class="search-value-date" placeholder="Ngày về">
           </div>
         </div>
         <button type="submit" class="search-btn">

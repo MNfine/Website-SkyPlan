@@ -30,17 +30,28 @@
     }
 
     function stopsOfCard(card) {
-        var s = (card.textContent || "").toLowerCase();
-        if (/bay thẳng/.test(s)) return 0;
-        var m = s.match(/(\d+)\s*(điểm\s*dừng|chặng)/i);
-        return m ? Number(m[1]) : 0; // không thấy thì xem như 0
+        // Dựa vào text "Bay thẳng" để xác định số điểm dừng
+        var details = card.querySelectorAll('.sp-duration-detail');
+        // Giá trị mặc định là 0 = bay thẳng
+        var stops = 0;
+        
+        // Kiểm tra nếu có text khác "Bay thẳng" thì tăng số điểm dừng
+        for (var i = 0; i < details.length; i++) {
+            var text = details[i].textContent.trim().toLowerCase();
+            if (text !== "bay thẳng") {
+                if (text.includes("1 điểm dừng")) stops = 1;
+                else if (text.includes("2 điểm dừng")) stops = 2;
+                else if (text.includes("3 điểm dừng")) stops = 3;
+                else stops = 1; // Default to 1 stop if text doesn't match expected patterns
+            }
+        }
+        return stops;
     }
 
     // ---------- Controls ----------
     var results = $(".sp-results");
     if (!results) return;
 
-    var cards = $all(".sp-results .sp-card");
     var priceSlider = $("#priceRange");
     var stopsRadios = $all('input[name="stops"]');
     var timeRadios = $all('input[name="time"]');
@@ -49,6 +60,61 @@
 
     // Map radio index -> 0/1/2/3 chặng
     stopsRadios.forEach(function(r, i) { r.dataset.stops = String(i); });
+
+    // ---------- Save and restore filter state from localStorage ----------
+    function saveFilterState() {
+        // Lưu trạng thái bộ lọc vào localStorage
+        var state = {
+            stops: getStopsWanted(),
+            cabin: cabinValueEl ? Number(txt(cabinValueEl)) : 0,
+            checked: checkedValueEl ? Number(txt(checkedValueEl)) : 0,
+            timeIndex: timeRadios.findIndex(function(r) { return r.checked; }),
+            priceMax: priceSlider ? Number(priceSlider.value) : 5000000
+        };
+        localStorage.setItem('skyplan_filters', JSON.stringify(state));
+    }
+    
+    function loadFilterState() {
+        try {
+            var state = JSON.parse(localStorage.getItem('skyplan_filters') || '{}');
+            
+            // Áp dụng số điểm dừng
+            if (state.stops !== undefined && stopsRadios[state.stops]) {
+                stopsRadios[state.stops].checked = true;
+            }
+            
+            // Áp dụng số lượng hành lý
+            if (state.cabin !== undefined && cabinValueEl) {
+                cabinValueEl.textContent = state.cabin;
+            }
+            if (state.checked !== undefined && checkedValueEl) {
+                checkedValueEl.textContent = state.checked;
+            }
+            
+            // Áp dụng khoảng thời gian
+            if (state.timeIndex !== undefined && timeRadios[state.timeIndex]) {
+                timeRadios[state.timeIndex].checked = true;
+            }
+            
+            // Áp dụng giá tối đa
+            if (state.priceMax !== undefined && priceSlider) {
+                priceSlider.value = state.priceMax;
+                var min = Number(priceSlider.min || 0),
+                    max = Number(priceSlider.max || 5000000),
+                    val = state.priceMax;
+                var pct = ((val - min) / (max - min)) * 100;
+                priceSlider.style.setProperty("--sp-range-pct", pct + "%");
+                priceSlider.style.background =
+                    "linear-gradient(to right, var(--sp-primary) " + pct + "%, #e5e7eb " + pct + "%)";
+                if (priceOut) priceOut.textContent = val.toLocaleString("vi-VN") + " VNĐ";
+            }
+        } catch (e) {
+            console.error("Error loading filter state:", e);
+        }
+    }
+
+    // Load filter state when page loads
+    loadFilterState();
 
     // ---------- Read current selections ----------
     function getStopsWanted() {
@@ -86,14 +152,14 @@
 
     // ---------- Bag rules (demo, tùy chỉnh nếu có dữ liệu thật) ----------
     function bagsOk(card, wantCabin, wantChecked) {
-        // Có thể đọc từ DOM mỗi card nếu bạn render quota; ở đây demo cố định
-        var cabinAllowed = 2;
-        var checkedAllowed = 1;
-        return wantCabin <= cabinAllowed && wantChecked <= checkedAllowed;
+        // Tạm thời cho phép tất cả card vượt qua bộ lọc này
+        return true;
     }
 
     // ---------- Apply filters in ORDER: STOPS -> BAGS -> TIME -> PRICE ----------
     function applyFilters() {
+        var cards = $all(".sp-results .sp-card");
+
         var wantStops = getStopsWanted();
         var bags = getBagsWanted();
         var timeRange = getTimeRange();
@@ -105,20 +171,22 @@
             var card = cards[i];
 
             // 1) STOPS
-            var passStops = (stopsOfCard(card) === wantStops);
+            var stops = stopsOfCard(card);
+            var passStops = (stops === wantStops || stops === -1);
             if (!passStops) { card.classList.add("is-hidden"); continue; }
 
             // 2) BAGS
             var passBags = bagsOk(card, bags.cabin, bags.checked);
             if (!passBags) { card.classList.add("is-hidden"); continue; }
 
-            // 3) TIME
+            // 3) TIME - Kích hoạt bộ lọc giờ bay
             var t = timeOfCard(card);
             var passTime = (t >= timeRange[0] && t <= timeRange[1]);
             if (!passTime) { card.classList.add("is-hidden"); continue; }
 
-            // 4) PRICE
-            var passPrice = (priceOfCard(card) <= priceMax);
+            // 4) PRICE - Kích hoạt bộ lọc giá
+            var price = priceOfCard(card);
+            var passPrice = price <= priceMax;
             if (!passPrice) { card.classList.add("is-hidden"); continue; }
 
             // Show if passed all
@@ -159,6 +227,7 @@
     // ---------- UI wiring ----------
     function onFilterChange() {
         applyFilters();
+        saveFilterState();  // Lưu trạng thái bộ lọc sau mỗi thay đổi
         scheduleScrollTop();
     }
 
@@ -207,5 +276,13 @@
     }
 
     // First render (no auto-scroll on load)
+    window.applyFilters = function() {
+        applyFilters();
+        // Không lưu trạng thái trong lần áp dụng đầu tiên khi trang tải
+    };
+    
+    // Biến toàn cục để nhận biết đã tải xong filter
+    window.filterInitialized = true;
+    
     applyFilters();
 })();

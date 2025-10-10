@@ -54,7 +54,6 @@
     margin-left: -32px;
     position: sticky;
     top: 88px;
-    align-self: start;
     background: transparent;
     border: 0;
     box-shadow: none;
@@ -100,6 +99,20 @@
     border-radius: 8px;
     background: #fbfbfc;
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.12);
+}
+
+select.sp-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff url('data:image/svg+xml;utf8,<svg fill="%23999" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>') no-repeat right 12px center/16px 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    font-size: 1rem;
+    color: #222;
+    cursor: pointer;
 }
 
 .sp-btn {
@@ -218,7 +231,7 @@
     -webkit-appearance: none;
     appearance: none;
     border: 0;
-    background: linear-gradient( to right, var(--sp-primary) var(--sp-range-pct, 0%), #e5e7eb var(--sp-range-pct, 0%));
+    background: linear-gradient(to right, var(--sp-primary) var(--sp-range-pct, 0%), #e5e7eb var(--sp-range-pct, 0%));
 }
 
 .sp-range::-webkit-slider-thumb {
@@ -236,7 +249,7 @@
     height: 4px;
     border-radius: 999px;
     border: 0;
-    background: linear-gradient( to right, var(--sp-primary) var(--sp-range-pct, 0%), #e5e7eb var(--sp-range-pct, 0%));
+    background: linear-gradient(to right, var(--sp-primary) var(--sp-range-pct, 0%), #e5e7eb var(--sp-range-pct, 0%));
 }
 
 .sp-range::-moz-range-thumb {
@@ -350,8 +363,16 @@
 }
 
 .sp-duration {
+    color: #20B2AA;
+    margin-top: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.sp-duration-detail {
     color: #6b7280;
-    margin-top: 6px;
+    margin-top: 2px;
     font-size: 12px;
     text-align: center;
 }
@@ -361,29 +382,52 @@
 
 .sp-modal {
     position: fixed;
-    inset: 0;
-    display: none;
-    z-index: 9999
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 9999;
+    display: none; /* Start with display none */
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
 }
 
 .sp-modal.is-open {
-    display: block
+    display: flex; /* Switch to flex when open */
+    opacity: 1;
+    pointer-events: all;
 }
 
 .sp-modal__backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, .45)
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, .45);
+    z-index: 9999;
+}
+
+/* Body style for when modal is open */
+body.modal-open {
+    overflow: hidden; /* Prevent scrolling when modal is open */
 }
 
 .sp-modal__dialog {
     position: relative;
     width: min(860px, 92vw);
-    margin: 48px auto;
+    max-height: 90vh;
+    margin: 0 auto;
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 24px 60px rgba(0, 0, 0, .25);
-    overflow: hidden
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 10000;
 }
 
 .sp-modal__header {
@@ -412,8 +456,9 @@
 
 .sp-modal__content {
     padding: 10px 24px 0;
-    max-height: 62vh;
-    overflow: auto
+    max-height: calc(70vh - 130px);
+    overflow-y: auto;
+    flex: 1;
 }
 
 .sp-modal__footer {
@@ -571,4 +616,26 @@
 
 .is-hidden {
     display: none !important;
+}
+
+/* Phần chọn khứ hồi/một chiều */
+.sp-trip-type {
+    display: flex;
+    margin: 15px 0;
+}
+
+.sp-radio {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.sp-radio input {
+    margin-right: 6px;
+}
+
+.sp-radio span {
+    font-size: 14px;
+    color: var(--sp-ink);
 }

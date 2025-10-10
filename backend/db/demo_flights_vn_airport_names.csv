@@ -1,0 +1,604 @@
+﻿flight_number,airline,from,from_name,from_province,to,to_name,to_province,date,depart_time_local,arrive_time_local,price,currency
+VJ999,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-10,08:00,10:10,1500000,VND
+VN888,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-10,14:00,16:10,1700000,VND
+VJ516,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-01,05:45,07:28,885856,VND
+VN381,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-01,18:00,20:01,921969,VND
+VN439,Vietnam Airlines,DIN,Sân bay Điện Biên,Điện Biên,VII,Sân bay Vinh,Nghệ An,2025-10-01,11:30,13:50,1158786,VND
+VJ266,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-01,06:00,08:05,2019461,VND
+QH160,Bamboo Airways,TBB,Sân bay Tuy Hòa,Phú Yên,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-01,20:45,22:20,1313382,VND
+VJ600,Vietjet Air,VCS,Sân bay Côn Đảo,TP.HCM,DIN,Sân bay Điện Biên,Điện Biên,2025-10-01,17:00,18:00,1078128,VND
+VN940,Vietnam Airlines,VDO,Sân bay Vân Đồn,Quảng Ninh,THD,Sân bay Thọ Xuân,Thanh Hóa,2025-10-01,06:00,07:25,1461772,VND
+QH360,Bamboo Airways,VDO,Sân bay Vân Đồn,Quảng Ninh,VCS,Sân bay Côn Đảo,TP.HCM,2025-10-01,11:45,14:10,1166870,VND
+VJ813,Vietjet Air,VKG,Sân bay Rạch Giá,An Giang,THD,Sân bay Thọ Xuân,Thanh Hóa,2025-10-01,11:00,12:59,1150370,VND
+VN683,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,SQH,Sân bay Na Sản,Sơn La,2025-10-02,08:45,10:47,1263748,VND
+VN100,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-02,18:15,19:24,1110707,VND
+VN466,Vietnam Airlines,DIN,Sân bay Điện Biên,Điện Biên,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-02,13:45,15:41,1242561,VND
+VN834,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,DIN,Sân bay Điện Biên,Điện Biên,2025-10-02,17:45,19:58,1326146,VND
+VJ830,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VCS,Sân bay Côn Đảo,TP.HCM,2025-10-02,06:30,07:57,1203827,VND
+QH358,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DIN,Sân bay Điện Biên,Điện Biên,2025-10-02,20:00,22:07,2372745,VND
+VN209,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-02,14:30,16:59,1929132,VND
+QH894,Bamboo Airways,PXU,Sân bay Pleiku,Gia Lai,VKG,Sân bay Rạch Giá,An Giang,2025-10-02,08:15,09:18,1249978,VND
+VN676,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-02,16:45,18:26,2334781,VND
+QH426,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-02,14:30,15:49,1453319,VND
+VN286,Vietnam Airlines,SQH,Sân bay Na Sản,Sơn La,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-02,17:30,19:04,1455406,VND
+VJ459,Vietjet Air,SQH,Sân bay Na Sản,Sơn La,THD,Sân bay Thọ Xuân,Thanh Hóa,2025-10-02,09:15,11:22,1055262,VND
+QH160,Bamboo Airways,TBB,Sân bay Tuy Hòa,Phú Yên,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-02,05:45,07:56,1081734,VND
+QH837,Bamboo Airways,TBB,Sân bay Tuy Hòa,Phú Yên,SQH,Sân bay Na Sản,Sơn La,2025-10-02,19:00,20:45,1080360,VND
+VJ527,Vietjet Air,TBB,Sân bay Tuy Hòa,Phú Yên,VII,Sân bay Vinh,Nghệ An,2025-10-02,08:15,09:40,1105435,VND
+QH386,Bamboo Airways,THD,Sân bay Thọ Xuân,Thanh Hóa,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-02,21:45,00:15,1271423,VND
+QH756,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,VKG,Sân bay Rạch Giá,An Giang,2025-10-02,06:15,07:30,1232615,VND
+VN441,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-03,17:45,19:55,1083856,VND
+VN280,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-03,12:00,13:44,1268055,VND
+VN280,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VDH,Sân bay Đồng Hới,Quảng Trị,2025-10-03,09:45,12:06,1053621,VND
+VN465,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,PXU,Sân bay Pleiku,Gia Lai,2025-10-03,05:45,06:59,1052488,VND
+QH860,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-03,18:30,20:08,1821862,VND
+QH722,Bamboo Airways,SQH,Sân bay Na Sản,Sơn La,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-03,09:15,11:40,1001517,VND
+VN659,Vietnam Airlines,TBB,Sân bay Tuy Hòa,Phú Yên,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-03,18:45,19:58,1266165,VND
+VJ103,Vietjet Air,THD,Sân bay Thọ Xuân,Thanh Hóa,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-03,09:00,10:06,889661,VND
+QH321,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-04,18:00,20:00,1064529,VND
+VN232,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-04,15:45,17:05,1141420,VND
+VJ399,Vietjet Air,DIN,Sân bay Điện Biên,Điện Biên,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-04,11:15,13:26,1303070,VND
+VN858,Vietnam Airlines,DIN,Sân bay Điện Biên,Điện Biên,THD,Sân bay Thọ Xuân,Thanh Hóa,2025-10-04,05:15,06:50,1063905,VND
+QH611,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,DIN,Sân bay Điện Biên,Điện Biên,2025-10-04,20:30,22:26,1151587,VND
+VJ213,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SQH,Sân bay Na Sản,Sơn La,2025-10-04,05:45,07:30,2212223,VND
+VJ451,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VII,Sân bay Vinh,Nghệ An,2025-10-04,16:30,18:46,1732684,VND
+VJ578,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-04,22:15,23:53,869823,VND
+VJ941,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,THD,Sân bay Thọ Xuân,Thanh Hóa,2025-10-04,22:45,23:51,1093095,VND
+VN160,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-04,12:00,14:17,1681134,VND
+VJ921,Vietjet Air,THD,Sân bay Thọ Xuân,Thanh Hóa,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-04,22:30,00:19,1066163,VND
+VN634,Vietnam Airlines,VCL,Sân bay Chu Lai,Quảng Nam,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-04,06:30,08:57,1405277,VND
+VN414,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,VCL,Sân bay Chu Lai,Quảng Nam,2025-10-04,21:30,23:22,1000144,VND
+QH574,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,SQH,Sân bay Na Sản,Sơn La,2025-10-05,10:45,11:52,924196,VND
+QH981,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VCL,Sân bay Chu Lai,Quảng Nam,2025-10-05,07:15,09:19,1343527,VND
+VJ405,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-05,17:15,19:02,1592435,VND
+VN981,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,PXU,Sân bay Pleiku,Gia Lai,2025-10-05,12:45,14:51,1108448,VND
+QH909,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,SQH,Sân bay Na Sản,Sơn La,2025-10-05,11:15,12:55,1052402,VND
+VN258,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-05,11:45,13:00,1251791,VND
+VJ309,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,THD,Sân bay Thọ Xuân,Thanh Hóa,2025-10-05,17:30,19:37,1881126,VND
+VJ300,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DIN,Sân bay Điện Biên,Điện Biên,2025-10-05,07:30,09:15,1070144,VND
+QH221,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-05,15:00,16:54,963200,VND
+VJ829,Vietjet Air,VCL,Sân bay Chu Lai,Quảng Nam,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-05,05:15,06:59,1177155,VND
+VJ108,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-06,13:45,15:05,1753944,VND
+VJ605,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-06,11:30,12:54,1086096,VND
+QH849,Bamboo Airways,DIN,Sân bay Điện Biên,Điện Biên,THD,Sân bay Thọ Xuân,Thanh Hóa,2025-10-06,13:45,15:17,1186001,VND
+VN840,Vietnam Airlines,DIN,Sân bay Điện Biên,Điện Biên,VII,Sân bay Vinh,Nghệ An,2025-10-06,12:45,13:54,1086259,VND
+QH561,Bamboo Airways,SQH,Sân bay Na Sản,Sơn La,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-06,09:00,10:53,1076787,VND
+VN624,Vietnam Airlines,VDH,Sân bay Đồng Hới,Quảng Trị,VCS,Sân bay Côn Đảo,TP.HCM,2025-10-06,07:15,09:38,1148649,VND
+VJ434,Vietjet Air,VKG,Sân bay Rạch Giá,An Giang,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-06,20:45,22:59,963818,VND
+VJ677,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VCL,Sân bay Chu Lai,Quảng Nam,2025-10-07,16:30,17:50,1232265,VND
+VN153,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-07,06:45,08:15,1133231,VND
+VN268,Vietnam Airlines,DIN,Sân bay Điện Biên,Điện Biên,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-07,11:45,14:12,1135999,VND
+VJ436,Vietjet Air,DIN,Sân bay Điện Biên,Điện Biên,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-07,15:00,16:37,1160715,VND
+QH184,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-07,15:00,16:38,1358402,VND
+QH442,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-07,19:30,20:54,950377,VND
+QH763,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-07,21:30,23:33,2507067,VND
+QH728,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DIN,Sân bay Điện Biên,Điện Biên,2025-10-07,14:30,16:41,1798743,VND
+VN843,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-07,15:30,16:43,2148343,VND
+VJ365,Vietjet Air,THD,Sân bay Thọ Xuân,Thanh Hóa,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-07,22:30,00:05,1111487,VND
+QH313,Bamboo Airways,THD,Sân bay Thọ Xuân,Thanh Hóa,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-07,09:45,12:14,1155366,VND
+VN984,Vietnam Airlines,THD,Sân bay Thọ Xuân,Thanh Hóa,VDH,Sân bay Đồng Hới,Quảng Trị,2025-10-07,11:30,13:25,1251001,VND
+VJ414,Vietjet Air,THD,Sân bay Thọ Xuân,Thanh Hóa,VII,Sân bay Vinh,Nghệ An,2025-10-07,08:15,09:57,897837,VND
+QH338,Bamboo Airways,VCL,Sân bay Chu Lai,Quảng Nam,SQH,Sân bay Na Sản,Sơn La,2025-10-07,12:30,14:22,1318575,VND
+VJ561,Vietjet Air,VII,Sân bay Vinh,Nghệ An,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-07,10:45,11:47,901186,VND
+QH277,Bamboo Airways,VKG,Sân bay Rạch Giá,An Giang,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-07,12:30,14:21,1437351,VND
+VJ419,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VII,Sân bay Vinh,Nghệ An,2025-10-08,21:45,23:55,1166769,VND
+QH230,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-08,22:45,00:41,1200127,VND
+QH835,Bamboo Airways,TBB,Sân bay Tuy Hòa,Phú Yên,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-08,22:45,00:07,1170543,VND
+VN537,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,SQH,Sân bay Na Sản,Sơn La,2025-10-08,14:30,16:05,1149735,VND
+QH970,Bamboo Airways,VCL,Sân bay Chu Lai,Quảng Nam,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-08,22:30,00:07,1225139,VND
+VN840,Vietnam Airlines,VCL,Sân bay Chu Lai,Quảng Nam,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-08,15:45,17:24,1028152,VND
+VN690,Vietnam Airlines,VCS,Sân bay Côn Đảo,TP.HCM,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-08,06:45,08:58,1406318,VND
+VN571,Vietnam Airlines,VCS,Sân bay Côn Đảo,TP.HCM,VII,Sân bay Vinh,Nghệ An,2025-10-08,21:30,23:00,1369684,VND
+QH121,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-08,09:30,11:39,959099,VND
+QH770,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-09,11:00,13:13,1706411,VND
+VN615,Vietnam Airlines,PXU,Sân bay Pleiku,Gia Lai,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-09,21:15,22:18,1003379,VND
+VN361,Vietnam Airlines,THD,Sân bay Thọ Xuân,Thanh Hóa,PXU,Sân bay Pleiku,Gia Lai,2025-10-09,15:45,17:09,1305386,VND
+VJ980,Vietjet Air,THD,Sân bay Thọ Xuân,Thanh Hóa,VCL,Sân bay Chu Lai,Quảng Nam,2025-10-09,15:15,16:50,838135,VND
+VN809,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-09,05:15,06:44,1329930,VND
+QH296,Bamboo Airways,VCS,Sân bay Côn Đảo,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-09,17:30,19:40,1299464,VND
+QH810,Bamboo Airways,VDH,Sân bay Đồng Hới,Quảng Trị,SQH,Sân bay Na Sản,Sơn La,2025-10-09,15:00,16:21,1000346,VND
+QH435,Bamboo Airways,VDH,Sân bay Đồng Hới,Quảng Trị,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-09,07:30,09:17,1177321,VND
+QH464,Bamboo Airways,VKG,Sân bay Rạch Giá,An Giang,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-09,14:15,16:41,1053382,VND
+VN498,Vietnam Airlines,VKG,Sân bay Rạch Giá,An Giang,VDH,Sân bay Đồng Hới,Quảng Trị,2025-10-09,06:00,08:10,1325376,VND
+QH360,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VCL,Sân bay Chu Lai,Quảng Nam,2025-10-10,13:45,15:01,1295276,VND
+QH706,Bamboo Airways,DIN,Sân bay Điện Biên,Điện Biên,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-10,05:00,06:34,878041,VND
+VN827,Vietnam Airlines,DIN,Sân bay Điện Biên,Điện Biên,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-10,16:45,18:37,1322424,VND
+VJ666,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,DIN,Sân bay Điện Biên,Điện Biên,2025-10-10,09:15,11:43,889899,VND
+VN518,Vietnam Airlines,SQH,Sân bay Na Sản,Sơn La,VKG,Sân bay Rạch Giá,An Giang,2025-10-10,19:45,20:54,1427513,VND
+VN661,Vietnam Airlines,THD,Sân bay Thọ Xuân,Thanh Hóa,VCL,Sân bay Chu Lai,Quảng Nam,2025-10-10,10:45,12:41,1061852,VND
+VN133,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-10,08:15,10:05,1363440,VND
+VN616,Vietnam Airlines,VCL,Sân bay Chu Lai,Quảng Nam,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-10,19:45,20:45,1168059,VND
+VN501,Vietnam Airlines,VCS,Sân bay Côn Đảo,TP.HCM,DIN,Sân bay Điện Biên,Điện Biên,2025-10-10,14:45,16:51,1362159,VND
+VJ848,Vietjet Air,VCS,Sân bay Côn Đảo,TP.HCM,THD,Sân bay Thọ Xuân,Thanh Hóa,2025-10-10,20:15,22:03,845735,VND
+VJ352,Vietjet Air,VDH,Sân bay Đồng Hới,Quảng Trị,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-10,21:30,23:53,1100637,VND
+QH434,Bamboo Airways,VDH,Sân bay Đồng Hới,Quảng Trị,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-10,13:45,15:43,1130979,VND
+QH272,Bamboo Airways,VDO,Sân bay Vân Đồn,Quảng Ninh,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-10,08:15,09:16,1227614,VND
+VN405,Vietnam Airlines,VKG,Sân bay Rạch Giá,An Giang,VII,Sân bay Vinh,Nghệ An,2025-10-10,05:00,07:06,1333971,VND
+QH839,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VDH,Sân bay Đồng Hới,Quảng Trị,2025-10-11,09:45,11:53,1101350,VND
+VJ863,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VKG,Sân bay Rạch Giá,An Giang,2025-10-11,12:15,14:13,1161342,VND
+VN442,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VDH,Sân bay Đồng Hới,Quảng Trị,2025-10-11,09:00,11:25,1440283,VND
+QH296,Bamboo Airways,SQH,Sân bay Na Sản,Sơn La,VCL,Sân bay Chu Lai,Quảng Nam,2025-10-11,22:30,23:33,1070106,VND
+VJ358,Vietjet Air,VCL,Sân bay Chu Lai,Quảng Nam,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-11,21:15,23:06,1054065,VND
+QH773,Bamboo Airways,VDO,Sân bay Vân Đồn,Quảng Ninh,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-11,08:15,10:33,1111803,VND
+QH427,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VDH,Sân bay Đồng Hới,Quảng Trị,2025-10-12,05:15,06:38,1072438,VND
+VN789,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-12,08:45,11:00,1369192,VND
+QH667,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-12,14:30,16:16,1211340,VND
+VN171,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-12,07:45,09:53,2128840,VND
+VJ951,Vietjet Air,SQH,Sân bay Na Sản,Sơn La,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-12,05:30,06:32,1936682,VND
+QH430,Bamboo Airways,SQH,Sân bay Na Sản,Sơn La,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-12,10:45,13:02,1335654,VND
+QH229,Bamboo Airways,SQH,Sân bay Na Sản,Sơn La,VII,Sân bay Vinh,Nghệ An,2025-10-12,18:15,20:03,943952,VND
+VJ127,Vietjet Air,TBB,Sân bay Tuy Hòa,Phú Yên,PXU,Sân bay Pleiku,Gia Lai,2025-10-12,22:15,00:13,881350,VND
+VJ400,Vietjet Air,TBB,Sân bay Tuy Hòa,Phú Yên,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-12,07:00,09:20,1614330,VND
+VJ591,Vietjet Air,VCL,Sân bay Chu Lai,Quảng Nam,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-12,19:15,20:48,816058,VND
+VJ467,Vietjet Air,VDH,Sân bay Đồng Hới,Quảng Trị,PXU,Sân bay Pleiku,Gia Lai,2025-10-12,19:00,20:02,1092900,VND
+QH503,Bamboo Airways,VDH,Sân bay Đồng Hới,Quảng Trị,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-12,20:00,21:08,939327,VND
+VN387,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VII,Sân bay Vinh,Nghệ An,2025-10-13,13:15,14:30,1246290,VND
+VN975,Vietnam Airlines,PXU,Sân bay Pleiku,Gia Lai,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-13,08:00,09:31,1179500,VND
+VN129,Vietnam Airlines,PXU,Sân bay Pleiku,Gia Lai,DIN,Sân bay Điện Biên,Điện Biên,2025-10-13,17:15,19:19,1103623,VND
+VN585,Vietnam Airlines,TBB,Sân bay Tuy Hòa,Phú Yên,DIN,Sân bay Điện Biên,Điện Biên,2025-10-13,18:30,19:55,1237341,VND
+QH678,Bamboo Airways,TBB,Sân bay Tuy Hòa,Phú Yên,VCL,Sân bay Chu Lai,Quảng Nam,2025-10-13,11:15,12:42,1411309,VND
+VN651,Vietnam Airlines,VCL,Sân bay Chu Lai,Quảng Nam,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-13,19:15,20:47,1047636,VND
+VN576,Vietnam Airlines,VCL,Sân bay Chu Lai,Quảng Nam,VCS,Sân bay Côn Đảo,TP.HCM,2025-10-13,21:00,22:50,952430,VND
+VJ848,Vietjet Air,VDO,Sân bay Vân Đồn,Quảng Ninh,DIN,Sân bay Điện Biên,Điện Biên,2025-10-13,21:00,22:53,1069827,VND
+QH264,Bamboo Airways,VDO,Sân bay Vân Đồn,Quảng Ninh,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-13,08:45,10:52,1815388,VND
+VJ297,Vietjet Air,VKG,Sân bay Rạch Giá,An Giang,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-13,22:15,00:17,889455,VND
+QH883,Bamboo Airways,PXU,Sân bay Pleiku,Gia Lai,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-14,09:30,11:17,1195095,VND
+QH461,Bamboo Airways,THD,Sân bay Thọ Xuân,Thanh Hóa,VCS,Sân bay Côn Đảo,TP.HCM,2025-10-14,19:45,21:33,1032158,VND
+VN581,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-14,15:15,17:37,1403208,VND
+VN442,Vietnam Airlines,VCL,Sân bay Chu Lai,Quảng Nam,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-14,08:15,10:11,1263475,VND
+QH751,Bamboo Airways,VDH,Sân bay Đồng Hới,Quảng Trị,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-14,11:30,13:24,1158902,VND
+VJ963,Vietjet Air,VDH,Sân bay Đồng Hới,Quảng Trị,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-14,05:45,08:09,1136149,VND
+VN588,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-15,11:15,13:11,2781730,VND
+QH264,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,DIN,Sân bay Điện Biên,Điện Biên,2025-10-15,15:00,16:21,1252670,VND
+QH759,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-15,05:45,08:15,1791220,VND
+QH743,Bamboo Airways,DIN,Sân bay Điện Biên,Điện Biên,VKG,Sân bay Rạch Giá,An Giang,2025-10-15,21:45,22:53,1343282,VND
+VJ701,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VDH,Sân bay Đồng Hới,Quảng Trị,2025-10-15,17:30,18:43,967526,VND
+VN795,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,VKG,Sân bay Rạch Giá,An Giang,2025-10-15,21:30,23:02,1249631,VND
+VJ134,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-15,05:00,06:17,2095616,VND
+VN424,Vietnam Airlines,SQH,Sân bay Na Sản,Sơn La,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-15,09:15,11:12,1383603,VND
+QH562,Bamboo Airways,TBB,Sân bay Tuy Hòa,Phú Yên,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-15,21:00,23:11,1137627,VND
+VN723,Vietnam Airlines,THD,Sân bay Thọ Xuân,Thanh Hóa,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-15,21:45,23:40,1313554,VND
+VJ570,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-15,11:30,13:31,849631,VND
+VN382,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-15,16:15,17:50,1502194,VND
+VN912,Vietnam Airlines,VCS,Sân bay Côn Đảo,TP.HCM,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-15,19:00,20:27,1147365,VND
+VN913,Vietnam Airlines,VCS,Sân bay Côn Đảo,TP.HCM,PXU,Sân bay Pleiku,Gia Lai,2025-10-15,08:30,10:12,1298681,VND
+VN454,Vietnam Airlines,VDO,Sân bay Vân Đồn,Quảng Ninh,PXU,Sân bay Pleiku,Gia Lai,2025-10-15,13:45,15:04,1315119,VND
+VJ349,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-16,22:00,23:24,1447681,VND
+QH636,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-16,15:15,17:44,2254711,VND
+VN950,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-16,18:45,20:16,1677521,VND
+VJ977,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-16,20:30,22:28,1511129,VND
+VN268,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,THD,Sân bay Thọ Xuân,Thanh Hóa,2025-10-16,13:00,15:26,1412621,VND
+VJ786,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-17,12:45,13:50,908227,VND
+VJ614,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-17,21:00,22:28,1835298,VND
+VN877,Vietnam Airlines,DIN,Sân bay Điện Biên,Điện Biên,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-17,12:15,14:11,2535638,VND
+QH450,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-17,11:00,13:18,1090379,VND
+VJ206,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VCS,Sân bay Côn Đảo,TP.HCM,2025-10-17,05:45,07:03,994776,VND
+VJ195,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-17,06:15,07:31,1909974,VND
+VJ225,Vietjet Air,THD,Sân bay Thọ Xuân,Thanh Hóa,DIN,Sân bay Điện Biên,Điện Biên,2025-10-17,14:30,16:57,1083627,VND
+QH947,Bamboo Airways,THD,Sân bay Thọ Xuân,Thanh Hóa,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-17,09:45,11:07,1060383,VND
+VJ301,Vietjet Air,VCL,Sân bay Chu Lai,Quảng Nam,VDH,Sân bay Đồng Hới,Quảng Trị,2025-10-17,16:45,18:19,1253353,VND
+QH745,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VII,Sân bay Vinh,Nghệ An,2025-10-18,20:30,22:25,926516,VND
+QH358,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-18,21:30,23:23,1137921,VND
+VN169,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-18,15:30,17:00,1265131,VND
+VN382,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-18,19:45,21:53,1251013,VND
+VJ473,Vietjet Air,TBB,Sân bay Tuy Hòa,Phú Yên,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-18,08:15,10:23,1857147,VND
+VN362,Vietnam Airlines,THD,Sân bay Thọ Xuân,Thanh Hóa,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-18,10:15,12:26,1102516,VND
+QH980,Bamboo Airways,VCS,Sân bay Côn Đảo,TP.HCM,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-18,21:00,22:42,1309222,VND
+QH425,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-18,22:30,00:41,2120093,VND
+VN284,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-19,16:45,18:33,1016566,VND
+QH316,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-19,18:15,20:29,2275347,VND
+QH803,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-19,07:15,08:41,2271621,VND
+VJ950,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VKG,Sân bay Rạch Giá,An Giang,2025-10-19,20:00,21:16,1621259,VND
+VJ346,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-19,16:15,17:55,1054332,VND
+VJ988,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VII,Sân bay Vinh,Nghệ An,2025-10-19,17:45,18:48,2387648,VND
+VJ210,Vietjet Air,SQH,Sân bay Na Sản,Sơn La,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-19,17:45,19:29,2148853,VND
+VN598,Vietnam Airlines,VDH,Sân bay Đồng Hới,Quảng Trị,DIN,Sân bay Điện Biên,Điện Biên,2025-10-19,07:45,08:48,1282347,VND
+QH633,Bamboo Airways,VDH,Sân bay Đồng Hới,Quảng Trị,VCL,Sân bay Chu Lai,Quảng Nam,2025-10-19,20:30,21:57,991823,VND
+VN972,Vietnam Airlines,VDO,Sân bay Vân Đồn,Quảng Ninh,DIN,Sân bay Điện Biên,Điện Biên,2025-10-19,14:30,15:37,1346426,VND
+VN175,Vietnam Airlines,VDO,Sân bay Vân Đồn,Quảng Ninh,VII,Sân bay Vinh,Nghệ An,2025-10-19,20:30,21:31,1255113,VND
+VJ870,Vietjet Air,VDO,Sân bay Vân Đồn,Quảng Ninh,VKG,Sân bay Rạch Giá,An Giang,2025-10-19,05:15,07:29,1143348,VND
+QH814,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-19,16:00,17:04,1108337,VND
+QH944,Bamboo Airways,VKG,Sân bay Rạch Giá,An Giang,VCL,Sân bay Chu Lai,Quảng Nam,2025-10-19,11:15,13:41,936256,VND
+VJ167,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-20,12:15,14:04,2040592,VND
+VN780,Vietnam Airlines,DIN,Sân bay Điện Biên,Điện Biên,VKG,Sân bay Rạch Giá,An Giang,2025-10-20,11:30,13:35,1332923,VND
+VN722,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-20,20:00,21:36,1623963,VND
+VJ429,Vietjet Air,TBB,Sân bay Tuy Hòa,Phú Yên,THD,Sân bay Thọ Xuân,Thanh Hóa,2025-10-20,18:15,19:30,878449,VND
+VJ232,Vietjet Air,VII,Sân bay Vinh,Nghệ An,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-20,19:30,21:27,1160556,VND
+VN222,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-21,16:45,18:19,1361322,VND
+QH571,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VDH,Sân bay Đồng Hới,Quảng Trị,2025-10-21,08:00,09:36,1056624,VND
+VN905,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-21,15:30,17:32,2357694,VND
+VN227,Vietnam Airlines,TBB,Sân bay Tuy Hòa,Phú Yên,VII,Sân bay Vinh,Nghệ An,2025-10-21,14:15,15:23,1436139,VND
+VN910,Vietnam Airlines,VCL,Sân bay Chu Lai,Quảng Nam,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-21,05:30,08:00,1038375,VND
+VJ117,Vietjet Air,VDH,Sân bay Đồng Hới,Quảng Trị,PXU,Sân bay Pleiku,Gia Lai,2025-10-21,12:15,14:16,967133,VND
+QH847,Bamboo Airways,VDH,Sân bay Đồng Hới,Quảng Trị,VKG,Sân bay Rạch Giá,An Giang,2025-10-21,16:45,18:39,942767,VND
+VJ836,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-22,18:00,20:18,1111593,VND
+VJ589,Vietjet Air,DIN,Sân bay Điện Biên,Điện Biên,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-22,09:00,10:51,1019524,VND
+VN231,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-22,19:15,21:12,2273480,VND
+VJ808,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SQH,Sân bay Na Sản,Sơn La,2025-10-22,05:30,07:24,1597646,VND
+VN952,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-22,22:00,00:14,1180306,VND
+VN395,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-22,12:45,14:36,2441753,VND
+VJ611,Vietjet Air,TBB,Sân bay Tuy Hòa,Phú Yên,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-22,05:15,06:41,1283539,VND
+QH930,Bamboo Airways,VCL,Sân bay Chu Lai,Quảng Nam,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-22,07:15,08:40,1011133,VND
+VN841,Vietnam Airlines,VDO,Sân bay Vân Đồn,Quảng Ninh,SQH,Sân bay Na Sản,Sơn La,2025-10-22,17:15,18:35,1174867,VND
+VN154,Vietnam Airlines,VKG,Sân bay Rạch Giá,An Giang,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-22,20:00,21:33,1146170,VND
+VJ282,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,THD,Sân bay Thọ Xuân,Thanh Hóa,2025-10-23,22:00,00:08,902144,VND
+QH588,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-23,15:30,17:26,1002639,VND
+QH187,Bamboo Airways,VKG,Sân bay Rạch Giá,An Giang,SQH,Sân bay Na Sản,Sơn La,2025-10-23,18:00,19:37,1007716,VND
+VJ978,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,PXU,Sân bay Pleiku,Gia Lai,2025-10-24,21:15,22:57,1124929,VND
+VN203,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VCS,Sân bay Côn Đảo,TP.HCM,2025-10-24,08:15,10:17,1096948,VND
+VN759,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VKG,Sân bay Rạch Giá,An Giang,2025-10-24,12:30,14:48,1085381,VND
+VJ946,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VII,Sân bay Vinh,Nghệ An,2025-10-24,17:30,18:39,910257,VND
+QH418,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-24,07:45,09:34,1700540,VND
+VJ125,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-24,05:30,07:52,1677572,VND
+VN382,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,THD,Sân bay Thọ Xuân,Thanh Hóa,2025-10-24,08:00,10:30,2486057,VND
+VN703,Vietnam Airlines,TBB,Sân bay Tuy Hòa,Phú Yên,VDH,Sân bay Đồng Hới,Quảng Trị,2025-10-24,17:00,19:05,1174325,VND
+VN808,Vietnam Airlines,THD,Sân bay Thọ Xuân,Thanh Hóa,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-24,15:00,16:18,1057732,VND
+QH202,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-24,09:00,11:22,1296916,VND
+VJ581,Vietjet Air,VCL,Sân bay Chu Lai,Quảng Nam,PXU,Sân bay Pleiku,Gia Lai,2025-10-24,07:30,09:56,935534,VND
+QH911,Bamboo Airways,VDH,Sân bay Đồng Hới,Quảng Trị,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-24,07:30,09:23,1133625,VND
+VJ493,Vietjet Air,VDO,Sân bay Vân Đồn,Quảng Ninh,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-24,05:30,07:33,1046752,VND
+QH841,Bamboo Airways,VKG,Sân bay Rạch Giá,An Giang,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-24,09:00,10:37,1307455,VND
+VJ288,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-25,20:15,22:30,1374152,VND
+VN313,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VII,Sân bay Vinh,Nghệ An,2025-10-25,14:00,15:22,1148477,VND
+VJ367,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-25,18:15,19:16,1324936,VND
+VJ504,Vietjet Air,DIN,Sân bay Điện Biên,Điện Biên,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-25,14:30,16:05,1174312,VND
+VN154,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-25,05:30,06:54,1208516,VND
+VJ356,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VII,Sân bay Vinh,Nghệ An,2025-10-25,22:00,23:30,1542902,VND
+VN728,Vietnam Airlines,SQH,Sân bay Na Sản,Sơn La,VCS,Sân bay Côn Đảo,TP.HCM,2025-10-25,12:30,13:50,1097345,VND
+QH737,Bamboo Airways,TBB,Sân bay Tuy Hòa,Phú Yên,VII,Sân bay Vinh,Nghệ An,2025-10-25,09:00,10:06,1204070,VND
+VJ539,Vietjet Air,THD,Sân bay Thọ Xuân,Thanh Hóa,DIN,Sân bay Điện Biên,Điện Biên,2025-10-25,20:15,22:29,1133931,VND
+QH566,Bamboo Airways,VCS,Sân bay Côn Đảo,TP.HCM,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-25,11:30,13:49,1059713,VND
+VJ455,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-26,05:45,08:04,1931708,VND
+VN434,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,VDH,Sân bay Đồng Hới,Quảng Trị,2025-10-26,11:15,13:36,1098266,VND
+VJ530,Vietjet Air,DIN,Sân bay Điện Biên,Điện Biên,SQH,Sân bay Na Sản,Sơn La,2025-10-26,20:15,22:05,1130396,VND
+QH546,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-26,20:15,21:19,2312652,VND
+VJ192,Vietjet Air,PXU,Sân bay Pleiku,Gia Lai,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-26,22:00,23:24,1005119,VND
+VJ658,Vietjet Air,PXU,Sân bay Pleiku,Gia Lai,VII,Sân bay Vinh,Nghệ An,2025-10-26,13:45,14:50,987767,VND
+VJ492,Vietjet Air,SQH,Sân bay Na Sản,Sơn La,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-26,19:45,21:24,864015,VND
+VN522,Vietnam Airlines,SQH,Sân bay Na Sản,Sơn La,VII,Sân bay Vinh,Nghệ An,2025-10-26,17:30,19:21,1369896,VND
+VN566,Vietnam Airlines,TBB,Sân bay Tuy Hòa,Phú Yên,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-26,18:30,19:53,1290570,VND
+VJ610,Vietjet Air,VCS,Sân bay Côn Đảo,TP.HCM,SQH,Sân bay Na Sản,Sơn La,2025-10-26,17:30,18:32,1170903,VND
+VN778,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-27,09:00,10:58,1670383,VND
+VN119,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VCL,Sân bay Chu Lai,Quảng Nam,2025-10-27,12:30,14:11,1414928,VND
+VN747,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VKG,Sân bay Rạch Giá,An Giang,2025-10-27,22:15,00:33,2599507,VND
+QH332,Bamboo Airways,PXU,Sân bay Pleiku,Gia Lai,VCS,Sân bay Côn Đảo,TP.HCM,2025-10-27,21:45,22:56,1026272,VND
+VJ757,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-27,14:15,16:30,1714214,VND
+QH871,Bamboo Airways,SQH,Sân bay Na Sản,Sơn La,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-27,21:45,23:55,1061308,VND
+VN238,Vietnam Airlines,SQH,Sân bay Na Sản,Sơn La,DIN,Sân bay Điện Biên,Điện Biên,2025-10-27,20:45,22:31,1043343,VND
+VN290,Vietnam Airlines,TBB,Sân bay Tuy Hòa,Phú Yên,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-27,20:00,21:36,1128265,VND
+VN587,Vietnam Airlines,VDO,Sân bay Vân Đồn,Quảng Ninh,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-27,07:45,08:50,1347300,VND
+QH833,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,VKG,Sân bay Rạch Giá,An Giang,2025-10-27,13:00,15:01,1039954,VND
+VN892,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-28,14:15,15:55,1429367,VND
+QH896,Bamboo Airways,DIN,Sân bay Điện Biên,Điện Biên,VCL,Sân bay Chu Lai,Quảng Nam,2025-10-28,06:00,08:07,1172505,VND
+VN820,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-28,22:45,01:00,2280954,VND
+VN108,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-28,17:00,18:04,2545249,VND
+QH766,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,SQH,Sân bay Na Sản,Sơn La,2025-10-28,10:45,12:19,1027960,VND
+QH419,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VCS,Sân bay Côn Đảo,TP.HCM,2025-10-28,10:30,12:23,1280337,VND
+VJ986,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-28,17:15,18:51,1847240,VND
+VN236,Vietnam Airlines,PXU,Sân bay Pleiku,Gia Lai,VCS,Sân bay Côn Đảo,TP.HCM,2025-10-28,19:45,21:52,1145964,VND
+QH443,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-28,21:00,22:25,1825426,VND
+VN296,Vietnam Airlines,THD,Sân bay Thọ Xuân,Thanh Hóa,PXU,Sân bay Pleiku,Gia Lai,2025-10-28,05:45,07:41,1242905,VND
+QH427,Bamboo Airways,THD,Sân bay Thọ Xuân,Thanh Hóa,TBB,Sân bay Tuy Hòa,Phú Yên,2025-10-28,17:00,18:35,1116185,VND
+QH514,Bamboo Airways,VDH,Sân bay Đồng Hới,Quảng Trị,DIN,Sân bay Điện Biên,Điện Biên,2025-10-28,12:30,14:36,1144199,VND
+VJ447,Vietjet Air,VKG,Sân bay Rạch Giá,An Giang,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-28,05:30,07:29,2343063,VND
+VN445,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-29,15:00,16:26,1230706,VND
+VN381,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,VII,Sân bay Vinh,Nghệ An,2025-10-29,08:00,09:40,1119621,VND
+VJ485,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-29,17:45,19:42,1015170,VND
+QH665,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-29,22:00,00:22,2552437,VND
+QH418,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,THD,Sân bay Thọ Xuân,Thanh Hóa,2025-10-29,15:00,17:06,1380043,VND
+VJ876,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-29,08:30,09:43,917459,VND
+QH527,Bamboo Airways,PXU,Sân bay Pleiku,Gia Lai,VKG,Sân bay Rạch Giá,An Giang,2025-10-29,22:00,23:34,1025819,VND
+VJ392,Vietjet Air,THD,Sân bay Thọ Xuân,Thanh Hóa,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-29,15:15,16:42,965302,VND
+VN343,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DIN,Sân bay Điện Biên,Điện Biên,2025-10-29,17:15,18:38,1176315,VND
+VJ400,Vietjet Air,VCL,Sân bay Chu Lai,Quảng Nam,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-29,05:00,06:04,1124651,VND
+VJ841,Vietjet Air,VCS,Sân bay Côn Đảo,TP.HCM,VCL,Sân bay Chu Lai,Quảng Nam,2025-10-29,20:15,21:34,844082,VND
+QH409,Bamboo Airways,VDH,Sân bay Đồng Hới,Quảng Trị,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-29,07:30,09:26,1096045,VND
+VN825,Vietnam Airlines,VDO,Sân bay Vân Đồn,Quảng Ninh,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-29,16:00,17:13,1322777,VND
+VJ864,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-30,21:45,00:05,1145771,VND
+QH939,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-30,13:00,14:50,1671441,VND
+VJ380,Vietjet Air,SQH,Sân bay Na Sản,Sơn La,DIN,Sân bay Điện Biên,Điện Biên,2025-10-30,08:15,10:06,1038490,VND
+QH580,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,VCS,Sân bay Côn Đảo,TP.HCM,2025-10-30,06:45,08:28,1045298,VND
+VN793,Vietnam Airlines,VDO,Sân bay Vân Đồn,Quảng Ninh,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-30,07:30,09:56,1237006,VND
+QH118,Bamboo Airways,VDO,Sân bay Vân Đồn,Quảng Ninh,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-30,19:15,20:59,1753453,VND
+QH330,Bamboo Airways,VDO,Sân bay Vân Đồn,Quảng Ninh,SQH,Sân bay Na Sản,Sơn La,2025-10-30,10:15,11:45,1088570,VND
+flight_number,airline,from,from_name,from_province,to,to_name,to_province,date,depart_time_local,arrive_time_local,price,currency
+QH787,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-11-02,10:30,12:50,2341379,VND
+QH103,Vietjet Air,VII,Sân bay Vinh,Nghệ An,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-31,15:00,16:20,1784705,VND
+QH530,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-25,10:00,13:00,1616175,VND
+VJ274,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VII,Sân bay Vinh,Nghệ An,2025-10-16,13:30,14:30,1276803,VND
+QH860,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-14,20:45,21:45,1910887,VND
+VN211,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VII,Sân bay Vinh,Nghệ An,2025-10-26,20:15,23:25,3356216,VND
+VN740,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2025-11-03,10:45,13:05,2072045,VND
+QH464,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-10,11:45,13:45,3427155,VND
+VN316,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-17,05:15,08:25,1064302,VND
+QH869,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-23,08:30,11:30,1020810,VND
+VN800,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,VII,Sân bay Vinh,Nghệ An,2025-10-14,10:45,11:45,3103050,VND
+QH216,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-14,12:30,14:40,3183392,VND
+VJ110,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-18,12:30,13:40,2187230,VND
+QH597,Vietjet Air,VII,Sân bay Vinh,Nghệ An,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-19,08:15,10:25,3208296,VND
+VN231,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-15,17:00,20:20,1687644,VND
+VN547,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-15,18:30,20:00,946058,VND
+VJ383,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-09,16:30,18:00,2900134,VND
+VN965,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-17,08:30,10:50,2187377,VND
+QH680,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-11-04,21:15,24:45,2946361,VND
+VN119,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-14,15:15,16:15,2458490,VND
+VN736,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-10,10:45,12:45,1820126,VND
+QH238,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-23,06:00,08:00,3467587,VND
+VN426,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-23,16:45,18:15,1597322,VND
+QH299,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-13,16:00,18:30,3022609,VND
+VJ112,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-11-03,07:15,10:45,1843375,VND
+VN683,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-11,07:00,10:30,1992708,VND
+VN849,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VII,Sân bay Vinh,Nghệ An,2025-11-01,15:15,16:15,2315254,VND
+VJ292,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-30,08:45,09:15,2644013,VND
+VJ616,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-13,17:45,19:15,2289175,VND
+VN141,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VII,Sân bay Vinh,Nghệ An,2025-10-27,06:30,09:50,3425400,VND
+VN750,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-24,07:15,08:25,947814,VND
+VJ440,Vietjet Air,VII,Sân bay Vinh,Nghệ An,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-22,10:15,11:35,1945499,VND
+VJ649,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-08,15:30,16:00,2876392,VND
+VJ471,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-25,13:00,15:20,2234307,VND
+VN911,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HUI,Sân bay quốc tế Phú Bài,Huế,2025-11-05,14:30,16:50,2846269,VND
+QH128,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-19,21:45,22:15,2860638,VND
+QH483,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-31,19:45,20:55,2446094,VND
+QH517,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-20,18:00,20:10,1094861,VND
+VN460,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-11-03,12:15,13:45,3024514,VND
+VJ244,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-18,17:30,20:40,906947,VND
+VN393,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-22,08:00,11:10,3201452,VND
+VJ940,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-19,17:00,19:00,1269811,VND
+VN384,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-21,13:15,14:25,3397294,VND
+VN150,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-15,20:15,22:25,1508492,VND
+VJ848,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-15,18:15,19:45,1332457,VND
+QH193,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-25,11:15,14:45,1149201,VND
+VN358,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-24,10:00,11:00,3412598,VND
+QH505,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VII,Sân bay Vinh,Nghệ An,2025-10-14,17:15,19:15,1886486,VND
+QH735,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-11-05,13:45,14:45,1489671,VND
+VN396,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VII,Sân bay Vinh,Nghệ An,2025-10-30,05:45,07:05,1863381,VND
+QH592,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-23,21:15,22:45,1561206,VND
+VN281,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-11-01,13:30,16:50,2304294,VND
+VJ224,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-11,19:00,20:20,2282504,VND
+QH457,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-13,21:45,24:45,2976912,VND
+VJ421,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-23,11:00,12:00,2168712,VND
+VJ449,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-11-05,16:00,19:00,2194725,VND
+QH306,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-11,08:30,11:50,3088400,VND
+QH615,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-14,10:45,12:45,1528032,VND
+VN739,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-30,05:30,07:00,1088724,VND
+VJ760,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-30,14:45,17:05,2217860,VND
+VN366,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-11-01,20:45,21:05,1749603,VND
+VJ596,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-21,05:45,06:05,1382446,VND
+QH855,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-15,17:00,19:30,1057447,VND
+QH202,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-27,08:00,11:00,3244493,VND
+VJ897,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-22,06:15,09:15,2727203,VND
+VJ671,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-20,06:30,08:00,3162121,VND
+VN317,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-21,08:30,11:30,2958033,VND
+QH890,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-23,05:45,08:55,959176,VND
+VN561,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-27,08:15,11:35,1926560,VND
+QH540,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-08,05:15,08:35,947190,VND
+VJ889,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-27,15:15,17:35,1450099,VND
+VJ979,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-19,13:15,14:25,1431918,VND
+VJ323,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-30,18:15,21:35,1872000,VND
+VN387,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-29,11:30,14:00,1754813,VND
+VN712,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-28,07:30,10:40,2803359,VND
+QH484,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-13,10:45,13:15,2799060,VND
+QH594,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-26,09:45,11:55,2880754,VND
+VN757,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-09,20:15,21:25,1762763,VND
+VJ644,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VII,Sân bay Vinh,Nghệ An,2025-10-21,05:15,08:25,1925071,VND
+VJ287,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-11,20:30,21:40,1705929,VND
+VJ827,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VII,Sân bay Vinh,Nghệ An,2025-10-20,11:00,12:00,916295,VND
+VN689,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-24,16:30,18:40,1436407,VND
+VJ865,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-15,17:30,20:50,2540039,VND
+VN690,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-29,20:45,23:55,3399849,VND
+QH716,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-16,20:00,23:20,3299551,VND
+VN515,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VII,Sân bay Vinh,Nghệ An,2025-10-26,20:15,23:35,1827959,VND
+QH393,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VII,Sân bay Vinh,Nghệ An,2025-10-10,05:30,08:40,3287259,VND
+VN291,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-11-06,16:00,17:20,1658792,VND
+VJ755,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,VII,Sân bay Vinh,Nghệ An,2025-11-05,11:00,12:30,2099541,VND
+VJ393,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-30,15:15,17:25,1911698,VND
+QH323,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-24,19:45,20:45,3393920,VND
+VJ898,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-08,12:15,14:35,2786008,VND
+VN406,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-31,21:30,24:00,1092193,VND
+VJ259,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-27,20:00,23:00,2673399,VND
+QH188,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-28,17:15,19:15,2522648,VND
+VJ752,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VII,Sân bay Vinh,Nghệ An,2025-10-25,11:15,14:15,2924556,VND
+QH124,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-17,15:30,16:00,1462299,VND
+VN504,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-15,10:30,12:30,3474707,VND
+QH195,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-23,12:45,15:55,3232351,VND
+VJ788,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,VII,Sân bay Vinh,Nghệ An,2025-10-12,05:00,07:30,3300266,VND
+VN404,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-11-02,05:15,07:15,3069684,VND
+VJ203,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-18,13:45,15:55,2815501,VND
+VN892,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-12,18:45,21:15,2474651,VND
+VN242,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-18,09:15,12:15,2161248,VND
+VN916,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-22,11:45,14:15,2474507,VND
+VJ508,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-19,11:45,14:45,1647983,VND
+QH110,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-15,11:00,14:30,1644810,VND
+VJ869,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-28,20:15,21:15,2829824,VND
+QH971,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VII,Sân bay Vinh,Nghệ An,2025-11-05,11:45,13:05,1341951,VND
+VN981,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-24,16:00,17:00,2664067,VND
+VN218,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-20,05:45,06:15,3099452,VND
+VN632,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-15,11:15,14:15,3237477,VND
+QH979,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-16,16:45,19:45,1257122,VND
+VN871,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,VII,Sân bay Vinh,Nghệ An,2025-10-15,08:15,09:45,2165673,VND
+VJ593,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-27,17:45,20:05,1796159,VND
+VJ870,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-24,11:30,14:30,3071777,VND
+VN418,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-25,10:30,13:40,2175288,VND
+QH991,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-22,11:15,12:35,2170661,VND
+QH457,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-13,19:00,22:30,3286587,VND
+VN916,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-14,12:15,15:35,1882979,VND
+VN676,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-11-02,09:45,11:45,1571991,VND
+VJ419,Vietjet Air,VII,Sân bay Vinh,Nghệ An,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-08,18:45,21:45,2389457,VND
+VN968,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-25,11:30,14:40,3326874,VND
+VN793,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-11-04,13:00,15:10,1574704,VND
+QH110,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-21,09:00,11:10,2604329,VND
+VJ409,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-16,10:45,12:45,1913362,VND
+VJ608,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-30,15:15,17:15,1556412,VND
+VN938,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-11-06,07:45,10:45,1734470,VND
+QH145,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-11,14:00,16:30,2504117,VND
+VJ703,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HUI,Sân bay quốc tế Phú Bài,Huế,2025-11-03,08:15,09:15,1876456,VND
+QH755,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VII,Sân bay Vinh,Nghệ An,2025-10-23,20:15,22:15,1816290,VND
+VN453,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VII,Sân bay Vinh,Nghệ An,2025-10-23,16:30,19:40,1565305,VND
+QH886,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-19,12:00,14:10,1124488,VND
+VN678,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-22,11:30,13:30,1284683,VND
+VJ716,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-21,08:00,11:00,3244921,VND
+QH470,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-20,09:30,12:00,1349309,VND
+QH367,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-11-03,09:30,11:00,1985705,VND
+VJ164,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-11-01,19:15,21:35,3186573,VND
+VN752,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-23,19:00,21:20,945650,VND
+VJ712,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-16,13:45,15:55,3176274,VND
+QH815,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-11-03,13:00,14:30,1177470,VND
+VJ893,Vietjet Air,VII,Sân bay Vinh,Nghệ An,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-14,16:00,19:30,1175664,VND
+QH267,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-31,15:00,17:30,1606279,VND
+VJ334,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-13,06:30,09:00,1550346,VND
+VJ226,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-17,20:00,22:00,901715,VND
+QH307,Vietjet Air,VII,Sân bay Vinh,Nghệ An,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-17,08:00,09:00,3351149,VND
+QH132,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-31,08:15,11:15,3368486,VND
+VN391,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-21,16:30,18:40,2392752,VND
+VN662,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-10,21:45,22:55,2650048,VND
+QH902,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VII,Sân bay Vinh,Nghệ An,2025-10-14,16:45,18:55,3430521,VND
+QH338,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-09,15:00,16:00,1034110,VND
+VN883,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-30,21:00,22:20,1396855,VND
+VJ877,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VII,Sân bay Vinh,Nghệ An,2025-11-05,08:15,11:45,1536126,VND
+VN434,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-15,07:00,10:30,1911369,VND
+VN874,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-19,21:15,22:15,1092326,VND
+VJ421,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,VII,Sân bay Vinh,Nghệ An,2025-10-11,10:45,12:15,915751,VND
+VJ924,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-24,19:15,22:35,2548799,VND
+VJ514,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-26,08:00,09:00,1115928,VND
+VN194,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-27,05:45,08:15,2568340,VND
+QH482,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-12,10:00,12:00,1910113,VND
+VN174,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-11-02,10:15,13:45,1157860,VND
+VJ237,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-14,18:30,19:00,2326750,VND
+QH874,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-20,14:45,17:45,1134458,VND
+QH655,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-21,18:45,19:55,1413121,VND
+QH357,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-10,08:30,11:50,1506630,VND
+VN181,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-16,21:00,23:20,1103264,VND
+VJ368,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-13,07:45,09:15,2987904,VND
+VN746,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-24,08:15,10:45,2097699,VND
+QH735,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-30,11:45,13:55,2700677,VND
+VJ833,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-17,10:15,11:25,1474833,VND
+QH104,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VII,Sân bay Vinh,Nghệ An,2025-11-05,09:00,12:20,2573347,VND
+VN634,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-08,15:30,17:30,2777883,VND
+VN973,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-26,17:45,20:55,2759221,VND
+VN118,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VII,Sân bay Vinh,Nghệ An,2025-10-19,21:00,22:30,3459590,VND
+VN181,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-11,16:15,17:25,964229,VND
+VN662,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-08,18:15,21:45,2855312,VND
+VJ671,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-31,12:30,13:40,1204015,VND
+VJ553,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-11-05,10:15,13:25,1638486,VND
+VN223,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-11-04,16:15,19:45,3160657,VND
+VN872,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-25,08:00,09:30,1347234,VND
+QH115,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-15,17:15,19:15,1248418,VND
+VJ923,Vietjet Air,VII,Sân bay Vinh,Nghệ An,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-26,07:45,08:55,3317052,VND
+QH583,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-22,21:45,22:15,2680462,VND
+VN655,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-31,08:30,09:40,1555707,VND
+VN348,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-18,10:00,11:10,2480736,VND
+VN662,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-13,16:00,17:30,2000157,VND
+VN794,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,VII,Sân bay Vinh,Nghệ An,2025-10-19,15:45,16:15,2371970,VND
+QH814,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-19,11:15,14:35,2746488,VND
+QH732,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-29,10:45,13:05,1838221,VND
+VN961,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-11-03,17:30,18:00,2462558,VND
+VN975,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-11-02,07:30,08:00,3485514,VND
+VJ714,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VII,Sân bay Vinh,Nghệ An,2025-10-28,09:30,12:40,3454979,VND
+VJ784,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-25,14:45,15:55,1930065,VND
+QH550,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-11-01,08:00,11:20,1039121,VND
+VN586,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-12,20:00,23:10,1284008,VND
+VN832,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-11-05,10:45,13:55,2883813,VND
+QH113,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-10,12:00,14:30,3413258,VND
+QH716,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-29,08:45,09:45,2474089,VND
+QH741,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-31,07:00,10:10,1513060,VND
+VJ705,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-18,16:15,18:25,2955847,VND
+VJ693,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-18,17:30,18:00,1032335,VND
+QH218,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-11-06,15:30,18:30,1936280,VND
+VN301,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-27,07:15,08:25,2816683,VND
+VN437,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,VII,Sân bay Vinh,Nghệ An,2025-10-25,15:00,18:10,1974159,VND
+VN380,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-14,08:45,10:45,1946077,VND
+VN276,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-19,14:00,15:00,1238851,VND
+VJ320,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-20,06:00,07:10,1119321,VND
+VJ674,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-23,17:45,20:15,3024865,VND
+QH262,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VII,Sân bay Vinh,Nghệ An,2025-10-17,06:30,07:40,3280810,VND
+QH881,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,VII,Sân bay Vinh,Nghệ An,2025-11-03,17:45,19:05,2910240,VND
+VN222,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-27,16:45,19:05,2560394,VND
+QH824,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-27,05:15,07:25,1174453,VND
+QH424,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-08,20:00,21:10,3076340,VND
+VJ781,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-20,06:15,07:25,1312789,VND
+QH863,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-22,19:45,21:15,2384541,VND
+VN676,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-28,20:15,21:25,1366432,VND
+VJ950,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-11-01,15:45,16:45,3056560,VND
+VN823,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-11-04,21:45,23:15,1643078,VND
+QH508,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-11-04,17:45,18:05,3404774,VND
+VN767,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-11-06,13:45,14:55,2472014,VND
+VJ429,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-25,15:30,17:50,2140884,VND
+QH840,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-11-03,17:15,18:25,1563587,VND
+QH726,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-30,06:00,08:00,2272179,VND
+QH845,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-08,19:15,20:25,1864384,VND
+VN162,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-26,16:15,17:45,2706544,VND
+VJ404,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-11-02,11:30,13:00,3019478,VND
+VJ851,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-10,09:30,10:40,1734202,VND
+VJ236,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,VII,Sân bay Vinh,Nghệ An,2025-10-17,21:45,22:05,1979892,VND
+VJ451,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-29,14:45,15:05,2541864,VND
+VJ976,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-25,13:30,16:00,2692088,VND
+VN500,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-11-05,11:15,14:35,2346345,VND
+VN478,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-11-02,13:15,14:25,1185411,VND
+VN465,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-15,14:15,16:45,1077274,VND
+VJ933,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,VII,Sân bay Vinh,Nghệ An,2025-10-25,14:30,16:40,2168061,VND
+VJ439,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-29,14:15,17:35,3073250,VND
+VJ627,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-11-01,06:30,08:50,2228914,VND
+VN710,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-12,19:30,22:30,2612350,VND
+VN275,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-21,18:15,19:35,2844083,VND
+VN455,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-24,13:00,14:20,2513307,VND
+QH337,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-31,11:45,14:55,3238945,VND
+QH343,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-10,12:15,13:35,1535150,VND
+QH147,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-11-03,10:00,12:00,2097268,VND
+QH157,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-17,15:45,17:45,1025421,VND
+VN115,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-19,11:15,12:35,1856183,VND
+QH741,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-08,11:30,13:00,2309100,VND
+QH575,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-27,19:15,22:45,3000483,VND
+VN403,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HUI,Sân bay quốc tế Phú Bài,Huế,2025-11-04,14:30,15:00,2109652,VND
+VN321,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-11-02,19:00,20:00,2420820,VND
+VJ630,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-28,07:30,08:50,1422912,VND
+VJ640,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-13,20:30,21:00,2489062,VND
+VN612,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-16,17:30,19:50,2675326,VND
+QH295,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-11-02,12:30,14:40,3456938,VND
+VN315,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-11-04,07:30,10:30,2431748,VND
+VN509,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VII,Sân bay Vinh,Nghệ An,2025-10-20,20:30,23:30,1714714,VND
+VJ840,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-26,17:00,19:30,3346850,VND
+VJ794,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-11-03,05:15,06:15,2198204,VND
+VN897,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-08,06:00,08:20,2289990,VND
+QH713,Vietjet Air,VII,Sân bay Vinh,Nghệ An,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-31,14:15,17:35,2586969,VND
+QH900,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-18,09:45,11:05,1365421,VND
+VJ319,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-23,05:15,06:15,2706371,VND
+VJ553,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-11-05,17:15,18:35,2807857,VND
+VJ506,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-18,07:45,08:05,1623001,VND
+VN771,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-29,18:00,21:30,2809433,VND
+VN803,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-11,21:45,22:15,2367680,VND
+VJ650,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-11-03,12:30,13:50,1856229,VND
+VJ699,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-19,09:45,12:45,956345,VND
+VN556,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-11-01,18:15,19:35,1241276,VND
+VJ296,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-27,07:30,10:30,3173391,VND
+VN129,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-30,17:45,20:45,1531913,VND
+VJ701,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,VII,Sân bay Vinh,Nghệ An,2025-10-11,13:30,16:40,3451473,VND
+VJ801,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-22,21:15,24:35,3445420,VND
+QH833,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-15,11:30,12:00,2588861,VND
+VJ402,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HUI,Sân bay quốc tế Phú Bài,Huế,2025-11-06,18:15,21:15,2315872,VND
+VJ164,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-14,14:45,15:55,2170365,VND
+VN495,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-11-04,11:45,12:05,1985340,VND
+VJ761,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-11-04,06:15,08:15,2206236,VND
+QH175,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,VII,Sân bay Vinh,Nghệ An,2025-10-11,06:30,07:00,1187515,VND
+VN525,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-11-02,07:45,10:15,1605530,VND
+QH891,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-11-06,11:45,13:05,3425431,VND
+VN714,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-31,09:00,12:10,1440888,VND
+VN847,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-28,20:45,22:05,1800677,VND
+VN900,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-20,05:00,08:00,2183494,VND
+VN567,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-14,10:30,11:50,3183624,VND
+VJ592,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VII,Sân bay Vinh,Nghệ An,2025-10-13,05:30,08:50,2095772,VND
+VJ645,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-11-05,07:30,10:50,1683781,VND
+VJ297,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-24,17:30,20:30,2027565,VND
+VN269,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-10,10:00,12:20,2009128,VND
+QH450,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-25,11:00,14:20,3156750,VND
+VJ959,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VII,Sân bay Vinh,Nghệ An,2025-10-10,16:15,18:45,3285213,VND
+VN800,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-11-04,15:30,17:30,936097,VND
+QH435,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-15,18:00,20:10,3371361,VND
+VJ535,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-21,12:45,15:15,1434546,VND
+VJ466,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-11,07:45,09:45,2541284,VND
+QH458,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-28,06:00,08:20,1295677,VND
+QH663,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-21,09:00,12:00,2121930,VND
+VN359,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VII,Sân bay Vinh,Nghệ An,2025-10-16,11:00,12:20,2298280,VND
+VJ905,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-24,09:45,10:55,933203,VND
+QH178,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-13,13:30,14:00,936493,VND
+VN795,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-31,15:45,16:05,2768568,VND
+VJ689,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-21,17:45,19:15,1795709,VND

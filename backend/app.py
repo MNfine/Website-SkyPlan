@@ -14,6 +14,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import payment routes
 from backend.routes.payments import payment_bp
+from backend.routes.flights import flights_bp
 from backend.models.db import init_db
 
 from os import getenv
@@ -62,6 +63,7 @@ def create_app():
 
     # Register API Blueprints (after DB ready)
     app.register_blueprint(payment_bp, url_prefix='/api/payment')
+    app.register_blueprint(flights_bp)  # Đăng ký API chuyến bay
     
     # Frontend routes
     @app.route('/')
@@ -79,6 +81,11 @@ def create_app():
     def fare_page():
         """Fare selection page"""
         return send_from_directory(app.template_folder, 'fare.html')
+    
+    @app.route('/seat')
+    def seat_page():
+        """Seat selection page"""
+        return send_from_directory(app.template_folder, 'seat.html')
         
     @app.route('/extras')
     def extras_page():

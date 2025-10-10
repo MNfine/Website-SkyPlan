@@ -1,4 +1,4 @@
-// Common JS for SkyPlan: shared UI logic (menu, language selector, etc.)
+// Common JS for SkyPlan: shared UI logic (menu, language selector, authentication, etc.)
 
 // Mobile menu functionality
 function initializeMobileMenu() {

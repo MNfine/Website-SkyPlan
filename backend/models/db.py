@@ -13,8 +13,12 @@ from typing import Iterator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session, DeclarativeBase
 
+from dotenv import load_dotenv
+load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///dev.db")
+
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///skylan.db")
+print("DATABASE_URL:", DATABASE_URL)
 
 
 class Base(DeclarativeBase):
@@ -58,6 +62,7 @@ def session_scope() -> Iterator:
 
 def init_db():
 	"""Create all tables (used at startup)."""
-	from . import payments  # noqa: F401  ensure models imported
+	from .payments import Payment  # noqa: F401  ensure models imported
+	from .flights import Flight  # noqa: F401
 	Base.metadata.create_all(bind=engine)
 

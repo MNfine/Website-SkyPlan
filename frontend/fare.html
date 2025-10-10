@@ -198,6 +198,59 @@
       if (typeof initializeLanguageSelector === 'function') {
         initializeLanguageSelector();
       }
+      
+      // Initialize fare selection buttons with URL params
+      initializeFareSelection();
+    }
+    
+    // Initialize fare selection buttons with proper URL parameters
+    function initializeFareSelection() {
+      // Get URL parameters from search
+      const urlParams = new URLSearchParams(window.location.search);
+      const tripType = urlParams.get('trip_type') || 'round-trip';
+      
+      // Update route title based on flight information
+      const outDeparture = urlParams.get('outbound_departure_airport') || '';
+      const outArrival = urlParams.get('outbound_arrival_airport') || '';
+      
+      // Get airport city names from a mapping
+      function getAirportCity(code) {
+        const airports = {
+          'HAN': 'Hà Nội',
+          'SGN': 'Hồ Chí Minh',
+          'DAD': 'Đà Nẵng',
+          'CXR': 'Nha Trang',
+          'DLI': 'Đà Lạt',
+          'PQC': 'Phú Quốc',
+          'VCA': 'Cần Thơ',
+          'VCS': 'Côn Đảo',
+          'UIH': 'Quy Nhơn',
+          'THD': 'Thanh Hóa',
+          'VDH': 'Đồng Hới',
+          'HUI': 'Huế',
+        };
+        return airports[code] || code;
+      }
+      
+      // Update route title
+      const routeTitle = document.querySelector('.route-title');
+      if (routeTitle) {
+        routeTitle.textContent = `Từ ${getAirportCity(outDeparture)} tới ${getAirportCity(outArrival)}`;
+      }
+      
+      // Get select buttons and update their href with URL params
+      const selectButtons = document.querySelectorAll('.btn-select');
+      
+      selectButtons.forEach(button => {
+        const fareClass = button.getAttribute('href').split('?class=')[1];
+        
+        // Create params with all flight data
+        const newParams = new URLSearchParams(window.location.search);
+        newParams.append('class', fareClass);
+        
+        // Replace the href with all parameters
+        button.href = `seat.html?${newParams.toString()}`;
+      });
     }
   </script>
 </body>
