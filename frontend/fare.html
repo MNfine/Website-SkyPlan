@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +16,24 @@
   <link rel="stylesheet" href="assets/styles/header.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/fare.css">
+
+  <style>
+    body {
+      visibility: hidden;
+    }
+
+    /* Add transition for smoother language changes */
+    [data-i18n] {
+      transition: opacity 0.3s ease;
+    }
+
+    /* Special class for elements that need translation but don't have data-i18n attribute */
+    .translatable {
+      transition: opacity 0.3s ease;
+    }
+  </style>
 </head>
+
 <body>
   <div id="header-container"></div>
 
@@ -48,7 +66,55 @@
       <div class="progress"></div>
     </div>
 
-    <h2 class="route-title" data-i18n="routeTitle">Từ London tới Stockholm</h2>
+    <h2 class="route-title" id="routeTitle">Chọn hạng vé của bạn</h2>
+
+    <!-- Flight details section -->
+    <div class="flight-details" id="flightDetails" style="display: none;">
+      <h3>
+        <i class="fas fa-plane"></i>
+        <span data-i18n="flightDetailsTitle">Chi tiết chuyến bay</span>
+      </h3>
+
+      <div class="flight-info">
+        <div class="flight-segment" id="outboundFlight">
+          <h4>
+            <i class="fas fa-plane-departure"></i>
+            <span data-i18n="outboundTitle">Chuyến đi</span>
+          </h4>
+          <div class="flight-data">
+            <div class="flight-info-row">
+              <span class="flight-number" id="outboundFlightNumber"></span>
+              <span class="airline" id="outboundAirline"></span>
+            </div>
+            <div class="route" id="outboundRoute">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+            <div class="datetime" id="outboundDateTime">
+              <i class="far fa-clock"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="flight-segment" id="inboundFlight" style="display: none;">
+          <h4>
+            <i class="fas fa-plane-arrival"></i>
+            <span data-i18n="inboundTitle">Chuyến về</span>
+          </h4>
+          <div class="flight-data">
+            <div class="flight-info-row">
+              <span class="flight-number" id="inboundFlightNumber"></span>
+              <span class="airline" id="inboundAirline"></span>
+            </div>
+            <div class="route" id="inboundRoute">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+            <div class="datetime" id="inboundDateTime">
+              <i class="far fa-clock"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="fare-grid">
       <article class="fare-card">
@@ -71,10 +137,10 @@
             <span class="feat-desc" data-i18n="noRefund">Không hoàn tiền</span>
           </li>
         </ul>
-         <div class="fare-footer">
-           <div class="price" data-price-usd="90" data-i18n-price="price90">$90</div>
-           <a href="seat.html?class=economy" class="btn-select" data-i18n="select">Chọn</a>
-         </div>
+        <div class="fare-footer">
+          <div class="price" id="economyPrice" data-price-usd="90" data-i18n-price="price90">$90</div>
+          <a href="/seat?class=economy" id="economySelect" class="btn-select" data-i18n="select">Chọn</a>
+        </div>
       </article>
 
       <article class="fare-card">
@@ -97,10 +163,10 @@
             <span class="feat-desc" data-i18n="noRefund">Không hoàn tiền</span>
           </li>
         </ul>
-         <div class="fare-footer">
-           <div class="price" data-price-usd="120" data-i18n-price="price120">$120</div>
-           <a href="seat.html?class=premium-economy" class="btn-select" data-i18n="select">Chọn</a>
-         </div>
+        <div class="fare-footer">
+          <div class="price" id="premiumPrice" data-price-usd="120" data-i18n-price="price120">$120</div>
+          <a href="/seat?class=premium-economy" id="premiumSelect" class="btn-select" data-i18n="select">Chọn</a>
+        </div>
       </article>
 
       <article class="fare-card">
@@ -123,10 +189,10 @@
             <span class="feat-desc" data-i18n="changeable">Được đổi ngày bay</span>
           </li>
         </ul>
-         <div class="fare-footer">
-           <div class="price" data-price-usd="350" data-i18n-price="price350">$350</div>
-           <a href="seat.html?class=business" class="btn-select" data-i18n="select">Chọn</a>
-         </div>
+        <div class="fare-footer">
+          <div class="price" id="businessPrice" data-price-usd="350" data-i18n-price="price350">$350</div>
+          <a href="/seat?class=business" id="businessSelect" class="btn-select" data-i18n="select">Chọn</a>
+        </div>
       </article>
     </div>
   </section>
@@ -135,14 +201,20 @@
 
   <script src="assets/scripts/fare_translations.js"></script>
   <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/fare.js"></script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+      // Signal that we will handle initialization manually
+      if (typeof window.setManualInit === 'function') {
+        window.setManualInit();
+      }
+
       // Function to handle component loading errors
       function handleComponentError(componentName) {
         console.error(`Failed to load ${componentName} component`);
       }
-      
+
       // Load header
       fetch('components/header.html')
         .then(response => {
@@ -153,12 +225,23 @@
         })
         .then(data => {
           document.getElementById('header-container').innerHTML = data;
-          // Initialize language functionality after header loads
-          initializeLanguage();
+          // Now manually initialize language and fare functionality
+          if (typeof window.initializeLanguage === 'function') {
+            window.initializeLanguage();
+          }
+          if (typeof window.initializeFarePage === 'function') {
+            window.initializeFarePage();
+          }
         })
         .catch(error => {
           handleComponentError('header');
-          initializeLanguage();
+          // Fallback initialization if header fails
+          if (typeof window.initializeLanguage === 'function') {
+            window.initializeLanguage();
+          }
+          if (typeof window.initializeFarePage === 'function') {
+            window.initializeFarePage();
+          }
         });
 
       // Load footer
@@ -176,84 +259,7 @@
           handleComponentError('footer');
         });
     });
-
-    // Initialize language functionality
-    function initializeLanguage() {
-      // Force Vietnamese as default for fare page
-      let currentLang = 'vi';
-      localStorage.setItem('preferredLanguage', 'vi');
-      
-      console.log('Fare page - Initializing language:', currentLang);
-      document.documentElement.lang = currentLang;
-      
-      // Apply fare-specific translations
-      if (typeof applyFareTranslations === 'function') {
-        console.log('Fare page - Applying translations');
-        applyFareTranslations(currentLang);
-      } else {
-        console.error('Fare page - applyFareTranslations function not found');
-      }
-      
-      // Initialize language selector after translations are applied
-      if (typeof initializeLanguageSelector === 'function') {
-        initializeLanguageSelector();
-      }
-      
-      // Initialize fare selection buttons with URL params
-      initializeFareSelection();
-    }
-    
-    // Initialize fare selection buttons with proper URL parameters
-    function initializeFareSelection() {
-      // Get URL parameters from search
-      const urlParams = new URLSearchParams(window.location.search);
-      const tripType = urlParams.get('trip_type') || 'round-trip';
-      
-      // Update route title based on flight information
-      const outDeparture = urlParams.get('outbound_departure_airport') || '';
-      const outArrival = urlParams.get('outbound_arrival_airport') || '';
-      
-      // Get airport city names from a mapping
-      function getAirportCity(code) {
-        const airports = {
-          'HAN': 'Hà Nội',
-          'SGN': 'Hồ Chí Minh',
-          'DAD': 'Đà Nẵng',
-          'CXR': 'Nha Trang',
-          'DLI': 'Đà Lạt',
-          'PQC': 'Phú Quốc',
-          'VCA': 'Cần Thơ',
-          'VCS': 'Côn Đảo',
-          'UIH': 'Quy Nhơn',
-          'THD': 'Thanh Hóa',
-          'VDH': 'Đồng Hới',
-          'HUI': 'Huế',
-        };
-        return airports[code] || code;
-      }
-      
-      // Update route title
-      const routeTitle = document.querySelector('.route-title');
-      if (routeTitle) {
-        routeTitle.textContent = `Từ ${getAirportCity(outDeparture)} tới ${getAirportCity(outArrival)}`;
-      }
-      
-      // Get select buttons and update their href with URL params
-      const selectButtons = document.querySelectorAll('.btn-select');
-      
-      selectButtons.forEach(button => {
-        const fareClass = button.getAttribute('href').split('?class=')[1];
-        
-        // Create params with all flight data
-        const newParams = new URLSearchParams(window.location.search);
-        newParams.append('class', fareClass);
-        
-        // Replace the href with all parameters
-        button.href = `seat.html?${newParams.toString()}`;
-      });
-    }
   </script>
 </body>
+
 </html>
-
-
