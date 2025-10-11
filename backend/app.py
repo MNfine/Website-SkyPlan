@@ -12,9 +12,10 @@ import sys
 # Add parent directory to path to allow imports from different directories
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import payment routes
+# Import routes
 from backend.routes.payments import payment_bp
 from backend.routes.flights import flights_bp
+from backend.routes.auth import auth_bp
 from backend.models.db import init_db
 
 from os import getenv
@@ -64,6 +65,7 @@ def create_app():
     # Register API Blueprints (after DB ready)
     app.register_blueprint(payment_bp, url_prefix='/api/payment')
     app.register_blueprint(flights_bp)  # Đăng ký API chuyến bay
+    app.register_blueprint(auth_bp, url_prefix='/api/auth')  # Đăng ký API xác thực
     
     # Frontend routes
     @app.route('/')
@@ -162,7 +164,10 @@ def create_app():
                 'payment': '/api/payment/',
                 'vnpay_create': '/api/payment/vnpay/create',
                 'vnpay_return': '/api/payment/vnpay/return',
-                'vnpay_ipn': '/api/payment/vnpay/ipn'
+                'vnpay_ipn': '/api/payment/vnpay/ipn',
+                'auth_register': '/api/auth/register',
+                'auth_login': '/api/auth/login',
+                'auth_profile': '/api/auth/profile'
             }
         })
     

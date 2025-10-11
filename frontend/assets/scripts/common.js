@@ -2,29 +2,59 @@
 
 // Mobile menu functionality
 function initializeMobileMenu() {
+    console.log("Initializing mobile menu...");
+    // Increase timeout to ensure header is fully loaded
     setTimeout(() => {
-        const menuToggle = document.querySelector('.menu-toggle');
-        const navLinks = document.querySelector('.nav-links');
-        if (menuToggle && navLinks) {
-            menuToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                menuToggle.classList.toggle('active');
-                navLinks.classList.toggle('active');
-                document.body.classList.toggle('no-scroll');
-            });
-        } else {
-            console.error('Menu elements not found');
-        }
-        document.addEventListener('click', function(event) {
-            if (navLinks && navLinks.classList.contains('active') &&
-                !event.target.closest('.nav-links') &&
-                !event.target.closest('.menu-toggle')) {
-                navLinks.classList.remove('active');
-                if (menuToggle) menuToggle.classList.remove('active');
-                document.body.classList.remove('no-scroll');
+        try {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (!menuToggle || !navLinks) {
+                console.error('Menu elements not found - will retry in 500ms');
+                // Retry once more after additional delay
+                setTimeout(() => {
+                    try {
+                        const menuToggle = document.querySelector('.menu-toggle');
+                        const navLinks = document.querySelector('.nav-links');
+                        if (menuToggle && navLinks) {
+                            console.log("Menu elements found on retry");
+                            attachMenuEventListeners(menuToggle, navLinks);
+                        } else {
+                            console.error('Menu elements still not found after retry');
+                        }
+                    } catch (error) {
+                        console.error('Error initializing menu on retry:', error);
+                    }
+                }, 1000);
+                return;
             }
-        });
-    }, 500);
+            
+            console.log("Menu elements found immediately");
+            attachMenuEventListeners(menuToggle, navLinks);
+        } catch (error) {
+            console.error('Error initializing mobile menu:', error);
+        }
+    }, 300); // Increased to 300ms
+}
+
+// Helper function to attach menu event listeners
+function attachMenuEventListeners(menuToggle, navLinks) {
+    menuToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        menuToggle.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        document.body.classList.toggle('no-scroll');
+    });
+    
+    document.addEventListener('click', function(event) {
+        if (navLinks && navLinks.classList.contains('active') &&
+            !event.target.closest('.nav-links') &&
+            !event.target.closest('.menu-toggle')) {
+            navLinks.classList.remove('active');
+            if (menuToggle) menuToggle.classList.remove('active');
+            document.body.classList.remove('no-scroll');
+        }
+    });
 }
 
 // Language selector functionality (calls correct change language function per page)
@@ -107,3 +137,210 @@ function enableSmoothScrolling() {
         });
     });
 }
+
+// Authentication functions
+/**
+ * Get authentication data (user and token)
+ * @returns {Object|null} User data and token if logged in, null otherwise
+ */
+function getUserData() {
+  // Try session storage first, then local storage
+  const userFromSession = sessionStorage.getItem('user');
+  const tokenFromSession = sessionStorage.getItem('token');
+  
+  if (userFromSession && tokenFromSession) {
+    return { 
+      user: JSON.parse(userFromSession), 
+      token: tokenFromSession 
+    };
+  }
+  
+  const userFromLocal = localStorage.getItem('user');
+  const tokenFromLocal = localStorage.getItem('token');
+  
+  if (userFromLocal && tokenFromLocal) {
+    return { 
+      user: JSON.parse(userFromLocal), 
+      token: tokenFromLocal 
+    };
+  }
+  
+  return null;
+}
+
+/**
+ * Check if user is logged in
+ * @returns {Boolean} True if logged in, false otherwise
+ */
+function isLoggedIn() {
+  return getUserData() !== null;
+}
+
+/**
+ * Get authentication token
+ * @returns {String|null} Authentication token if available, null otherwise
+ */
+function getAuthToken() {
+  const userData = getUserData();
+  return userData ? userData.token : null;
+}
+
+/**
+ * Log out the current user
+ */
+function logout() {
+  // Clear both local and session storage
+  localStorage.removeItem('user');
+  localStorage.removeItem('token');
+  localStorage.removeItem('isLoggedIn');
+  sessionStorage.removeItem('user');
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('isLoggedIn');
+  
+  // Redirect to login page
+  window.location.href = '/login';
+}
+
+/**
+ * Simple way to ensure updateHeaderForAuth is called after header loads
+ * This replaces the previous complex version that was causing errors
+ */
+function handleHeaderLoaded() {
+  // Simple timeout to ensure DOM is updated
+  setTimeout(() => {
+    if (typeof updateHeaderForAuth === 'function') {
+      try {
+        updateHeaderForAuth();
+        console.log('Auth header updated successfully');
+      } catch (error) {
+        console.error('Error updating header auth:', error);
+      }
+    }
+  }, 100);
+}
+
+/**
+ * Update header based on login status
+ * This should be called when the header is loaded
+ */
+function updateHeaderForAuth() {
+  const userData = getUserData();
+  const authLinks = document.querySelector('#authLinks');
+  const userInfoElement = document.querySelector('#userInfo');
+  
+  if (!authLinks) return;
+  
+  if (userData) {
+    // User is logged in
+    if (authLinks) {
+      authLinks.innerHTML = `
+        <div class="user-menu">
+          <div class="user-menu-trigger">
+            <div class="user-avatar">
+              ${userData.user.fullname.charAt(0).toUpperCase()}
+            </div>
+            <span class="user-name">${userData.user.fullname.split(' ')[0]}</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="user-dropdown">
+            <a href="/profile" class="dropdown-item">
+              <i class="fas fa-user"></i>
+              <span>Hồ sơ cá nhân</span>
+            </a>
+            <a href="/bookings" class="dropdown-item">
+              <i class="fas fa-ticket-alt"></i>
+              <span>Đặt chỗ của tôi</span>
+            </a>
+            <a href="#" id="logoutButton" class="dropdown-item">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Đăng xuất</span>
+            </a>
+          </div>
+        </div>
+      `;
+      
+      // Add event listener for logout button
+      const logoutButton = document.getElementById('logoutButton');
+      if (logoutButton) {
+        logoutButton.addEventListener('click', logout);
+      }
+      
+      // Add user menu dropdown functionality
+      const userMenu = document.querySelector('.user-menu');
+      const userDropdown = document.querySelector('.user-dropdown');
+      
+      if (userMenu && userDropdown) {
+        userMenu.addEventListener('click', function(e) {
+          e.stopPropagation();
+          userDropdown.classList.toggle('show');
+        });
+        
+        document.addEventListener('click', function(e) {
+          if (!userMenu.contains(e.target)) {
+            userDropdown.classList.remove('show');
+          }
+        });
+      }
+    }
+    
+    if (userInfoElement) {
+      userInfoElement.textContent = userData.user.fullname;
+    }
+  } else {
+    // User is not logged in
+    if (authLinks) {
+      authLinks.innerHTML = `
+        <a href="/login" class="btn btn-outline" data-i18n="signInText">Đăng nhập</a>
+        <a href="/register" class="btn btn-primary" data-i18n="logInText">Đăng ký</a>
+      `;
+    }
+    
+    if (userInfoElement) {
+      userInfoElement.textContent = 'Khách';
+    }
+  }
+}
+
+/**
+ * Protect routes that require authentication
+ * Redirect to login page if not logged in
+ * @param {Array} routes - Routes that require authentication (e.g., ['/payment', '/passenger'])
+ */
+function protectRoutes(routes = []) {
+  // Default protected routes
+  const defaultProtectedRoutes = [
+    '/passenger',
+    '/payment',
+    '/extras',
+    '/confirmation',
+    '/profile',
+    '/bookings'
+  ];
+  
+  // Combine default and custom routes
+  const protectedRoutes = [...defaultProtectedRoutes, ...routes];
+  
+  // Get current path
+  const currentPath = window.location.pathname;
+  
+  // Check if current path is protected
+  const isProtected = protectedRoutes.some(route => 
+    currentPath === route || currentPath.endsWith(route)
+  );
+  
+  // If protected and not logged in, redirect to login page
+  if (isProtected && !isLoggedIn()) {
+    // Save current URL to redirect back after login
+    const currentUrl = window.location.href;
+    window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
+  }
+}
+
+// Initialize authentication on page load
+document.addEventListener('DOMContentLoaded', () => {
+  // Update header authentication UI
+  updateHeaderForAuth();
+  
+  // Protect routes
+  protectRoutes();
+});

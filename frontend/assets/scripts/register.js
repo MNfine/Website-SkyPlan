@@ -16,7 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnGoogle = document.getElementById('btnGoogle');
   const btnFacebook = document.getElementById('btnFacebook');
   const backButton = document.getElementById('backButton');
-
+  const submitButton = form ? form.querySelector('button[type="submit"]') : null;
+  
+  // API endpoint
+  const API_URL = '/api/auth';
+  
+  // Check if user is already logged in and redirect if needed
+  checkLoginStatus();
+  
   /* Helpers */
   const getErrorEl = (fieldId) => document.getElementById(fieldId + 'Error');
 
@@ -90,6 +97,98 @@ document.addEventListener('DOMContentLoaded', () => {
         ? '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle>'
         : '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path><line x1="2" y1="2" x2="22" y2="22"></line>';
     });
+  }
+
+  /* User authentication functions */
+  function saveUserData(data, remember = false) {
+    const storage = remember ? localStorage : sessionStorage;
+    storage.setItem('user', JSON.stringify(data.user));
+    storage.setItem('token', data.token);
+    storage.setItem('isLoggedIn', 'true');
+  }
+  
+  function getUserData() {
+    // Try session storage first, then local storage
+    const userFromSession = sessionStorage.getItem('user');
+    const tokenFromSession = sessionStorage.getItem('token');
+    
+    if (userFromSession && tokenFromSession) {
+      return { 
+        user: JSON.parse(userFromSession), 
+        token: tokenFromSession 
+      };
+    }
+    
+    const userFromLocal = localStorage.getItem('user');
+    const tokenFromLocal = localStorage.getItem('token');
+    
+    if (userFromLocal && tokenFromLocal) {
+      return { 
+        user: JSON.parse(userFromLocal), 
+        token: tokenFromLocal 
+      };
+    }
+    
+    return null;
+  }
+  
+  function checkLoginStatus() {
+    const userData = getUserData();
+    if (userData) {
+      console.log('User is already logged in', userData.user);
+      
+      // Redirect to home page if on register page
+      if (window.location.pathname.includes('register') || window.location.pathname === '/register') {
+        window.location.href = '/';
+      }
+    }
+  }
+  
+  async function performRegistration(userData) {
+    try {
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner"></span> Đang xử lý...';
+      }
+      
+      const response = await fetch(`${API_URL}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Đăng ký thất bại');
+      }
+      
+      // Registration successful - store user data and token
+      saveUserData(data, true);
+      
+      // Show success message
+      alert('Đăng ký thành công!\n\nChào mừng ' + userData.fullname + '!');
+      
+      // Redirect to home page
+      window.location.href = '/';
+      
+    } catch (error) {
+      if (error.message.includes('Email already registered')) {
+        showError('email', 'Email đã được đăng ký');
+      } else if (error.message.includes('Phone number already registered')) {
+        showError('phone', 'Số điện thoại đã được đăng ký');
+      } else {
+        alert('Đăng ký thất bại: ' + error.message);
+      }
+      console.error('Registration error:', error);
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Đăng ký';
+      }
+    }
   }
 
   /* Form submit */
@@ -166,13 +265,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (hasError) return;
 
-      console.log('Registration successful:', { fullName, email, phone, password, agreeTerms });
-      alert('Đăng ký thành công!\n\nHọ tên: ' + fullName + '\nEmail: ' + email + '\nSố điện thoại: ' + phone);
-      
-      // Redirect to login page after successful registration
-      setTimeout(() => {
-        window.location.href = './login.html';
-      }, 2000);
+      // Create user data object
+      const userData = {
+        fullname: fullName,
+        email: email,
+        phone: phone,
+        password: password
+      };
+
+      // Call API to register
+      performRegistration(userData);
     });
   }
 
@@ -216,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (backButton) {
     backButton.addEventListener('click', () => {
       // Navigate to home page (index.html)
-      window.location.href = './index.html';
+      window.location.href = '/';
     });
   }
 

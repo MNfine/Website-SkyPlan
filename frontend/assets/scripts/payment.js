@@ -216,7 +216,7 @@ function processCardPayment() {
 // Process bank transfer
 function processBankTransfer() {
   // Giả lập đã nhận được tiền, chuyển đến trang xác nhận
-  window.location.href = 'confirmation.html';
+  window.location.href = '/confirmation';
 }
 
 // Process e-wallet payment
@@ -280,7 +280,7 @@ function showPaymentSuccess() {
   }
   localStorage.setItem('lastTxnRef', bookingCode);
   localStorage.setItem('lastAmount', amount);
-  window.location.href = 'confirmation.html';
+  window.location.href = '/confirmation';
 }
 
 // E-wallet selection functionality
@@ -561,13 +561,13 @@ function showPaymentSuccess() {
   }
   localStorage.setItem('lastTxnRef', bookingCode);
   localStorage.setItem('lastAmount', amount);
-  window.location.href = 'confirmation.html';
+  window.location.href = '/confirmation';
 }
 
 // --- SỬA LOGIC BANK ---
 function processBankTransfer() {
   // Giả lập đã nhận được tiền, chuyển đến trang xác nhận
-  window.location.href = 'confirmation.html';
+  window.location.href = '/confirmation';
 }
 
 

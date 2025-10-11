@@ -10,7 +10,7 @@
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   
   <!-- Font Awesome CDN for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   
   <!-- CSS -->
   <link rel="stylesheet" href="assets/styles/reset.css">
@@ -18,6 +18,8 @@
   <link rel="stylesheet" href="assets/styles/flags.css">
   <link rel="stylesheet" href="assets/styles/header.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
+  <link rel="stylesheet" href="assets/styles/auth.css">
+  <link rel="stylesheet" href="assets/styles/user-menu.css">
 </head>
 <body>
   <!-- Header -->
@@ -235,38 +237,70 @@
     
     // Wait for translations.js to load before using functions
     function initializeApp() {
-      // Load header
-      fetch('components/header.html')
+      // Debug logs
+      console.log("Initializing app...");
+      console.log("Current path:", window.location.pathname);
+      
+      // Load header - Use absolute path to avoid issues
+      const headerPath = window.location.pathname.endsWith('/') ? 
+        'components/header.html' : './components/header.html';
+      
+      console.log("Fetching header from:", headerPath);
+      
+      fetch(headerPath)
         .then(response => {
           if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error(`Network response was not ok: ${response.status}`);
           }
           return response.text();
         })
         .then(data => {
           document.getElementById('header-container').innerHTML = data;
+          console.log("Header loaded successfully");
+          
+          // After header loads, initialize mobile menu with a delay
+          setTimeout(() => {
+            if (typeof initializeMobileMenu === 'function') {
+              console.log("Initializing mobile menu...");
+              initializeMobileMenu();
+            }
+            
+            // Update header for auth status using the new function
+            if (typeof handleHeaderLoaded === 'function') {
+              console.log("Handling header loaded...");
+              handleHeaderLoaded();
+            }
+          }, 100);
           
           // After header loads, initialize language functionality
           initializeLanguage();
         })
         .catch(error => {
+          console.error("Header loading error:", error);
           handleComponentError('header');
           // Still initialize language even if header fails
           initializeLanguage();
         });
       
-      // Load footer
-      fetch('components/footer.html')
+      // Load footer - Use same path determination as header
+      const footerPath = window.location.pathname.endsWith('/') ? 
+        'components/footer.html' : './components/footer.html';
+      
+      console.log("Fetching footer from:", footerPath);
+      
+      fetch(footerPath)
         .then(response => {
           if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error(`Network response was not ok: ${response.status}`);
           }
           return response.text();
         })
         .then(data => {
           document.getElementById('footer-container').innerHTML = data;
+          console.log("Footer loaded successfully");
         })
         .catch(error => {
+          console.error("Footer loading error:", error);
           handleComponentError('footer');
         });
     }

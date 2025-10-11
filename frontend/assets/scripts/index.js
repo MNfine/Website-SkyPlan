@@ -2,9 +2,7 @@
 
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-  // Initialize shared UI
-  initializeMobileMenu();
-  initializeLanguageSelector();
+  // Initialize shared UI that doesn't depend on header/footer
   initializeSearch();
   enableSmoothScrolling();
   // Set the default language to Vietnamese (VI) on initial load (only for index)

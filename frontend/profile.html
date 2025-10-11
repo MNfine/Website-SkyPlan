@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyPlan - Hồ sơ cá nhân</title>
+  <meta name="description" content="Quản lý thông tin cá nhân và chuyến bay của bạn trên SkyPlan">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  
+  <!-- Font Awesome CDN for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="assets/styles/reset.css">
+  <link rel="stylesheet" href="assets/styles/index.css">
+  <link rel="stylesheet" href="assets/styles/flags.css">
+  <link rel="stylesheet" href="assets/styles/header.css">
+  <link rel="stylesheet" href="assets/styles/footer.css">
+  <link rel="stylesheet" href="assets/styles/user-menu.css">
+  <link rel="stylesheet" href="assets/styles/profile.css">
+</head>
+<body>
+  <!-- Header -->
+  <div id="header-container"></div>
+
+  <!-- Profile Content -->
+  <div class="container profile-container">
+    <div class="profile-header">
+      <h1>Hồ sơ cá nhân</h1>
+      <p>Quản lý thông tin cá nhân và theo dõi hoạt động của bạn</p>
+    </div>
+
+    <div class="profile-content">
+      <div class="profile-sidebar">
+        <div class="user-info">
+          <div class="user-avatar-large" id="userAvatarLarge">
+            <!-- Will be filled by JS -->
+          </div>
+          <h3 id="userFullName"><!-- Will be filled by JS --></h3>
+          <p id="userEmail"><!-- Will be filled by JS --></p>
+        </div>
+        
+        <ul class="profile-nav">
+          <li class="active">
+            <a href="#personal-info">
+              <i class="fas fa-user"></i>
+              <span>Thông tin cá nhân</span>
+            </a>
+          </li>
+          <li>
+            <a href="#bookings">
+              <i class="fas fa-ticket-alt"></i>
+              <span>Đặt chỗ của tôi</span>
+            </a>
+          </li>
+          <li>
+            <a href="#security">
+              <i class="fas fa-lock"></i>
+              <span>Bảo mật</span>
+            </a>
+          </li>
+          <li>
+            <a href="#notifications">
+              <i class="fas fa-bell"></i>
+              <span>Thông báo</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="profile-main">
+        <!-- Personal Information Section -->
+        <section id="personal-info" class="profile-section active">
+          <div class="section-header">
+            <h2>Thông tin cá nhân</h2>
+            <button class="btn-edit" id="editPersonalInfo">
+              <i class="fas fa-pen"></i>
+              Chỉnh sửa
+            </button>
+          </div>
+          
+          <div class="section-content">
+            <div class="view-mode" id="viewMode">
+              <div class="info-row">
+                <div class="info-label">Họ và tên</div>
+                <div class="info-value" id="displayFullName"><!-- Filled by JS --></div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">Email</div>
+                <div class="info-value" id="displayEmail"><!-- Filled by JS --></div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">Số điện thoại</div>
+                <div class="info-value" id="displayPhone"><!-- Filled by JS --></div>
+              </div>
+            </div>
+            
+            <form class="edit-mode hidden" id="editMode">
+              <div class="form-group">
+                <label for="fullname">Họ và tên</label>
+                <input type="text" id="fullname" name="fullname" class="form-input" placeholder="Họ và tên">
+                <div class="error-message" id="fullnameError"></div>
+              </div>
+              
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" class="form-input" readonly>
+                <div class="helper-text">Email không thể thay đổi</div>
+              </div>
+              
+              <div class="form-group">
+                <label for="phone">Số điện thoại</label>
+                <input type="tel" id="phone" name="phone" class="form-input" placeholder="Số điện thoại">
+                <div class="error-message" id="phoneError"></div>
+              </div>
+              
+              <div class="form-actions">
+                <button type="button" class="btn-cancel" id="cancelEdit">Hủy</button>
+                <button type="submit" class="btn-save">Lưu thay đổi</button>
+              </div>
+            </form>
+          </div>
+        </section>
+        
+        <!-- Bookings Section (Placeholder) -->
+        <section id="bookings" class="profile-section">
+          <div class="section-header">
+            <h2>Đặt chỗ của tôi</h2>
+          </div>
+          
+          <div class="section-content">
+            <div class="bookings-list">
+              <p class="empty-state">Bạn chưa có chuyến bay nào được đặt.</p>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Security Section -->
+        <section id="security" class="profile-section">
+          <div class="section-header">
+            <h2>Bảo mật</h2>
+          </div>
+          
+          <div class="section-content">
+            <form id="passwordForm" class="password-form">
+              <div class="form-group">
+                <label for="currentPassword">Mật khẩu hiện tại</label>
+                <input type="password" id="currentPassword" name="currentPassword" class="form-input" placeholder="Nhập mật khẩu hiện tại">
+                <div class="error-message" id="currentPasswordError"></div>
+              </div>
+              
+              <div class="form-group">
+                <label for="newPassword">Mật khẩu mới</label>
+                <input type="password" id="newPassword" name="newPassword" class="form-input" placeholder="Nhập mật khẩu mới">
+                <div class="error-message" id="newPasswordError"></div>
+                <div class="helper-text">Mật khẩu cần có ít nhất 8 ký tự, bao gồm chữ và số</div>
+              </div>
+              
+              <div class="form-group">
+                <label for="confirmPassword">Xác nhận mật khẩu</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="Xác nhận mật khẩu mới">
+                <div class="error-message" id="confirmPasswordError"></div>
+              </div>
+              
+              <div class="form-actions">
+                <button type="submit" class="btn-save">Đổi mật khẩu</button>
+              </div>
+            </form>
+          </div>
+        </section>
+        
+        <!-- Notifications Section (Placeholder) -->
+        <section id="notifications" class="profile-section">
+          <div class="section-header">
+            <h2>Thông báo</h2>
+          </div>
+          
+          <div class="section-content">
+            <p>Tính năng này đang được phát triển.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div id="footer-container"></div>
+
+  <!-- Scripts -->
+  <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/toast.js"></script>
+  <script src="assets/scripts/profile.js"></script>
+  
+  <!-- Load components -->
+  <script>
+    // Load header and footer
+    document.addEventListener('DOMContentLoaded', () => {
+      // Debug logs
+      console.log("Profile: Initializing app...");
+      
+      // Load header - Use absolute path to avoid issues
+      const headerPath = window.location.pathname.endsWith('/') ? 
+        'components/header.html' : './components/header.html';
+      
+      console.log("Profile: Fetching header from:", headerPath);
+      
+      fetch(headerPath)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(html => {
+          document.getElementById('header-container').innerHTML = html;
+          console.log("Profile: Header loaded successfully");
+          
+          // After header loads, initialize with a delay
+          setTimeout(() => {
+            if (typeof initializeMobileMenu === 'function') {
+              initializeMobileMenu();
+            }
+            if (typeof initializeLanguageSelector === 'function') {
+              initializeLanguageSelector();
+            }
+            if (typeof handleHeaderLoaded === 'function') {
+              handleHeaderLoaded();
+            }
+          }, 100);
+        })
+        .catch(error => {
+          console.error("Profile: Header loading error:", error);
+        });
+
+      // Load footer - Use same path determination as header
+      const footerPath = window.location.pathname.endsWith('/') ? 
+        'components/footer.html' : './components/footer.html';
+        
+      console.log("Profile: Fetching footer from:", footerPath);
+      
+      fetch(footerPath)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(html => {
+          document.getElementById('footer-container').innerHTML = html;
+          console.log("Profile: Footer loaded successfully");
+        })
+        .catch(error => {
+          console.error("Profile: Footer loading error:", error);
+        });
+        
+      // Protect this page - redirect to login if not authenticated
+      if (!isLoggedIn()) {
+        window.location.href = './login.html?redirect=' + encodeURIComponent(window.location.href);
+      }
+    });
+  </script>
+</body>
+</html>
