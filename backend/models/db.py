@@ -64,5 +64,6 @@ def init_db():
 	"""Create all tables (used at startup)."""
 	from .payments import Payment  # noqa: F401  ensure models imported
 	from .flights import Flight  # noqa: F401
+	from .passenger import Passenger  # noqa: F401
 	Base.metadata.create_all(bind=engine)
 

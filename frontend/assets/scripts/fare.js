@@ -94,7 +94,7 @@
       seatParams.set('selected_class', f.class);
       seatParams.set('selected_price', f.price);
 
-      btn.href = `seat.html?${seatParams.toString()}`;
+      btn.href = `/seat?${seatParams.toString()}`;
     });
   }
 

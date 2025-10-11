@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title data-i18n="title" data-i18n-target="document-title">SkyPlan - Thông Tin Hành Khách</title>
 
   <link rel="icon" href="favicon.ico" type="image/x-icon">
@@ -13,14 +14,17 @@
   <link rel="stylesheet" href="assets/styles/index.css">
   <link rel="stylesheet" href="assets/styles/flags.css">
   <link rel="stylesheet" href="assets/styles/header.css">
+  <link rel="stylesheet" href="assets/styles/user-menu.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/passenger.css">
 
   <!-- Shared translations (header/footer), then page translations, then page logic -->
+  <script src="assets/scripts/common.js"></script>
   <script src="./assets/scripts/index_translations.js" defer></script>
   <script src="./assets/scripts/passenger_translations.js" defer></script>
   <script src="./assets/scripts/passenger.js" defer></script>
 </head>
+
 <body>
   <!-- Header will be injected here -->
   <div id="header-container"></div>
@@ -70,7 +74,7 @@
 
             <!-- Step 6 -->
             <div class="progress-step">
-<div class="step-circle"><span>6</span></div>
+              <div class="step-circle"><span>6</span></div>
               <span class="step-label" data-i18n="steps.5">Thanh toán</span>
             </div>
 
@@ -90,44 +94,48 @@
           <div class="form-grid">
             <!-- Last name -->
             <div class="form-group">
-              <label for="lastname" data-i18n="lbl.lastname" data-i18n-target="label">Họ <span class="required">*</span></label>
-              <input type="text" id="lastname" name="lastname" placeholder="Nhập họ"
-                     data-i18n="ph.lastname" data-i18n-target="placeholder" autocomplete="family-name">
+              <label for="lastname" data-i18n="lbl.lastname" data-i18n-target="label">Họ <span
+                  class="required">*</span></label>
+              <input type="text" id="lastname" name="lastname" placeholder="Nhập họ" data-i18n="ph.lastname"
+                data-i18n-target="placeholder" autocomplete="family-name">
               <span class="error-message" id="lastname-error"></span>
             </div>
 
             <!-- First name -->
             <div class="form-group">
-              <label for="firstname" data-i18n="lbl.firstname" data-i18n-target="label">Tên <span class="required">*</span></label>
-              <input type="text" id="firstname" name="firstname" placeholder="Nhập tên"
-                     data-i18n="ph.firstname" data-i18n-target="placeholder" autocomplete="given-name">
+              <label for="firstname" data-i18n="lbl.firstname" data-i18n-target="label">Tên <span
+                  class="required">*</span></label>
+              <input type="text" id="firstname" name="firstname" placeholder="Nhập tên" data-i18n="ph.firstname"
+                data-i18n-target="placeholder" autocomplete="given-name">
               <span class="error-message" id="firstname-error"></span>
             </div>
 
             <!-- National ID (CCCD/CMND) -->
             <div class="form-group full-width">
-              <label for="cccd" data-i18n="lbl.cccd" data-i18n-target="label">Số CCCD/CMND <span class="required">*</span></label>
-              <input type="text" id="cccd" name="cccd" placeholder="Nhập số CCCD/CMND"
-                     data-i18n="ph.cccd" data-i18n-target="placeholder"
-                     maxlength="12" inputmode="numeric" pattern="[0-9]*">
+              <label for="cccd" data-i18n="lbl.cccd" data-i18n-target="label">Số CCCD/CMND <span
+                  class="required">*</span></label>
+              <input type="text" id="cccd" name="cccd" placeholder="Nhập số CCCD/CMND" data-i18n="ph.cccd"
+                data-i18n-target="placeholder" maxlength="12" inputmode="numeric" pattern="[0-9]*">
               <span class="error-message" id="cccd-error"></span>
             </div>
 
             <!-- Date of birth -->
             <div class="form-group">
-              <label for="dob" data-i18n="lbl.dob" data-i18n-target="label">Ngày sinh <span class="required">*</span></label>
-              <input type="text" id="dob" name="dob" placeholder="DD/MM/YYYY"
-                     data-i18n="ph.dob" data-i18n-target="placeholder" inputmode="numeric">
+              <label for="dob" data-i18n="lbl.dob" data-i18n-target="label">Ngày sinh <span
+                  class="required">*</span></label>
+              <input type="text" id="dob" name="dob" placeholder="DD/MM/YYYY" data-i18n="ph.dob"
+                data-i18n-target="placeholder" inputmode="numeric">
               <span class="error-message" id="dob-error"></span>
             </div>
 
             <!-- Gender -->
             <div class="form-group">
-              <label for="gender" data-i18n="lbl.gender" data-i18n-target="label">Giới tính <span class="required">*</span></label>
+              <label for="gender" data-i18n="lbl.gender" data-i18n-target="label">Giới tính <span
+                  class="required">*</span></label>
               <select id="gender" name="gender">
                 <option value="" data-i18n="gender.0">Chọn giới tính</option>
                 <option value="male" data-i18n="gender.1">Nam</option>
-<option value="female" data-i18n="gender.2">Nữ</option>
+                <option value="female" data-i18n="gender.2">Nữ</option>
                 <option value="other" data-i18n="gender.3">Khác</option>
               </select>
               <span class="error-message" id="gender-error"></span>
@@ -135,32 +143,35 @@
 
             <!-- Phone number -->
             <div class="form-group">
-              <label for="phoneNumber" data-i18n="lbl.phone" data-i18n-target="label">Số điện thoại <span class="required">*</span></label>
+              <label for="phoneNumber" data-i18n="lbl.phone" data-i18n-target="label">Số điện thoại <span
+                  class="required">*</span></label>
               <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Nhập số điện thoại"
-                     data-i18n="ph.phone" data-i18n-target="placeholder"
-                     maxlength="10" inputmode="tel" autocomplete="tel">
+                data-i18n="ph.phone" data-i18n-target="placeholder" maxlength="10" inputmode="tel" autocomplete="tel">
               <span class="error-message" id="phoneNumber-error"></span>
             </div>
 
             <!-- Email -->
             <div class="form-group">
-              <label for="email" data-i18n="lbl.email" data-i18n-target="label">Email <span class="required">*</span></label>
-              <input type="email" id="email" name="email" placeholder="Nhập email"
-                     data-i18n="ph.email" data-i18n-target="placeholder" autocomplete="email">
+              <label for="email" data-i18n="lbl.email" data-i18n-target="label">Email <span
+                  class="required">*</span></label>
+              <input type="email" id="email" name="email" placeholder="Nhập email" data-i18n="ph.email"
+                data-i18n-target="placeholder" autocomplete="email">
               <span class="error-message" id="email-error"></span>
             </div>
 
             <!-- Permanent address -->
             <div class="form-group full-width">
-              <label for="address" data-i18n="lbl.address" data-i18n-target="label">Địa chỉ thường trú <span class="required">*</span></label>
+              <label for="address" data-i18n="lbl.address" data-i18n-target="label">Địa chỉ thường trú <span
+                  class="required">*</span></label>
               <input type="text" id="address" name="address" placeholder="Nhập địa chỉ thường trú"
-                     data-i18n="ph.address" data-i18n-target="placeholder" autocomplete="street-address">
+                data-i18n="ph.address" data-i18n-target="placeholder" autocomplete="street-address">
               <span class="error-message" id="address-error"></span>
             </div>
 
             <!-- City/Province -->
             <div class="form-group" id="city-group">
-              <label for="city" data-i18n="lbl.city" data-i18n-target="label">Tỉnh/Thành phố <span class="required">*</span></label>
+              <label for="city" data-i18n="lbl.city" data-i18n-target="label">Tỉnh/Thành phố <span
+                  class="required">*</span></label>
               <select id="city" name="city">
                 <option value="" data-i18n="cityDefault">Chọn tỉnh/thành phố</option>
                 <option value="Hà Nội">Hà Nội</option>
@@ -175,15 +186,17 @@
 
             <!-- Custom city input -->
             <div class="form-group" id="customCity-group" style="display: none;">
-              <label for="customCity" data-i18n="lbl.customCity" data-i18n-target="label">Nhập tỉnh/thành phố <span class="required">*</span></label>
-<input type="text" id="customCity" name="customCity" placeholder="Nhập tỉnh/thành phố của bạn"
-                     data-i18n="ph.customCity" data-i18n-target="placeholder">
+              <label for="customCity" data-i18n="lbl.customCity" data-i18n-target="label">Nhập tỉnh/thành phố <span
+                  class="required">*</span></label>
+              <input type="text" id="customCity" name="customCity" placeholder="Nhập tỉnh/thành phố của bạn"
+                data-i18n="ph.customCity" data-i18n-target="placeholder">
               <span class="error-message" id="customCity-error"></span>
             </div>
 
             <!-- Nationality -->
             <div class="form-group" id="nationality-group">
-              <label for="nationality" data-i18n="lbl.nationality" data-i18n-target="label">Quốc tịch <span class="required">*</span></label>
+              <label for="nationality" data-i18n="lbl.nationality" data-i18n-target="label">Quốc tịch <span
+                  class="required">*</span></label>
               <select id="nationality" name="nationality">
                 <option value="Việt Nam">Việt Nam</option>
                 <option value="Lào">Lào</option>
@@ -211,23 +224,24 @@
 
             <!-- Custom nationality input -->
             <div class="form-group" id="customNationality-group" style="display: none;">
-              <label for="customNationality" data-i18n="lbl.customNationality" data-i18n-target="label">Nhập quốc tịch <span class="required">*</span></label>
+              <label for="customNationality" data-i18n="lbl.customNationality" data-i18n-target="label">Nhập quốc tịch
+                <span class="required">*</span></label>
               <input type="text" id="customNationality" name="customNationality" placeholder="Nhập quốc tịch của bạn"
-                     data-i18n="ph.customNationality" data-i18n-target="placeholder">
+                data-i18n="ph.customNationality" data-i18n-target="placeholder">
               <span class="error-message" id="customNationality-error"></span>
             </div>
 
             <!-- Notes -->
             <div class="form-group full-width">
               <label for="notes" data-i18n="lbl.notes" data-i18n-target="label">Ghi chú</label>
-              <textarea id="notes" name="notes" rows="4" placeholder="Nhập ghi chú (nếu có)"
-                        data-i18n="ph.notes" data-i18n-target="placeholder"></textarea>
+              <textarea id="notes" name="notes" rows="4" placeholder="Nhập ghi chú (nếu có)" data-i18n="ph.notes"
+                data-i18n-target="placeholder"></textarea>
               <div class="char-counter" data-i18n="notesCounter">Tối đa 500 ký tự</div>
             </div>
           </div>
 
           <!-- Confirmation checkbox -->
-<div class="form-checkbox">
+          <div class="form-checkbox">
             <label class="checkbox-label">
               <input type="checkbox" id="confirm" name="confirm" class="custom-checkbox">
               <span class="checkbox-text" data-i18n="terms">Tôi đồng ý với điều khoản</span>
@@ -262,10 +276,16 @@
         try {
           lang = localStorage.getItem('preferredLanguage') || 'vi';
           localStorage.setItem('preferredLanguage', lang);
-        } catch {}
+        } catch { }
         fetch('components/header.html')
           .then(r => r.text()).then(html => {
             const n = document.getElementById('header-container'); if (n) n.innerHTML = html;
+            // Initialize common header behaviors after injection
+            try {
+              if (typeof updateHeaderForAuth === 'function') updateHeaderForAuth();
+              if (typeof initializeLanguageSelector === 'function') initializeLanguageSelector();
+              if (typeof initializeMobileMenu === 'function') initializeMobileMenu();
+            } catch (e) { console.warn('Init header scripts failed', e); }
             applyAll(lang);
           }).catch(() => applyAll(lang));
 
@@ -273,10 +293,11 @@
           .then(r => r.text()).then(html => {
             const n = document.getElementById('footer-container'); if (n) n.innerHTML = html;
             applyAll(lang);
-          }).catch(() => {});
+          }).catch(() => { });
       }
       document.addEventListener('DOMContentLoaded', initializeApp);
     })();
   </script>
 </body>
+
 </html>

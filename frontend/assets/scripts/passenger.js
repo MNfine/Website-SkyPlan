@@ -297,18 +297,62 @@ function clearAllErrors() {
 }
 
 // Form submission
-form.addEventListener('submit', function(e) {
+form.addEventListener('submit', async function(e) {
     e.preventDefault();
     
     // Clear all previous errors
     clearAllErrors();
     
     // Validate form
-    if (validateForm()) {
-        console.log('Form Data:', formData);
-        alert('Thông tin đã được xác nhận thành công!\n\nDữ liệu đã được ghi vào Console.');
-    } else {
+    if (!validateForm()) {
         alert('Vui lòng kiểm tra lại thông tin và điền đầy đủ các trường bắt buộc.');
+        return;
+    }
+
+    // Check login status (token in sessionStorage or localStorage)
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    if (!token) {
+        const currentPath = window.location.pathname + window.location.search;
+        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+        return;
+    }
+
+    // Prepare payload mapping names to backend expectation
+    const payload = {
+        lastname: formData.lastname,
+        firstname: formData.firstname,
+        cccd: formData.cccd,
+        dob: formData.dob, // MM/DD/YYYY
+        gender: formData.gender,
+        phoneNumber: formData.phoneNumber,
+        email: formData.email,
+        address: formData.address,
+        city: formData.city,
+        customCity: formData.customCity,
+        nationality: formData.nationality,
+        customNationality: formData.customNationality,
+        notes: formData.notes
+    };
+
+    try {
+        const res = await fetch('/api/bookings/passenger', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+            throw new Error(data.message || 'Không thể lưu thông tin hành khách');
+        }
+
+        // Success: proceed to extras page
+        window.location.href = '/extras';
+    } catch (err) {
+        console.error('Save passenger error:', err);
+        alert(err.message || 'Có lỗi xảy ra, vui lòng thử lại.');
     }
 });
 

@@ -350,6 +350,12 @@
                 <p class="fare-class-label" data-i18n="selectedFareClass">Hạng vé đã chọn:</p>
                 <p class="fare-class-value" id="fareClassName"></p>
               </div>
+
+              <!-- Fare Price Info (from fare page) -->
+              <div class="fare-price-info" id="farePriceInfo" style="display: none; margin-top: 8px;">
+                <p class="fare-price-label">Giá đã chọn:</p>
+                <p class="fare-price-value" id="farePriceValue"></p>
+              </div>
               
               <div class="selected-seats">
                 <p class="selected-label" data-i18n="selectedSeats">Ghế đã chọn:</p>
@@ -402,8 +408,10 @@
   <div id="footer-container"></div>
 
   <!-- JavaScript -->
+  <script src="assets/scripts/toast.js"></script>
   <script src="assets/scripts/seat_translations.js"></script>
   <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/seat.js"></script>
 
   <!-- Load Components -->
   <script>
@@ -469,10 +477,10 @@
       }
     }
 
-    // Function to get URL parameter
-    function getUrlParameter(name) {
+    // Function to get URL parameter (supports alternative keys from fare page)
+    function getUrlParameter(name, altName) {
       const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(name);
+      return urlParams.get(name) || (altName ? urlParams.get(altName) : null);
     }
 
     // Function to restrict seats based on fare class
@@ -481,8 +489,10 @@
       const businessSection = document.querySelector('.business-class-section');
       const premiumEconomySection = document.querySelector('.premium-economy-section');
       const economySection = document.querySelector('.economy-section');
-      const fareClassInfo = document.getElementById('fareClassInfo');
-      const fareClassName = document.getElementById('fareClassName');
+  const fareClassInfo = document.getElementById('fareClassInfo');
+  const fareClassName = document.getElementById('fareClassName');
+  const farePriceInfo = document.getElementById('farePriceInfo');
+  const farePriceValue = document.getElementById('farePriceValue');
       const restrictedLegend = document.getElementById('restrictedLegend');
       
       // Remove any existing restrictions first
@@ -516,6 +526,16 @@
         
         fareClassName.textContent = fareDisplayName;
         fareClassInfo.style.display = 'block';
+      }
+
+      // Display selected price if provided from fare page
+      const selectedPriceParam = getUrlParameter('selected_price');
+      if (farePriceInfo && farePriceValue && selectedPriceParam) {
+        const priceNumber = Number(selectedPriceParam) || 0;
+        const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+        const locale = currentLang === 'en' ? 'en-US' : 'vi-VN';
+        farePriceValue.textContent = priceNumber > 0 ? priceNumber.toLocaleString(locale) + ' VND' : '';
+        farePriceInfo.style.display = priceNumber > 0 ? 'block' : 'none';
       }
       
       // Apply restrictions based on fare class
@@ -563,8 +583,8 @@
 
     // Seat selection functionality
     function initializeSeatSelection() {
-      // Get fare class from URL parameter
-      const fareClass = getUrlParameter('class');
+      // Get fare class from URL parameter (support selected_class from fare page)
+      const fareClass = getUrlParameter('class', 'selected_class');
       
       // Apply seat restrictions based on fare class
       if (fareClass) {
@@ -639,10 +659,14 @@
             updateSelectedDisplay();
             hideCountdown();
             
-            // Show translated alert message
-            const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
-            const timeExpiredMsg = seatTranslations[currentLang]['timeExpired'] || 'Time expired! Please select your seats again.';
-            alert(timeExpiredMsg);
+            // Show toast notification for timeout
+            if (typeof SeatNotifications !== 'undefined') {
+              SeatNotifications.showTimeExpired();
+            } else {
+              const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+              const timeExpiredMsg = seatTranslations[currentLang]['timeExpired'] || 'Time expired! Please select your seats again.';
+              alert(timeExpiredMsg);
+            }
           }
         }, 1000); // Update every 1 second
       }
@@ -662,7 +686,11 @@
         seat.addEventListener('click', function() {
           // Check if seat is restricted
           if (this.classList.contains('restricted')) {
-            return; // Do nothing if seat is restricted
+            // Show restricted seat notification
+            if (typeof SeatNotifications !== 'undefined') {
+              SeatNotifications.showRestrictedSeat();
+            }
+            return;
           }
           
           const seatCode = this.dataset.seat;
@@ -671,6 +699,11 @@
             // Deselect seat
             this.classList.remove('selected');
             selectedSeats = selectedSeats.filter(s => s !== seatCode);
+            
+            // Show deselection notification
+            if (typeof SeatNotifications !== 'undefined') {
+              SeatNotifications.showSeatDeselected(seatCode);
+            }
             
             // Hide countdown if no seats selected
             if (selectedSeats.length === 0) {
@@ -681,6 +714,11 @@
             this.classList.add('selected');
             selectedSeats.push(seatCode);
             
+            // Show selection notification
+            if (typeof SeatNotifications !== 'undefined') {
+              SeatNotifications.showSeatSelected(seatCode);
+            }
+            
             // Start countdown when first seat is selected or restart it
             startCountdown();
           }
@@ -689,18 +727,23 @@
         });
       });
 
-      // Continue button functionality
+      // Continue button functionality (enhanced with toast)
       continueBtn.addEventListener('click', function(e) {
         if (selectedSeats.length === 0) {
           e.preventDefault();
-          const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
-          const selectAtLeastOneMsg = seatTranslations[currentLang]['selectAtLeastOne'] || 'Please select at least one seat before continuing.';
-          alert(selectAtLeastOneMsg);
+          if (typeof SeatNotifications !== 'undefined') {
+            SeatNotifications.showNoSeatsSelected();
+          } else {
+            const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+            const selectAtLeastOneMsg = seatTranslations[currentLang]['selectAtLeastOne'] || 'Please select at least one seat before continuing.';
+            alert(selectAtLeastOneMsg);
+          }
         } else {
           // Stop countdown when continuing
           hideCountdown();
+          
           // Navigate to next page
-          window.location.href = 'passenger.html';
+          window.location.href = '/passenger';
         }
       });
 
