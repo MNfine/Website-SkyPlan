@@ -14,6 +14,30 @@ window.openFlightModal = function() {
     }
 };
 
+// Chuẩn hoá tên thành phố -> mã IATA để dùng chung
+const CITY_TO_IATA = {
+    'Hà Nội': 'HAN','HaNoi': 'HAN','Hanoi': 'HAN','HAN': 'HAN',
+    'Hồ Chí Minh': 'SGN','HoChiMinh': 'SGN','TP.Hồ Chí Minh': 'SGN','TP Ho Chi Minh': 'SGN','Sài Gòn': 'SGN','Sai Gon': 'SGN','SGN': 'SGN',
+    'Đà Nẵng': 'DAD','Da Nang': 'DAD','DaNang': 'DAD','DAD': 'DAD',
+    'Phú Quốc': 'PQC','Phu Quoc': 'PQC','PQC': 'PQC',
+    'Cần Thơ': 'VCA','Can Tho': 'VCA','VCA': 'VCA',
+    'Lâm Đồng': 'DLI','Lam Dong': 'DLI','DLI': 'DLI',
+    'Huế': 'HUI','Hue': 'HUI','HUI': 'HUI',
+    'Điện Biên': 'DIN','Dien Bien': 'DIN','DIN': 'DIN',
+    'Gia Lai': 'PXU','PXU': 'PXU',
+    'An Giang': 'VKG','VKG': 'VKG',
+    'Thanh Hóa': 'THD','Thanh Hoa': 'THD','THD': 'THD',
+    'Nghệ An': 'VII','Nghe An': 'VII','VII': 'VII',
+    'Quảng Ninh': 'VDO','Quang Ninh': 'VDO','VDO': 'VDO',
+    'Sơn La': 'SQH','Son La': 'SQH','SQH': 'SQH',
+    'Khánh Hòa': 'CXR','Khanh Hoa': 'CXR','CXR': 'CXR',
+    'Đắk Lắk': 'BMV','Dak Lak': 'BMV','BMV': 'BMV',
+    'Quảng Trị': 'VDH','Quang Tri': 'VDH','VDH': 'VDH',
+    'Chu Lai': 'VCL','VCL': 'VCL',
+    'Hải Phòng': 'HPH','Hai Phong': 'HPH','HPH': 'HPH',
+    'Tuy Hòa': 'TBB','Tuy Hoa': 'TBB','TBB': 'TBB'
+};
+
 // Lấy tham số từ URL
 function getQueryParams() {
     const params = {};
@@ -35,10 +59,22 @@ function setDateInputsFromQuery() {
         return d.toISOString().slice(0, 10);
     }
     if (fromInput && params.from) {
-        fromInput.value = params.from;
+        // Select hiển thị theo IATA hay slug đều được; nếu là slug, giữ nguyên; nếu là IATA, chuyển về slug tương ứng nếu có option
+        const normFromIata = CITY_TO_IATA[params.from] || params.from;
+        // Ưu tiên set theo IATA nếu option có value IATA; nếu không có, thử set theo slug từ URL
+        if ([...fromInput.options].some(o => o.value === normFromIata)) {
+            fromInput.value = normFromIata;
+        } else if ([...fromInput.options].some(o => o.value === params.from)) {
+            fromInput.value = params.from;
+        }
     }
     if (toInput && params.to) {
-        toInput.value = params.to;
+        const normToIata = CITY_TO_IATA[params.to] || params.to;
+        if ([...toInput.options].some(o => o.value === normToIata)) {
+            toInput.value = normToIata;
+        } else if ([...toInput.options].some(o => o.value === params.to)) {
+            toInput.value = params.to;
+        }
     }
     if (depInput) depInput.value = params.dep || fmt(today);
     if (retInput) retInput.value = params.ret || fmt(today);
@@ -116,8 +152,9 @@ const sampleFlights = {
 async function fetchFlights() {
     setDateInputsFromQuery();
     const params = getQueryParams();
-    const fromCity = params.from || '';
-    const toCity = params.to || '';
+    // Normalize input (slug or IATA) -> IATA for backend query
+    const fromCity = CITY_TO_IATA[params.from] || CITY_TO_IATA[params.from && params.from.toString()] || params.from || '';
+    const toCity = CITY_TO_IATA[params.to] || CITY_TO_IATA[params.to && params.to.toString()] || params.to || '';
     const dep = params.dep || '';
     const ret = params.ret || '';
     const tripType = params.type || 'round-trip';
@@ -135,7 +172,7 @@ async function fetchFlights() {
     
     try {
         // Luôn lấy dữ liệu chuyến đi
-        const resOut = await fetch(`/api/flights?from=${encodeURIComponent(fromCity)}&to=${encodeURIComponent(toCity)}&date=${encodeURIComponent(dep)}`);
+    const resOut = await fetch(`/api/flights?from=${encodeURIComponent(fromCity)}&to=${encodeURIComponent(toCity)}&date=${encodeURIComponent(dep)}`);
         const dataOut = await resOut.json();
         
         let dataIn = { flights: [] };
@@ -146,14 +183,11 @@ async function fetchFlights() {
             dataIn = await resIn.json();
         }
 
-        // Nếu không có kết quả tìm kiếm, sử dụng dữ liệu mẫu
-        const outFlights = (dataOut.flights && dataOut.flights.length > 0) ? 
-                           dataOut.flights : sampleFlights.outbound;
-        const inFlights = (tripType === 'round-trip') ? 
-                          ((dataIn.flights && dataIn.flights.length > 0) ? 
-                           dataIn.flights : sampleFlights.inbound) : [];
+    // Dùng dữ liệu từ dataset; không fallback sang mẫu nếu API trả về rỗng
+    const outFlights = (dataOut && Array.isArray(dataOut.flights)) ? dataOut.flights : [];
+    const inFlights = (tripType === 'round-trip') ? ((dataIn && Array.isArray(dataIn.flights)) ? dataIn.flights : []) : [];
 
-        renderFlights(outFlights, inFlights, tripType);
+    renderFlights(outFlights, inFlights, tripType);
         if (typeof window.applyFilters === 'function') window.applyFilters();
     } catch (e) {
         console.error('Error fetching flights:', e);
@@ -178,14 +212,23 @@ function renderFlights(outbounds, inbounds, tripType = 'round-trip') {
     console.log('Element .sp-results before update:', results);
     results.innerHTML = '';
     
-    // Hiển thị thông báo nếu không có chuyến bay nào
-    if (!outbounds || outbounds.length === 0) {
-        results.innerHTML = '<div class="sp-empty-state">Không tìm thấy chuyến bay phù hợp. Vui lòng thử lại với các tiêu chí khác.</div>';
+    let isOneWay = tripType === 'one-way';
+    const hasOut = Array.isArray(outbounds) && outbounds.length > 0;
+    const hasIn = Array.isArray(inbounds) && inbounds.length > 0;
+    // Nếu tìm khứ hồi nhưng không có chuyến về, vẫn hiển thị chiều đi như một chiều
+    if (!isOneWay && hasOut && !hasIn) {
+        console.info('[search] No inbound flights; show outbound as one-way.');
+        isOneWay = true;
+    }
+    // Không có dữ liệu phù hợp nào
+    if (!hasOut && (!isOneWay ? !hasIn : true)) {
+        // Để trống; filter script sẽ hiển thị empty-state của riêng nó
+        results.innerHTML = '';
+        console.warn('[search] No flights found: outbounds=', outbounds ? outbounds.length : 0, 'inbounds=', inbounds ? inbounds.length : 0, 'type=', tripType);
         return;
     }
 
     // Xác định số lượng card sẽ hiển thị
-    const isOneWay = tripType === 'one-way';
     let htmlContent = '';
     
     // Hiển thị từng chuyến bay
@@ -528,7 +571,13 @@ function formatAirport(code) {
         'HUI': 'Huế (HUI)',
         'VII': 'Vinh (VII)',
         'VDO': 'Vân Đồn (VDO)',
-        'THD': 'Thanh Hóa (THD)'
+        'THD': 'Thanh Hóa (THD)',
+        'DLI': 'Lâm Đồng (DLI)',
+        'DIN': 'Điện Biên (DIN)',
+        'PXU': 'Pleiku (PXU)',
+        'VKG': 'Rạch Giá (VKG)',
+        'SQH': 'Sơn La (SQH)',
+        'VCL': 'Chu Lai (VCL)'
     };
     
     return airportMap[code] || code;
