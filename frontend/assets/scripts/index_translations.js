@@ -65,8 +65,8 @@ const translations = {
     // Header
     helpText: "Trợ giúp",
     myTripsText: "Chuyến đi của tôi",
-    signInText: "Đăng nhập",
-    logInText: "Đăng ký",
+    signInText: "Đăng ký",
+    logInText: "Đăng nhập",
     
     // Hero section
     heroTitle: "Ưu đãi tốt nhất đang chờ đón bạn",
