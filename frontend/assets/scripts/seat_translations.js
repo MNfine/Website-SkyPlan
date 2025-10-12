@@ -23,9 +23,9 @@ const seatTranslations = {
         copyright: "© 2024 SkyPlan. All rights reserved.",
         helpText: "Help",
         myTripsText: "My Trips",
-        signInText: "Sign Up",
-        logInText: "Sign In",
-        
+        signInText: "Sign In",
+        logInText: "Log In",
+
         // Seat Selection Page Specific
         seatTitle: "Choose your seat",
         flightInfo: "Select seats for flight VN 1234 from Ho Chi Minh to Hanoi",
