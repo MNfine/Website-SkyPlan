@@ -51,6 +51,8 @@ function initializeLanguageSelector() {
                     changeFareLanguage(selectedLangValue);
                 } else if (typeof changeSearchLanguage === 'function' && (path.includes('search.html') || path.endsWith('/search'))) {
                     changeSearchLanguage(selectedLangValue);
+                } else if (typeof changeSearchLanguage === 'function' && (path.includes('404.html') || path.endsWith('/404'))) {
+                    changeSearchLanguage(selectedLangValue);
                 } else if (typeof changeLanguage === 'function') {
                     changeLanguage(selectedLangValue);
                 }
