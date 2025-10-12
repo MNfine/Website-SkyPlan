@@ -23,9 +23,9 @@ const fareTranslations = {
         copyright: "© 2024 SkyPlan. All rights reserved.",
         helpText: "Help",
         myTripsText: "My Trips",
-        signInText: "Sign Up",
-        logInText: "Sign In",
-        
+        signInText: "Sign In",
+        logInText: "Log In",
+
         // Steps
         step1: "Search",
         step2: "Select flight",
