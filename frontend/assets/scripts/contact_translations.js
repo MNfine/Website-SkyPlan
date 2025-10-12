@@ -24,9 +24,9 @@ const contactTranslations = {
         copyright: "© 2024 SkyPlan. All rights reserved.",
         helpText: "Help",
         myTripsText: "My Trips",
-        signInText: "Sign Up",
-        logInText: "Sign In",
-        
+        signInText: "Sign In",
+        logInText: "Log In",
+
         // Contact Page Specific
         contactTitle: "Contact Us",
         contactSubtitle: "We're here to help you 24/7. Leave us a message and we'll respond as soon as possible.",
