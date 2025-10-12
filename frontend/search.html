@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -15,7 +14,6 @@
     <link rel="stylesheet" href="assets/styles/footer.css">
     <link rel="stylesheet" href="assets/styles/user-menu.css">
 </head>
-
 <body class="with-fixed-header with-fixed-footer">
     <div id="header-container"></div>
 
@@ -26,46 +24,46 @@
             <div class="sp-field">
                 <label for="from" class="sp-label">Từ</label>
                 <select id="from" class="sp-input">
-                    <option value="AnGiang">An Giang</option>
-                    <option value="CanTho">Cần Thơ</option>
+                    <option value="HaNoi">Hà Nội</option>
+                    <option value="HoChiMinh">Hồ Chí Minh</option>
                     <option value="DaNang">Đà Nẵng</option>
+                    <option value="CanTho">Cần Thơ</option>
+                    <option value="LamDong">Lâm Đồng</option>
+                    <option value="QuangTri">Quảng Trị</option>
                     <option value="DakLak">Đắk Lắk</option>
+                    <option value="KhanhHoa">Khánh Hòa</option>
+                    <option value="HaiPhong">Hải Phòng</option>
+                    <option value="Hue">Huế</option>
                     <option value="DienBien">Điện Biên</option>
                     <option value="GiaLai">Gia Lai</option>
-                    <option value="HaNoi">Hà Nội</option>
-                    <option value="HaiPhong">Hải Phòng</option>
-                    <option value="HoChiMinh">Hồ Chí Minh</option>
-                    <option value="Hue">Huế</option>
-                    <option value="KhanhHoa">Khánh Hòa</option>
-                    <option value="LamDong">Lâm Đồng</option>
+                    <option value="AnGiang">An Giang</option>
+                    <option value="ThanhHoa">Thanh Hóa</option>
                     <option value="NgheAn">Nghệ An</option>
                     <option value="QuangNinh">Quảng Ninh</option>
-                    <option value="QuangTri">Quảng Trị</option>
                     <option value="SonLa">Sơn La</option>
-                    <option value="ThanhHoa">Thanh Hóa</option>
                 </select>
             </div>
 
             <div class="sp-field">
                 <label for="to" class="sp-label">Đến</label>
                 <select id="to" class="sp-input">
-                    <option value="AnGiang">An Giang</option>
-                    <option value="CanTho">Cần Thơ</option>
+                    <option value="HaNoi">Hà Nội</option>
+                    <option value="HoChiMinh">Hồ Chí Minh</option>
                     <option value="DaNang">Đà Nẵng</option>
+                    <option value="CanTho">Cần Thơ</option>
+                    <option value="LamDong">Lâm Đồng</option>
+                    <option value="QuangTri">Quảng Trị</option>
                     <option value="DakLak">Đắk Lắk</option>
+                    <option value="KhanhHoa">Khánh Hòa</option>
+                    <option value="HaiPhong">Hải Phòng</option>
+                    <option value="Hue">Huế</option>
                     <option value="DienBien">Điện Biên</option>
                     <option value="GiaLai">Gia Lai</option>
-                    <option value="HaNoi">Hà Nội</option>
-                    <option value="HaiPhong">Hải Phòng</option>
-                    <option value="HoChiMinh">Hồ Chí Minh</option>
-                    <option value="Hue">Huế</option>
-                    <option value="KhanhHoa">Khánh Hòa</option>
-                    <option value="LamDong">Lâm Đồng</option>
+                    <option value="AnGiang">An Giang</option>
+                    <option value="ThanhHoa">Thanh Hóa</option>
                     <option value="NgheAn">Nghệ An</option>
                     <option value="QuangNinh">Quảng Ninh</option>
-                    <option value="QuangTri">Quảng Trị</option>
                     <option value="SonLa">Sơn La</option>
-                    <option value="ThanhHoa">Thanh Hóa</option>
                 </select>
             </div>
 
@@ -143,128 +141,102 @@
         </section>
     </main>
 
+    <div id="spModal" class="sp-modal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="sp-modal__backdrop" data-close></div>
+
+        <div class="sp-modal__dialog" role="document" aria-labelledby="spModalTitle">
+            <div class="sp-modal__header">
+                <!-- <h2 id="spModalTitle">Chi tiết chuyến bay</h2> -->
+                <button class="sp-modal__close" aria-label="Close" data-close>&times;</button>
+            </div>
+
+            <div class="sp-modal__content">
+                <!-- OUTBOUND -->
+                <section class="sp-leg">
+                    <div class="sp-leg__title">Đến <span data-to-city>—</span></div>
+                    <div class="sp-leg__panel">
+                        <div class="sp-leg__grid">
+                            <div class="sp-leg__date">
+                                <i class="fa-regular fa-calendar"></i>
+                                <span data-out-date>—</span>
+                            </div>
+                            <div class="sp-leg__timeline">
+                                <div class="sp-node">
+                                    <div class="sp-node__time" data-out-dep-time>—</div>
+                                    <div class="sp-node__icon"><i class="fa-solid fa-location-pin"></i></div>
+                                    <div class="sp-node__text" data-out-dep-airport>—</div>
+                                </div>
+                                <div class="sp-node sp-node--plane">
+                                    <div class="sp-node__time">&nbsp;</div>
+                                    <div class="sp-node__icon"><i class="fa-solid fa-plane"></i></div>
+                                </div>
+                                <div class="sp-node">
+                                    <div class="sp-node__time" data-out-arr-time>—</div>
+                                    <div class="sp-node__icon"><i class="fa-solid fa-location-dot"></i></div>
+                                    <div class="sp-node__text" data-out-arr-airport>—</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- INBOUND -->
+                <section class="sp-leg">
+                    <div class="sp-leg__title">Đến <span data-from-city>—</span></div>
+                    <div class="sp-leg__panel">
+                        <div class="sp-leg__grid">
+                            <div class="sp-leg__date">
+                                <i class="fa-regular fa-calendar"></i>
+                                <span data-in-date>—</span>
+                            </div>
+                            <div class="sp-leg__timeline">
+                                <div class="sp-node">
+                                    <div class="sp-node__time" data-in-dep-time>—</div>
+                                    <div class="sp-node__icon"><i class="fa-solid fa-location-pin"></i></div>
+                                    <div class="sp-node__text" data-in-dep-airport>—</div>
+                                </div>
+                                <div class="sp-node sp-node--plane">
+                                    <div class="sp-node__time">&nbsp;</div>
+                                    <div class="sp-node__icon"><i class="fa-solid fa-plane"></i></div>
+                                </div>
+                                <div class="sp-node">
+                                    <div class="sp-node__time" data-in-arr-time>—</div>
+                                    <div class="sp-node__icon"><i class="fa-solid fa-location-dot"></i></div>
+                                    <div class="sp-node__text" data-in-arr-airport>—</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="sp-modal__footer">
+                <button class="sp-btn sp-btn--ghost" type="button" data-i18n="shareTrip">Chia sẻ chuyến đi</button>
+                <button id="spBookBtn" class="sp-btn sp-btn--primary" type="button" data-i18n="bookNowFor">Đặt ngay với giá</button>
+            </div>
+        </div>
+    </div>
+
     <div id="footer-container"></div>
 
-    <script src="assets/scripts/search.js"></script>
+    <!-- Tất cả JavaScript đã được chuyển sang file ngoài -->
     <script src="assets/scripts/common.js"></script>
     <script src="assets/scripts/search_translations.js"></script>
+    <script src="assets/scripts/search.js"></script>
     <script src="assets/scripts/search_filter.js"></script>
     
     <script>
-        function handleComponentError(componentName) {
-            console.error(`Failed to load ${componentName} component`);
-        }
-
-        function initializeLanguage() {
-            // Get or set language
-            let currentLang = localStorage.getItem('preferredLanguage');
-            if (!currentLang) {
-                currentLang = 'vi';
-                localStorage.setItem('preferredLanguage', 'vi');
-            }
-
-            document.documentElement.lang = currentLang;
-
-            // Initialize components after a short delay
-            setTimeout(() => {
-                if (typeof initializeMobileMenu === 'function') {
-                    initializeMobileMenu();
-                    console.log('Mobile menu initialized');
-                }
-                if (typeof initializeLanguageSelector === 'function') {
-                    initializeLanguageSelector();
-                    console.log('Language selector initialized');
-                }
-
-                if (typeof initializeSearchFilter === 'function') {
-                    initializeSearchFilter();
-                    console.log('Search filter initialized');
-                }
-
-                // Initialize search translations
-                if (typeof initSearchTranslations === 'function') {
-                    initSearchTranslations();
-                    console.log('Search translations initialized');
-                }
-
-                // Apply language to search page
-                if (typeof changeSearchLanguage === 'function') {
-                    changeSearchLanguage(currentLang);
-                    console.log('Search language applied:', currentLang);
-                }
-
-                if (typeof updateSelectedLanguage === 'function') {
-                    updateSelectedLanguage(currentLang);
-                    console.log('Language selector updated:', currentLang);
-                }
-            }, 200);
-        }
-
-        function initializeApp() {
-            // Load header
-            fetch('components/header.html')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    document.getElementById('header-container').innerHTML = data;
-                    console.log('Header loaded successfully');
-
-                    // After header loads, initialize language functionality
-                    initializeLanguage();
-                    
-                    // Update header authentication state
-                    if (typeof handleHeaderLoaded === 'function') {
-                        handleHeaderLoaded();
-                        console.log('Header auth state updated');
-                    }
-                })
-                .catch(error => {
-                    handleComponentError('header');
-                    console.error('Error loading header:', error);
-                    // Still initialize language even if header fails
-                    initializeLanguage();
-                });
-
-            // Load footer
-            fetch('components/footer.html')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    document.getElementById('footer-container').innerHTML = data;
-                    console.log('Footer loaded successfully');
-                })
-                .catch(error => {
-                    handleComponentError('footer');
-                    console.error('Error loading footer:', error);
-                });
-        }
-
-        // Initialize when DOM is ready
+        // Khởi tạo ngay khi trang tải xong
         document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-            
-            // Kiểm tra nếu cần bảo vệ route
-            if (typeof protectRoutes === 'function') {
-                protectRoutes();
-                console.log('Route protection initialized');
+            if (typeof initSearchTranslations === 'function') {
+                initSearchTranslations();
             }
             
-            // Tự động tải dữ liệu chuyến bay khi trang được tải
-            setTimeout(function() {
-                if (typeof fetchFlights === 'function') {
-                    fetchFlights();
-                }
-            }, 500);
+            // Kích hoạt tìm kiếm ban đầu
+            if (typeof fetchFlights === 'function') {
+                fetchFlights();
+            }
         });
     </script>
 </body>
-
 </html>

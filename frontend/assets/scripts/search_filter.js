@@ -30,20 +30,33 @@
     }
 
     function stopsOfCard(card) {
-        // Dựa vào text "Bay thẳng" để xác định số điểm dừng
+        // Ưu tiên đọc từ data-stops nếu có
+        var ds = card.getAttribute('data-stops');
+        if (ds != null && ds !== '') return Number(ds);
+
+        // Nếu không có data-stops, suy luận từ text trong .sp-duration-detail
         var details = card.querySelectorAll('.sp-duration-detail');
-        // Giá trị mặc định là 0 = bay thẳng
+        // Mặc định 0 = bay thẳng / nonstop
         var stops = 0;
-        
-        // Kiểm tra nếu có text khác "Bay thẳng" thì tăng số điểm dừng
+
         for (var i = 0; i < details.length; i++) {
-            var text = details[i].textContent.trim().toLowerCase();
-            if (text !== "bay thẳng") {
-                if (text.includes("1 điểm dừng")) stops = 1;
-                else if (text.includes("2 điểm dừng")) stops = 2;
-                else if (text.includes("3 điểm dừng")) stops = 3;
-                else stops = 1; // Default to 1 stop if text doesn't match expected patterns
-            }
+            var text = (details[i].textContent || '').trim().toLowerCase();
+            if (!text) continue;
+
+            // Vietnamese
+            if (text.includes('bay thẳng')) { stops = 0; continue; }
+            if (text.includes('1 điểm dừng')) { stops = 1; continue; }
+            if (text.includes('2 điểm dừng')) { stops = 2; continue; }
+            if (text.includes('3 điểm dừng')) { stops = 3; continue; }
+
+            // English
+            if (text.includes('nonstop')) { stops = 0; continue; }
+            if (text.includes('1 stop')) { stops = 1; continue; }
+            if (text.includes('2 stops')) { stops = 2; continue; }
+            if (text.includes('3 stops')) { stops = 3; continue; }
+
+            // Fallback: nếu chuỗi khác với mặc định, coi như có 1 điểm dừng
+            if (text) { stops = 1; }
         }
         return stops;
     }
@@ -96,17 +109,18 @@
                 timeRadios[state.timeIndex].checked = true;
             }
             
-            // Áp dụng giá tối đa
-            if (state.priceMax !== undefined && priceSlider) {
-                priceSlider.value = state.priceMax;
-                var min = Number(priceSlider.min || 0),
-                    max = Number(priceSlider.max || 5000000),
-                    val = state.priceMax;
-                var pct = ((val - min) / (max - min)) * 100;
-                priceSlider.style.setProperty("--sp-range-pct", pct + "%");
+            // Áp dụng giá tối đa (mặc định lấy MAX để tránh ẩn tất cả)
+            if (priceSlider) {
+                var min = Number(priceSlider.min || 0);
+                var max = Number(priceSlider.max || 5000000);
+                var effective = (state.priceMax !== undefined) ? Number(state.priceMax) : max;
+                priceSlider.value = effective;
+                var pct = ((effective - min) / (max - min)) * 100;
+                try { priceSlider.style.setProperty("--sp-range-pct", pct + "%"); } catch (e) {}
                 priceSlider.style.background =
                     "linear-gradient(to right, var(--sp-primary) " + pct + "%, #e5e7eb " + pct + "%)";
-                if (priceOut) priceOut.textContent = val.toLocaleString("vi-VN") + " VNĐ";
+                var priceOutEl = document.getElementById('priceOut');
+                if (priceOutEl) priceOutEl.textContent = effective.toLocaleString("vi-VN") + " VNĐ";
             }
         } catch (e) {
             console.error("Error loading filter state:", e);
