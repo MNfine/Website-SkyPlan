@@ -1,6 +1,32 @@
 ﻿flight_number,airline,from,from_name,from_province,to,to_name,to_province,date,depart_time_local,arrive_time_local,price,currency
 VJ999,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-10,08:00,10:10,1500000,VND
+VJ101,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-10,06:00,08:10,1420000,VND
+VJ102,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-10,10:30,12:40,1580000,VND
+VJ103,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-10,13:15,15:25,1550000,VND
+VJ104,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-10,16:30,18:40,1620000,VND
+VJ105,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-10,19:45,21:55,1480000,VND
+VN201,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-10,05:30,07:40,1720000,VND
+VN202,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-10,09:15,11:25,1890000,VND
+VN203,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-10,11:45,13:55,1820000,VND
+VN204,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-10,15:00,17:10,1950000,VND
+VN205,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-10,18:30,20:40,1790000,VND
+QH301,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-10,07:15,09:25,1680000,VND
+QH302,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-10,12:00,14:10,1780000,VND
+QH303,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-10,17:15,19:25,1850000,VND
 VN888,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-10,14:00,16:10,1700000,VND
+VN211,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-10,06:15,08:25,1750000,VND
+VN212,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-10,09:00,11:10,1870000,VND
+VN213,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-10,12:30,14:40,1790000,VND
+VN214,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-10,16:45,18:55,1920000,VND
+VN215,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-10,19:15,21:25,1680000,VND
+VJ121,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-10,05:45,07:55,1490000,VND
+VJ122,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-10,08:30,10:40,1580000,VND
+VJ123,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-10,11:15,13:25,1520000,VND
+VJ124,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-10,15:30,17:40,1650000,VND
+VJ125,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-10,18:45,20:55,1460000,VND
+QH311,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-10,07:00,09:10,1630000,VND
+QH312,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-10,13:00,15:10,1740000,VND
+QH313,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-10,17:30,19:40,1820000,VND
 VJ516,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-01,05:45,07:28,885856,VND
 VN381,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-01,18:00,20:01,921969,VND
 VN439,Vietnam Airlines,DIN,Sân bay Điện Biên,Điện Biên,VII,Sân bay Vinh,Nghệ An,2025-10-01,11:30,13:50,1158786,VND
@@ -602,3 +628,81 @@ VJ905,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,CXR,Sân bay quốc
 QH178,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-13,13:30,14:00,936493,VND
 VN795,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-31,15:45,16:05,2768568,VND
 VJ689,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2025-10-21,17:45,19:15,1795709,VND
+VN501,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-13,06:00,08:10,1850000,VND
+VN502,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-13,08:30,10:40,1950000,VND
+VN503,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-13,12:15,14:25,2150000,VND
+VJ701,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-13,07:00,09:05,1520000,VND
+VJ702,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-13,10:30,12:35,1620000,VND
+VJ703,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-13,14:45,16:50,1720000,VND
+QH801,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-13,06:30,08:40,1650000,VND
+QH802,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-13,11:45,13:55,1750000,VND
+VCS901,Pacific Airlines,VCS,Sân bay Côn Đảo,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-13,09:15,11:45,1920000,VND
+VCS902,Pacific Airlines,VCS,Sân bay Côn Đảo,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-13,15:00,17:30,1870000,VND
+VN601,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,PQC,Sân bay quốc tế Phú Quốc,Kiên Giang,2025-10-14,07:00,09:10,2450000,VND
+VN602,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,PQC,Sân bay quốc tế Phú Quốc,Kiên Giang,2025-10-14,15:30,17:40,2650000,VND
+VN603,Vietnam Airlines,PQC,Sân bay quốc tế Phú Quốc,Kiên Giang,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-14,10:20,12:30,2550000,VND
+VN604,Vietnam Airlines,PQC,Sân bay quốc tế Phú Quốc,Kiên Giang,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-14,18:30,20:40,2750000,VND
+VJ804,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-15,06:15,07:45,1320000,VND
+VJ805,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-15,12:30,14:00,1420000,VND
+VJ806,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-15,08:45,10:15,1350000,VND
+VJ807,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-15,19:00,20:30,1450000,VND
+QH902,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-16,07:30,09:00,1540000,VND
+QH903,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2025-10-16,14:00,15:30,1640000,VND
+QH904,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-16,10:00,11:30,1590000,VND
+QH905,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-16,16:30,18:00,1690000,VND
+PA101,Pacific Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,UIH,Sân bay Phù Cát,Bình Định,2025-10-17,08:00,09:20,1230000,VND
+PA102,Pacific Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,UIH,Sân bay Phù Cát,Bình Định,2025-10-17,16:15,17:35,1330000,VND
+PA103,Pacific Airlines,UIH,Sân bay Phù Cát,Bình Định,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-17,10:30,11:50,1280000,VND
+PA104,Pacific Airlines,UIH,Sân bay Phù Cát,Bình Định,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-17,18:30,19:50,1380000,VND
+VN701,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-18,07:45,09:30,1890000,VND
+VN702,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2025-10-18,15:15,17:00,1990000,VND
+VN703,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-18,10:45,12:30,1940000,VND
+VN704,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-18,18:15,20:00,2040000,VND
+VJ908,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VII,Sân bay Vinh,Nghệ An,2025-10-19,06:45,08:30,1630000,VND
+VJ909,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VII,Sân bay Vinh,Nghệ An,2025-10-19,14:30,16:15,1730000,VND
+VJ910,Vietjet Air,VII,Sân bay Vinh,Nghệ An,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-19,09:45,11:30,1680000,VND
+VJ911,Vietjet Air,VII,Sân bay Vinh,Nghệ An,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-19,17:30,19:15,1780000,VND
+QH520,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-20,07:15,09:30,1860000,VND
+QH521,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2025-10-20,16:00,18:15,1960000,VND
+QH522,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-20,10:45,13:00,1910000,VND
+QH523,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-20,19:30,21:45,2010000,VND
+PA201,Pacific Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HUI,Sân bay Phú Bài,Huế,2025-10-21,08:30,10:00,1380000,VND
+PA202,Pacific Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HUI,Sân bay Phú Bài,Huế,2025-10-21,15:45,17:15,1480000,VND
+PA203,Pacific Airlines,HUI,Sân bay Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-21,11:15,12:45,1430000,VND
+PA204,Pacific Airlines,HUI,Sân bay Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-21,18:30,20:00,1530000,VND
+VN801,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-22,07:30,09:15,1740000,VND
+VN802,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2025-10-22,16:15,18:00,1840000,VND
+VN803,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-22,10:30,12:15,1790000,VND
+VN804,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-22,19:15,21:00,1890000,VND
+VJ112,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-23,06:00,08:15,1680000,VND
+VJ113,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2025-10-23,14:45,17:00,1780000,VND
+VJ114,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-23,09:30,11:45,1730000,VND
+VJ115,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-23,18:15,20:30,1830000,VND
+QH630,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,UIH,Sân bay Phù Cát,Bình Định,2025-10-24,08:15,09:45,1420000,VND
+QH631,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,UIH,Sân bay Phù Cát,Bình Định,2025-10-24,15:30,17:00,1520000,VND
+QH632,Bamboo Airways,UIH,Sân bay Phù Cát,Bình Định,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-24,10:45,12:15,1470000,VND
+QH633,Bamboo Airways,UIH,Sân bay Phù Cát,Bình Định,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-24,18:15,19:45,1570000,VND
+PA301,Pacific Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,PQC,Sân bay quốc tế Phú Quốc,Kiên Giang,2025-10-25,07:00,08:15,1190000,VND
+PA302,Pacific Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,PQC,Sân bay quốc tế Phú Quốc,Kiên Giang,2025-10-25,15:30,16:45,1290000,VND
+PA303,Pacific Airlines,PQC,Sân bay quốc tế Phú Quốc,Kiên Giang,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-25,09:30,10:45,1240000,VND
+PA304,Pacific Airlines,PQC,Sân bay quốc tế Phú Quốc,Kiên Giang,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-25,17:45,19:00,1340000,VND
+VN901,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-26,06:30,08:15,1580000,VND
+VN902,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2025-10-26,14:45,16:30,1680000,VND
+VN903,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-26,09:30,11:15,1630000,VND
+VN904,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-26,17:45,19:30,1730000,VND
+VJ116,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,THD,Sân bay Thọ Xuân,Thanh Hóa,2025-10-27,07:45,09:45,1710000,VND
+VJ117,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,THD,Sân bay Thọ Xuân,Thanh Hóa,2025-10-27,15:00,17:00,1810000,VND
+VJ118,Vietjet Air,THD,Sân bay Thọ Xuân,Thanh Hóa,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-27,11:00,13:00,1760000,VND
+VJ119,Vietjet Air,THD,Sân bay Thọ Xuân,Thanh Hóa,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-27,18:15,20:15,1860000,VND
+QH740,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VDH,Sân bay Đồng Hới,Quảng Bình,2025-10-28,08:30,09:45,1240000,VND
+QH741,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VDH,Sân bay Đồng Hới,Quảng Bình,2025-10-28,16:15,17:30,1340000,VND
+QH742,Bamboo Airways,VDH,Sân bay Đồng Hới,Quảng Bình,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-28,10:45,12:00,1290000,VND
+QH743,Bamboo Airways,VDH,Sân bay Đồng Hới,Quảng Bình,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-28,18:45,20:00,1390000,VND
+PA401,Pacific Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-29,07:15,09:30,1850000,VND
+PA402,Pacific Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VDO,Sân bay Vân Đồn,Quảng Ninh,2025-10-29,14:30,16:45,1950000,VND
+PA403,Pacific Airlines,VDO,Sân bay Vân Đồn,Quảng Ninh,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-29,11:00,13:15,1900000,VND
+PA404,Pacific Airlines,VDO,Sân bay Vân Đồn,Quảng Ninh,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2025-10-29,18:00,20:15,2000000,VND
+VN921,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VII,Sân bay Vinh,Nghệ An,2025-10-30,06:45,08:00,990000,VND
+VN922,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VII,Sân bay Vinh,Nghệ An,2025-10-30,17:30,18:45,1090000,VND
+VN923,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-30,09:00,10:15,1040000,VND
+VN924,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2025-10-30,19:30,20:45,1140000,VND

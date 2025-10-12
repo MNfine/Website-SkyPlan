@@ -639,3 +639,22 @@ body.modal-open {
     font-size: 14px;
     color: var(--sp-ink);
 }
+
+/* Styling for airport name display */
+.airport-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.airport-code {
+    font-weight: 600;
+    color: var(--sp-ink);
+}
+
+.airport-name {
+    font-size: 11px;
+    color: var(--sp-muted);
+    margin-top: 2px;
+    line-height: 1.2;
+}
