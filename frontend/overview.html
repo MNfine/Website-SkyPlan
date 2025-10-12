@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="assets/styles/header.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/overview.css">
+  <link rel="stylesheet" href="assets/styles/user-menu.css">
 </head>
 <body>
   <!-- Header -->
@@ -191,6 +192,12 @@
       })
       .then(data => {
         document.getElementById('header-container').innerHTML = data;
+        
+        // Update header authentication first
+        if (typeof updateHeaderForAuth === 'function') {
+          updateHeaderForAuth();
+        }
+        
         // After header loads, initialize language functionality if available
         if (typeof initializeLanguageSelector === 'function') {
           initializeLanguageSelector();

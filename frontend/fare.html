@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="assets/styles/header.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/fare.css">
+  <link rel="stylesheet" href="assets/styles/user-menu.css">
 
   <style>
     body {
@@ -225,6 +226,12 @@
         })
         .then(data => {
           document.getElementById('header-container').innerHTML = data;
+          
+          // Update header authentication first
+          if (typeof updateHeaderForAuth === 'function') {
+            updateHeaderForAuth();
+          }
+          
           // Now manually initialize language and fare functionality
           if (typeof window.initializeLanguage === 'function') {
             window.initializeLanguage();

@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="assets/styles/flags.css" />
   <link rel="stylesheet" href="assets/styles/footer.css" />
   <link rel="stylesheet" href="assets/styles/confirmation.css" />
+  <link rel="stylesheet" href="assets/styles/user-menu.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
@@ -36,10 +37,16 @@
   </div>
   <div id="footer-container"></div>
   <script src="assets/scripts/config.js"></script>
+  <script src="assets/scripts/common.js"></script>
   <script>
     // Load header/footer
     fetch('components/header.html').then(r=>r.text()).then(html=>{
       document.getElementById('header-container').innerHTML = html;
+      
+      // Update header authentication
+      if (typeof updateHeaderForAuth === 'function') {
+        updateHeaderForAuth();
+      }
     });
     fetch('components/footer.html').then(r=>r.text()).then(html=>{
       document.getElementById('footer-container').innerHTML = html;

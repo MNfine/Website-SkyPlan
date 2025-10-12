@@ -288,12 +288,7 @@ function updateHeaderForAuth() {
     }
   } else {
     // User is not logged in
-    if (authLinks) {
-      authLinks.innerHTML = `
-        <a href="/login" class="btn btn-outline" data-i18n="signInText">Đăng nhập</a>
-        <a href="/register" class="btn btn-primary" data-i18n="logInText">Đăng ký</a>
-      `;
-    }
+    // Do nothing as the login/register buttons are already in the header.html
     
     if (userInfoElement) {
       userInfoElement.textContent = 'Khách';

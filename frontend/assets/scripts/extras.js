@@ -17,6 +17,12 @@ function loadHeaderFooter() {
       .then((r) => (r.ok ? r.text() : Promise.reject()))
       .then((html) => {
         document.getElementById("header-container").innerHTML = html;
+        
+        // Update header authentication
+        if (typeof updateHeaderForAuth === 'function') {
+          updateHeaderForAuth();
+        }
+        
         resolve();
       })
       .catch(() => resolve());

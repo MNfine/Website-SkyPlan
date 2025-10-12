@@ -215,6 +215,12 @@
 
                     // After header loads, initialize language functionality
                     initializeLanguage();
+                    
+                    // Update header authentication state
+                    if (typeof handleHeaderLoaded === 'function') {
+                        handleHeaderLoaded();
+                        console.log('Header auth state updated');
+                    }
                 })
                 .catch(error => {
                     handleComponentError('header');
@@ -244,6 +250,12 @@
         // Initialize when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
+            
+            // Kiểm tra nếu cần bảo vệ route
+            if (typeof protectRoutes === 'function') {
+                protectRoutes();
+                console.log('Route protection initialized');
+            }
             
             // Tự động tải dữ liệu chuyến bay khi trang được tải
             setTimeout(function() {

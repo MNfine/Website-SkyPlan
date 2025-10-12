@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="assets/styles/header.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/seat.css">
+  <link rel="stylesheet" href="assets/styles/user-menu.css">
 </head>
 <body>
   <div id="header-container"></div>
@@ -431,6 +432,12 @@
         })
         .then(data => {
           document.getElementById('header-container').innerHTML = data;
+          
+          // Update header authentication first
+          if (typeof updateHeaderForAuth === 'function') {
+            updateHeaderForAuth();
+          }
+          
           // Initialize language functionality after header loads
           initializeLanguage();
         })
