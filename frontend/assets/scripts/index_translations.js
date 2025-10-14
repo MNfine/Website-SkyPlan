@@ -8,8 +8,8 @@ const translations = {
     // Header
     helpText: "Help",
     myTripsText: "My Trips",
-    signInText: "Sign In",
-    logInText: "Log In",
+    signUpText: "Sign Up",
+    signInText: "Log In",
     
     // Hero section
     heroTitle: "Best deals are waiting for you",
@@ -65,8 +65,8 @@ const translations = {
     // Header
     helpText: "Trợ giúp",
     myTripsText: "Chuyến đi của tôi",
+    signUpText: "Đăng ký",
     signInText: "Đăng nhập",
-    logInText: "Đăng ký",
     
     // Hero section
     heroTitle: "Ưu đãi tốt nhất đang chờ đón bạn",
