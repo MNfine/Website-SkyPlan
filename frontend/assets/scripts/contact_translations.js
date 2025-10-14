@@ -24,8 +24,9 @@ const contactTranslations = {
         copyright: "© 2024 SkyPlan. All rights reserved.",
         helpText: "Help",
         myTripsText: "My Trips",
+        signUpText: "Sign Up",
         signInText: "Sign In",
-        logInText: "Log In",
+        
 
         // Contact Page Specific
         contactTitle: "Contact Us",
@@ -89,8 +90,9 @@ const contactTranslations = {
         copyright: "© 2024 SkyPlan. Bảo lưu mọi quyền.",
         helpText: "Trợ giúp",
         myTripsText: "Chuyến đi của tôi",
-        signInText: "Đăng ký",
-        logInText: "Đăng nhập",
+        signUpText: "Đăng ký",
+        signInText: "Đăng nhập",
+        
         
         // Contact Page Specific
         contactTitle: "Liên hệ với chúng tôi",
