@@ -60,6 +60,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* Custom notification toast updated styling */
+  function showCustomNotification(message) {
+    const toast = document.createElement('div');
+    toast.classList.add('toast');
+    toast.style.position = 'fixed';
+    toast.style.top = '20px';
+    toast.style.right = '20px';
+    toast.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+    toast.style.color = '#333';
+    toast.style.padding = '16px 24px';
+    toast.style.borderRadius = '10px';
+    toast.style.border = '1px solid #ddd';
+    toast.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+    toast.style.fontFamily = 'Helvetica, Arial, sans-serif';
+    toast.style.fontSize = '16px';
+    toast.style.zIndex = '9999';
+    toast.style.opacity = '1';
+    toast.style.transition = 'opacity 0.6s ease';
+    toast.innerText = message;
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+    setTimeout(() => { document.body.removeChild(toast); }, 3600);
+  }
+
+  /* Get current language */
+  function getCurrentLanguage() {
+    const activeLangElem = document.querySelector('.lang-option.active');
+    return activeLangElem ? activeLangElem.getAttribute('data-lang') : 'vi';
+  }
+
   /* Form submit */
   if (form && emailInput && passwordInput) {
     form.addEventListener('submit', (e) => {
@@ -90,7 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (hasError) return;
 
       console.log('Login successful:', { email, password, remember });
-      alert('Đăng nhập thành công!\n\nEmail: ' + email);
+      const lang = getCurrentLanguage();
+      lang === 'en' ? showCustomNotification('Login successful!') : showCustomNotification('Đăng nhập thành công!');
     });
   }
 
@@ -105,14 +136,16 @@ document.addEventListener('DOMContentLoaded', () => {
   /* Social buttons */
   if (btnGoogle) {
     btnGoogle.addEventListener('click', () => {
-      alert('Đăng nhập với Google');
+      const langGoogle = getCurrentLanguage();
+      langGoogle === 'en' ? showCustomNotification('Login with Google') : showCustomNotification('Đăng nhập với Google');
       console.log('Google login clicked');
     });
   }
 
   if (btnFacebook) {
     btnFacebook.addEventListener('click', () => {
-      alert('Đăng nhập với Facebook');
+      const langFb = getCurrentLanguage();
+      langFb === 'en' ? showCustomNotification('Login with Facebook') : showCustomNotification('Đăng nhập với Facebook');
       console.log('Facebook login clicked');
     });
   }
