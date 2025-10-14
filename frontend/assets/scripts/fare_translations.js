@@ -23,8 +23,9 @@ const fareTranslations = {
         copyright: "© 2024 SkyPlan. All rights reserved.",
         helpText: "Help",
         myTripsText: "My Trips",
+        signUpText: "Sign Up",
         signInText: "Sign In",
-        logInText: "Log In",
+        
 
         // Steps
         step1: "Search",
@@ -36,7 +37,7 @@ const fareTranslations = {
         
         // Fare Selection Page Specific
         fareTitle: "Select fare",
-        routeTitle: "From London to Stockholm",
+        routeTitle: "From Ho Chi Minh to Hanoi",
         
         // Fare Types
         economy: "Economy",
@@ -81,8 +82,9 @@ const fareTranslations = {
         metaDescription: "Chọn hạng giá vé phù hợp cho chuyến bay của bạn với SkyPlan.",
         helpText: "Trợ giúp",
         myTripsText: "Chuyến đi của tôi",
-        signInText: "Đăng ký",
-        logInText: "Đăng nhập",
+        signUpText: "Đăng ký",
+        signInText: "Đăng nhập",
+        
         // Footer 
         footerDesc: "Đối tác du lịch đáng tin cậy của bạn cho các ưu đãi vé máy bay tốt nhất và những hành trình khó quên.",
         quickLinksTitle: "Liên kết nhanh",
@@ -111,7 +113,7 @@ const fareTranslations = {
         
         // Fare Selection Page Specific
         fareTitle: "Chọn giá vé",
-        routeTitle: "Từ London tới Stockholm",
+        routeTitle: "Từ Hồ Chí Minh đến Hà Nội",
         
         // Fare Types
         economy: "Phổ thông",
@@ -146,9 +148,9 @@ const fareTranslations = {
         select: "Chọn",
         
         // Prices (VND) - USD to VND conversion rate ~25,000
-        price90: "2.374.000₫",
-        price120: "3.165.000₫", 
-        price350: "9.230.000₫"
+        price90: "2.374.000 VND",
+        price120: "3.165.000 VND", 
+        price350: "9.230.000 VND"
     }
 };
 
