@@ -449,6 +449,9 @@
   letter-spacing: 0.5px;
 }
 
+.continue-btn:hover {
+  background-color: #189a87;
+}
 
 
 .continue-btn:active {

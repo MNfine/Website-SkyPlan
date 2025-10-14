@@ -112,25 +112,8 @@ function enhanceCountdownNotifications() {
   };
 }
 
-// Enhance continue button with notifications
-function enhanceContinueButton() {
-  const continueBtn = document.querySelector('.continue-btn');
-  if (continueBtn) {
-    continueBtn.addEventListener('click', function(e) {
-      const selectedSeats = document.querySelectorAll('.seat.selected');
-      
-      if (selectedSeats.length === 0) {
-        e.preventDefault();
-        SeatNotifications.showNoSeatsSelected();
-        return false;
-      } else {
-        // Navigate directly without notification
-        window.location.href = 'passenger.html';
-        return false;
-      }
-    });
-  }
-}
+// Note: Continue button click handler is now in seat.html inline script
+// to avoid duplicate event listeners and duplicate toast notifications
 
 // Initialize all seat page enhancements
 function initializeSeatEnhancements() {
@@ -138,7 +121,7 @@ function initializeSeatEnhancements() {
   setTimeout(() => {
     showWelcomeMessage();
     enhanceCountdownNotifications();
-    enhanceContinueButton();
+    // Note: enhanceContinueButton() removed - handler is in seat.html to avoid duplicate listeners
   }, 500);
 }
 
