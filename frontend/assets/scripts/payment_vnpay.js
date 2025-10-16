@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
       bookingCode = document.getElementById('bookingCode').textContent || 'SP';
     } catch (e) {
-      console.error('Booking code element not found, using default');
+      if (window.SkyPlanDebug) console.error('Booking code element not found, using default');
     }
 
     const btnElement = event.target.closest('.vnpay-checkout-btn');
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     })
     .catch(error => {
-      console.error('VNPay Error:', error);
+  if (window.SkyPlanDebug) console.error('VNPay Error:', error);
       if (typeof showToast === 'function') { try { showToast('Lỗi: ' + error.message, { type: 'error', duration: 6000 }); } catch (e) { alert('Lỗi: ' + error.message); } }
       else alert('Lỗi: ' + error.message);
       btnElement.innerHTML = originalContent;

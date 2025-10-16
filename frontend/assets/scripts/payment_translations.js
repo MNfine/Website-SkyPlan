@@ -1,4 +1,5 @@
 // Translations for SkyPlan - Payment page
+const __SKYPLAN_DEBUG__ = (typeof window !== 'undefined' && window.SkyPlanDebug === true);
 const paymentTranslations = {
     en: {
         // Steps
@@ -34,8 +35,8 @@ const paymentTranslations = {
         // Header 
         helpText: "Help",
         myTripsText: "My Trips",
-        signInText: "Sign Up",
-        logInText: "Sign In",
+        signUpText: "Sign Up",
+        signInText: "Sign In",
         // Footer 
         footerDesc: "Your trusted travel companion for the best flight deals and unforgettable journeys.",
         quickLinksTitle: "Quick Links",
@@ -118,8 +119,8 @@ const paymentTranslations = {
         // Header 
         helpText: "Trợ giúp",
         myTripsText: "Chuyến đi của tôi",
-        signInText: "Đăng ký",
-        logInText: "Đăng nhập",
+        signUpText: "Đăng ký",
+        signInText: "Đăng nhập",
         // Footer 
         footerDesc: "Đối tác du lịch đáng tin cậy của bạn cho các ưu đãi vé máy bay tốt nhất và những hành trình khó quên.",
         quickLinksTitle: "Liên kết nhanh",
@@ -177,15 +178,15 @@ if (typeof module !== 'undefined' && module.exports) {
 
 // Function to apply translations for payment page
 function applyPaymentTranslations(lang) {
-    console.debug('[i18n] applyPaymentTranslations', lang);
+    if (__SKYPLAN_DEBUG__) console.debug('[i18n] applyPaymentTranslations', lang);
     const elements = document.querySelectorAll('[data-i18n]');
     elements.forEach(element => {
         const key = element.getAttribute('data-i18n');
         if (paymentTranslations[lang] && paymentTranslations[lang][key]) {
             element.textContent = paymentTranslations[lang][key];
         } else {
-            // Log missing keys for easier debugging
-            console.warn(`Missing translation for key: '${key}' in language: '${lang}'`);
+            // Only log missing keys when debug flag is on
+            if (__SKYPLAN_DEBUG__) console.warn(`Missing translation for key: '${key}' in language: '${lang}'`);
         }
     });
     // Update page title if needed
@@ -225,7 +226,7 @@ try {
 
 // Function to change language for payment page
 function changePaymentLanguage(lang) {
-    console.debug('[i18n] changePaymentLanguage ->', lang);
+    if (__SKYPLAN_DEBUG__) console.debug('[i18n] changePaymentLanguage ->', lang);
     localStorage.setItem('preferredLanguage', lang);
     document.documentElement.lang = lang;
     applyPaymentTranslations(lang);
