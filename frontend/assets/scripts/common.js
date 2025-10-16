@@ -74,6 +74,10 @@ function initializeLanguageSelector() {
                 opt.classList.remove('active');
             }
         });
+        // Ensure the header's selected language UI reflects the saved language on load
+        if (typeof updateSelectedLanguage === 'function') {
+            updateSelectedLanguage(currentLang);
+        }
     }, 100);
 }
 

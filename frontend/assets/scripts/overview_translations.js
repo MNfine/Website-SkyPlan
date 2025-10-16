@@ -234,6 +234,10 @@ function changeOverviewLanguage(lang) {
     localStorage.setItem('preferredLanguage', lang);
     document.documentElement.lang = lang;
     applyOverviewTranslations(lang);
+    // Broadcast so header/footer or other modules can react immediately
+    try {
+        document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
+    } catch {}
 }
 
 // Ensure Vietnamese is set as default on first visit

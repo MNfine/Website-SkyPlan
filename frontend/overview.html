@@ -205,10 +205,14 @@
         if (typeof initializeMobileMenu === 'function') {
           initializeMobileMenu();
         }
-        // Re-apply translations for header
-        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        // Re-apply translations and sync header UI with saved language
+        const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
         if (typeof applyOverviewTranslations === 'function') {
           applyOverviewTranslations(lang);
+        }
+        // Update selected language UI in header to reflect saved language
+        if (typeof updateSelectedLanguage === 'function') {
+          updateSelectedLanguage(lang);
         }
       })
       .catch(error => {
