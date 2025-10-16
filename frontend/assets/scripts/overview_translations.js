@@ -55,10 +55,10 @@ const overviewTranslations = {
         formatDate: (date) => {
             try {
                 const d = new Date(date);
-                const day = d.getDate();
+                const day = d.getDate(); // no leading zero
                 const month = d.toLocaleString('en', { month: 'short' });
                 const year = d.getFullYear();
-                return `${day} ${month} ${year}`; // e.g., 10 Jun 2023
+                return `${month} ${day} ${year}`; // e.g., Jun 10 2023
             } catch { return date; }
         },
         // ...add more as needed
@@ -155,8 +155,8 @@ function applyOverviewTranslations(lang) {
     const params = new URLSearchParams(window.location.search);
     const iataToCode = { HAN: 'HaNoi', SGN: 'HoChiMinh', DAD: 'DaNang', VCA: 'CanTho' };
     const cities = overviewTranslations[lang].cities || {};
-    const routeBetween = overviewTranslations[lang].routeBetween || ((a,b)=>`${a} - ${b}`);
-    const formatDate = overviewTranslations[lang].formatDate || ((x)=>x);
+    const routeBetween = overviewTranslations[lang].routeBetween || ((a, b) => `${a} - ${b}`);
+    const formatDate = overviewTranslations[lang].formatDate || ((x) => x);
 
     // Infer from/to codes
     const segs = document.querySelectorAll('.flight-segment');
@@ -191,31 +191,37 @@ function applyOverviewTranslations(lang) {
     if (cityArriveRet) cityArriveRet.textContent = fromName;
 
     // Dates
-    function toISO(y,m,d){ const pad=n=>String(n).padStart(2,'0'); return `${y}-${pad(m)}-${pad(d)}`; }
-    function parseAnyDateToISO(text){
+    function toISO(y, m, d) { const pad = n => String(n).padStart(2, '0'); return `${y}-${pad(m)}-${pad(d)}`; }
+    function parseAnyDateToISO(text) {
         if (!text) return '';
         // 1) Try native Date for EN-like strings (e.g., '10 Jun 2023', 'June 10, 2023')
         const tryNative = new Date(text);
         if (!isNaN(tryNative.getTime())) {
-            return toISO(tryNative.getFullYear(), tryNative.getMonth()+1, tryNative.getDate());
+            return toISO(tryNative.getFullYear(), tryNative.getMonth() + 1, tryNative.getDate());
         }
         // 2) Try DD/MM/YYYY
         let m = text.match(/\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/);
         if (m) {
-            const dd = parseInt(m[1],10), mm = parseInt(m[2],10), yy = parseInt(m[3],10);
+            const dd = parseInt(m[1], 10), mm = parseInt(m[2], 10), yy = parseInt(m[3], 10);
             if (dd && mm && yy) return toISO(yy, mm, dd);
         }
         // 3) Try Vietnamese pattern 'Ngày 10 thg 6, 2023' or any dd non-digit mm non-digit yyyy
         m = text.match(/(\d{1,2})\D+(\d{1,2})\D+(\d{4})/);
         if (m) {
-            const dd = parseInt(m[1],10), mm = parseInt(m[2],10), yy = parseInt(m[3],10);
+            const dd = parseInt(m[1], 10), mm = parseInt(m[2], 10), yy = parseInt(m[3], 10);
             if (dd && mm && yy) return toISO(yy, mm, dd);
         }
-        // 4) Try '10 Jun 2023' with month words explicitly
-        const monthMap = { jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12 };
+        // 4a) Try '10 Jun 2023' (day first)
+        const monthMap = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
         m = text.match(/\b(\d{1,2})\s+([A-Za-z]{3,})\s+(\d{4})\b/);
         if (m) {
-            const dd = parseInt(m[1],10), mon = (monthMap[m[2].slice(0,3).toLowerCase()]||0), yy = parseInt(m[3],10);
+            const dd = parseInt(m[1], 10), mon = (monthMap[m[2].slice(0, 3).toLowerCase()] || 0), yy = parseInt(m[3], 10);
+            if (dd && mon && yy) return toISO(yy, mon, dd);
+        }
+        // 4b) Try 'Jun 10 2023' (month first)
+        m = text.match(/\b([A-Za-z]{3,})\s+(\d{1,2})(?:,)?\s+(\d{4})\b/);
+        if (m) {
+            const mon = (monthMap[m[1].slice(0, 3).toLowerCase()] || 0), dd = parseInt(m[2], 10), yy = parseInt(m[3], 10);
             if (dd && mon && yy) return toISO(yy, mon, dd);
         }
         return '';
@@ -223,8 +229,8 @@ function applyOverviewTranslations(lang) {
     const depParam = params.get('departure');
     const retParam = params.get('return');
     const dateTexts = document.querySelectorAll('.flight-segment .flight-header .date-text');
-    const depISO = depParam || (dateTexts[0]?.textContent ? parseAnyDateToISO(dateTexts[0].textContent) : '');
-    const retISO = retParam || (dateTexts[1]?.textContent ? parseAnyDateToISO(dateTexts[1].textContent) : '');
+    const depISO = depParam || (dateTexts[0]?.dataset?.iso || (dateTexts[0]?.textContent ? parseAnyDateToISO(dateTexts[0].textContent) : ''));
+    const retISO = retParam || (dateTexts[1]?.dataset?.iso || (dateTexts[1]?.textContent ? parseAnyDateToISO(dateTexts[1].textContent) : ''));
     if (dateTexts[0] && depISO) dateTexts[0].textContent = formatDate(depISO);
     if (dateTexts[1] && retISO) dateTexts[1].textContent = formatDate(retISO);
 }
@@ -237,7 +243,7 @@ function changeOverviewLanguage(lang) {
     // Broadcast so header/footer or other modules can react immediately
     try {
         document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
-    } catch {}
+    } catch { }
 }
 
 // Ensure Vietnamese is set as default on first visit
