@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-i18n="overviewTitle">SkyPlan - Tổng quan chuyến đi</title>
-  
+
   <!-- Favicon -->
   <link rel="icon" href="favicon.ico" type="image/x-icon">
-  
+
   <!-- Font Awesome CDN for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  
+
   <!-- CSS -->
   <link rel="stylesheet" href="assets/styles/reset.css">
   <link rel="stylesheet" href="assets/styles/index.css">
@@ -19,6 +20,7 @@
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/overview.css">
 </head>
+
 <body>
   <!-- Header -->
   <div id="header-container"></div>
@@ -60,21 +62,24 @@
       <!-- Trip Summary -->
       <div class="trip-summary">
         <h2>
-          Hà Nội đến Hồ Chí Minh - <span data-i18n="overviewTitle">Tổng quan chuyến đi</span>
+          <span id="route-heading">Hà Nội đến Hồ Chí Minh</span>
+
+          - <span data-i18n="overviewTitle">Tổng quan chuyến đi</span>
         </h2>
-        
+
         <!-- Flight Information -->
         <div class="flight-info">
           <div class="flight-segment">
             <div class="flight-header">
-              <span class="flight-date">Ngày 10 thg 6, 2023 - Chiều đi</span>
+              <span class="flight-date"><span class="date-text" data-iso="2023-06-10">Ngày 10 thg 6, 2023</span> -
+                <span data-i18n="outboundLabel">Chiều đi</span></span>
               <span class="flight-type" data-i18n="passengerClass">Phổ thông</span>
-            </div>
+              </div>
             <div class="flight-details">
               <div class="departure">
                 <div class="time">10:45</div>
                 <div class="location">HAN</div>
-                <div class="city">Hà Nội</div>
+                <div class="city city-depart-out">Hà Nội</div>
               </div>
               <div class="flight-path">
                 <div class="duration">2h 15m</div>
@@ -88,21 +93,22 @@
               <div class="arrival">
                 <div class="time">13:00</div>
                 <div class="location">SGN</div>
-                <div class="city">Hồ Chí Minh</div>
+                <div class="city city-arrive-out">Hồ Chí Minh</div>
               </div>
             </div>
           </div>
 
           <div class="flight-segment">
             <div class="flight-header">
-              <span class="flight-date">Ngày 18 thg 8, 2023 - Chiều về</span>
+              <span class="flight-date"><span class="date-text" data-iso="2023-08-18">Ngày 18 thg 8, 2023</span> -
+                <span data-i18n="inboundLabel">Chiều về</span></span>
               <span class="flight-type" data-i18n="passengerClass">Phổ thông</span>
-            </div>
+              </div>
             <div class="flight-details">
               <div class="departure">
                 <div class="time">16:20</div>
                 <div class="location">SGN</div>
-                <div class="city">Hồ Chí Minh</div>
+                <div class="city city-depart-ret">Hồ Chí Minh</div>
               </div>
               <div class="flight-path">
                 <div class="duration">2h 10m</div>
@@ -116,7 +122,7 @@
               <div class="arrival">
                 <div class="time">18:30</div>
                 <div class="location">HAN</div>
-                <div class="city">Hà Nội</div>
+                <div class="city city-arrive-ret">Hà Nội</div>
               </div>
             </div>
           </div>
@@ -156,7 +162,7 @@
         <div class="total-section">
           <div class="total-price">
             <span class="price-label" data-i18n="totalLabel">Tổng cộng</span>
-            <span class="price-amount">1.598.000 ₫</span>
+            <span class="price-amount">1.598.000 VND</span>
           </div>
           <a href="payment.html" class="confirm-btn pay-btn">
             <span data-i18n="confirmBooking">Xác nhận đặt vé</span>
@@ -180,7 +186,7 @@
     function handleComponentError(componentName) {
       console.error(`Failed to load ${componentName} component`);
     }
-    
+
     // Load header
     fetch('components/header.html')
       .then(response => {
@@ -199,16 +205,20 @@
         if (typeof initializeMobileMenu === 'function') {
           initializeMobileMenu();
         }
-        // Re-apply translations for header
-        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        // Re-apply translations and sync header UI with saved language
+        const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
         if (typeof applyOverviewTranslations === 'function') {
           applyOverviewTranslations(lang);
+        }
+        // Update selected language UI in header to reflect saved language
+        if (typeof updateSelectedLanguage === 'function') {
+          updateSelectedLanguage(lang);
         }
       })
       .catch(error => {
         handleComponentError('header');
       });
-    
+
     // Load footer
     fetch('components/footer.html')
       .then(response => {
@@ -219,6 +229,11 @@
       })
       .then(data => {
         document.getElementById('footer-container').innerHTML = data;
+        // Re-apply all translations to include footer
+        const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+        if (typeof applyOverviewTranslations === 'function') {
+          applyOverviewTranslations(lang);
+        }
       })
       .catch(error => {
         handleComponentError('footer');
@@ -226,33 +241,33 @@
   </script>
 
   <script>
-  // Ẩn nút thanh toán nếu đã thanh toán thành công (dựa vào localStorage hoặc query string)
-  (function() {
-    const paid = localStorage.getItem('lastTxnRef') && localStorage.getItem('lastAmount');
-    if (paid) {
-      const payBtn = document.querySelector('.pay-btn');
-      if (payBtn) payBtn.style.display = 'none';
-    }
-  })();
+    // Ẩn nút thanh toán nếu đã thanh toán thành công (dựa vào localStorage hoặc query string)
+    (function () {
+      const paid = localStorage.getItem('lastTxnRef') && localStorage.getItem('lastAmount');
+      if (paid) {
+        const payBtn = document.querySelector('.pay-btn');
+        if (payBtn) payBtn.style.display = 'none';
+      }
+    })();
   </script>
 
   <script>
-  // Ẩn nút thanh toán cho từng vé đã thanh toán thành công
-  (function() {
-    // Giả sử mỗi vé có 1 container với id hoặc class chứa bookingCode
-    document.querySelectorAll('[data-booking-code]').forEach(function(ticket) {
-      const code = ticket.getAttribute('data-booking-code');
-      if (code && localStorage.getItem('paid_' + code) === 'true') {
-        const payBtn = ticket.querySelector('.pay-btn');
-        if (payBtn) payBtn.style.display = 'none';
-      }
-    });
-  })();
+    // Ẩn nút thanh toán cho từng vé đã thanh toán thành công
+    (function () {
+      // Giả sử mỗi vé có 1 container với id hoặc class chứa bookingCode
+      document.querySelectorAll('[data-booking-code]').forEach(function (ticket) {
+        const code = ticket.getAttribute('data-booking-code');
+        if (code && localStorage.getItem('paid_' + code) === 'true') {
+          const payBtn = ticket.querySelector('.pay-btn');
+          if (payBtn) payBtn.style.display = 'none';
+        }
+      });
+    })();
   </script>
 
   <script>
     // Tự động dịch khi trang load
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       const lang = localStorage.getItem('preferredLanguage') || 'vi';
       if (typeof applyOverviewTranslations === 'function') {
         applyOverviewTranslations(lang);
@@ -260,4 +275,5 @@
     });
   </script>
 </body>
+
 </html>
