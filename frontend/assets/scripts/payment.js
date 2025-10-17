@@ -316,7 +316,7 @@ function processVNPayPayment() {
   try {
     bookingCode = document.getElementById('bookingCode').textContent || 'SP';
   } catch (e) {
-    console.error('Booking code element not found, using default');
+    if (window.SkyPlanDebug) console.error('Booking code element not found, using default');
   }
 
   const btnElement = event.target.closest('.vnpay-checkout-btn');
@@ -348,7 +348,7 @@ function processVNPayPayment() {
     }
   })
   .catch(error => {
-    console.error('VNPay Error:', error);
+    if (window.SkyPlanDebug) console.error('VNPay Error:', error);
     notify('Lỗi: ' + error.message, 'error', 6000);
     btnElement.innerHTML = originalContent;
     btnElement.disabled = false;
