@@ -63,7 +63,16 @@ const contactTranslations = {
         whatsappDesc: "+84 901 234 567",
         faqTitle: "FAQ",
         faqDesc: "Find quick answers",
-        successMessage: "Thank you for contacting us! We will respond as soon as possible."
+        successMessage: "Thank you for contacting us! We will respond as soon as possible.",
+        
+        // Validation messages
+        errorRequired: "Please fill in",
+        errorInvalidEmail: "Please enter a valid email address",
+        errorFullName: "Please enter your full name",
+        errorEmail: "Please enter your email address",
+        errorSubject: "Please select a subject",
+        errorMessage: "Please enter your message",
+        btnSubmitting: "Sending..."
     },
     
     vi: {
@@ -129,7 +138,16 @@ const contactTranslations = {
         whatsappDesc: "+84 901 234 567",
         faqTitle: "FAQ",
         faqDesc: "Tìm câu trả lời nhanh chóng",
-        successMessage: "Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất."
+        successMessage: "Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.",
+        
+        // Validation messages
+        errorRequired: "Vui lòng điền",
+        errorInvalidEmail: "Vui lòng nhập địa chỉ email hợp lệ",
+        errorFullName: "Vui lòng nhập họ và tên",
+        errorEmail: "Vui lòng nhập địa chỉ email",
+        errorSubject: "Vui lòng chọn chủ đề",
+        errorMessage: "Vui lòng nhập nội dung tin nhắn",
+        btnSubmitting: "Đang gửi..."
     }
 };
 
