@@ -43,6 +43,8 @@ function initializeLanguageSelector() {
                 const path = window.location.pathname;
                 if (typeof changeOverviewLanguage === 'function' && (path.includes('overview.html') || path.endsWith('/overview'))) {
                     changeOverviewLanguage(selectedLangValue);
+                } else if (typeof changeConfirmationLanguage === 'function' && (path.includes('confirmation.html') || path.endsWith('/confirmation'))) {
+                    changeConfirmationLanguage(selectedLangValue);
                 } else if (typeof changePaymentLanguage === 'function' && (path.includes('payment.html') || path.endsWith('/payment'))) {
                     changePaymentLanguage(selectedLangValue);
                 } else if (typeof changeSeatLanguage === 'function' && (path.includes('seat.html') || path.endsWith('/seat'))) {
