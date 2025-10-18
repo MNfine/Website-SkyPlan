@@ -849,19 +849,4 @@
                 })
                 .then(data => {
                     document.getElementById('footer-container').innerHTML = data;
-                    console.log('Footer loaded successfully');
-                })
-                .catch(error => {
-                    handleComponentError('footer');
-                    console.error('Error loading footer:', error);
-                });
-        }
-
-        // Initialize when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-        });
-    </script>
-</body>
-
-</html>
+                    console.log('Footer loaded successfu
