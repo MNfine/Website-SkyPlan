@@ -151,7 +151,9 @@ function initializePaymentValidation() {
       const selectedPayment = document.querySelector('input[name="payment"]:checked');
       
       if (!selectedPayment) {
-        notify('Vui lòng chọn phương thức thanh toán', 'info', 4000);
+        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('selectPaymentMethod', lang) : 'Vui lòng chọn phương thức thanh toán';
+        notify(msg, 'info', 4000);
         return;
       }
       
@@ -180,22 +182,30 @@ function validateCardForm() {
   const cardName = document.getElementById('cardName').value;
   
   if (!cardNumber || cardNumber.length < 13) {
-    notify('Vui lòng nhập số thẻ hợp lệ', 'info', 4000);
+    const lang = localStorage.getItem('preferredLanguage') || 'vi';
+    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('invalidCardNumber', lang) : 'Vui lòng nhập số thẻ hợp lệ';
+    notify(msg, 'info', 4000);
     return false;
   }
   
   if (!expiryDate || !expiryDate.match(/^\d{2}\/\d{2}$/)) {
-    notify('Vui lòng nhập ngày hết hạn hợp lệ (MM/YY)', 'info', 4000);
+    const lang = localStorage.getItem('preferredLanguage') || 'vi';
+    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('invalidExpiryDate', lang) : 'Vui lòng nhập ngày hết hạn hợp lệ (MM/YY)';
+    notify(msg, 'info', 4000);
     return false;
   }
   
   if (!cvv || cvv.length < 3) {
-    notify('Vui lòng nhập mã CVV hợp lệ', 'info', 4000);
+    const lang = localStorage.getItem('preferredLanguage') || 'vi';
+    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('invalidCVV', lang) : 'Vui lòng nhập mã CVV hợp lệ';
+    notify(msg, 'info', 4000);
     return false;
   }
   
   if (!cardName.trim()) {
-    notify('Vui lòng nhập tên trên thẻ', 'info', 4000);
+    const lang = localStorage.getItem('preferredLanguage') || 'vi';
+    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('invalidCardName', lang) : 'Vui lòng nhập tên trên thẻ';
+    notify(msg, 'info', 4000);
     return false;
   }
   
@@ -221,7 +231,9 @@ function processBankTransfer() {
 
 // Process e-wallet payment
 function processEWalletPayment() {
-  notify('Vui lòng chọn ví điện tử để tiếp tục', 'info', 4000);
+  const lang = localStorage.getItem('preferredLanguage') || 'vi';
+  const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('selectEwallet', lang) : 'Vui lòng chọn ví điện tử để tiếp tục';
+  notify(msg, 'info', 4000);
 }
 
 // E-wallet button handlers
@@ -349,7 +361,9 @@ function processVNPayPayment() {
   })
   .catch(error => {
     if (window.SkyPlanDebug) console.error('VNPay Error:', error);
-    notify('Lỗi: ' + error.message, 'error', 6000);
+    const lang = localStorage.getItem('preferredLanguage') || 'vi';
+    const prefix = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('errorPrefix', lang) : 'Lỗi: ';
+    notify(prefix + error.message, 'error', 6000);
     btnElement.innerHTML = originalContent;
     btnElement.disabled = false;
   });

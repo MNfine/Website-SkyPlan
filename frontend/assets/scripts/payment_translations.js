@@ -57,7 +57,16 @@ const paymentTranslations = {
         // Titles & Labels
         paymentTitle: "Payment",
         payNow: "Pay Now",
-    processing: "Processing...",
+        processing: "Processing...",
+        errorPrefix: "Error: ",
+        vnpayConnecting: "Connecting to VNPay...",
+        vnpayCreateFail: "Unable to create VNPay payment",
+        selectPaymentMethod: "Please choose a payment method",
+        invalidCardNumber: "Please enter a valid card number",
+        invalidExpiryDate: "Please enter a valid expiry date (MM/YY)",
+        invalidCVV: "Please enter a valid CVV",
+        invalidCardName: "Please enter the name on card",
+        selectEwallet: "Please select an e-wallet to continue",
         paymentMethod: "Payment Method",
         cardNumber: "Card Number",
         cardHolder: "Card Holder",
@@ -69,21 +78,21 @@ const paymentTranslations = {
         vnpay: "VNPay",
         momo: "MoMo",
         cash: "Cash at counter",
-    // Bank/E-wallet instructions
-    bankNameLabel: "Bank:",
-    accountNumberLabel: "Account number:",
-    accountNameLabel: "Account name:",
-    transferContentLabel: "Content:",
-    paymentGuide: "Payment instructions:",
-    phoneLabel: "Phone number:",
-    nameLabel: "Name:",
-    chooseWallet: "2. Choose a suitable e-wallet:",
-    scanOrTransfer: "1. Scan QR code or transfer using the following info:",
-    transferExample: "[Booking code] - [Full name]",
-    // Confirm button
-    toConfirmation: "Go to confirmation page",
-    bankConfirm: "Go to confirmation page",
-    // ...add more as needed
+        // Bank/E-wallet instructions
+        bankNameLabel: "Bank:",
+        accountNumberLabel: "Account number:",
+        accountNameLabel: "Account name:",
+        transferContentLabel: "Content:",
+        paymentGuide: "Payment instructions:",
+        phoneLabel: "Phone number:",
+        nameLabel: "Name:",
+        chooseWallet: "2. Choose a suitable e-wallet:",
+        scanOrTransfer: "1. Scan QR code or transfer using the following info:",
+        transferExample: "[Booking code] - [Full name]",
+        // Confirm button
+        toConfirmation: "Go to confirmation page",
+        bankConfirm: "Go to confirmation page",
+        // ...add more as needed
     },
     vi: {
         // Steps
@@ -141,7 +150,16 @@ const paymentTranslations = {
         // Titles & Labels
         paymentTitle: "Thanh toán",
         payNow: "Thanh toán ngay",
-    processing: "Đang xử lý...",
+        processing: "Đang xử lý...",
+        errorPrefix: "Lỗi: ",
+        vnpayConnecting: "Đang kết nối VNPay...",
+        vnpayCreateFail: "Không thể tạo thanh toán VNPay",
+        selectPaymentMethod: "Vui lòng chọn phương thức thanh toán",
+        invalidCardNumber: "Vui lòng nhập số thẻ hợp lệ",
+        invalidExpiryDate: "Vui lòng nhập ngày hết hạn hợp lệ (MM/YY)",
+        invalidCVV: "Vui lòng nhập mã CVV hợp lệ",
+        invalidCardName: "Vui lòng nhập tên trên thẻ",
+        selectEwallet: "Vui lòng chọn ví điện tử để tiếp tục",
         paymentMethod: "Phương thức thanh toán",
         cardNumber: "Số thẻ",
         cardHolder: "Chủ thẻ",
@@ -153,21 +171,21 @@ const paymentTranslations = {
         vnpay: "VNPay",
         momo: "MoMo",
         cash: "Thanh toán tại quầy",
-    // Bank/E-wallet instructions
-    bankNameLabel: "Ngân hàng:",
-    accountNumberLabel: "Số tài khoản:",
-    accountNameLabel: "Tên tài khoản:",
-    transferContentLabel: "Nội dung:",
-    paymentGuide: "Hướng dẫn thanh toán:",
-    phoneLabel: "Số điện thoại:",
-    nameLabel: "Tên:",
-    chooseWallet: "2. Chọn ví điện tử phù hợp:",
-    scanOrTransfer: "1. Quét mã QR hoặc chuyển tiền theo thông tin:",
-    transferExample: "[Mã đặt vé] - [Họ tên]",
-    // Confirm button
-    toConfirmation: "Đến trang xác nhận",
-    bankConfirm: "Đến trang xác nhận",
-    // ...add more as needed
+        // Bank/E-wallet instructions
+        bankNameLabel: "Ngân hàng:",
+        accountNumberLabel: "Số tài khoản:",
+        accountNameLabel: "Tên tài khoản:",
+        transferContentLabel: "Nội dung:",
+        paymentGuide: "Hướng dẫn thanh toán:",
+        phoneLabel: "Số điện thoại:",
+        nameLabel: "Tên:",
+        chooseWallet: "2. Chọn ví điện tử phù hợp:",
+        scanOrTransfer: "1. Quét mã QR hoặc chuyển tiền theo thông tin:",
+        transferExample: "[Mã đặt vé] - [Họ tên]",
+        // Confirm button
+        toConfirmation: "Đến trang xác nhận",
+        bankConfirm: "Đến trang xác nhận",
+        // ...add more as needed
     }
 };
 
