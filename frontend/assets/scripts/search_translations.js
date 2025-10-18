@@ -3,8 +3,8 @@ const searchTranslations = {
         // Header
         helpText: "Help",
         myTripsText: "My Trips",
-        signInText: "Sign Up",
-        logInText: "Sign In",
+        signUpText: "Sign Up",
+        signInText: "Sign In",
         // Footer
         footerDesc: "Your trusted travel companion for the best flight deals and unforgettable journeys.",
         quickLinksTitle: "Quick Links",
@@ -30,18 +30,9 @@ const searchTranslations = {
         returnLabel: "Return date",
         searchButton: "Search",
         filtersTitle: "Filters",
-        stopsTitle: "Number of stops",
-        baggageTitle: "Baggage",
-        carryOn: "Carry-on baggage",
-        checkedBag: "Checked baggage",
         timeTitle: "Departure time",
         budgetTitle: "Budget",
         anyLabel: "Any",
-        // Options
-        nonstop: "Nonstop",
-        oneStop: "1 stop",
-        twoStops: "2 stops",
-        threeStops: "3 stops",
         // Cards / Modal CTA
         selectFlight: "Select flight",
         shareTrip: "Share trip",
@@ -55,8 +46,8 @@ const searchTranslations = {
         // Header
         helpText: "Trợ giúp",
         myTripsText: "Chuyến đi của tôi",
-        signInText: "Đăng ký",
-        logInText: "Đăng nhập",
+        signUpText: "Đăng ký",
+        signInText: "Đăng nhập",
         // Footer
         footerDesc: "Đối tác du lịch đáng tin cậy của bạn cho các ưu đãi vé máy bay tốt nhất và những hành trình khó quên.",
         quickLinksTitle: "Liên kết nhanh",
@@ -82,18 +73,9 @@ const searchTranslations = {
         returnLabel: "Ngày về",
         searchButton: "Tìm kiếm",
         filtersTitle: "Bộ lọc",
-        stopsTitle: "Số điểm dừng",
-        baggageTitle: "Hành lý",
-        carryOn: "Hành lý xách tay",
-        checkedBag: "Hành lý ký gửi",
         timeTitle: "Giờ bay",
         budgetTitle: "Ngân sách",
         anyLabel: "Bất kỳ",
-        // Options
-        nonstop: "Bay thẳng",
-        oneStop: "1 điểm dừng",
-        twoStops: "2 điểm dừng",
-        threeStops: "3 điểm dừng",
         // Cards / Modal CTA
         selectFlight: "Chọn chuyến bay",
         shareTrip: "Chia sẻ chuyến đi",
@@ -150,36 +132,10 @@ function applySearchTranslations(lang) {
     setText('.sp-subtitle', dict.filtersTitle, aside);
 
     const titles = _$all('.sp-filters .sp-section .sp-section-title', aside);
-    if (titles[0]) titles[0].textContent = dict.stopsTitle;
-    if (titles[1]) titles[1].textContent = dict.baggageTitle;
-    if (titles[2]) titles[2].textContent = dict.timeTitle;
-    if (titles[3]) titles[3].textContent = dict.budgetTitle;
+    if (titles[1]) titles[1].textContent = dict.timeTitle;
+    if (titles[0]) titles[0].textContent = dict.budgetTitle;
 
-    // Stops labels
-    const stopLabels = _$all('.sp-filters .sp-section:nth-of-type(1) .sp-choice', aside);
-    if (stopLabels[0] && stopLabels[0].lastChild) stopLabels[0].lastChild.nodeValue = ' ' + dict.nonstop;
-    if (stopLabels[1] && stopLabels[1].lastChild) stopLabels[1].lastChild.nodeValue = ' ' + dict.oneStop;
-    if (stopLabels[2] && stopLabels[2].lastChild) stopLabels[2].lastChild.nodeValue = ' ' + dict.twoStops;
-    if (stopLabels[3] && stopLabels[3].lastChild) stopLabels[3].lastChild.nodeValue = ' ' + dict.threeStops;
 
-    // Baggage + aria
-    const bagCounters = _$all('.sp-filters .sp-section:nth-of-type(2) .sp-counter', aside);
-    if (bagCounters[0]) {
-        const span = bagCounters[0].querySelector('span');
-        if (span) span.textContent = dict.carryOn;
-        const minus = bagCounters[0].querySelector('[data-minus]');
-        const plus = bagCounters[0].querySelector('[data-plus]');
-        if (minus) minus.setAttribute('aria-label', lang === 'vi' ? 'giảm xách tay' : 'decrease cabin');
-        if (plus) plus.setAttribute('aria-label', lang === 'vi' ? 'tăng xách tay' : 'increase cabin');
-    }
-    if (bagCounters[1]) {
-        const span = bagCounters[1].querySelector('span');
-        if (span) span.textContent = dict.checkedBag;
-        const minus = bagCounters[1].querySelector('[data-minus]');
-        const plus = bagCounters[1].querySelector('[data-plus]');
-        if (minus) minus.setAttribute('aria-label', lang === 'vi' ? 'giảm ký gửi' : 'decrease checked');
-        if (plus) plus.setAttribute('aria-label', lang === 'vi' ? 'tăng ký gửi' : 'increase checked');
-    }
 
     const anyEl = _$('.sp-price-top span:last-child', aside);
     if (anyEl) anyEl.textContent = dict.anyLabel;

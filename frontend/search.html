@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SkyPlane – Search Results</title>
-    <link rel="stylesheet" href="assets/styles/search.css" />
+    <link rel="stylesheet" href="assets/styles/search.css">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="assets/styles/reset.css">
@@ -24,74 +24,56 @@
 
             <div class="sp-field">
                 <label for="from" class="sp-label">Từ</label>
-                <input id="from" class="sp-input" type="text" value="TP.Hồ Chí Minh" />
+                <input id="from" class="sp-input" type="text" value="TP.Hồ Chí Minh">
             </div>
 
             <div class="sp-field">
                 <label for="to" class="sp-label">Đến</label>
-                <input id="to" class="sp-input" type="text" value="Hà Nội" />
+                <input id="to" class="sp-input" type="text" value="Hà Nội">
             </div>
 
             <div class="sp-row sp-field-group">
                 <div class="sp-field">
                     <label for="dep" class="sp-label">Ngày đi</label>
-                    <input id="dep" class="sp-input" type="date" value="2023-06-10" />
+                    <input id="dep" class="sp-input" type="date" value="2023-06-10">
                 </div>
                 <div class="sp-field">
                     <label for="ret" class="sp-label">Ngày về</label>
-                    <input id="ret" class="sp-input" type="date" value="2023-08-18" />
+                    <input id="ret" class="sp-input" type="date" value="2023-08-18">
                 </div>
             </div>
 
             <button class="sp-btn sp-btn-secondary" type="button">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        Tìm kiếm
-      </button>
+                <i class="fa-solid fa-magnifying-glass"></i>
+                Tìm kiếm
+            </button>
 
             <h3 class="sp-subtitle">Bộ lọc</h3>
 
-            <section class="sp-section">
-                <div class="sp-section-title">Số điểm dừng</div>
-                <label class="sp-choice"><input type="radio" name="stops" checked> Bay thẳng</label>
-                <label class="sp-choice"><input type="radio" name="stops"> 1 điểm dừng</label>
-                <label class="sp-choice"><input type="radio" name="stops"> 2 điểm dừng</label>
-                <label class="sp-choice"><input type="radio" name="stops"> 3 điểm dừng</label>
+            <section class="sp-section" aria-labelledby="budget-heading">
+                <h4 id="budget-heading" class="sp-section-title">Ngân sách</h4>
+                <div class="sp-price-top"><span>0 VND – 5.000.000 VND</span><span>Bất kỳ</span></div>
+                <input id="priceRange" class="sp-range" type="range" max="5000000" step="50000" value="2000000">
+                <div class="sp-price-bottom"><span>0 VND</span><span id="priceOut">2.000.000 VND</span></div>
             </section>
 
-            <section class="sp-section">
-                <div class="sp-section-title">Hành lý</div>
-                <div class="sp-counter" data-counter="cabin">
-                    <span>Hành lý sách tay</span>
-                    <button class="sp-chip" data-minus aria-label="decrease cabin">−</button>
-                    <span class="sp-count" data-value>2</span>
-                    <button class="sp-chip" data-plus aria-label="increase cabin">＋</button>
-                </div>
-                <div class="sp-counter" data-counter="checked">
-                    <span>Hành lý ký gửi</span>
-                    <button class="sp-chip" data-minus aria-label="decrease checked">−</button>
-                    <span class="sp-count" data-value>0</span>
-                    <button class="sp-chip" data-plus aria-label="increase checked">＋</button>
-                </div>
-            </section>
 
-            <section class="sp-section">
-                <div class="sp-section-title">Giờ bay</div>
+            <section class="sp-section" aria-labelledby="time-heading">
+                <h4 id="time-heading" class="sp-section-title">Giờ bay</h4>
                 <label class="sp-choice"><input type="radio" name="time" checked>5:00 - 11:49</label>
                 <label class="sp-choice"><input type="radio" name="time">12:00 - 17:59</label>
                 <label class="sp-choice"><input type="radio" name="time"> 18:00 - 23:59</label>
                 <label class="sp-choice"><input type="radio" name="time"> 00:00 - 4:59</label>
             </section>
 
-            <section class="sp-section">
-                <div class="sp-section-title">Ngân sách</div>
-                <div class="sp-price-top"><span>0 VND – 5.000.000 VND</span><span>Bất kỳ</span></div>
-                <input id="priceRange" class="sp-range" type="range" max="5000000" step="50000" value="2000000" />
-                <div class="sp-price-bottom"><span>0 VND</span><span id="priceOut">2.000.000 VND</span></div>
-            </section>
+
         </aside>
 
-        <section class="sp-results" aria-live="polite">
-            <article class="sp-card">
+        <section class="sp-results" aria-live="polite" aria-labelledby="results-heading">
+            <h2 id="results-heading" class="sr-only">Kết quả tìm kiếm</h2>
+
+            <article class="sp-card" aria-labelledby="card1-heading">
+                <h3 id="card1-heading" class="sr-only">Chuyến bay 06:00 → 08:10 và 09:00 → 11:05</h3>
                 <div class="sp-card-body">
                     <div class="sp-date">10/06/2023 · Khởi hành</div>
                     <div class="sp-itinerary">
@@ -109,7 +91,7 @@
                         </div>
                     </div>
 
-                    <hr class="sp-divider" />
+                    <hr class="sp-divider">
 
                     <div class="sp-date">18/08/2023 · Về</div>
                     <div class="sp-itinerary">
@@ -133,7 +115,8 @@
                 </aside>
             </article>
 
-            <article class="sp-card">
+            <article class="sp-card" aria-labelledby="card2-heading">
+                <h3 id="card2-heading" class="sr-only">Chuyến bay 07:30 → 09:45 và 10:00 → 12:15</h3>
                 <div class="sp-card-body">
                     <div class="sp-date">10/06/2023 · Khởi hành</div>
                     <div class="sp-itinerary">
@@ -151,7 +134,7 @@
                         </div>
                     </div>
 
-                    <hr class="sp-divider" />
+                    <hr class="sp-divider">
 
                     <div class="sp-date">18/08/2023 · Về</div>
                     <div class="sp-itinerary">
@@ -175,7 +158,8 @@
                 </aside>
             </article>
 
-            <article class="sp-card">
+            <article class="sp-card" aria-labelledby="card3-heading">
+                <h3 id="card3-heading" class="sr-only">Chuyến bay 09:00 → 11:00 và 12:00 → 14:00</h3>
                 <div class="sp-card-body">
                     <div class="sp-date">10/06/2023 · Khởi hành</div>
                     <div class="sp-itinerary">
@@ -193,7 +177,7 @@
                         </div>
                     </div>
 
-                    <hr class="sp-divider" />
+                    <hr class="sp-divider">
 
                     <div class="sp-date">18/08/2023 · Về</div>
                     <div class="sp-itinerary">
@@ -217,7 +201,8 @@
                 </aside>
             </article>
 
-            <article class="sp-card">
+            <article class="sp-card" aria-labelledby="card4-heading">
+                <h3 id="card4-heading" class="sr-only">Chuyến bay 11:30 → 13:35 và 14:00 → 16:05</h3>
                 <div class="sp-card-body">
                     <div class="sp-date">10/06/2023 · Khởi hành</div>
                     <div class="sp-itinerary">
@@ -235,7 +220,7 @@
                         </div>
                     </div>
 
-                    <hr class="sp-divider" />
+                    <hr class="sp-divider">
 
                     <div class="sp-date">18/08/2023 · Về</div>
                     <div class="sp-itinerary">
@@ -259,7 +244,8 @@
                 </aside>
             </article>
 
-            <article class="sp-card">
+            <article class="sp-card" aria-labelledby="card5-heading">
+                <h3 id="card5-heading" class="sr-only">Chuyến bay 13:00 → 15:10 và 13:40 → 15:45</h3>
                 <div class="sp-card-body">
                     <div class="sp-date">10/06/2023 · Khởi hành</div>
                     <div class="sp-itinerary">
@@ -277,7 +263,7 @@
                         </div>
                     </div>
 
-                    <hr class="sp-divider" />
+                    <hr class="sp-divider">
 
                     <div class="sp-date">18/08/2023 · Về</div>
                     <div class="sp-itinerary">
@@ -301,7 +287,8 @@
                 </aside>
             </article>
 
-            <article class="sp-card">
+            <article class="sp-card" aria-labelledby="card6-heading">
+                <h3 id="card6-heading" class="sr-only">Chuyến bay 14:30 → 16:35 và 15:30 → 17:40</h3>
                 <div class="sp-card-body">
                     <div class="sp-date">10/06/2023 · Khởi hành</div>
                     <div class="sp-itinerary">
@@ -319,7 +306,8 @@
                         </div>
                     </div>
 
-                    <hr class="sp-divider" />
+                    <hr class="sp-divider">
+
                     <div class="sp-date">18/08/2023 · Về</div>
                     <div class="sp-itinerary">
                         <div>
@@ -342,7 +330,8 @@
                 </aside>
             </article>
 
-            <article class="sp-card">
+            <article class="sp-card" aria-labelledby="card7-heading">
+                <h3 id="card7-heading" class="sr-only">Chuyến bay 16:00 → 18:00 và 17:00 → 19:05</h3>
                 <div class="sp-card-body">
                     <div class="sp-date">10/06/2023 · Khởi hành</div>
                     <div class="sp-itinerary">
@@ -360,7 +349,7 @@
                         </div>
                     </div>
 
-                    <hr class="sp-divider" />
+                    <hr class="sp-divider">
 
                     <div class="sp-date">18/08/2023 · Về</div>
                     <div class="sp-itinerary">
@@ -384,7 +373,8 @@
                 </aside>
             </article>
 
-            <article class="sp-card">
+            <article class="sp-card" aria-labelledby="card8-heading">
+                <h3 id="card8-heading" class="sr-only">Chuyến bay 18:00 → 20:15 và 19:00 → 21:10</h3>
                 <div class="sp-card-body">
                     <div class="sp-date">10/06/2023 · Khởi hành</div>
                     <div class="sp-itinerary">
@@ -402,7 +392,7 @@
                         </div>
                     </div>
 
-                    <hr class="sp-divider" />
+                    <hr class="sp-divider">
 
                     <div class="sp-date">18/08/2023 · Về</div>
                     <div class="sp-itinerary">
@@ -426,7 +416,8 @@
                 </aside>
             </article>
 
-            <article class="sp-card">
+            <article class="sp-card" aria-labelledby="card9-heading">
+                <h3 id="card9-heading" class="sr-only">Chuyến bay 20:00 → 22:05 và 20:30 → 22:30</h3>
                 <div class="sp-card-body">
                     <div class="sp-date">10/06/2023 · Khởi hành</div>
                     <div class="sp-itinerary">
@@ -444,7 +435,7 @@
                         </div>
                     </div>
 
-                    <hr class="sp-divider" />
+                    <hr class="sp-divider">
 
                     <div class="sp-date">18/08/2023 · Về</div>
                     <div class="sp-itinerary">
@@ -468,7 +459,8 @@
                 </aside>
             </article>
 
-            <article class="sp-card">
+            <article class="sp-card" aria-labelledby="card10-heading">
+                <h3 id="card10-heading" class="sr-only">Chuyến bay 22:00 → 00:10 và 21:30 → 23:45</h3>
                 <div class="sp-card-body">
                     <div class="sp-date">10/06/2023 · Khởi hành</div>
                     <div class="sp-itinerary">
@@ -486,7 +478,7 @@
                         </div>
                     </div>
 
-                    <hr class="sp-divider" />
+                    <hr class="sp-divider">
 
                     <div class="sp-date">18/08/2023 · Về</div>
                     <div class="sp-itinerary">
@@ -524,7 +516,8 @@
 
             <div class="sp-modal__content">
                 <!-- OUTBOUND -->
-                <section class="sp-leg">
+                <section class="sp-leg" aria-labelledby="outbound-heading">
+                    <h3 id="outbound-heading" class="sr-only">Chiều đi</h3>
                     <div class="sp-leg__title">To <span data-to-city>—</span></div>
                     <div class="sp-leg__panel">
                         <div class="sp-leg__grid">
@@ -553,7 +546,8 @@
                 </section>
 
                 <!-- INBOUND -->
-                <section class="sp-leg">
+                <section class="sp-leg" aria-labelledby="inbound-heading">
+                    <h3 id="inbound-heading" class="sr-only">Chiều về</h3>
                     <div class="sp-leg__title">To <span data-from-city>—</span></div>
                     <div class="sp-leg__panel">
                         <div class="sp-leg__grid">
@@ -580,6 +574,7 @@
                         </div>
                     </div>
                 </section>
+
             </div>
 
             <div class="sp-modal__footer">

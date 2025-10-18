@@ -52,6 +52,7 @@
 
 .sp-filters {
     margin-left: -32px;
+    display: block !important;
     position: sticky;
     top: 88px;
     align-self: start;
@@ -105,9 +106,10 @@
 .sp-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    border: 0;
-    cursor: pointer;
+    line-height: 1;
+    vertical-align: middle;
 }
 
 .sp-btn.sp-btn-secondary {
@@ -118,6 +120,22 @@
     color: #fff;
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.25);
     padding: 10px 14px;
+}
+
+.sp-btn.sp-btn-secondary:hover {
+    background: #4b5563;
+    /* sáng hơn một chút */
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.3);
+    transition: all 0.25s ease;
+}
+
+.sp-btn.sp-btn-secondary:active {
+    background: #1f2937;
+    /* nhấn đậm hơn */
+    transform: translateY(0);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
 }
 
 .sp-section {
@@ -632,18 +650,6 @@
         margin: 0 0 10px 0;
         cursor: pointer;
     }
-    .sp-filters {
-        display: none;
-    }
-    .sp-filters.active {
-        display: block;
-        position: fixed;
-        inset: 0;
-        z-index: 2000;
-        background: #fff;
-        padding: 16px;
-        overflow-y: auto;
-    }
     .sp-results {
         gap: 16px;
     }
@@ -666,6 +672,7 @@
         font-size: 11px;
     }
     .sp-btn.sp-btn-block {
+        align-items: center;
         font-size: 13px;
         padding: 10px 12px;
     }
