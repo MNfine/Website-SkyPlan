@@ -24,8 +24,9 @@ const contactTranslations = {
         copyright: "© 2024 SkyPlan. All rights reserved.",
         helpText: "Help",
         myTripsText: "My Trips",
+        signUpText: "Sign Up",
         signInText: "Sign In",
-        logInText: "Log In",
+        
 
         // Contact Page Specific
         contactTitle: "Contact Us",
@@ -62,7 +63,16 @@ const contactTranslations = {
         whatsappDesc: "+84 901 234 567",
         faqTitle: "FAQ",
         faqDesc: "Find quick answers",
-        successMessage: "Thank you for contacting us! We will respond as soon as possible."
+        successMessage: "Thank you for contacting us! We will respond as soon as possible.",
+        
+        // Validation messages
+        errorRequired: "Please fill in",
+        errorInvalidEmail: "Please enter a valid email address",
+        errorFullName: "Please enter your full name",
+        errorEmail: "Please enter your email address",
+        errorSubject: "Please select a subject",
+        errorMessage: "Please enter your message",
+        btnSubmitting: "Sending..."
     },
     
     vi: {
@@ -89,8 +99,9 @@ const contactTranslations = {
         copyright: "© 2024 SkyPlan. Bảo lưu mọi quyền.",
         helpText: "Trợ giúp",
         myTripsText: "Chuyến đi của tôi",
-        signInText: "Đăng ký",
-        logInText: "Đăng nhập",
+        signUpText: "Đăng ký",
+        signInText: "Đăng nhập",
+        
         
         // Contact Page Specific
         contactTitle: "Liên hệ với chúng tôi",
@@ -127,7 +138,16 @@ const contactTranslations = {
         whatsappDesc: "+84 901 234 567",
         faqTitle: "FAQ",
         faqDesc: "Tìm câu trả lời nhanh chóng",
-        successMessage: "Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất."
+        successMessage: "Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.",
+        
+        // Validation messages
+        errorRequired: "Vui lòng điền",
+        errorInvalidEmail: "Vui lòng nhập địa chỉ email hợp lệ",
+        errorFullName: "Vui lòng nhập họ và tên",
+        errorEmail: "Vui lòng nhập địa chỉ email",
+        errorSubject: "Vui lòng chọn chủ đề",
+        errorMessage: "Vui lòng nhập nội dung tin nhắn",
+        btnSubmitting: "Đang gửi..."
     }
 };
 

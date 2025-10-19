@@ -396,6 +396,9 @@
               <button class="continue-btn" data-i18n="continue">Tiếp Tục</button>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
   </main>
 
   <!-- Footer -->
@@ -425,8 +428,16 @@
         })
         .then(data => {
           document.getElementById('header-container').innerHTML = data;
-          // Initialize language functionality after header loads
-          initializeLanguage();
+          
+          // Initialize all header functionalities after DOM is ready
+          requestAnimationFrame(() => {
+            // Initialize mobile menu
+            if (typeof initializeMobileMenu === 'function') {
+              initializeMobileMenu();
+            }
+            // Initialize language functionality after header loads
+            initializeLanguage();
+          });
         })
         .catch(error => {
           handleComponentError('header');

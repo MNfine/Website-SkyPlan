@@ -6,24 +6,30 @@ function initializeMobileMenu() {
         const menuToggle = document.querySelector('.menu-toggle');
         const navLinks = document.querySelector('.nav-links');
         if (menuToggle && navLinks) {
-            menuToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                menuToggle.classList.toggle('active');
-                navLinks.classList.toggle('active');
-                document.body.classList.toggle('no-scroll');
-            });
+            if (!menuToggle.dataset.bound) {
+                menuToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    menuToggle.classList.toggle('active');
+                    navLinks.classList.toggle('active');
+                    document.body.classList.toggle('no-scroll');
+                });
+                menuToggle.dataset.bound = '1';
+            }
         } else {
             console.error('Menu elements not found');
         }
-        document.addEventListener('click', function(event) {
-            if (navLinks && navLinks.classList.contains('active') &&
-                !event.target.closest('.nav-links') &&
-                !event.target.closest('.menu-toggle')) {
-                navLinks.classList.remove('active');
-                if (menuToggle) menuToggle.classList.remove('active');
-                document.body.classList.remove('no-scroll');
-            }
-        });
+        if (!document.body.dataset.menuOutsideClickBound) {
+            document.addEventListener('click', function(event) {
+                if (navLinks && navLinks.classList.contains('active') &&
+                    !event.target.closest('.nav-links') &&
+                    !event.target.closest('.menu-toggle')) {
+                    navLinks.classList.remove('active');
+                    if (menuToggle) menuToggle.classList.remove('active');
+                    document.body.classList.remove('no-scroll');
+                }
+            });
+            document.body.dataset.menuOutsideClickBound = '1';
+        }
     }, 500);
 }
 
@@ -34,6 +40,7 @@ function initializeLanguageSelector() {
         const selectedLang = document.querySelector('.selected-lang');
         const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
         langOptions.forEach(option => {
+            if (option.dataset.bound === '1') return;
             option.addEventListener('click', function(e) {
                 e.preventDefault();
                 const selectedLangValue = this.getAttribute('data-lang');
@@ -43,6 +50,8 @@ function initializeLanguageSelector() {
                 const path = window.location.pathname;
                 if (typeof changeOverviewLanguage === 'function' && (path.includes('overview.html') || path.endsWith('/overview'))) {
                     changeOverviewLanguage(selectedLangValue);
+                } else if (typeof changeConfirmationLanguage === 'function' && (path.includes('confirmation.html') || path.endsWith('/confirmation'))) {
+                    changeConfirmationLanguage(selectedLangValue);
                 } else if (typeof changePaymentLanguage === 'function' && (path.includes('payment.html') || path.endsWith('/payment'))) {
                     changePaymentLanguage(selectedLangValue);
                 } else if (typeof changeSeatLanguage === 'function' && (path.includes('seat.html') || path.endsWith('/seat'))) {
@@ -58,6 +67,7 @@ function initializeLanguageSelector() {
                 }
                 updateSelectedLanguage(selectedLangValue);
             });
+            option.dataset.bound = '1';
         });
         langOptions.forEach(opt => {
             if (opt.getAttribute('data-lang') === currentLang) {
@@ -66,6 +76,10 @@ function initializeLanguageSelector() {
                 opt.classList.remove('active');
             }
         });
+        // Ensure the header's selected language UI reflects the saved language on load
+        if (typeof updateSelectedLanguage === 'function') {
+            updateSelectedLanguage(currentLang);
+        }
     }, 100);
 }
 
