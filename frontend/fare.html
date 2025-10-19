@@ -55,10 +55,6 @@
         <h3 class="fare-name" data-i18n="economy">Phổ thông</h3>
         <ul class="fare-features">
           <li>
-            <span class="feat-title" data-i18n="seatClass">Hạng ghế:</span>
-            <span class="feat-desc" data-i18n="economyClass">Phổ thông</span>
-          </li>
-          <li>
             <span class="feat-title" data-i18n="seating">Chỗ ngồi</span>
             <span class="feat-desc" data-i18n="autoAssigned">Phân bổ tự động</span>
           </li>
@@ -81,10 +77,6 @@
         <h3 class="fare-name" data-i18n="premiumEconomy">Phổ thông đặc biệt</h3>
         <ul class="fare-features">
           <li>
-            <span class="feat-title" data-i18n="seatClass">Hạng ghế:</span>
-            <span class="feat-desc" data-i18n="premiumEconomyClass">Phổ thông đặc biệt</span>
-          </li>
-          <li>
             <span class="feat-title" data-i18n="seating">Chỗ ngồi</span>
             <span class="feat-desc" data-i18n="seatSelection">Được chọn chỗ</span>
           </li>
@@ -106,10 +98,6 @@
       <article class="fare-card">
         <h3 class="fare-name" data-i18n="business">Thương gia</h3>
         <ul class="fare-features">
-          <li>
-            <span class="feat-title" data-i18n="seatClass">Hạng ghế</span>
-            <span class="feat-desc" data-i18n="businessClass">Thương gia</span>
-          </li>
           <li>
             <span class="feat-title" data-i18n="seating">Chỗ ngồi</span>
             <span class="feat-desc" data-i18n="seatSelection">Được chọn chỗ</span>
@@ -153,8 +141,16 @@
         })
         .then(data => {
           document.getElementById('header-container').innerHTML = data;
-          // Initialize language functionality after header loads
-          initializeLanguage();
+          
+          // Initialize all header functionalities after DOM is ready
+          requestAnimationFrame(() => {
+            // Initialize mobile menu
+            if (typeof initializeMobileMenu === 'function') {
+              initializeMobileMenu();
+            }
+            // Initialize language functionality after header loads
+            initializeLanguage();
+          });
         })
         .catch(error => {
           handleComponentError('header');
