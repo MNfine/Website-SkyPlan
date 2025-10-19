@@ -1,31 +1,31 @@
-document.addEventListener('DOMContentLoaded', () => {
-  'use strict';
+document.addEventListener("DOMContentLoaded", () => {
+  "use strict";
 
-  /* DOM refs */
-  const form = document.getElementById('loginForm');
-  const emailInput = document.getElementById('email');
-  const passwordInput = document.getElementById('password');
-  const rememberCheckbox = document.getElementById('remember');
-  const togglePasswordBtn = document.getElementById('togglePassword');
-  const eyeIcon = document.getElementById('eyeIcon');
-  const btnGoogle = document.getElementById('btnGoogle');
-  const btnFacebook = document.getElementById('btnFacebook');
-  const backButton = document.getElementById('backButton');
+  /* DOM references */
+  const form = document.getElementById("loginForm");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const rememberCheckbox = document.getElementById("remember");
+  const togglePasswordBtn = document.getElementById("togglePassword");
+  const eyeIcon = document.getElementById("eyeIcon");
+  const btnGoogle = document.getElementById("btnGoogle");
+  const btnFacebook = document.getElementById("btnFacebook");
+  const backButton = document.getElementById("backButton");
 
-  /* Helpers */
-  const getErrorEl = (fieldId) => document.getElementById(fieldId + 'Error');
+  /* Helper functions */
+  const getErrorEl = (fieldId) => document.getElementById(fieldId + "Error");
 
   function clearError(fieldId) {
     const input = document.getElementById(fieldId);
     const errorDiv = getErrorEl(fieldId);
 
     if (input) {
-      input.classList.remove('error');
-      input.setAttribute('aria-invalid', 'false');
+      input.classList.remove("error");
+      input.setAttribute("aria-invalid", "false");
     }
     if (errorDiv) {
-      errorDiv.classList.remove('show');
-      errorDiv.textContent = '';
+      errorDiv.classList.remove("show");
+      errorDiv.textContent = "";
     }
   }
 
@@ -34,12 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorDiv = getErrorEl(fieldId);
 
     if (input) {
-      input.classList.add('error');
-      input.setAttribute('aria-invalid', 'true');
+      input.classList.add("error");
+      input.setAttribute("aria-invalid", "true");
     }
     if (errorDiv) {
       errorDiv.textContent = message;
-      errorDiv.classList.add('show');
+      errorDiv.classList.add("show");
     }
   }
 
@@ -48,11 +48,60 @@ document.addEventListener('DOMContentLoaded', () => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   }
 
+  /* Helper to get translated text */
+  function getTranslation(key) {
+    try {
+      const lang = localStorage.getItem("preferredLanguage") || "vi";
+      if (window.translations && window.translations[lang]) {
+        // Try flat key first
+        if (window.translations[lang][key]) {
+          return window.translations[lang][key];
+        }
+
+        // Try nested path
+        const keys = key.split(".");
+        let value = window.translations[lang];
+        for (const k of keys) {
+          if (value && typeof value === "object") {
+            value = value[k];
+          } else {
+            break;
+          }
+        }
+        if (typeof value === "string") {
+          return value;
+        }
+      }
+    } catch (e) {
+      console.error("Translation error:", e);
+    }
+
+    // Fallback translations
+    const lang = localStorage.getItem("preferredLanguage") || "vi";
+    const fallbacksEn = {
+      "login.successToast": "Login successful!",
+      "login.googleInfoToast": "Google sign in feature is under development",
+      "login.facebookInfoToast":
+        "Facebook sign in feature is under development",
+    };
+
+    const fallbacksVi = {
+      "login.successToast": "Đăng nhập thành công!",
+      "login.googleInfoToast":
+        "Tính năng đăng nhập với Google đang được phát triển",
+      "login.facebookInfoToast":
+        "Tính năng đăng nhập với Facebook đang được phát triển",
+    };
+
+    const fallbacks = lang === "en" ? fallbacksEn : fallbacksVi;
+    return fallbacks[key] || "";
+  }
+
   /* Toggle password visibility */
   if (togglePasswordBtn && passwordInput && eyeIcon) {
-    togglePasswordBtn.addEventListener('click', () => {
-      const isVisible = passwordInput.type === 'text';
-      passwordInput.type = isVisible ? 'password' : 'text';
+    togglePasswordBtn.addEventListener("click", () => {
+      const isVisible = passwordInput.type === "text";
+      passwordInput.type = isVisible ? "password" : "text";
 
       eyeIcon.innerHTML = isVisible
         ? '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle>'
@@ -60,43 +109,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* Custom notification toast updated styling */
-  function showCustomNotification(message) {
-    const toast = document.createElement('div');
-    toast.classList.add('toast');
-    toast.style.position = 'fixed';
-    toast.style.top = '20px';
-    toast.style.right = '20px';
-    toast.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
-    toast.style.color = '#333';
-    toast.style.padding = '16px 24px';
-    toast.style.borderRadius = '10px';
-    toast.style.border = '1px solid #ddd';
-    toast.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-    toast.style.fontFamily = 'Helvetica, Arial, sans-serif';
-    toast.style.fontSize = '16px';
-    toast.style.zIndex = '9999';
-    toast.style.opacity = '1';
-    toast.style.transition = 'opacity 0.6s ease';
-    toast.innerText = message;
-    document.body.appendChild(toast);
-    setTimeout(() => { toast.style.opacity = '0'; }, 3000);
-    setTimeout(() => { document.body.removeChild(toast); }, 3600);
-  }
-
   /* Get current language */
   function getCurrentLanguage() {
-    const activeLangElem = document.querySelector('.lang-option.active');
-    return activeLangElem ? activeLangElem.getAttribute('data-lang') : 'vi';
+    const activeLangElem = document.querySelector(".lang-option.active");
+    return activeLangElem ? activeLangElem.getAttribute("data-lang") : "vi";
   }
 
-  /* Form submit */
+  /* Form submit handler */
   if (form && emailInput && passwordInput) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
 
-      clearError('email');
-      clearError('password');
+      clearError("email");
+      clearError("password");
 
       const email = emailInput.value.trim();
       const password = passwordInput.value;
@@ -105,56 +130,61 @@ document.addEventListener('DOMContentLoaded', () => {
       let hasError = false;
 
       if (!email) {
-        showError('email', 'Vui lòng nhập email');
+        showError("email", "Vui lòng nhập email");
         hasError = true;
       } else if (!isValidEmail(email)) {
-        showError('email', 'Email không hợp lệ');
+        showError("email", "Email không hợp lệ");
         hasError = true;
       }
 
       if (!password) {
-        showError('password', 'Vui lòng nhập mật khẩu');
+        showError("password", "Vui lòng nhập mật khẩu");
         hasError = true;
       }
 
       if (hasError) return;
 
-      console.log('Login successful:', { email, password, remember });
-      const lang = getCurrentLanguage();
-      lang === 'en' ? showCustomNotification('Login successful!') : showCustomNotification('Đăng nhập thành công!');
+      console.log("Login successful:", { email, password, remember });
+      showToast(getTranslation("login.successToast"), {
+        type: "success",
+        duration: 3000,
+      });
     });
   }
 
   /* Inline validation */
   if (emailInput) {
-    emailInput.addEventListener('input', () => clearError('email'));
+    emailInput.addEventListener("input", () => clearError("email"));
   }
   if (passwordInput) {
-    passwordInput.addEventListener('input', () => clearError('password'));
+    passwordInput.addEventListener("input", () => clearError("password"));
   }
 
-  /* Social buttons */
+  /* Social login buttons */
   if (btnGoogle) {
-    btnGoogle.addEventListener('click', () => {
-      const langGoogle = getCurrentLanguage();
-      langGoogle === 'en' ? showCustomNotification('Login with Google') : showCustomNotification('Đăng nhập với Google');
-      console.log('Google login clicked');
+    btnGoogle.addEventListener("click", () => {
+      showToast(getTranslation("login.googleInfoToast"), {
+        type: "info",
+        duration: 3000,
+      });
+      console.log("Google login clicked");
     });
   }
 
   if (btnFacebook) {
-    btnFacebook.addEventListener('click', () => {
-      const langFb = getCurrentLanguage();
-      langFb === 'en' ? showCustomNotification('Login with Facebook') : showCustomNotification('Đăng nhập với Facebook');
-      console.log('Facebook login clicked');
+    btnFacebook.addEventListener("click", () => {
+      showToast(getTranslation("login.facebookInfoToast"), {
+        type: "info",
+        duration: 3000,
+      });
+      console.log("Facebook login clicked");
     });
   }
 
   /* Back button functionality */
   if (backButton) {
-    backButton.addEventListener('click', () => {
-      // Navigate to home page (index.html)
-      window.location.href = './index.html';
+    backButton.addEventListener("click", () => {
+      window.location.href = "./index.html";
     });
   }
 });
