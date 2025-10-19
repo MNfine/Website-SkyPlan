@@ -72,9 +72,9 @@ const fareTranslations = {
         select: "Select",
         
         // Prices (USD)
-        price90: "$90",
-        price120: "$120",
-        price350: "$350"
+        price90: "2.374.000 VND",
+        price120: "3.165.000 VND", 
+        price350: "9.230.000 VND"
     },
     vi: {
         // Header 
