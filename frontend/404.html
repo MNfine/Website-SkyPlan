@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SkyPlane – Search Results</title>
-    <link rel="stylesheet" href="assets/styles/404.css" />
+    <link rel="stylesheet" href="assets/styles/404.css">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="assets/styles/reset.css">
@@ -17,126 +17,151 @@
 
 
 <!-- Header -->
-<div id="header-container"></div>
+
+<body class="with-fixed-header with-fixed-footer">
+    <div id="header-container"></div>
 
 
-<main class="sp404-surface">
-    <div class="sp404-grid">
-        <div class="sp404-left">
-            <span class="sp404-badge">404</span>
-            <h1 class="sp404-title">Đây không phải là trang bạn đang tìm!</h1>
-            <p class="sp404-desc">
-                Liên kết có thể không chính xác hoặc trang đã được di chuyển.<br> Hãy quay lại trang chủ để tìm trang bạn cần.
-            </p>
-            <div class="sp404-actions">
-                <a href="index.html" id="homeBtn" class="sp404-btn">Về trang chủ</a>
+    <main class="sp404-surface">
+        <div class="sp404-grid">
+            <div class="sp404-left">
+                <span class="sp404-badge">404</span>
+                <h1 class="sp404-title">Đây không phải là trang bạn đang tìm!</h1>
+                <p class="sp404-desc">
+                    Liên kết có thể không chính xác hoặc trang đã được di chuyển.<br> Hãy quay lại trang chủ để tìm trang bạn cần.
+                </p>
+                <div class="sp404-actions">
+                    <a href="index.html" id="homeBtn" class="sp404-btn">Về trang chủ</a>
+                </div>
+            </div>
+
+            <div class="sp404-right">
+                <img src="assets/images/404.jpg" alt=" " class="sp404-img">
             </div>
         </div>
+    </main>
 
-        <div class="sp404-right">
-            <img src="assets/images/404.jpg" alt=" " class="sp404-img">
-        </div>
-    </div>
-</main>
+    <!-- Footer -->
+    <div id="footer-container"></div>
 
-<!-- Footer -->
-<div id="footer-container"></div>
+    <script src="assets/scripts/common.js"></script>
+    <script src="assets/scripts/404.js"></script>
+    <script src="assets/scripts/404_translations.js"></script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', async() => {
-        const loadComponent = async(id, file) => {
-            const container = document.getElementById(id);
-            if (container) {
-                try {
-                    const html = await fetch(file).then(r => r.text());
-                    container.innerHTML = html;
-                } catch (e) {
-                    console.error(`Không load được ${file}:`, e);
-                }
+    <script>
+        function handleComponentError(componentName) {
+            console.error(`Failed to load ${componentName} component`);
+        }
+
+        function initializeApp() {
+            fetch('components/header.html')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                    initializeLanguage();
+                    if (typeof initializeMobileMenu === 'function') {
+                        initializeMobileMenu();
+                    }
+                })
+                .catch(error => {
+                    handleComponentError('header');
+                    initializeLanguage();
+                });
+
+            fetch('components/footer.html')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById('footer-container').innerHTML = data;
+                    // Re-apply translations to include freshly injected footer
+                    try {
+                        const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+                        if (typeof applyTranslations === 'function') {
+                            applyTranslations(lang);
+                        }
+                    } catch (e) {}
+                })
+                .catch(error => {
+                    handleComponentError('footer');
+                });
+        }
+
+        // Initialize language functionality
+        function initializeLanguage() {
+            // Set Vietnamese as default language if not already set
+            let currentLang = localStorage.getItem('preferredLanguage');
+            if (!currentLang) {
+                currentLang = 'vi';
+                localStorage.setItem('preferredLanguage', 'vi');
             }
-        };
-        await loadComponent('header-container', 'components/header.html');
-        await loadComponent('footer-container', 'components/footer.html');
-    });
-</script>
+            // bind language switch after header injected
+            const langButtons = document.querySelectorAll('[data-lang]');
+            langButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const newLang = btn.getAttribute('data-lang'); // 'vi' hoặc 'en'
+                    localStorage.setItem('preferredLanguage', newLang);
+                    document.documentElement.lang = newLang;
 
-<script>
-    // Tự động dịch khi trang load
-    document.addEventListener('DOMContentLoaded', function() {
-        const lang = localStorage.getItem('preferredLanguage') || 'vi';
-        if (typeof apply404Translations === 'function') {
-            apply404Translations(lang);
-        }
-    });
-</script>
+                    if (typeof apply404Translations === 'function') {
+                        apply404Translations(newLang);
+                    }
+                    if (typeof updateSelectedLanguage === 'function') {
+                        updateSelectedLanguage(newLang);
+                    }
 
-<script src="assets/scripts/common.js"></script>
-<script src="assets/scripts/404_translations.js"></script>
-
-<script>
-    (function() {
-        function currentLang() {
-            return (new URLSearchParams(location.search).get('lang') ||
-                localStorage.getItem('preferredLanguage') || 'vi').toLowerCase();
-        }
-
-        function syncLabel(lang) {
-            var root = document.getElementById('header-container') || document;
-            var box = root.querySelector('.selected-lang');
-            if (box) {
-                box.innerHTML = (lang === 'en') ?
-                    '<span class="lang-flag flag-en"></span><span>EN</span>' :
-                    '<span class="lang-flag flag-vi"></span><span>VI</span>';
-            }
-            var sel = root.querySelector('#lang-select, #language-select');
-            if (sel) sel.value = lang;
-        }
-
-        function afterHeader(cb) {
-            var h = document.getElementById('header-container');
-            if (h && h.children.length) return cb();
-            var mo = new MutationObserver(function() {
-                var hh = document.getElementById('header-container');
-                if (hh && hh.children.length) {
-                    mo.disconnect();
-                    cb();
-                }
-            });
-            mo.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            afterHeader(function() {
-                syncLabel(currentLang());
-                document.querySelectorAll('.lang-option').forEach(function(opt) {
-                    opt.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        var code = (this.getAttribute('data-lang') || 'vi').toLowerCase();
-                        localStorage.setItem('preferredLanguage', code);
-                        syncLabel(code);
-                        window.dispatchEvent(new CustomEvent('sp:langchange', {
+                    // thông báo cho các phần khác (nếu cần)
+                    try {
+                        document.dispatchEvent(new CustomEvent('languageChanged', {
                             detail: {
-                                lang: code
+                                lang: newLang
                             }
                         }));
-                    });
+                    } catch (e) {}
                 });
             });
-        });
-        window.addEventListener('sp:langchange', function(e) {
-            var code = (e && e.detail && e.detail.lang) ? String(e.detail.lang).toLowerCase() : currentLang();
-            syncLabel(code);
-        });
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'preferredLanguage' && e.newValue) syncLabel(e.newValue.toLowerCase());
-        });
-    })();
-</script>
 
 
+            document.documentElement.lang = currentLang;
+
+            // Apply translations when page loads (check if function exists)
+            if (typeof apply404Translations === 'function') {
+                apply404Translations(currentLang);
+                // emit a custom event so page parts can react
+                try {
+                    const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+                    if (typeof apply404Translations === 'function') {
+                        apply404Translations(lang);
+                    }
+                } catch (e) {}
+            } else {
+                console.error('apply404Translations function not found');
+            }
+
+            // Initialize language selector ONLY after header is loaded and language is set
+            if (typeof initializeLanguageSelector === 'function') {
+                initializeLanguageSelector();
+            }
+            // Keep the selected language UI in sync with current setting
+            if (typeof updateSelectedLanguage === 'function') {
+                updateSelectedLanguage(currentLang);
+            }
+        }
+
+        // Language initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+    </script>
 </body>
 
 </html>

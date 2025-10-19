@@ -4,8 +4,8 @@ const notFoundTranslations = {
         // Header
         helpText: "Help",
         myTripsText: "My Trips",
-        signInText: "Sign Up",
-        logInText: "Sign In",
+        signUpText: "Sign Up",
+        signInText: "Sign In",
         // Footer
         footerDesc: "Your trusted travel companion for the best flight deals and unforgettable journeys.",
         quickLinksTitle: "Quick Links",
@@ -34,8 +34,8 @@ const notFoundTranslations = {
         // Header
         helpText: "Trợ giúp",
         myTripsText: "Chuyến đi của tôi",
-        signInText: "Đăng ký",
-        logInText: "Đăng nhập",
+        signUpText: "Đăng ký",
+        signInText: "Đăng nhập",
         // Footer
         footerDesc: "Đối tác du lịch đáng tin cậy của bạn cho các ưu đãi vé máy bay tốt nhất và những hành trình khó quên.",
         quickLinksTitle: "Liên kết nhanh",
