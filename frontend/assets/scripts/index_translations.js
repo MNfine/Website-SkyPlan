@@ -9,7 +9,7 @@ const translations = {
     helpText: "Help",
     myTripsText: "My Trips",
     signUpText: "Sign Up",
-    signInText: "Log In",
+    signInText: "Sign In",
     
     // Hero section
     heroTitle: "Best deals are waiting for you",
