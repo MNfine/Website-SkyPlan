@@ -128,8 +128,8 @@
   top: 0;
   right: 0;
   height: 100vh;
-  width: 380px;
-  max-width: 90%;
+  width: 480px;
+  max-width: 95%;
   background: var(--light-color);
   box-shadow: -2px 0 16px rgba(0, 0, 0, 0.12);
   display: flex;
@@ -184,12 +184,31 @@
 }
 .meal-row {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: auto 1fr max-content max-content;
   align-items: center;
   gap: 12px;
   padding: 10px 0;
   border-bottom: 1px dashed #eee;
 }
+.meal-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: cover; /* nếu là ảnh món ăn thực tế */
+  border-radius: 10px;
+  border: 1px solid #eee;
+  background: #fff;
+}
+.meal-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.meal-desc {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.3;
+}
+
 .meal-name {
   font-weight: 600;
   color: var(--dark-color);
@@ -197,12 +216,18 @@
 .meal-price {
   color: #111;
   font-weight: 600;
-}
-.meal-price {
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
+.meal-qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
 .meal-qty button {
   width: 28px;
   height: 28px;
@@ -220,6 +245,64 @@
   font-weight: 600;
 }
 /* Baggage */
+.baggage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.baggage-card {
+  display: grid;
+  grid-template-columns: auto 1fr max-content max-content; /* thumb | info | price | btn */
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px dashed #eee;
+}
+.baggage-thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  background: #fff;
+}
+.baggage-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.baggage-title {
+  font-weight: 600;
+  color: var(--dark-color);
+}
+.baggage-desc {
+  font-size: 13px;
+  color: #666;
+}
+.baggage-price {
+  font-weight: 700;
+  color: #111;
+  white-space: nowrap;
+}
+.baggage-choose {
+  border: 1px solid var(--primary-color);
+  color: #fff;
+  background: var(--primary-color);
+  border-radius: 9999px;
+  padding: 6px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.baggage-choose.on {
+  background: #e8f5f4;
+  color: var(--primary-color);
+}
+.baggage-card.active {
+  background: #fafefe;
+}
+
 .baggage-included {
   font-size: 14px;
   color: #3a7c3a;
@@ -257,6 +340,94 @@
   flex-direction: column;
   gap: 8px;
 }
+.service-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto; /* thumb | info | price | button */
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px dashed #eee;
+}
+.service-thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  background: #fff;
+}
+.service-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.service-title {
+  font-weight: 600;
+  color: var(--dark-color);
+}
+.service-desc {
+  font-size: 13px;
+  color: #666;
+}
+
+.service-price {
+  font-weight: 700;
+  color: #111;
+  white-space: nowrap;
+}
+.service-add {
+  border: 1px solid var(--primary-color);
+  color: #fff;
+  background: var(--primary-color);
+  border-radius: 9999px;
+  padding: 6px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.service-add:hover {
+  filter: brightness(0.95);
+}
+.service-add.on {
+  background: #e8f5f4;
+  color: var(--primary-color);
+}
+.service-card.selected {
+  background: #fafefe;
+}
+@media (max-width: 420px) {
+  .meal-thumb {
+    width: 60px;
+    height: 60px;
+  }
+  .meal-name {
+    font-size: 15px;
+  }
+  .meal-price {
+    font-size: 14px;
+  }
+  .baggage-thumb {
+    width: 40px;
+    height: 40px;
+  }
+  .baggage-title {
+    font-size: 15px;
+  }
+  .baggage-price {
+    font-size: 14px;
+  }
+  .service-thumb {
+    width: 40px;
+    height: 40px;
+  }
+  .service-title {
+    font-size: 15px;
+  }
+  .service-price {
+    font-size: 14px;
+  }
+}
 .service-row {
   display: flex;
   align-items: center;
@@ -287,5 +458,16 @@
   }
   .extras-drawer {
     width: 90%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .extras-drawer {
+    width: 500px;
+  }
+}
+@media (min-width: 1440px) {
+  .extras-drawer {
+    width: 560px;
   }
 }
