@@ -40,24 +40,28 @@ function loadHeaderFooter() {
 function initializeLanguage() {
   const currentLang = localStorage.getItem("preferredLanguage") || "vi";
   document.documentElement.lang = currentLang;
-  // Áp dụng bản dịch chung (header/footer) nếu có
   if (typeof applyTranslations === "function") {
-    try { applyTranslations(currentLang); } catch (e) {}
+    try {
+      applyTranslations(currentLang);
+    } catch (e) {}
   }
-  // Áp dụng bản dịch riêng cho trang Extras
-  if (typeof applyExtrasTranslations === "function") {
-    try { applyExtrasTranslations(currentLang); } catch (e) {}
-  }
-  // Khởi tạo chọn ngôn ngữ trong header
+  if (typeof applyExtrasTranslations === "function")
+    applyExtrasTranslations(currentLang);
+  document.addEventListener("languageChanged", (ev) => {
+    const lang = ev?.detail?.lang || currentLang;
+    applyExtrasTranslations?.(lang);
+    initRouteTitle(lang);
+  });
+
   if (typeof initializeLanguageSelector === "function")
     initializeLanguageSelector();
-  // Cập nhật khi đổi ngôn ngữ
   document.addEventListener("languageChanged", (ev) => {
     const lang = (ev && ev.detail && ev.detail.lang) || currentLang;
     try {
       if (typeof applyTranslations === "function") applyTranslations(lang);
-      if (typeof applyExtrasTranslations === "function") applyExtrasTranslations(lang);
-      initRouteTitle();
+      if (typeof applyExtrasTranslations === "function")
+        applyExtrasTranslations(lang);
+      if (typeof initRouteTitle === "function") initRouteTitle(lang);
     } catch (e) {}
   });
 }
@@ -66,17 +70,77 @@ function formatVND(val) {
   return new Intl.NumberFormat("vi-VN").format(val || 0) + " VND";
 }
 
-function initRouteTitle() {
+function resolveCityLabel(raw, lang) {
+  if (!raw) return "";
+  const CITY_MAP =
+    typeof window !== "undefined" && window.SKYPLAN_CITY_TRANSLATIONS
+      ? window.SKYPLAN_CITY_TRANSLATIONS
+      : {};
+  const dict = CITY_MAP[lang] || {};
+  const viMap = CITY_MAP.vi || {};
+  const enMap = CITY_MAP.en || {};
+  const val = String(raw).trim();
+  if (!val) return "";
+  if (
+    Object.prototype.hasOwnProperty.call(viMap, val) ||
+    Object.prototype.hasOwnProperty.call(enMap, val) ||
+    Object.prototype.hasOwnProperty.call(dict, val)
+  ) {
+    return dict[val] || val;
+  }
+  const mapsToCheck = [viMap, enMap];
+  for (const m of mapsToCheck) {
+    for (const code of Object.keys(m)) {
+      const label = (m[code] || "").toString();
+      if (label && label.toLowerCase() === val.toLowerCase()) {
+        return dict[code] || m[code];
+      }
+    }
+  }
+
+  return val;
+}
+
+function readRouteParts() {
+  const usp = new URLSearchParams(window.location.search || "");
+  const fromParam = usp.get("from") || usp.get("fromCode") || usp.get("f");
+  const toParam = usp.get("to") || usp.get("toCode") || usp.get("t");
+  const fromLS =
+    localStorage.getItem("booking_from") || localStorage.getItem("route_from");
+  const toLS =
+    localStorage.getItem("booking_to") || localStorage.getItem("route_to");
+  return { fromRaw: fromParam || fromLS || "", toRaw: toParam || toLS || "" };
+}
+
+function initRouteTitle(langOverride) {
   const lang =
+    langOverride ||
     document.documentElement.lang ||
     localStorage.getItem("preferredLanguage") ||
     "vi";
-  const from = localStorage.getItem("booking_from") || "Hồ Chí Minh";
-  const to = localStorage.getItem("booking_to") || "Hà Nội";
+  const { fromRaw, toRaw } = readRouteParts();
+  const CITY_MAP =
+    typeof window !== "undefined" && window.SKYPLAN_CITY_TRANSLATIONS
+      ? window.SKYPLAN_CITY_TRANSLATIONS
+      : {};
+  const dict = CITY_MAP[lang] || {};
+
+  // Fallback mặc định
+  const defaultFromCode = "HaNoi";
+  const defaultToCode = "HoChiMinh";
+  const fallbackFrom =
+    dict[defaultFromCode] || (lang === "vi" ? "Hà Nội" : "Ha Noi");
+  const fallbackTo =
+    dict[defaultToCode] || (lang === "vi" ? "Hồ Chí Minh" : "Ho Chi Minh");
+
+  const from = resolveCityLabel(fromRaw, lang) || fallbackFrom;
+  const to = resolveCityLabel(toRaw, lang) || fallbackTo;
+
   const el = document.getElementById("routeTitle");
   if (!el) return;
-  el.textContent =
-    lang === "vi" ? `Từ ${from} tới ${to}` : `From ${from} to ${to}`;
+  const phrase =
+    lang === "vi" ? { from: "Từ", to: "tới" } : { from: "From", to: "to" };
+  el.textContent = `${phrase.from} ${from} ${phrase.to} ${to}`;
 }
 
 function getState() {
@@ -117,22 +181,84 @@ function updateTotalsUI(state) {
 }
 // Meal
 const MEALS = [
-  { id: "meal_basic", name: "Basic combo", price: 120000 },
-  { id: "meal_standard", name: "Standard combo", price: 150000 },
-  { id: "meal_premium", name: "Premium combo", price: 200000 },
+  {
+    id: "meal_basic",
+    name: "Basic combo",
+    price: 120000,
+    img: "assets/images/basic_meal.svg",
+    desc: "Basic meal",
+  },
+  {
+    id: "meal_standard",
+    name: "Standard combo",
+    price: 150000,
+    img: "assets/images/standard_meal.svg",
+    desc: "Standard meal",
+  },
+  {
+    id: "meal_premium",
+    name: "Premium combo",
+    price: 200000,
+    img: "assets/images/premium_meal.svg",
+    desc: "Premium meal",
+  },
 ];
+
 //Baggage packages
 const BAGGAGE_PKGS = [
-  { kg: 0, label: "+0kg", price: 0 },
-  { kg: 20, label: "Goi 20kg", price: 200000 },
-  { kg: 30, label: "Goi 30kg", price: 300000 },
-  { kg: 40, label: "Goi 40kg", price: 400000 },
+  {
+    kg: 0,
+    label: "0kg",
+    price: 0,
+    img: "assets/images/baggage_add.svg",
+    desc: "No additional checked baggage",
+  },
+  {
+    kg: 20,
+    label: "20kg",
+    price: 200000,
+    img: "assets/images/baggage_add.svg",
+    desc: "Add 20kg checked baggage",
+  },
+  {
+    kg: 30,
+    label: "30kg",
+    price: 300000,
+    img: "assets/images/baggage_add.svg",
+    desc: "Add 30kg checked baggage",
+  },
+  {
+    kg: 40,
+    label: "40kg",
+    price: 400000,
+    img: "assets/images/baggage_add.svg",
+    desc: "Add 40kg checked baggage",
+  },
 ];
+
 // Services
 const SERVICES = [
-  { id: "svc_wheelchair", label: "Wheelchair assist", price: 500000 },
-  { id: "svc_infant", label: "Infant support", price: 500000 },
-  { id: "svc_elderly", label: "Senior support", price: 500000 },
+  {
+    id: "svc_wheelchair",
+    label: "Wheelchair assist",
+    price: 200000,
+    img: "assets/images/service_wheelchair.svg",
+    desc: "Assist for reduced mobility",
+  },
+  {
+    id: "svc_infant",
+    label: "Infant support",
+    price: 300000,
+    img: "assets/images/service_pet.svg",
+    desc: "Support for infants/babies",
+  },
+  {
+    id: "svc_elderly",
+    label: "Senior support",
+    price: 400000,
+    img: "assets/images/service_elderly.svg",
+    desc: "Assistance for seniors",
+  },
 ];
 
 function bindDetailsButtons() {
@@ -181,10 +307,16 @@ function renderDrawerContent(type) {
   const wrap = document.getElementById("drawerContent");
   const title = document.getElementById("drawerTitle");
   const lang = document.documentElement.lang || "vi";
-  // Lấy hàm dịch cho drawer; hỗ trợ cả window.extrasI18n và biến cục bộ extrasI18n
-  const __extrasI18n = (typeof window !== 'undefined' && window.extrasI18n) ? window.extrasI18n
-                       : (typeof extrasI18n !== 'undefined' ? extrasI18n : null);
-  const t = (k) => (__extrasI18n && __extrasI18n[lang] && __extrasI18n[lang][k]) ? __extrasI18n[lang][k] : k;
+  const __extrasI18n =
+    typeof window !== "undefined" && window.extrasI18n
+      ? window.extrasI18n
+      : typeof extrasI18n !== "undefined"
+      ? extrasI18n
+      : null;
+  const t = (k) =>
+    __extrasI18n && __extrasI18n[lang] && __extrasI18n[lang][k]
+      ? __extrasI18n[lang][k]
+      : k;
   const state = getState();
   if (!wrap) return;
 
@@ -192,23 +324,32 @@ function renderDrawerContent(type) {
 
   if (type === "meal") {
     wrap.innerHTML = `
-      <div class="meal-list">
-        ${MEALS.map(
-          (m) => `
-          <div class="meal-row" data-id="${m.id}">
-            <div class="meal-name">${m.name}</div>
-            <div class="meal-price">${formatVND(m.price)}</div>
-            <div class="meal-qty">
-              <button class="qty-minus" aria-label="minus">-</button>
-              <span class="qty-val">${
-                state.meals.find((x) => x.id === m.id)?.qty || 0
-              }</span>
-              <button class="qty-plus" aria-label="plus">+</button>
-            </div>
-          </div>`
-        ).join("")}
-      </div>
-    `;
+  <div class="meal-list">
+    ${MEALS.map((m) => {
+      const name = window.extrasI18n?.[lang]?.meals?.[m.id] || m.name;
+      const desc =
+        window.extrasI18n?.[lang]?.mealItemDescs?.[m.id] || m.desc || "";
+      const img = m.img || "assets/images/meal.png"; // fallback
+      return `
+        <div class="meal-row" data-id="${m.id}">
+          <img class="meal-thumb" src="${img}" alt="${name}" />
+          <div class="meal-info">
+            <div class="meal-name">${name}</div>
+            <div class="meal-desc">${desc}</div>
+          </div>
+          <div class="meal-price">${formatVND(m.price)}</div>
+          <div class="meal-qty">
+            <button class="qty-minus" aria-label="minus">-</button>
+            <span class="qty-val">${
+              state.meals.find((x) => x.id === m.id)?.qty || 0
+            }</span>
+            <button class="qty-plus" aria-label="plus">+</button>
+          </div>
+        </div>`;
+    }).join("")}
+  </div>
+`;
+
     wrap.querySelectorAll(".meal-row").forEach((row) => {
       const id = row.getAttribute("data-id");
       row.querySelector(".qty-minus").addEventListener("click", () => {
@@ -237,21 +378,50 @@ function renderDrawerContent(type) {
     });
   } else if (type === "baggage") {
     wrap.innerHTML = `
-      <div class="baggage-included">${t("baggageIncluded")}</div>
-      <div class="baggage-options">
-        ${BAGGAGE_PKGS.map(
-          (b) => `
-          <button class="baggage-opt ${
-            b.kg === (state.baggage?.kg || 0) ? "active" : ""
-          }" data-kg="${b.kg}">
-            ${b.label} ${b.price ? "(" + formatVND(b.price) + ")" : ""}
-          </button>`
-        ).join("")}
-      </div>
-    `;
-    wrap.querySelectorAll(".baggage-opt").forEach((btn) => {
+    <div class="baggage-included">${t("baggageIncluded")}</div>
+    <div class="baggage-list">
+      ${BAGGAGE_PKGS.map((b) => {
+        const isActive = b.kg === (state.baggage?.kg || 0);
+        const title =
+          window.extrasI18n?.[lang]?.baggagePkgs?.[String(b.kg)] || b.label;
+        const desc =
+          window.extrasI18n?.[lang]?.baggageItemDescs?.[String(b.kg)] ||
+          b.desc ||
+          "";
+        const img = b.img || "assets/images/baggage_add.svg";
+        const btnText = isActive
+          ? lang === "vi"
+            ? "Đã thêm"
+            : "Added"
+          : lang === "vi"
+          ? "Thêm"
+          : "Add";
+        const priceText = b.price
+          ? formatVND(b.price)
+          : lang === "vi"
+          ? "Miễn phí"
+          : "Free";
+        return `
+          <div class="baggage-card ${isActive ? "active" : ""}" data-kg="${
+          b.kg
+        }">
+            <img class="baggage-thumb" src="${img}" alt="${title}" />
+            <div class="baggage-info">
+              <div class="baggage-title">${title}</div>
+              <div class="baggage-desc">${desc}</div>
+            </div>
+            <div class="baggage-price">${priceText}</div>
+            <button class="baggage-choose ${
+              isActive ? "on" : ""
+            }" aria-pressed="${isActive}">${btnText}</button>
+          </div>`;
+      }).join("")}
+    </div>
+  `;
+    wrap.querySelectorAll(".baggage-choose").forEach((btn) => {
       btn.addEventListener("click", (e) => {
-        const kg = Number(e.currentTarget.getAttribute("data-kg"));
+        const card = e.currentTarget.closest(".baggage-card");
+        const kg = Number(card?.dataset.kg || 0);
         const st = getState();
         st.baggage = { kg };
         setState(st);
@@ -260,30 +430,50 @@ function renderDrawerContent(type) {
     });
   } else if (type === "services") {
     wrap.innerHTML = `
-      <div class="services-list">
-        ${SERVICES.map(
-          (s) => `
-          <label class="service-row">
-            <input type="checkbox" value="${s.id}" ${
-            state.services.includes(s.id) ? "checked" : ""
-          }/>
-            <span>${s.label}</span>
-          </label>`
-        ).join("")}
-      </div>
-    `;
-    wrap.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
-      cb.addEventListener("change", (e) => {
-        const id = e.currentTarget.value;
+    <div class="services-list">
+      ${SERVICES.map((s) => {
+        const title = window.extrasI18n?.[lang]?.services?.[s.id] || s.label;
+        const desc =
+          window.extrasI18n?.[lang]?.serviceItemDescs?.[s.id] || s.desc || "";
+        const img = s.img || "assets/images/service.svg";
+        const isOn = (getState().services || []).includes(s.id);
+        const btn = isOn
+          ? lang === "vi"
+            ? "Đã thêm"
+            : "Added"
+          : lang === "vi"
+          ? "Thêm"
+          : "Add";
+        return `
+          <div class="service-card ${isOn ? "selected" : ""}" data-id="${s.id}">
+            <img class="service-thumb" src="${img}" alt="${title}" />
+            <div class="service-info">
+              <div class="service-title">${title}</div>
+              <div class="service-desc">${desc}</div>
+            </div>
+            <div class="service-price">${formatVND(s.price)}</div>
+            <button class="service-add ${
+              isOn ? "on" : ""
+            }" aria-pressed="${isOn}">${btn}</button>
+          </div>`;
+      }).join("")}
+    </div>
+  `;
+    wrap.querySelectorAll(".service-add").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const card = e.currentTarget.closest(".service-card");
+        const id = card?.dataset.id;
         const st = getState();
-        if (e.currentTarget.checked) {
-          if (!st.services.includes(id)) st.services.push(id);
-        } else {
+        const on = st.services.includes(id);
+        if (on) {
           st.services = st.services.filter((x) => x !== id);
+        } else {
+          st.services.push(id);
         }
         setState(st);
+        renderDrawerContent("services");
       });
     });
   }
-  updateTotalsUI(getState());
+  updateTotalUI(state.total);
 }
