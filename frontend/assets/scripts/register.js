@@ -244,9 +244,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // Show success toast notification
       showToast(getTranslation('register.successToast'), {
         type: 'success',
-        duration: 3000,
+        duration: 2000,
         dismissible: true
       });
+
+      // Redirect to login page after successful registration
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 2000);
     });
   }
 
