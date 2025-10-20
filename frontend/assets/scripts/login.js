@@ -143,12 +143,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (hasError) return;
-
-      console.log("Login successful:", { email, password, remember });
+    
       showToast(getTranslation("login.successToast"), {
         type: "success",
-        duration: 3000,
+        duration: 2000,
       });
+
+      // Redirect to home page after successful login
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 2000);
     });
   }
 
@@ -167,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
         type: "info",
         duration: 3000,
       });
-      console.log("Google login clicked");
+      // NOTE: Implement Google OAuth login here
     });
   }
 
@@ -177,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
         type: "info",
         duration: 3000,
       });
-      console.log("Facebook login clicked");
+      // NOTE: Implement Facebook OAuth login here
     });
   }
 
