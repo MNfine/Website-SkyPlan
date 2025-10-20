@@ -14,7 +14,7 @@
         "Select flight",
         "Select fare",
         "Passenger info",
-        "Add-on services",
+        "Extras",
         "Payment",
       ],
       passengerHeader: "PASSENGER INFORMATION",
