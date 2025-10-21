@@ -22,49 +22,50 @@
         <aside class="sp-filters" aria-label="Search filters">
             <h2 class="sp-title">Chuyến đi của bạn</h2>
 
-            <div class="sp-field">
-                <label for="from" class="sp-label">Từ</label>
-                <input id="from" class="sp-input" type="text" value="TP.Hồ Chí Minh">
-            </div>
-
-            <div class="sp-field">
-                <label for="to" class="sp-label">Đến</label>
-                <input id="to" class="sp-input" type="text" value="Hà Nội">
-            </div>
-
-            <div class="sp-row sp-field-group">
+            <form id="spSearchForm">
                 <div class="sp-field">
-                    <label for="dep" class="sp-label">Ngày đi</label>
-                    <input id="dep" class="sp-input" type="date" value="2023-06-10">
+                    <label class="sp-label" data-i18n="search.from">Từ</label>
+                    <select id="fromCity" class="sp-input sp-city-dropdown"></select>
                 </div>
-                <div class="sp-field">
-                    <label for="ret" class="sp-label">Ngày về</label>
-                    <input id="ret" class="sp-input" type="date" value="2023-08-18">
-                </div>
-            </div>
 
-            <button class="sp-btn sp-btn-secondary" type="button">
+                <div class="sp-field">
+                    <label class="sp-label" data-i18n="search.to">Đến</label>
+                    <select id="toCity" class="sp-input sp-city-dropdown"></select>
+                </div>
+
+                <div class="sp-row sp-field-group">
+                    <div class="sp-field">
+                        <label for="dep" class="sp-label">Ngày đi</label>
+                        <input id="dep" class="sp-input" type="date" value="2023-06-10">
+                    </div>
+                    <div class="sp-field">
+                        <label for="ret" class="sp-label">Ngày về</label>
+                        <input id="ret" class="sp-input" type="date" value="2023-08-18">
+                    </div>
+                </div>
+
+                <button class="sp-btn sp-btn-secondary" type="button">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 Tìm kiếm
             </button>
 
-            <h3 class="sp-subtitle">Bộ lọc</h3>
+                <h3 class="sp-subtitle">Bộ lọc</h3>
 
-            <section class="sp-section" aria-labelledby="budget-heading">
-                <h4 id="budget-heading" class="sp-section-title">Ngân sách</h4>
-                <div class="sp-price-top"><span>0 VND – 5.000.000 VND</span><span>Bất kỳ</span></div>
-                <input id="priceRange" class="sp-range" type="range" max="5000000" step="50000" value="2000000">
-                <div class="sp-price-bottom"><span>0 VND</span><span id="priceOut">2.000.000 VND</span></div>
-            </section>
+                <section class="sp-section" aria-labelledby="budget-heading">
+                    <h4 id="budget-heading" class="sp-section-title">Ngân sách</h4>
+                    <div class="sp-price-top"><span>0 VND – 5.000.000 VND</span><span>Bất kỳ</span></div>
+                    <input id="priceRange" class="sp-range" type="range" max="5000000" step="50000" value="2000000">
+                    <div class="sp-price-bottom"><span>0 VND</span><span id="priceOut">2.000.000 VND</span></div>
+                </section>
 
 
-            <section class="sp-section" aria-labelledby="time-heading">
-                <h4 id="time-heading" class="sp-section-title">Giờ bay</h4>
-                <label class="sp-choice"><input type="radio" name="time" checked>5:00 - 11:49</label>
-                <label class="sp-choice"><input type="radio" name="time">12:00 - 17:59</label>
-                <label class="sp-choice"><input type="radio" name="time"> 18:00 - 23:59</label>
-                <label class="sp-choice"><input type="radio" name="time"> 00:00 - 4:59</label>
-            </section>
+                <section class="sp-section" aria-labelledby="time-heading">
+                    <h4 id="time-heading" class="sp-section-title">Giờ bay</h4>
+                    <label class="sp-choice"><input type="radio" name="time" checked>5:00 - 11:49</label>
+                    <label class="sp-choice"><input type="radio" name="time">12:00 - 17:59</label>
+                    <label class="sp-choice"><input type="radio" name="time"> 18:00 - 23:59</label>
+                    <label class="sp-choice"><input type="radio" name="time"> 00:00 - 4:59</label>
+                </section>
 
 
         </aside>
@@ -718,7 +719,10 @@
 
                     var priceEl = card.querySelector('.sp-price');
                     var price = text(priceEl);
-                    if (price) bookBtn.textContent = 'Đặt ngay với giá ' + price;
+                    const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+                    const t = MODAL_I18N[lang] || MODAL_I18N.vi;
+                    bookBtn.textContent = t.bookPrefix + price;
+
                 }
 
                 function openModal() {
@@ -813,6 +817,13 @@
                     updateSelectedLanguage(currentLang);
                     console.log('Language selector updated:', currentLang);
                 }
+                try {
+                    document.dispatchEvent(new CustomEvent('languageChanged', {
+                        detail: {
+                            lang: currentLang
+                        }
+                    }));
+                } catch (e) {}
             }, 200);
         }
 
@@ -835,18 +846,4 @@
                 .catch(error => {
                     handleComponentError('header');
                     console.error('Error loading header:', error);
-                    // Still initialize language even if header fails
-                    initializeLanguage();
-                });
-
-            // Load footer
-            fetch('components/footer.html')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    document.getElementById('footer-container').innerHTML = data;
-                    console.log('Footer loaded successfu
+   

@@ -91,8 +91,8 @@
         // empty state
         // helper nhỏ để lấy chuỗi theo ngôn ngữ hiện tại
         function t(key, fallbackVi, fallbackEn) {
-            const lang = document.documentElement.lang === 'en' ? 'en' : 'vi';
-            try { return _t(lang)[key] || (lang === 'en' ? (fallbackEn || '') : (fallbackVi || '')); } catch (_) { return (lang === 'en' ? (fallbackEn || '') : (fallbackVi || '')); }
+            const lang = document.documentElement.lang === 'vi' ? 'vi' : 'en';
+            try { return _t(lang)[key] || (lang === 'vi' ? (fallbackEn || '') : (fallbackVi || '')); } catch (_) { return (lang === 'vi' ? (fallbackEn || '') : (fallbackVi || '')); }
         }
 
         // Empty state
@@ -135,7 +135,7 @@
             priceSlider.style.setProperty("--sp-range-pct", pct + "%");
             priceSlider.style.background =
                 "linear-gradient(to right, var(--sp-primary) " + pct + "%, #e5e7eb " + pct + "%)";
-            if (priceOut) priceOut.textContent = val.toLocaleString("vi-VN") + " VNĐ";
+            if (priceOut) priceOut.textContent = val.toLocaleString("vi-VN") + " VND";
         };
         priceSlider.addEventListener("input", () => {
             paintRange();
@@ -148,5 +148,4 @@
         paintRange();
     }
 
-    applyFilters();
-})();
+    document.addEventListe
