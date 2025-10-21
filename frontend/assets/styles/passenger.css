@@ -42,7 +42,7 @@ main.main-content {
   background: linear-gradient(90deg, #0a969d 0%, #1fb6a0 100%);
   border-radius: 2px;
   transition: width 0.3s ease;
-  width: 58.33%; 
+  width: 58.33%;
 }
 
 .step {
@@ -153,8 +153,7 @@ main.main-content {
 .form-card {
   background-color: white;
   border-radius: 0.5rem;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.15),
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15),
     0 2px 4px -1px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(0, 0, 0, 0.08);
   padding: 1.5rem;
@@ -192,21 +191,21 @@ main.main-content {
 .form-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.25rem; 
+  gap: 1.25rem;
 }
 
 @media (min-width: 768px) {
   .form-grid {
     grid-template-columns: repeat(2, 1fr);
-    column-gap: 2.5rem; 
-    row-gap: 1.5rem; 
+    column-gap: 2.5rem;
+    row-gap: 1.5rem;
   }
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem; 
+  gap: 0.5rem;
 }
 
 .form-group.full-width {
@@ -242,7 +241,7 @@ main.main-content {
 .form-group input::placeholder,
 .form-group textarea::placeholder {
   color: #9ca3af;
-  opacity: 1; 
+  opacity: 1;
   font-weight: 400;
 }
 
@@ -297,10 +296,23 @@ main.main-content {
 /* Select dropdown styling */
 select {
   appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   padding-right: 2.5rem;
+}
+
+/* Ensure select arrow is visible with higher specificity */
+.form-group select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  padding-right: 2.5rem !important;
 }
 
 /* Input with datalist */
@@ -381,15 +393,13 @@ input[list]::-webkit-calendar-picker-indicator {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .btn-submit:hover {
   background-color: #008b7a;
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
   transform: translateY(-1px);
 }
@@ -402,6 +412,17 @@ input[list]::-webkit-calendar-picker-indicator {
 #skyplan-toast-container {
   top: 120px !important;
   z-index: 99999 !important;
+}
+
+/* Mobile language selector - support click toggle */
+@media (max-width: 768px) {
+  /* Show dropdown when show-dropdown class is added (via JavaScript) */
+  .language-selector.show-dropdown .lang-dropdown {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) scale(1) !important;
+    display: block !important;
+  }
 }
 
 /* Responsive */
