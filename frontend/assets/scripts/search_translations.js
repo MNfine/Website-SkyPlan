@@ -266,4 +266,48 @@ function changeSearchLanguage(lang) {
     document.documentElement.lang = next;
     applySearchTranslations(next);
 
-   
+    if (typeof updateSelectedLanguage === 'function') {
+        try { updateSelectedLanguage(next); } catch (_) {}
+    }
+}
+
+// Expose cho common.js & fallback
+window.changeSearchLanguage = changeSearchLanguage;
+window.changeLanguage = changeSearchLanguage; // alias thường dùng
+
+// Mặc định VI lần đầu
+if (!localStorage.getItem('preferredLanguage')) {
+    localStorage.setItem('preferredLanguage', 'vi');
+}
+
+// Function để init translations sau khi components đã load
+function initSearchTranslations() {
+    const qLang = new URLSearchParams(location.search).get('lang');
+    const lang = (qLang === 'vi' || qLang === 'en') ?
+        qLang :
+        (localStorage.getItem('preferredLanguage') || 'en');
+
+    applySearchTranslations(lang);
+
+    // Fallback click .lang-option nếu không dùng common.js
+    if (!window.__search_lang_bound) {
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest && e.target.closest('.lang-option');
+            if (!btn) return;
+            e.preventDefault();
+            const next = btn.getAttribute('data-lang') || 'vi';
+            changeSearchLanguage(next);
+        });
+        window.__search_lang_bound = true;
+    }
+
+    // Fallback <select id="languageSelect">
+    const sel = document.getElementById('languageSelect');
+    if (sel && !sel.__bound) {
+        sel.addEventListener('change', () => changeSearchLanguage(sel.value));
+        sel.__bound = true;
+    }
+}
+
+// Expose init function
+window.initSearchTranslations = initSearchTranslations;

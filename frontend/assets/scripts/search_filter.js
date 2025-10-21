@@ -148,4 +148,21 @@
         paintRange();
     }
 
-    document.addEventListe
+    document.addEventListener('languageChanged', () => {
+        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        const t = MODAL_I18N[lang] || MODAL_I18N.vi;
+
+        const shareBtn = document.querySelector('.sp-modal__footer .sp-btn--ghost');
+        const bookBtn = document.getElementById('spBookBtn');
+        const titleEl = document.querySelector('.sp-modal__header h2');
+
+        if (shareBtn) shareBtn.textContent = t.share;
+        if (bookBtn) {
+            const price = bookBtn.dataset.price || '';
+            bookBtn.textContent = t.bookPrefix + price;
+        }
+        if (titleEl) titleEl.textContent = t.title;
+    });
+
+    applyFilters();
+})();

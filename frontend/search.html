@@ -846,4 +846,201 @@
                 .catch(error => {
                     handleComponentError('header');
                     console.error('Error loading header:', error);
-   
+                    // Still initialize language even if header fails
+                    initializeLanguage();
+                });
+
+            // Load footer
+            fetch('components/footer.html')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById('footer-container').innerHTML = data;
+                    console.log('Footer loaded successfully');
+                })
+                .catch(error => {
+                    handleComponentError('footer');
+                    console.error('Error loading footer:', error);
+                });
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+    </script>
+
+    <script>
+        (function() {
+            // Lấy ngôn ngữ hiện tại
+            function getLang() {
+                return localStorage.getItem('preferredLanguage') || 'vi';
+            }
+
+            // Tạo dropdown cho phần "From" và "To"
+            const citySelects = document.querySelectorAll('.sp-city-dropdown');
+
+            citySelects.forEach(select => {
+                const lang = getLang();
+                const cities = window.SKYPLAN_CITY_TRANSLATIONS[lang];
+                select.innerHTML = ''; // xoá sạch option cũ
+
+                // Tạo option mặc định
+                const defOpt = document.createElement('option');
+                defOpt.textContent = lang === 'vi' ? 'Chọn thành phố' : 'Select city';
+                defOpt.disabled = true;
+                defOpt.selected = true;
+                select.appendChild(defOpt);
+
+                // Đổ danh sách thành phố
+                for (const code in cities) {
+                    const opt = document.createElement('option');
+                    opt.value = code; // ví dụ: HaNoi
+                    opt.textContent = cities[code]; // ví dụ: Hà Nội
+                    select.appendChild(opt);
+                }
+            });
+
+            // Khi đổi ngôn ngữ thì dropdown tự cập nhật
+            document.addEventListener('languageChanged', (e) => {
+                const newLang = e.detail.lang;
+                citySelects.forEach(select => {
+                    const currentValue = select.value;
+                    const cities = window.SKYPLAN_CITY_TRANSLATIONS[newLang];
+                    select.innerHTML = '';
+                    const defOpt = document.createElement('option');
+                    defOpt.textContent = newLang === 'vi' ? 'Chọn thành phố' : 'Select city';
+                    defOpt.disabled = true;
+                    select.appendChild(defOpt);
+
+                    for (const code in cities) {
+                        const opt = document.createElement('option');
+                        opt.value = code;
+                        opt.textContent = cities[code];
+                        if (code === currentValue) opt.selected = true;
+                        select.appendChild(opt);
+                    }
+                });
+            });
+        })();
+    </script>
+
+    <script>
+        document.getElementById('spSearchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const lang = localStorage.getItem('preferredLanguage') || 'vi';
+            const dict = window.SKYPLAN_CITY_TRANSLATIONS[lang];
+
+            const fromCode = document.getElementById('fromCity').value;
+            const toCode = document.getElementById('toCity').value;
+            const fromName = dict[fromCode];
+            const toName = dict[toCode];
+
+            const depart = document.getElementById('departDay').value;
+            const ret = document.getElementById('returnDay').value;
+
+            const data = {
+                fromCode,
+                fromName,
+                toCode,
+                toName,
+                depart,
+                ret
+            };
+            sessionStorage.setItem('skyplan:lastSearch', JSON.stringify(data));
+            location.href = `search.html?from=${fromCode}&to=${toCode}&depart=${depart}&ret=${ret}`;
+        });
+    </script>
+
+
+
+    <script>
+        (function() {
+            const KEY = 'skyplan:lastSearch';
+
+            function getLang() {
+                return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+            }
+
+            function getDict(lang) {
+                return (window.SKYPLAN_CITY_TRANSLATIONS && window.SKYPLAN_CITY_TRANSLATIONS[lang]) || {};
+            }
+
+
+            function readState() {
+                const p = new URLSearchParams(location.search);
+                let state = {
+                    from: p.get('from') || '',
+                    to: p.get('to') || '',
+                    depart: p.get('depart') || '',
+                    ret: p.get('ret') || '',
+                };
+                if ((!state.from || !state.to) && sessionStorage.getItem(KEY)) {
+                    try {
+                        const s = JSON.parse(sessionStorage.getItem(KEY));
+                        state.from = state.from || s.fromCode || '';
+                        state.to = state.to || s.toCode || '';
+                        state.depart = state.depart || s.depart || '';
+                        state.ret = state.ret || s.ret || '';
+                    } catch {}
+                }
+                return state;
+            }
+
+            function ensureOption(select, code, label) {
+                if (!select || !code) return;
+                const found = Array.from(select.options).some(o => o.value === code);
+                if (!found) {
+                    const opt = document.createElement('option');
+                    opt.value = code;
+                    opt.textContent = label || code;
+                    select.appendChild(opt);
+                }
+                select.value = code;
+            }
+
+            function applyState(state) {
+                const lang = getLang();
+                const dict = getDict(lang);
+
+                const fromSel = document.getElementById('fromCity');
+                const toSel = document.getElementById('toCity');
+
+                ensureOption(fromSel, state.from, dict[state.from]);
+                ensureOption(toSel, state.to, dict[state.to]);
+
+                const depart = document.getElementById('dep');
+                const ret = document.getElementById('ret');
+                if (depart && state.depart) depart.value = state.depart;
+                if (ret && state.ret) ret.value = state.ret;
+            }
+
+            function relabelSelects() {
+                const lang = getLang();
+                const dict = getDict(lang);
+                ['fromCity', 'toCity'].forEach(id => {
+                    const sel = document.getElementById(id);
+                    if (!sel) return;
+                    Array.from(sel.options).forEach(opt => {
+                        if (dict[opt.value]) opt.textContent = dict[opt.value];
+                    });
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const state = readState();
+                applyState(state);
+            });
+
+            document.addEventListener('languageChanged', relabelSelects);
+        })();
+    </script>
+
+</body>
+
+</html>
