@@ -9,7 +9,6 @@ const DEFAULT_EXTRAS = {
 
 document.addEventListener("DOMContentLoaded", () => {
   loadHeaderFooter().then(initializeLanguage);
-  initRouteTitle();
   bindDetailsButtons();
   initDrawer();
   updateTotalsUI(getState());
@@ -47,6 +46,7 @@ function initializeLanguage() {
   }
   if (typeof applyExtrasTranslations === "function")
     applyExtrasTranslations(currentLang);
+  if (typeof initRouteTitle === "function") initRouteTitle(currentLang);
   document.addEventListener("languageChanged", (ev) => {
     const lang = ev?.detail?.lang || currentLang;
     applyExtrasTranslations?.(lang);
@@ -103,8 +103,8 @@ function resolveCityLabel(raw, lang) {
 
 function readRouteParts() {
   const usp = new URLSearchParams(window.location.search || "");
-  const fromParam = usp.get("from") || usp.get("fromCode") || usp.get("f");
-  const toParam = usp.get("to") || usp.get("toCode") || usp.get("t");
+  const fromParam = usp.get("from");
+  const toParam = usp.get("to");
   const fromLS =
     localStorage.getItem("booking_from") || localStorage.getItem("route_from");
   const toLS =
@@ -115,8 +115,8 @@ function readRouteParts() {
 function initRouteTitle(langOverride) {
   const lang =
     langOverride ||
-    document.documentElement.lang ||
     localStorage.getItem("preferredLanguage") ||
+    document.documentElement.lang ||
     "vi";
   const { fromRaw, toRaw } = readRouteParts();
   const CITY_MAP =
@@ -246,11 +246,11 @@ const SERVICES = [
     desc: "Assist for reduced mobility",
   },
   {
-    id: "svc_infant",
-    label: "Infant support",
+    id: "svc_pet",
+    label: "Pet support",
     price: 300000,
     img: "assets/images/service_pet.svg",
-    desc: "Support for infants/babies",
+    desc: "Support for your pet",
   },
   {
     id: "svc_elderly",

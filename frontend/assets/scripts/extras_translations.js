@@ -11,7 +11,7 @@ const extrasI18n = {
     baggageTitle: "Baggage",
     baggageDesc: "Add more baggage allowance.",
     servicesTitle: "Passenger services",
-    servicesDesc: "Wheelchair, infant, senior support.",
+    servicesDesc: "Wheelchair, pet, senior support.",
     viewDetails: "View details",
     panelTitle: "Details",
     totalLabel: "Total",
@@ -45,12 +45,12 @@ const extrasI18n = {
     },
     services: {
       svc_wheelchair: "Wheelchair assist",
-      svc_infant: "Infant support",
+      svc_pet: "Pet support",
       svc_elderly: "Senior support",
     },
     serviceItemDescs: {
       svc_wheelchair: "Assistance for passengers with reduced mobility",
-      svc_infant: "Support for traveling with infants",
+      svc_pet: "Support for traveling with pet",
       svc_elderly: "Care and assistance for seniors",
     },
   },
@@ -66,7 +66,7 @@ const extrasI18n = {
     baggageTitle: "Chọn hành lý",
     baggageDesc: "Lựa chọn gói hành lý phù hợp",
     servicesTitle: "Dịch vụ theo hành khách",
-    servicesDesc: "Hỗ trợ xe lăn, trẻ em, người cao tuổi.",
+    servicesDesc: "Hỗ trợ xe lăn, thú cưng, người cao tuổi.",
     viewDetails: "Xem chi tiết",
     panelTitle: "Chi tiết",
     totalLabel: "Tổng",
@@ -101,12 +101,12 @@ const extrasI18n = {
 
     services: {
       svc_wheelchair: "Hỗ trợ xe lăn",
-      svc_infant: "Hỗ trợ trẻ em",
+      svc_pet: "Hỗ trợ thú cưng",
       svc_elderly: "Hỗ trợ người cao tuổi",
     },
     serviceItemDescs: {
       svc_wheelchair: "Hỗ trợ hành khách hạn chế di chuyển",
-      svc_infant: "Hỗ trợ khi đi cùng em bé",
+      svc_pet: "Hỗ trợ thú cưng",
       svc_elderly: "Chăm sóc và hỗ trợ người cao tuổi",
     },
   },
@@ -141,16 +141,13 @@ function applyExtrasTranslations(lang) {
       document.documentElement.lang = lang;
       if (typeof applyExtrasTranslations === "function")
         applyExtrasTranslations(lang);
-      if (typeof initRouteTitle === "function") initRouteTitle();
+      if (typeof initRouteTitle === "function") initRouteTitle(lang);
     } catch (e) {}
   };
 })();
 
-// Expose translations to other scripts (e.g., extras.js)
 try {
   if (typeof window !== "undefined") {
     window.extrasI18n = extrasI18n;
   }
-} catch (e) {
-  /* noop */
-}
+} catch (e) {}
