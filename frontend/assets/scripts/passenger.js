@@ -335,11 +335,18 @@ form.addEventListener("submit", function (e) {
     if (typeof window.showToast === "function") {
       window.showToast(t("successMessage"), {
         type: "success",
-        duration: 5000,
+        duration: 2000,
         dismissible: true,
       });
+      
+      // Redirect to extras page after 2 seconds
+      setTimeout(() => {
+        window.location.href = "extras.html";
+      }, 2000);
     } else {
       alert(t("successMessage") + "\n\n" + t("successDetail"));
+      // Redirect immediately if no toast
+      window.location.href = "extras.html";
     }
   }
 });
