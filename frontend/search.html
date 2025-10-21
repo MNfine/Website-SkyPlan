@@ -926,6 +926,8 @@
                     }
                 });
             });
+
+
         })();
     </script>
 
@@ -1040,6 +1042,148 @@
             document.addEventListener('languageChanged', relabelSelects);
         })();
     </script>
+
+    <script>
+        (function() {
+            // Bảng song ngữ theo mã IATA (bổ sung thêm nếu cần)
+            const CITY_BY_CODE = {
+                HAN: {
+                    vi: 'Hà Nội',
+                    en: 'Ha Noi'
+                },
+                SGN: {
+                    vi: 'Hồ Chí Minh',
+                    en: 'Ho Chi Minh'
+                },
+                DAD: {
+                    vi: 'Đà Nẵng',
+                    en: 'Da Nang'
+                },
+                PQC: {
+                    vi: 'Phú Quốc',
+                    en: 'Phu Quoc'
+                },
+                HPH: {
+                    vi: 'Hải Phòng',
+                    en: 'Hai Phong'
+                },
+                HUI: {
+                    vi: 'Huế',
+                    en: 'Hue'
+                },
+                DLI: {
+                    vi: 'Đà Lạt',
+                    en: 'Da Lat'
+                },
+                VCA: {
+                    vi: 'Cần Thơ',
+                    en: 'Can Tho'
+                }
+            };
+
+            function getLang() {
+                return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+            }
+
+            // Tự bắt mã IATA trong text "(XXX)" nếu chưa có data-iata
+            function ensureIata(el) {
+                if (el.dataset.iata) return el.dataset.iata;
+                const m = el.textContent.trim().match(/\(([A-Z]{3})\)\s*$/);
+                if (!m) return null;
+                el.dataset.iata = m[1];
+                return m[1];
+            }
+
+            // Cập nhật tên địa điểm theo ngôn ngữ cho cả card & modal
+            function renderAirportLabels(lang) {
+                const TARGETS = [
+                    '.sp-card .sp-meta', // các card kết quả
+                    '.sp-modal [data-out-dep-airport]',
+                    '.sp-modal [data-out-arr-airport]',
+                    '.sp-modal [data-in-dep-airport]',
+                    '.sp-modal [data-in-arr-airport]'
+                ].join(',');
+                document.querySelectorAll(TARGETS).forEach(el => {
+                    const code = ensureIata(el);
+                    if (!code) return;
+                    const row = CITY_BY_CODE[code];
+                    if (row && row[lang]) el.textContent = `${row[lang]} (${code})`;
+                });
+            }
+
+            // Lúc trang load
+            document.addEventListener('DOMContentLoaded', () => {
+                renderAirportLabels(getLang());
+            });
+
+            // Khi header đổi ngôn ngữ
+            document.addEventListener('languageChanged', function(e) {
+                // dùng cú pháp "an toàn" không optional chaining để khỏi lỗi
+                var lang = (e && e.detail && e.detail.lang) || getLang();
+                renderAirportLabels(lang);
+            });
+
+            // Export nhẹ để gọi sau parseCard
+            window.__spRenderAirports = renderAirportLabels;
+            window.__spGetLang = getLang;
+        })();
+    </script>
+
+    <script>
+        // hàm phụ an toàn lấy lang
+        function getLangSafe(e) {
+            return (e && e.detail && e.detail.lang) || localStorage.getItem('preferredLanguage') || 'vi';
+        }
+
+        // ====== Lắng nghe đổi ngôn ngữ từ header ======
+        document.addEventListener('languageChanged', function(e) {
+            const lang = getLangSafe(e);
+
+            // 1) Text tĩnh dùng i18n (nếu bạn có applyTranslations / changeSearchLanguage)
+            if (typeof changeSearchLanguage === 'function') changeSearchLanguage(lang);
+            if (typeof initSearchTranslations === 'function') initSearchTranslations(lang);
+
+            // 2) Relabel dropdown From/To (không thay value đang chọn)
+            (function relabelSelects() {
+                const dict = (window.SKYPLAN_CITY_TRANSLATIONS && window.SKYPLAN_CITY_TRANSLATIONS[lang]) || {};
+                ['fromCity', 'toCity'].forEach(id => {
+                    const sel = document.getElementById(id);
+                    if (!sel) return;
+                    Array.from(sel.options).forEach(opt => {
+                        if (dict[opt.value]) opt.textContent = dict[opt.value];
+                    });
+                });
+            })();
+
+            // 3) Đổi city labels trong **card kết quả + modal**
+            if (typeof window.__spRenderAirports === 'function') window.__spRenderAirports(lang);
+
+            // 4) Thông điệp "không có chuyến bay" (nếu có phần tử này)
+            const empty = document.querySelector('.sp-empty, [data-empty]');
+            if (empty) empty.textContent = (lang === 'vi') ?
+                'Không có chuyến bay phù hợp với bộ lọc.' :
+                'No flights match your filters.';
+
+            // 5) Nút/CTA trong modal (nếu đang mở)
+            if (window.MODAL_I18N && window.MODAL_I18N[lang]) {
+                const btn = document.getElementById('spBookBtn');
+                const priceEl = document.querySelector('.sp-modal .sp-price');
+                const price = priceEl ? priceEl.textContent : '';
+                if (btn) btn.textContent = window.MODAL_I18N[lang].bookPrefix + price;
+            }
+        });
+
+        // ====== Gọi một lần khi trang vừa load (đồng bộ ngay với ngôn ngữ hiện tại) ======
+        document.addEventListener('DOMContentLoaded', function() {
+            const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+            document.dispatchEvent(new CustomEvent('languageChanged', {
+                detail: {
+                    lang
+                }
+            }));
+        });
+    </script>
+
 
 </body>
 
