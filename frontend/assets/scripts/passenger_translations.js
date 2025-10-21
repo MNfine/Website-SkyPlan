@@ -2,11 +2,11 @@
 (function () {
   if (typeof window === "undefined") return;
 
-  // Passenger-specific i18n dictionary (independent from index translations)
+  // Passenger-specific i18n dictionary
   const P = {
     en: {
       title: "SkyPlan - Passenger Information",
-      // Header button text 
+      // Header button text
       signInText: "Sign In",
       signUpText: "Sign Up",
       steps: [
@@ -124,28 +124,28 @@
       },
       nationalities: {
         "Việt Nam": "Vietnam",
-        "Lào": "Laos",
-        "Campuchia": "Cambodia",
+        Lào: "Laos",
+        Campuchia: "Cambodia",
         "Thái Lan": "Thailand",
-        "Singapore": "Singapore",
-        "Malaysia": "Malaysia",
-        "Indonesia": "Indonesia",
-        "Philippines": "Philippines",
-        "Myanmar": "Myanmar",
-        "Brunei": "Brunei",
+        Singapore: "Singapore",
+        Malaysia: "Malaysia",
+        Indonesia: "Indonesia",
+        Philippines: "Philippines",
+        Myanmar: "Myanmar",
+        Brunei: "Brunei",
         "Hàn Quốc": "South Korea",
         "Nhật Bản": "Japan",
         "Trung Quốc": "China",
         "Hoa Kỳ": "United States",
-        "Anh": "United Kingdom",
-        "Pháp": "France",
-        "Đức": "Germany",
-        "Úc": "Australia",
-        "Canada": "Canada",
+        Anh: "United Kingdom",
+        Pháp: "France",
+        Đức: "Germany",
+        Úc: "Australia",
+        Canada: "Canada",
         "Ấn Độ": "India",
-        "Nga": "Russia",
+        Nga: "Russia",
         "Hà Lan": "Netherlands",
-        "Ý": "Italy",
+        Ý: "Italy",
         "Tây Ban Nha": "Spain",
       },
       err: {
@@ -175,7 +175,7 @@
     },
     vi: {
       title: "SkyPlan - Thông Tin Hành Khách",
-      // Header button text 
+      // Header button text
       signInText: "Đăng nhập",
       signUpText: "Đăng ký",
       steps: [
@@ -269,7 +269,7 @@
     else
       el.insertBefore(
         document.createTextNode(text + " "),
-        el.firstChild || null,
+        el.firstChild || null
       );
   }
 
@@ -321,7 +321,9 @@
     if (notes && counter) {
       const limit = 500;
       const update = () => {
-        counter.textContent = `${notes.value ? notes.value.length : 0}/${limit}`;
+        counter.textContent = `${
+          notes.value ? notes.value.length : 0
+        }/${limit}`;
       };
       notes.removeEventListener("input", update);
       notes.addEventListener("input", update);
@@ -336,9 +338,7 @@
     if (btn && L.submit) btn.textContent = L.submit;
     if (btn && L.submit) btn.textContent = L.submit;
 
-    // Update city dropdown options
     updateCityDropdown(lang);
-    // Update nationality dropdown options
     updateNationalityDropdown(lang);
   }
 
@@ -427,7 +427,7 @@
       };
     };
     const rerender = debounce(() =>
-      applyAll(localStorage.getItem("preferredLanguage") || "vi"),
+      applyAll(localStorage.getItem("preferredLanguage") || "vi")
     );
 
     const head = document.getElementById("header-container");
@@ -485,9 +485,11 @@
     }
 
     // Highlight active language in dropdown
-    document.querySelectorAll(".lang-option").forEach((el) =>
-      el.classList.toggle("active", el.getAttribute("data-lang") === lang),
-    );
+    document
+      .querySelectorAll(".lang-option")
+      .forEach((el) =>
+        el.classList.toggle("active", el.getAttribute("data-lang") === lang)
+      );
   }
 
   // Export global functions

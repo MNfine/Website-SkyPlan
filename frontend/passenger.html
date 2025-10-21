@@ -427,33 +427,77 @@
           }
         }
         function initializeApp() {
+          // Get current language from localStorage
           let lang = "vi";
           try {
             lang = localStorage.getItem("preferredLanguage") || "vi";
             localStorage.setItem("preferredLanguage", lang);
-          } catch {}
+          } catch (e) {
+            console.warn("LocalStorage not available:", e);
+          }
+
+          // Load header component
           fetch("components/header.html")
             .then((r) => r.text())
             .then((html) => {
-              const n = document.getElementById("header-container");
-              if (n) n.innerHTML = html;
+              const container = document.getElementById("header-container");
+              if (container) container.innerHTML = html;
               applyAll(lang);
+
               // Initialize mobile menu after header is loaded
               if (typeof initializeMobileMenu === "function") {
                 initializeMobileMenu();
               }
-            })
-            .catch(() => applyAll(lang));
 
+              // Initialize mobile language selector toggle
+              initMobileLangSelector();
+            })
+            .catch((err) => {
+              console.error("Failed to load header:", err);
+              applyAll(lang);
+            });
+
+          // Load footer component
           fetch("components/footer.html")
             .then((r) => r.text())
             .then((html) => {
-              const n = document.getElementById("footer-container");
-              if (n) n.innerHTML = html;
+              const container = document.getElementById("footer-container");
+              if (container) container.innerHTML = html;
               applyAll(lang);
             })
-            .catch(() => {});
+            .catch((err) => console.error("Failed to load footer:", err));
         }
+
+        // Mobile language selector toggle functionality
+        function initMobileLangSelector() {
+          const langSelector = document.querySelector(".language-selector");
+          const selectedLang = document.querySelector(".selected-lang");
+
+          // Add click event for mobile devices
+          if (selectedLang && window.innerWidth <= 768) {
+            if (!selectedLang.dataset.mobileBound) {
+              selectedLang.addEventListener("click", function (e) {
+                e.stopPropagation();
+                if (langSelector) {
+                  langSelector.classList.toggle("show-dropdown");
+                }
+              });
+              selectedLang.dataset.mobileBound = "1";
+            }
+          }
+
+          // Close dropdown when clicking outside
+          if (!document.body.dataset.langDropdownClickBound) {
+            document.addEventListener("click", function (event) {
+              if (langSelector && !event.target.closest(".language-selector")) {
+                langSelector.classList.remove("show-dropdown");
+              }
+            });
+            document.body.dataset.langDropdownClickBound = "1";
+          }
+        }
+
+        // Initialize on DOM ready
         document.addEventListener("DOMContentLoaded", initializeApp);
       })();
     </script>
