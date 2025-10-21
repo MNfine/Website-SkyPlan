@@ -297,10 +297,23 @@ main.main-content {
 /* Select dropdown styling */
 select {
   appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   padding-right: 2.5rem;
+}
+
+/* Ensure select arrow is visible with higher specificity */
+.form-group select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  padding-right: 2.5rem !important;
 }
 
 /* Input with datalist */
@@ -402,6 +415,139 @@ input[list]::-webkit-calendar-picker-indicator {
 #skyplan-toast-container {
   top: 120px !important;
   z-index: 99999 !important;
+}
+
+/* Mobile menu styling */
+@media (max-width: 768px) {
+  /* Language selector in mobile menu */
+  .nav-links.active .language-selector {
+    width: 100%;
+    margin: 10px 0;
+    order: 2; /* Place language selector between nav items and auth buttons */
+  }
+
+  .nav-links.active .selected-lang {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+    border: 1px solid #ddd;
+  }
+
+  .nav-links.active .selected-lang:hover {
+    background: #f0f0f0;
+  }
+
+  .nav-links.active .selected-lang .lang-flag {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Only show dropdown when hovering/clicking on selected-lang */
+  .nav-links.active .lang-dropdown {
+    position: static;
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+    box-shadow: none;
+    border: none;
+    padding: 8px 0;
+    margin-top: 8px;
+    background: transparent;
+    transform: none;
+  }
+
+  .nav-links.active .language-selector:hover .lang-dropdown,
+  .nav-links.active .language-selector.show-dropdown .lang-dropdown {
+    opacity: 1;
+    visibility: visible;
+    display: block;
+  }
+
+  .nav-links.active .lang-option {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .nav-links.active .lang-option:hover {
+    background: #f0f0f0;
+  }
+
+  .nav-links.active .lang-option.active {
+    background: #1fb6a0;
+    color: white;
+  }
+
+  .nav-links.active .lang-option .lang-flag {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Nav items styling in mobile */
+  .nav-links.active .nav-links-main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    order: 1;
+    margin-bottom: 10px;
+  }
+
+  .nav-links.active .nav-links-main .link {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s ease;
+  }
+
+  .nav-links.active .nav-links-main .link:hover {
+    background: #f0f0f0;
+  }
+
+  .nav-links.active .nav-links-main .link i {
+    font-size: 18px;
+    color: #666;
+  }
+
+  .nav-links.active .auth-buttons {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    order: 3;
+    margin: 10px 0 0 0;
+  }
+
+  .nav-links.active .auth-buttons .btn {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 15px;
+    margin-bottom: 8px;
+    text-align: center;
+    border-radius: 6px;
+  }
 }
 
 /* Responsive */

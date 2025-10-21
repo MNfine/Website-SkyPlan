@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="assets/styles/passenger.css" />
 
     <!-- Shared translations (header/footer), then page translations, then page logic -->
+    <script src="./assets/scripts/common.js" defer></script>
     <script src="./assets/scripts/toast.js" defer></script>
     <script src="./assets/scripts/index_translations.js" defer></script>
     <script src="./assets/scripts/passenger_translations.js" defer></script>
@@ -437,6 +438,10 @@
               const n = document.getElementById("header-container");
               if (n) n.innerHTML = html;
               applyAll(lang);
+              // Initialize mobile menu after header is loaded
+              if (typeof initializeMobileMenu === "function") {
+                initializeMobileMenu();
+              }
             })
             .catch(() => applyAll(lang));
 
