@@ -68,7 +68,7 @@
           </li>
         </ul>
          <div class="fare-footer">
-           <div class="price" data-price-usd="90" data-i18n-price="price90">$90</div>
+           <div class="price" data-price-vnd="2374000">2.374.000 VND</div>
            <a href="seat.html?class=economy" class="btn-select" data-i18n="select">Chọn</a>
          </div>
       </article>
@@ -90,7 +90,7 @@
           </li>
         </ul>
          <div class="fare-footer">
-           <div class="price" data-price-usd="120" data-i18n-price="price120">$120</div>
+           <div class="price" data-price-vnd="3165000">3.165.000 VND</div>
            <a href="seat.html?class=premium-economy" class="btn-select" data-i18n="select">Chọn</a>
          </div>
       </article>
@@ -112,7 +112,7 @@
           </li>
         </ul>
          <div class="fare-footer">
-           <div class="price" data-price-usd="350" data-i18n-price="price350">$350</div>
+           <div class="price" data-price-vnd="9230000">9.230.000 VND</div>
            <a href="seat.html?class=business" class="btn-select" data-i18n="select">Chọn</a>
          </div>
       </article>
@@ -123,6 +123,51 @@
 
   <script src="assets/scripts/fare_translations.js"></script>
   <script src="assets/scripts/common.js"></script>
+  <script>
+    // Persist selected fare class and price (VND) to localStorage
+    document.addEventListener('DOMContentLoaded', function(){
+      document.querySelectorAll('.fare-card .btn-select').forEach(function(a){
+        if (a.__bound) return; a.__bound = true;
+        a.addEventListener('click', function(){
+          try {
+            const card = a.closest('.fare-card');
+            const priceEl = card && card.querySelector('.price');
+            let vnd = 0;
+            if (priceEl) {
+              // 1) Prefer explicit data-price-vnd
+              const attrVnd = priceEl.getAttribute('data-price-vnd');
+              if (attrVnd) vnd = Number(attrVnd) || 0;
+              // 2) Fallback: parse from text like "2.374.000 VND"
+              if (!vnd) {
+                const text = priceEl.textContent || '';
+                const onlyDigits = text.replace(/[^0-9]/g, '');
+                if (onlyDigits) vnd = Number(onlyDigits) || 0;
+              }
+            }
+            // read fare class from href query
+            let fareClass = 'economy';
+            try {
+              const u = new URL(a.getAttribute('href'), location.href);
+              fareClass = u.searchParams.get('class') || 'economy';
+            } catch(_) {}
+            // Map features by fare class so overview can render correctly
+            const FEATURES_BY_CLASS = {
+              'economy': { seat: 'autoAssigned', baggage: 'handBaggage1', flex: 'noRefund' },
+              'premium-economy': { seat: 'seatSelection', baggage: 'handBaggage1Plus1', flex: 'noRefund' },
+              'business': { seat: 'seatSelection', baggage: 'handBaggage2Plus2', flex: 'changeable' }
+            };
+            const data = {
+              fareClass,
+              priceVND: vnd,
+              priceLabel: priceEl ? priceEl.textContent.trim() : '',
+              features: FEATURES_BY_CLASS[fareClass] || FEATURES_BY_CLASS['economy']
+            };
+            localStorage.setItem('skyplan_fare_selection', JSON.stringify(data));
+          } catch(e) { /* no-op */ }
+        }, { capture: true }); // capture to persist even if navigation happens
+      });
+    });
+  </script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -175,28 +220,29 @@
 
     // Initialize language functionality
     function initializeLanguage() {
-      // Force Vietnamese as default for fare page
-      let currentLang = 'vi';
-      localStorage.setItem('preferredLanguage', 'vi');
-      
-      console.log('Fare page - Initializing language:', currentLang);
+      // Respect saved language; do NOT override to Vietnamese on reload
+      const saved = localStorage.getItem('preferredLanguage');
+      let currentLang = saved || document.documentElement.lang || 'vi';
+
       document.documentElement.lang = currentLang;
-      
+
       // Apply fare-specific translations
       if (typeof applyFareTranslations === 'function') {
-        console.log('Fare page - Applying translations');
-        applyFareTranslations(currentLang);
-      } else {
-        console.error('Fare page - applyFareTranslations function not found');
+        try { applyFareTranslations(currentLang); } catch (e) { console.error(e); }
       }
-      
+
       // Initialize language selector after translations are applied
       if (typeof initializeLanguageSelector === 'function') {
-        initializeLanguageSelector();
+        try { initializeLanguageSelector(); } catch (e) { }
       }
+
+      // React to language changes triggered from the header selector
+      document.addEventListener('languageChanged', function (ev) {
+        const lang = (ev && ev.detail && ev.detail.lang) || currentLang;
+        document.documentElement.lang = lang;
+        try { applyFareTranslations && applyFareTranslations(lang); } catch (e) {}
+      });
     }
   </script>
 </body>
 </html>
-
-
