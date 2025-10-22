@@ -91,13 +91,13 @@
         // empty state
         // helper nhỏ để lấy chuỗi theo ngôn ngữ hiện tại
         function t(key, fallbackVi, fallbackEn) {
-            const lang = document.documentElement.lang === 'en' ? 'en' : 'vi';
-            try { return _t(lang)[key] || (lang === 'en' ? (fallbackEn || '') : (fallbackVi || '')); } catch (_) { return (lang === 'en' ? (fallbackEn || '') : (fallbackVi || '')); }
+            const lang = document.documentElement.lang === 'vi' ? 'vi' : 'en';
+            try { return _t(lang)[key] || (lang === 'vi' ? (fallbackEn || '') : (fallbackVi || '')); } catch (_) { return (lang === 'vi' ? (fallbackEn || '') : (fallbackVi || '')); }
         }
 
-        // Empty state
-        var emptyId = "sp-empty";
-        var empty = $("#" + emptyId);
+        // empty state
+        const emptyId = "sp-empty";
+        let empty = document.getElementById(emptyId);
         if (!anyVisible) {
             if (!empty) {
                 empty = document.createElement("div");
@@ -107,12 +107,33 @@
                 empty.style.borderRadius = "12px";
                 empty.style.textAlign = "center";
                 empty.style.color = "var(--sp-muted)";
-                empty.textContent = "Không có chuyến bay phù hợp với bộ lọc.";
                 results.appendChild(empty);
             }
+
+            // lấy ngôn ngữ hiện tại
+            const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+            const messages = {
+                vi: "Không có chuyến bay phù hợp với bộ lọc.",
+                en: "No flights match your filters."
+            };
+            empty.textContent = messages[lang];
         } else if (empty) {
-            empty.parentNode.removeChild(empty);
+            empty.remove();
         }
+
+        // === khi user đổi ngôn ngữ thì cập nhật lại ngay ===
+        document.addEventListener("languageChanged", (e) => {
+            const lang = (e && e.detail && e.detail.lang) || localStorage.getItem("preferredLanguage") || "vi";
+            const empty = document.getElementById("sp-empty");
+            if (empty) {
+                const messages = {
+                    vi: "Không có chuyến bay phù hợp với bộ lọc.",
+                    en: "No flights match your filters."
+                };
+                empty.textContent = messages[lang];
+            }
+        });
+
     }
 
     function onFilterChange() {
@@ -135,7 +156,7 @@
             priceSlider.style.setProperty("--sp-range-pct", pct + "%");
             priceSlider.style.background =
                 "linear-gradient(to right, var(--sp-primary) " + pct + "%, #e5e7eb " + pct + "%)";
-            if (priceOut) priceOut.textContent = val.toLocaleString("vi-VN") + " VNĐ";
+            if (priceOut) priceOut.textContent = val.toLocaleString("vi-VN") + " VND";
         };
         priceSlider.addEventListener("input", () => {
             paintRange();
@@ -147,6 +168,22 @@
         });
         paintRange();
     }
+
+    document.addEventListener('languageChanged', () => {
+        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        const t = MODAL_I18N[lang] || MODAL_I18N.vi;
+
+        const shareBtn = document.querySelector('.sp-modal__footer .sp-btn--ghost');
+        const bookBtn = document.getElementById('spBookBtn');
+        const titleEl = document.querySelector('.sp-modal__header h2');
+
+        if (shareBtn) shareBtn.textContent = t.share;
+        if (bookBtn) {
+            const price = bookBtn.dataset.price || '';
+            bookBtn.textContent = t.bookPrefix + price;
+        }
+        if (titleEl) titleEl.textContent = t.title;
+    });
 
     applyFilters();
 })();
