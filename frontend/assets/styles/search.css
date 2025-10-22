@@ -281,6 +281,8 @@
     display: flex;
     flex-direction: column;
     gap: 50px;
+    /* When using scrollIntoView, ensure results stop below fixed header */
+    scroll-margin-top: 90px;
 }
 
 .sp-card {
@@ -556,7 +558,9 @@
 .sp-node--plane::after {
     content: "";
     position: absolute;
-    left: calc(80px + 24px - 1px);
+    /* align dashed line center with plane icon (includes first col + gap + half of icon col) */
+    /* fine-tune half-pixel to visually center with FA plane glyph */
+    left: calc(80px + 10px + 14px - 1px);
     border-left: 2px dashed #9ca3af;
     pointer-events: none;
     width: 0;
@@ -695,9 +699,15 @@
         grid-template-columns: 64px 24px 1fr;
         padding: 10px 0;
     }
+    /* Match icon cell size to the 24px column to keep plane centered */
+    .sp-node__icon {
+        width: 24px;
+        height: 24px;
+    }
     .sp-node--plane::before,
     .sp-node--plane::after {
-        left: calc(64px + 20px - 1px);
+        /* 64 (col1) + 10 (gap) + 12 (half of 24px icon col) - 1 */
+    left: calc(64px + 10px + 12px - 0.5px);
     }
 }
 
@@ -719,5 +729,13 @@
     .sp-btn--ghost {
         padding: 10px 14px;
         font-size: 13px;
+    }
+    /* Stack modal footer buttons vertically on small screens */
+    .sp-modal__footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .sp-modal__footer .sp-btn {
+        width: 100%;
     }
 }

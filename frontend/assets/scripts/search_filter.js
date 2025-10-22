@@ -121,27 +121,48 @@
             empty.remove();
         }
 
-        // === khi user đổi ngôn ngữ thì cập nhật lại ngay ===
-        document.addEventListener("languageChanged", (e) => {
-            const lang = (e && e.detail && e.detail.lang) || localStorage.getItem("preferredLanguage") || "vi";
-            const empty = document.getElementById("sp-empty");
-            if (empty) {
-                const messages = {
-                    vi: "Không có chuyến bay phù hợp với bộ lọc.",
-                    en: "No flights match your filters."
-                };
-                empty.textContent = messages[lang];
-            }
-        });
-
     }
 
-    function onFilterChange() {
+    // smooth scroll to top of results after filters change
+    let __scrollTimer;
+    function scheduleScrollTop() {
+        if (__scrollTimer) clearTimeout(__scrollTimer);
+        __scrollTimer = setTimeout(() => {
+            try {
+                const topEl = document.querySelector('.sp-results');
+                if (topEl) {
+                    // Offset for fixed header (~88-96px). Use 90px as a safe default.
+                    const headerOffset = 90;
+                    const y = topEl.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+                    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } catch (_) {}
+        }, 150);
+    }
+
+    function onFilterChange(ev) {
         applyFilters();
-        scheduleScrollTop();
+        // Only auto-scroll for real user interactions, not programmatic events on load
+        if (ev && ev.isTrusted) scheduleScrollTop();
     }
 
     // ---------- Wiring ----------
+    // === update empty state text immediately when language changes ===
+    let __emptyLangBound = false;
+    if (!__emptyLangBound) {
+        document.addEventListener('languageChanged', (e) => {
+            const lang = (e && e.detail && e.detail.lang) || localStorage.getItem('preferredLanguage') || 'vi';
+            const empty = document.getElementById('sp-empty');
+            if (empty) {
+                const messages = { vi: 'Không có chuyến bay phù hợp với bộ lọc.', en: 'No flights match your filters.' };
+                empty.textContent = messages[lang];
+            }
+        });
+        __emptyLangBound = true;
+    }
+
     // TIME radios
     timeRadios.forEach((r) => r.addEventListener("change", onFilterChange));
 
@@ -158,13 +179,13 @@
                 "linear-gradient(to right, var(--sp-primary) " + pct + "%, #e5e7eb " + pct + "%)";
             if (priceOut) priceOut.textContent = val.toLocaleString("vi-VN") + " VND";
         };
-        priceSlider.addEventListener("input", () => {
+        priceSlider.addEventListener("input", (ev) => {
             paintRange();
-            onFilterChange();
+            onFilterChange(ev);
         });
-        priceSlider.addEventListener("change", () => {
+        priceSlider.addEventListener("change", (ev) => {
             paintRange();
-            onFilterChange();
+            onFilterChange(ev);
         });
         paintRange();
     }

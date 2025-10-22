@@ -44,6 +44,9 @@ const searchTranslations = {
         // Inline markers
         dotDeparture: "· Departure",
         dotReturn: "· Return",
+        nonstop: "Nonstop",
+        modalTitle: "Flight Details",
+        legTo: "To",
     },
     vi: {
         // Header
@@ -90,6 +93,9 @@ const searchTranslations = {
         // Inline markers
         dotDeparture: "· Khởi hành",
         dotReturn: "· Về",
+        nonstop: "Bay thẳng",
+        modalTitle: "Chi tiết chuyến bay",
+        legTo: "Đến",
     }
 };
 
@@ -248,9 +254,14 @@ function applySearchTranslations(lang) {
 
         const bookBtn = _$('#spBookBtn', modal);
         if (bookBtn) {
-            const txt = (bookBtn.textContent || '').trim();
-            const m = txt.match(/([\d\s.,]+(?:VND|₫|USD|€|£))$/i);
-            bookBtn.textContent = m ? `${dict.bookNowFor} ${m[1]}` : dict.bookNowFor;
+            const stored = (bookBtn.dataset && bookBtn.dataset.price) ? bookBtn.dataset.price : '';
+            if (stored) {
+                bookBtn.textContent = `${dict.bookNowFor} ${stored}`;
+            } else {
+                const txt = (bookBtn.textContent || '').trim();
+                const m = txt.match(/([\d\s.,]+(?:VND|₫|USD|€|£))$/i);
+                bookBtn.textContent = m ? `${dict.bookNowFor} ${m[1]}` : dict.bookNowFor;
+            }
         }
     }
 
@@ -265,6 +276,12 @@ function changeSearchLanguage(lang) {
     try { localStorage.setItem('preferredLanguage', next); } catch (_) {}
     document.documentElement.lang = next;
     applySearchTranslations(next);
+
+    // Trigger date format update via custom event
+    const event = new CustomEvent('languageChanged', { 
+        detail: { lang: next }
+    });
+    document.dispatchEvent(event);
 
     if (typeof updateSelectedLanguage === 'function') {
         try { updateSelectedLanguage(next); } catch (_) {}
@@ -311,3 +328,6 @@ function initSearchTranslations() {
 
 // Expose init function
 window.initSearchTranslations = initSearchTranslations;
+
+// Expose dictionary for other scripts that need to read translations directly
+try { window.searchTranslations = searchTranslations; } catch (_) {}
