@@ -25,37 +25,37 @@
             <form id="spSearchForm">
                 <div class="sp-field">
                     <label class="sp-label" data-i18n="search.from">Từ</label>
-                    <select id="fromCity" class="sp-input sp-city-dropdown"></select>
+                    <select id="fromCity" class="sp-input sp-city-dropdown" required></select>
                 </div>
 
                 <div class="sp-field">
                     <label class="sp-label" data-i18n="search.to">Đến</label>
-                    <select id="toCity" class="sp-input sp-city-dropdown"></select>
+                    <select id="toCity" class="sp-input sp-city-dropdown" required></select>
                 </div>
 
                 <div class="sp-row sp-field-group">
                     <div class="sp-field">
                         <label for="dep" class="sp-label">Ngày đi</label>
-                        <input id="dep" class="sp-input" type="date" value="2023-06-10">
+                        <input id="dep" class="sp-input" type="date">
                     </div>
                     <div class="sp-field">
                         <label for="ret" class="sp-label">Ngày về</label>
-                        <input id="ret" class="sp-input" type="date" value="2023-08-18">
+                        <input id="ret" class="sp-input" type="date">
                     </div>
                 </div>
 
-                <button class="sp-btn sp-btn-secondary" type="button">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                Tìm kiếm
-            </button>
+                <button class="sp-btn sp-btn-secondary" type="submit">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    Tìm kiếm
+                </button>
 
                 <h3 class="sp-subtitle">Bộ lọc</h3>
 
                 <section class="sp-section" aria-labelledby="budget-heading">
                     <h4 id="budget-heading" class="sp-section-title">Ngân sách</h4>
                     <div class="sp-price-top"><span>0 VND – 5.000.000 VND</span><span>Bất kỳ</span></div>
-                    <input id="priceRange" class="sp-range" type="range" max="5000000" step="50000" value="2000000">
-                    <div class="sp-price-bottom"><span>0 VND</span><span id="priceOut">2.000.000 VND</span></div>
+                    <input id="priceRange" class="sp-range" type="range" max="5000000" step="50000" value="3000000">
+                    <div class="sp-price-bottom"><span>0 VND</span><span id="priceOut">3.000.000 VND</span></div>
                 </section>
 
 
@@ -72,437 +72,7 @@
 
         <section class="sp-results" aria-live="polite" aria-labelledby="results-heading">
             <h2 id="results-heading" class="sr-only">Kết quả tìm kiếm</h2>
-
-            <article class="sp-card" aria-labelledby="card1-heading">
-                <h3 id="card1-heading" class="sr-only">Chuyến bay 06:00 → 08:10 và 09:00 → 11:05</h3>
-                <div class="sp-card-body">
-                    <div class="sp-date">10/06/2023 · Khởi hành</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">06:00</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h10m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">08:10</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                    </div>
-
-                    <hr class="sp-divider">
-
-                    <div class="sp-date">18/08/2023 · Về</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">09:00</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h05m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">11:05</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                    </div>
-                </div>
-                <aside class="sp-card-aside">
-                    <div class="sp-price">1.200.000 VND</div>
-                    <button class="sp-btn sp-btn-block">Chọn chuyến bay</button>
-                </aside>
-            </article>
-
-            <article class="sp-card" aria-labelledby="card2-heading">
-                <h3 id="card2-heading" class="sr-only">Chuyến bay 07:30 → 09:45 và 10:00 → 12:15</h3>
-                <div class="sp-card-body">
-                    <div class="sp-date">10/06/2023 · Khởi hành</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">07:30</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h15m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">09:45</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                    </div>
-
-                    <hr class="sp-divider">
-
-                    <div class="sp-date">18/08/2023 · Về</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">10:00</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h15m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">12:15</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                    </div>
-                </div>
-                <aside class="sp-card-aside">
-                    <div class="sp-price">1.350.000 VND</div>
-                    <button class="sp-btn sp-btn-block">Chọn chuyến bay</button>
-                </aside>
-            </article>
-
-            <article class="sp-card" aria-labelledby="card3-heading">
-                <h3 id="card3-heading" class="sr-only">Chuyến bay 09:00 → 11:00 và 12:00 → 14:00</h3>
-                <div class="sp-card-body">
-                    <div class="sp-date">10/06/2023 · Khởi hành</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">09:00</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h00m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">11:00</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                    </div>
-
-                    <hr class="sp-divider">
-
-                    <div class="sp-date">18/08/2023 · Về</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">12:00</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h00m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">14:00</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                    </div>
-                </div>
-                <aside class="sp-card-aside">
-                    <div class="sp-price">1.400.000 VND</div>
-                    <button class="sp-btn sp-btn-block">Chọn chuyến bay</button>
-                </aside>
-            </article>
-
-            <article class="sp-card" aria-labelledby="card4-heading">
-                <h3 id="card4-heading" class="sr-only">Chuyến bay 11:30 → 13:35 và 14:00 → 16:05</h3>
-                <div class="sp-card-body">
-                    <div class="sp-date">10/06/2023 · Khởi hành</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">11:30</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h05m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">13:35</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                    </div>
-
-                    <hr class="sp-divider">
-
-                    <div class="sp-date">18/08/2023 · Về</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">14:00</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h05m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">16:05</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                    </div>
-                </div>
-                <aside class="sp-card-aside">
-                    <div class="sp-price">1.550.000 VND</div>
-                    <button class="sp-btn sp-btn-block">Chọn chuyến bay</button>
-                </aside>
-            </article>
-
-            <article class="sp-card" aria-labelledby="card5-heading">
-                <h3 id="card5-heading" class="sr-only">Chuyến bay 13:00 → 15:10 và 13:40 → 15:45</h3>
-                <div class="sp-card-body">
-                    <div class="sp-date">10/06/2023 · Khởi hành</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">13:00</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h10m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">15:10</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                    </div>
-
-                    <hr class="sp-divider">
-
-                    <div class="sp-date">18/08/2023 · Về</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">13:40</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h05m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">15:45</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                    </div>
-                </div>
-                <aside class="sp-card-aside">
-                    <div class="sp-price">1.650.000 VND</div>
-                    <button class="sp-btn sp-btn-block">Chọn chuyến bay</button>
-                </aside>
-            </article>
-
-            <article class="sp-card" aria-labelledby="card6-heading">
-                <h3 id="card6-heading" class="sr-only">Chuyến bay 14:30 → 16:35 và 15:30 → 17:40</h3>
-                <div class="sp-card-body">
-                    <div class="sp-date">10/06/2023 · Khởi hành</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">14:30</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h05m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">16:35</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                    </div>
-
-                    <hr class="sp-divider">
-
-                    <div class="sp-date">18/08/2023 · Về</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">15:30</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h10m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">17:40</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                    </div>
-                </div>
-                <aside class="sp-card-aside">
-                    <div class="sp-price">1.700.000 VND</div>
-                    <button class="sp-btn sp-btn-block">Chọn chuyến bay</button>
-                </aside>
-            </article>
-
-            <article class="sp-card" aria-labelledby="card7-heading">
-                <h3 id="card7-heading" class="sr-only">Chuyến bay 16:00 → 18:00 và 17:00 → 19:05</h3>
-                <div class="sp-card-body">
-                    <div class="sp-date">10/06/2023 · Khởi hành</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">16:00</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h00m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">18:00</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                    </div>
-
-                    <hr class="sp-divider">
-
-                    <div class="sp-date">18/08/2023 · Về</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">17:00</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h05m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">19:05</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                    </div>
-                </div>
-                <aside class="sp-card-aside">
-                    <div class="sp-price">1.780.000 VND</div>
-                    <button class="sp-btn sp-btn-block">Chọn chuyến bay</button>
-                </aside>
-            </article>
-
-            <article class="sp-card" aria-labelledby="card8-heading">
-                <h3 id="card8-heading" class="sr-only">Chuyến bay 18:00 → 20:15 và 19:00 → 21:10</h3>
-                <div class="sp-card-body">
-                    <div class="sp-date">10/06/2023 · Khởi hành</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">18:00</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h15m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">20:15</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                    </div>
-
-                    <hr class="sp-divider">
-
-                    <div class="sp-date">18/08/2023 · Về</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">19:00</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h10m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">21:10</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                    </div>
-                </div>
-                <aside class="sp-card-aside">
-                    <div class="sp-price">1.900.000 VND</div>
-                    <button class="sp-btn sp-btn-block">Chọn chuyến bay</button>
-                </aside>
-            </article>
-
-            <article class="sp-card" aria-labelledby="card9-heading">
-                <h3 id="card9-heading" class="sr-only">Chuyến bay 20:00 → 22:05 và 20:30 → 22:30</h3>
-                <div class="sp-card-body">
-                    <div class="sp-date">10/06/2023 · Khởi hành</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">20:00</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h05m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">22:05</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                    </div>
-
-                    <hr class="sp-divider">
-
-                    <div class="sp-date">18/08/2023 · Về</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">20:30</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h00m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">22:30</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                    </div>
-                </div>
-                <aside class="sp-card-aside">
-                    <div class="sp-price">2.000.000 VND</div>
-                    <button class="sp-btn sp-btn-block">Chọn chuyến bay</button>
-                </aside>
-            </article>
-
-            <article class="sp-card" aria-labelledby="card10-heading">
-                <h3 id="card10-heading" class="sr-only">Chuyến bay 22:00 → 00:10 và 21:30 → 23:45</h3>
-                <div class="sp-card-body">
-                    <div class="sp-date">10/06/2023 · Khởi hành</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">22:00</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h10m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">00:10</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                    </div>
-
-                    <hr class="sp-divider">
-
-                    <div class="sp-date">18/08/2023 · Về</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">21:30</div>
-                            <div class="sp-meta">Hà Nội (HAN)</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <span class="sp-duration">2h15m<br>Bay thẳng</span>
-                        </div>
-                        <div>
-                            <div class="sp-time">23:45</div>
-                            <div class="sp-meta">Hồ Chí Minh (SGN)</div>
-                        </div>
-                    </div>
-                </div>
-                <aside class="sp-card-aside">
-                    <div class="sp-price">2.150.000 VND</div>
-                    <button class="sp-btn sp-btn-block">Chọn chuyến bay</button>
-                </aside>
-            </article>
-
+            <!-- Results will be injected dynamically -->
         </section>
     </main>
 
@@ -590,8 +160,8 @@
     <div id="footer-container"></div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', async() => {
-            const loadComponent = async(id, file) => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loadComponent = async (id, file) => {
                 const container = document.getElementById(id);
                 if (container) {
                     try {
@@ -608,7 +178,7 @@
     </script>
 
     <script>
-        (function() {
+        (function () {
             function $(sel, ctx) {
                 return (ctx || document).querySelector(sel);
             }
@@ -643,7 +213,7 @@
 
                     try {
                         slider.style.setProperty('--sp-range-pct', pct + '%');
-                    } catch (e) {}
+                    } catch (e) { }
 
                     slider.style.background = 'linear-gradient(to right, var(--sp-primary) ' + pct + '%, #e5e7eb ' + pct + '%)';
                     out.textContent = fmt(val);
@@ -653,115 +223,12 @@
                 slider.addEventListener('change', paintRange);
             }
 
-            function initModal() {
-                var modal = document.getElementById('spModal');
-                var bookBtn = document.getElementById('spBookBtn');
-                if (!modal || !bookBtn) return;
-
-                function readItinerary(it) {
-                    if (!it) return {
-                        depTime: '',
-                        arrTime: '',
-                        depAirport: '',
-                        arrAirport: ''
-                    };
-                    var times = $all('.sp-time', it);
-                    var metas = $all('.sp-meta', it);
-                    return {
-                        depTime: text(times[0]),
-                        arrTime: text(times[1]),
-                        depAirport: text(metas[0]),
-                        arrAirport: text(metas[1])
-                    };
-                }
-
-                function cleanCity(s) {
-                    s = s || '';
-                    var i = s.indexOf('(');
-                    return (i >= 0 ? s.slice(0, i) : s).trim();
-                }
-
-                function cleanDate(s) {
-                    s = s || '';
-                    return s.replace('· Departure', '').replace('· Return', '').trim();
-                }
-
-                function parseCard(card) {
-                    var itins = $all('.sp-itinerary', card);
-                    var dates = $all('.sp-date', card);
-
-                    var outLeg = readItinerary(itins[0]);
-                    var inLeg = readItinerary(itins[1]);
-
-                    var outDate = '',
-                        inDate = '';
-                    if (dates.length === 2) {
-                        outDate = cleanDate(text(dates[0]));
-                        inDate = cleanDate(text(dates[1]));
-                    } else if (dates.length === 1) {
-                        inDate = cleanDate(text(dates[0]));
-                    }
-
-                    setText(modal, '[data-to-city]', cleanCity(outLeg.arrAirport || outLeg.depAirport));
-                    setText(modal, '[data-from-city]', cleanCity(inLeg.arrAirport || inLeg.depAirport));
-
-                    setText(modal, '[data-out-date]', outDate);
-                    setText(modal, '[data-out-dep-time]', outLeg.depTime);
-                    setText(modal, '[data-out-dep-airport]', outLeg.depAirport);
-                    setText(modal, '[data-out-arr-time]', outLeg.arrTime);
-                    setText(modal, '[data-out-arr-airport]', outLeg.arrAirport);
-
-                    setText(modal, '[data-in-date]', inDate);
-                    setText(modal, '[data-in-dep-time]', inLeg.depTime);
-                    setText(modal, '[data-in-dep-airport]', inLeg.depAirport);
-                    setText(modal, '[data-in-arr-time]', inLeg.arrTime);
-                    setText(modal, '[data-in-arr-airport]', inLeg.arrAirport);
-
-                    var priceEl = card.querySelector('.sp-price');
-                    var price = text(priceEl);
-                    const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
-                    const t = MODAL_I18N[lang] || MODAL_I18N.vi;
-                    bookBtn.textContent = t.bookPrefix + price;
-
-                }
-
-                function openModal() {
-                    modal.classList.add('is-open');
-                    modal.setAttribute('aria-hidden', 'false');
-                    document.addEventListener('keydown', onEsc);
-                }
-
-                function closeModal() {
-                    modal.classList.remove('is-open');
-                    modal.setAttribute('aria-hidden', 'true');
-                    document.removeEventListener('keydown', onEsc);
-                }
-
-                function onEsc(e) {
-                    if (e.key === 'Escape') closeModal();
-                }
-
-                modal.addEventListener('click', function(e) {
-                    if (e.target && e.target.getAttribute('data-close') !== null) closeModal();
-                });
-
-                $all('.sp-card .sp-btn.sp-btn-block').forEach(function(btn) {
-                    btn.addEventListener('click', function() {
-                        var card = btn.closest('.sp-card');
-                        parseCard(card);
-                        openModal();
-                    });
-                });
-            }
-
             if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', function() {
+                document.addEventListener('DOMContentLoaded', function () {
                     initSlider();
-                    initModal();
                 });
             } else {
                 initSlider();
-                initModal();
             }
         })();
     </script>
@@ -817,13 +284,7 @@
                     updateSelectedLanguage(currentLang);
                     console.log('Language selector updated:', currentLang);
                 }
-                try {
-                    document.dispatchEvent(new CustomEvent('languageChanged', {
-                        detail: {
-                            lang: currentLang
-                        }
-                    }));
-                } catch (e) {}
+                // changeSearchLanguage already fires languageChanged; avoid re-dispatching here.
             }, 200);
         }
 
@@ -869,13 +330,13 @@
         }
 
         // Initialize when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             initializeApp();
         });
     </script>
 
     <script>
-        (function() {
+        (function () {
             // Lấy ngôn ngữ hiện tại
             function getLang() {
                 return localStorage.getItem('preferredLanguage') || 'vi';
@@ -892,6 +353,7 @@
                 // Tạo option mặc định
                 const defOpt = document.createElement('option');
                 defOpt.textContent = lang === 'vi' ? 'Chọn thành phố' : 'Select city';
+                defOpt.value = '';
                 defOpt.disabled = true;
                 defOpt.selected = true;
                 select.appendChild(defOpt);
@@ -914,6 +376,7 @@
                     select.innerHTML = '';
                     const defOpt = document.createElement('option');
                     defOpt.textContent = newLang === 'vi' ? 'Chọn thành phố' : 'Select city';
+                    defOpt.value = '';
                     defOpt.disabled = true;
                     select.appendChild(defOpt);
 
@@ -936,51 +399,48 @@
             e.preventDefault();
 
             const lang = localStorage.getItem('preferredLanguage') || 'vi';
-            const dict = window.SKYPLAN_CITY_TRANSLATIONS[lang];
+            const dict = (window.SKYPLAN_CITY_TRANSLATIONS && window.SKYPLAN_CITY_TRANSLATIONS[lang]) || {};
 
             const fromCode = document.getElementById('fromCity').value;
             const toCode = document.getElementById('toCity').value;
             const fromName = dict[fromCode];
             const toName = dict[toCode];
 
-            const depart = document.getElementById('departDay').value;
-            const ret = document.getElementById('returnDay').value;
+            // Always submit ISO (YYYY-MM-DD), use dataset when in text display mode
+            const depEl = document.getElementById('dep');
+            const retEl = document.getElementById('ret');
+            const depart = (depEl && (depEl.dataset.isoValue || depEl.value)) || '';
+            const ret = (retEl && (retEl.dataset.isoValue || retEl.value)) || '';
 
-            const data = {
-                fromCode,
-                fromName,
-                toCode,
-                toName,
-                depart,
-                ret
-            };
+            const data = { fromCode, fromName, toCode, toName, depart, ret };
             sessionStorage.setItem('skyplan:lastSearch', JSON.stringify(data));
-            location.href = `search.html?from=${fromCode}&to=${toCode}&depart=${depart}&ret=${ret}`;
+            location.href = `search.html?from=${fromCode}&to=${toCode}&departure=${depart}&return=${ret}`;
         });
     </script>
 
 
 
     <script>
-        (function() {
+        (function () {
             const KEY = 'skyplan:lastSearch';
 
             function getLang() {
                 return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
             }
 
-            function getDict(lang) {
-                return (window.SKYPLAN_CITY_TRANSLATIONS && window.SKYPLAN_CITY_TRANSLATIONS[lang]) || {};
+            function formatDate(dateStr, lang) {
+                if (!dateStr) return '';
+                const [year, month, day] = dateStr.split('-');
+                return lang === 'vi' ? `${day}/${month}/${year}` : `${month}/${day}/${year}`;
             }
-
 
             function readState() {
                 const p = new URLSearchParams(location.search);
                 let state = {
                     from: p.get('from') || '',
                     to: p.get('to') || '',
-                    depart: p.get('depart') || '',
-                    ret: p.get('ret') || '',
+                    depart: p.get('departure') || '',
+                    ret: p.get('return') || '',
                 };
                 if ((!state.from || !state.to) && sessionStorage.getItem(KEY)) {
                     try {
@@ -989,7 +449,7 @@
                         state.to = state.to || s.toCode || '';
                         state.depart = state.depart || s.depart || '';
                         state.ret = state.ret || s.ret || '';
-                    } catch {}
+                    } catch { }
                 }
                 return state;
             }
@@ -1008,43 +468,72 @@
 
             function applyState(state) {
                 const lang = getLang();
-                const dict = getDict(lang);
 
                 const fromSel = document.getElementById('fromCity');
                 const toSel = document.getElementById('toCity');
-
-                ensureOption(fromSel, state.from, dict[state.from]);
-                ensureOption(toSel, state.to, dict[state.to]);
-
                 const depart = document.getElementById('dep');
                 const ret = document.getElementById('ret');
-                if (depart && state.depart) depart.value = state.depart;
-                if (ret && state.ret) ret.value = state.ret;
+
+                if (fromSel) fromSel.value = state.from || '';
+                if (toSel) toSel.value = state.to || '';
+
+                // Normalize incoming dates to ISO (YYYY-MM-DD)
+                const isISO = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s || '');
+                const isDDMM = (s) => /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s || '');
+                const isMMDD = (s) => /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s || '');
+                const parseToISO = (s) => {
+                    if (!s) return '';
+                    if (isISO(s)) return s;
+                    const h = window.dateFormatHandler;
+                    // Try DD/MM/YYYY first (VI), then MM/DD/YYYY (EN)
+                    let iso = h && h.parseDDMMToISO ? h.parseDDMMToISO(s) : '';
+                    if (!iso && h && h.parseMMDDToISO) iso = h.parseMMDDToISO(s);
+                    return iso || '';
+                };
+
+                // Always work with ISO values and let date_format_handler render UI and constraints
+                if (depart) {
+                    const depISO = parseToISO(state.depart) || depart.dataset.isoValue || depart.value || '';
+                    if (depISO) {
+                        depart.dataset.isoValue = depISO;
+                        depart.value = depISO;
+                    }
+                }
+
+                if (ret) {
+                    const retISO = parseToISO(state.ret) || ret.dataset.isoValue || ret.value || '';
+                    if (retISO) {
+                        ret.dataset.isoValue = retISO;
+                        ret.value = retISO;
+                    }
+                }
+
+                if (window.dateFormatHandler) {
+                    window.dateFormatHandler.ensureTodayAndMins();
+                    window.dateFormatHandler.updateDateInputsByLang(lang);
+                    window.dateFormatHandler.enforceReturnAfterDeparture();
+                }
             }
 
-            function relabelSelects() {
-                const lang = getLang();
-                const dict = getDict(lang);
-                ['fromCity', 'toCity'].forEach(id => {
-                    const sel = document.getElementById(id);
-                    if (!sel) return;
-                    Array.from(sel.options).forEach(opt => {
-                        if (dict[opt.value]) opt.textContent = dict[opt.value];
-                    });
-                });
+            function readState() {
+                const p = new URLSearchParams(location.search);
+                return {
+                    from: p.get('from') || '',
+                    to: p.get('to') || '',
+                    depart: p.get('departure') || '',
+                    ret: p.get('return') || '',
+                };
             }
 
             document.addEventListener('DOMContentLoaded', () => {
                 const state = readState();
                 applyState(state);
             });
-
-            document.addEventListener('languageChanged', relabelSelects);
         })();
     </script>
 
     <script>
-        (function() {
+        (function () {
             // Bảng song ngữ theo mã IATA (bổ sung thêm nếu cần)
             const CITY_BY_CODE = {
                 HAN: {
@@ -1117,7 +606,7 @@
             });
 
             // Khi header đổi ngôn ngữ
-            document.addEventListener('languageChanged', function(e) {
+            document.addEventListener('languageChanged', function (e) {
                 // dùng cú pháp "an toàn" không optional chaining để khỏi lỗi
                 var lang = (e && e.detail && e.detail.lang) || getLang();
                 renderAirportLabels(lang);
@@ -1136,12 +625,11 @@
         }
 
         // ====== Lắng nghe đổi ngôn ngữ từ header ======
-        document.addEventListener('languageChanged', function(e) {
+        document.addEventListener('languageChanged', function (e) {
             const lang = getLangSafe(e);
 
-            // 1) Text tĩnh dùng i18n (nếu bạn có applyTranslations / changeSearchLanguage)
-            if (typeof changeSearchLanguage === 'function') changeSearchLanguage(lang);
-            if (typeof initSearchTranslations === 'function') initSearchTranslations(lang);
+            // 1) Text tĩnh dùng i18n được xử lý bởi nơi phát sự kiện (header/common),
+            // tránh gọi lại changeSearchLanguage/initSearchTranslations để không tạo vòng lặp.
 
             // 2) Relabel dropdown From/To (không thay value đang chọn)
             (function relabelSelects() {
@@ -1167,21 +655,182 @@
             // 5) Nút/CTA trong modal (nếu đang mở)
             if (window.MODAL_I18N && window.MODAL_I18N[lang]) {
                 const btn = document.getElementById('spBookBtn');
-                const priceEl = document.querySelector('.sp-modal .sp-price');
-                const price = priceEl ? priceEl.textContent : '';
-                if (btn) btn.textContent = window.MODAL_I18N[lang].bookPrefix + price;
+                const storedPrice = btn && btn.dataset ? (btn.dataset.price || '') : '';
+                if (btn) btn.textContent = window.MODAL_I18N[lang].bookPrefix + storedPrice;
+                const titleEl = document.getElementById('spModalTitle');
+                if (titleEl) titleEl.textContent = window.MODAL_I18N[lang].title;
             }
         });
 
-        // ====== Gọi một lần khi trang vừa load (đồng bộ ngay với ngôn ngữ hiện tại) ======
-        document.addEventListener('DOMContentLoaded', function() {
-            const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
-            document.dispatchEvent(new CustomEvent('languageChanged', {
-                detail: {
-                    lang
+        // ====== Gọi một lần khi trang vừa load (đồng bộ ngôn ngữ hiện tại)
+        // Sự kiện languageChanged đã được phát từ changeSearchLanguage trong initializeLanguage/header; tránh phát lặp.
+    </script>
+
+    <!-- Date format handling moved to global date_format_handler.js -->
+    <script src="assets/scripts/date_format_handler.js"></script>
+
+    <script>
+    // Render dynamic result cards based on URL params (from, to, departure, return)
+        (function() {
+            const CITY_IATA = {
+                HaNoi: 'HAN', HoChiMinh: 'SGN', DaNang: 'DAD', PhuQuoc: 'PQC',
+                HaiPhong: 'HPH', Hue: 'HUI', DaLat: 'DLI', CanTho: 'VCA',
+                KhanhHoa: 'CXR', LamDong: 'DLI', NgheAn: 'VII', QuangNinh: 'VDO', QuangTri: 'VDH',
+                AnGiang: 'VKG', DienBien: 'DIN', GiaLai: 'PXU', SonLa: 'SQH', ThanhHoa: 'THD'
+            };
+            const CITY_LABELS = window.SKYPLAN_CITY_TRANSLATIONS || { vi: {}, en: {} };
+            const getLang = () => localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+
+            const fmtDate = (iso) => {
+                const h = window.dateFormatHandler;
+                const lang = getLang();
+                if (h && h.formatDate) return h.formatDate(iso, lang);
+                if (!iso) return '';
+                const [y,m,d] = iso.split('-');
+                return lang === 'vi' ? `${d}/${m}/${y}` : `${m}/${d}/${y}`;
+            };
+
+            function readState() {
+                const p = new URLSearchParams(location.search);
+                return {
+                    from: p.get('from') || 'HaNoi',
+                    to: p.get('to') || 'HoChiMinh',
+                    depart: p.get('departure') || '',
+                    ret: p.get('return') || ''
+                };
+            }
+
+            function generateFlights(state) {
+                const seeds = ['06:00','07:30','09:00','11:30','13:00','14:30','16:00','18:00','20:00','22:00'];
+                const pick = (n) => seeds.slice(0, Math.min(6, Math.max(3, n)));
+                const dateNum = Number((state.depart || '').replace(/\D/g,'')) || 5;
+                const outTimes = pick((dateNum % 6) + 3);
+                const addMin = (hhmm, add) => {
+                    const [h,m] = hhmm.split(':').map(Number);
+                    const total = h*60 + m + add;
+                    const hh = String(Math.floor(total/60)%24).padStart(2,'0');
+                    const mm = String(total%60).padStart(2,'0');
+                    return `${hh}:${mm}`;
+                };
+                return outTimes.map((t, idx) => {
+                    const dur1 = 125 + (idx%3)*5;
+                    const arr1 = addMin(t, dur1);
+                    const retBase = addMin(t, 60 + (idx%2)*30);
+                    const dur2 = 120 + (idx%4)*10;
+                    const arr2 = addMin(retBase, dur2);
+                    const price = 1200000 + idx*150000;
+                    return { outDep: t, outArr: arr1, outDur: dur1, inDep: retBase, inArr: arr2, inDur: dur2, price };
+                });
+            }
+
+            function labelFor(code, lang) {
+                const dict = CITY_LABELS[lang] || CITY_LABELS.vi || {};
+                return dict[code] || code;
+            }
+
+            function ensureModalHandlers() {
+                const modal = document.getElementById('spModal');
+                if (!modal || modal.dataset.closeBound === '1') return;
+                modal.addEventListener('click', function(e){
+                    if (e.target && e.target.getAttribute('data-close') !== null) {
+                        modal.classList.remove('is-open');
+                        modal.setAttribute('aria-hidden','true');
+                    }
+                });
+                document.addEventListener('keydown', function(e){
+                    if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+                        modal.classList.remove('is-open');
+                        modal.setAttribute('aria-hidden','true');
+                    }
+                });
+                // Navigate to fare.html when clicking book button
+                const bookBtn = document.getElementById('spBookBtn');
+                if (bookBtn && !bookBtn.dataset.navBound) {
+                    bookBtn.addEventListener('click', function(){
+                        window.location.href = 'fare.html';
+                    });
+                    bookBtn.dataset.navBound = '1';
                 }
-            }));
-        });
+                modal.dataset.closeBound = '1';
+            }
+
+            function renderResults() {
+                const state = readState();
+                const lang = getLang();
+                const results = document.querySelector('.sp-results');
+                if (!results) return;
+                const fromIATA = CITY_IATA[state.from] || 'XXX';
+                const toIATA = CITY_IATA[state.to] || 'YYY';
+                const fromName = labelFor(state.from, lang);
+                const toName = labelFor(state.to, lang);
+
+                const flights = generateFlights(state);
+                const dict = (window.searchTranslations && (window.searchTranslations[lang] || window.searchTranslations.vi)) || {};
+                const nonstopLbl = dict.nonstop || (lang === 'vi' ? 'Bay thẳng' : 'Nonstop');
+                const selectFlightLbl = dict.selectFlight || (lang === 'vi' ? 'Chọn chuyến bay' : 'Select flight');
+                const outDateLabel = `${fmtDate(state.depart)} ${dict.dotDeparture || (lang==='vi'?'· Khởi hành':'· Departure')}`;
+                const inDateLabel = `${fmtDate(state.ret || state.depart)} ${dict.dotReturn || (lang==='vi'?'· Về':'· Return')}`;
+                const durTxt = (min) => `${Math.floor(min/60)}h${String(min%60).padStart(2,'0')}m`;
+
+                const cards = flights.map((f, i) => `
+                    <article class=\"sp-card\" aria-labelledby=\"card${i+1}-heading\">\n                        <h3 id=\"card${i+1}-heading\" class=\"sr-only\">${fromName} → ${toName} ${f.outDep} / ${toName} → ${fromName} ${f.inDep}</h3>\n                        <div class=\"sp-card-body\">\n                            <div class=\"sp-date\">${outDateLabel}</div>\n                            <div class=\"sp-itinerary\">\n                                <div>\n                                    <div class=\"sp-time\">${f.outDep}</div>\n                                    <div class=\"sp-meta\">${fromName} (${fromIATA})</div>\n                                </div>\n                                <div class=\"sp-mid\">\n                                    <i class=\"fa-solid fa-plane sp-plane\"></i>\n                                    <span class=\"sp-duration\">${durTxt(f.outDur)}<br>${nonstopLbl}</span>\n                                </div>\n                                <div>\n                                    <div class=\"sp-time\">${f.outArr}</div>\n                                    <div class=\"sp-meta\">${toName} (${toIATA})</div>\n                                </div>\n                            </div>\n                            <hr class=\"sp-divider\">\n                            <div class=\"sp-date\">${inDateLabel}</div>\n                            <div class=\"sp-itinerary\">\n                                <div>\n                                    <div class=\"sp-time\">${f.inDep}</div>\n                                    <div class=\"sp-meta\">${toName} (${toIATA})</div>\n                                </div>\n                                <div class=\"sp-mid\">\n                                    <i class=\"fa-solid fa-plane sp-plane\"></i>\n                                    <span class=\"sp-duration\">${durTxt(f.inDur)}<br>${nonstopLbl}</span>\n                                </div>\n                                <div>\n                                    <div class=\"sp-time\">${f.inArr}</div>\n                                    <div class=\"sp-meta\">${fromName} (${fromIATA})</div>\n                                </div>\n                            </div>\n                        </div>\n                        <aside class=\"sp-card-aside\">\n                            <div class=\"sp-price\">${(f.price).toLocaleString('vi-VN')} VND</div>\n                            <button class=\"sp-btn sp-btn-block\">${selectFlightLbl}</button>\n                        </aside>\n                    </article>`).join('');
+
+                results.innerHTML = cards;
+                // Override all card prices with requested fixed amount
+                document.querySelectorAll('.sp-card .sp-price').forEach(function(el){
+                    el.textContent = '2.374.000 VND';
+                });
+
+                // Refresh filters
+                setTimeout(() => {
+                    const slider = document.getElementById('priceRange');
+                    if (slider) slider.dispatchEvent(new Event('input', { bubbles: true }));
+                }, 0);
+
+                // Basic modal binding for new cards
+                document.querySelectorAll('.sp-card .sp-btn.sp-btn-block').forEach(btn => {
+                    if (btn.dataset.bound === '1') return;
+                    btn.addEventListener('click', function() {
+                        const card = btn.closest('.sp-card');
+                        const modal = document.getElementById('spModal');
+                        const bookBtn = document.getElementById('spBookBtn');
+                        if (!card || !modal || !bookBtn) return;
+                        const setText = (root, sel, val) => { const el = root.querySelector(sel); if (el) el.textContent = val; };
+                        setText(modal, '[data-to-city]', toName);
+                        setText(modal, '[data-from-city]', fromName);
+                        setText(modal, '[data-out-date]', fmtDate(readState().depart));
+                        setText(modal, '[data-in-date]', fmtDate(readState().ret || readState().depart));
+                        const times = card.querySelectorAll('.sp-time');
+                        setText(modal, '[data-out-dep-time]', times[0]?.textContent || '');
+                        setText(modal, '[data-out-arr-time]', times[1]?.textContent || '');
+                        setText(modal, '[data-in-dep-time]', times[2]?.textContent || '');
+                        setText(modal, '[data-in-arr-time]', times[3]?.textContent || '');
+                        setText(modal, '[data-out-dep-airport]', `${fromName} (${fromIATA})`);
+                        setText(modal, '[data-out-arr-airport]', `${toName} (${toIATA})`);
+                        setText(modal, '[data-in-dep-airport]', `${toName} (${toIATA})`);
+                        setText(modal, '[data-in-arr-airport]', `${fromName} (${fromIATA})`);
+                        const price = card.querySelector('.sp-price')?.textContent.trim() || '';
+                        const langNow = getLang();
+                        const lbl = (window.MODAL_I18N && window.MODAL_I18N[langNow]) ? window.MODAL_I18N[langNow].bookPrefix : (langNow==='vi'?'Đặt ngay với giá ':'Book now for ');
+                        bookBtn.textContent = lbl + price;
+                        if (bookBtn && bookBtn.dataset) bookBtn.dataset.price = price;
+                        // Localize modal title if dictionary available
+                        const titleEl = modal.querySelector('#spModalTitle');
+                        if (titleEl && window.MODAL_I18N && window.MODAL_I18N[langNow]) titleEl.textContent = window.MODAL_I18N[langNow].title;
+                        // Ensure airport labels use current language inside modal
+                        if (typeof window.__spRenderAirports === 'function') window.__spRenderAirports(langNow);
+                        modal.classList.add('is-open');
+                        modal.setAttribute('aria-hidden', 'false');
+                    });
+                    btn.dataset.bound = '1';
+                });
+                ensureModalHandlers();
+            }
+
+            // Render on load and on language change
+            document.addEventListener('DOMContentLoaded', function(){ ensureModalHandlers(); renderResults(); });
+            document.addEventListener('languageChanged', () => setTimeout(renderResults, 0));
+        })();
     </script>
 
 
