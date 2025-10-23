@@ -747,6 +747,56 @@
                 const bookBtn = document.getElementById('spBookBtn');
                 if (bookBtn && !bookBtn.dataset.navBound) {
                     bookBtn.addEventListener('click', function(){
+                        try {
+                            // Build a persistent selection object from current modal contents
+                            const state = readState();
+                            const lang = getLang();
+                            const CITY_LABELS = window.SKYPLAN_CITY_TRANSLATIONS || { vi: {}, en: {} };
+                            const fromName = (CITY_LABELS[lang] && CITY_LABELS[lang][state.from]) || state.from;
+                            const toName = (CITY_LABELS[lang] && CITY_LABELS[lang][state.to]) || state.to;
+                            const CITY_IATA = {
+                                HaNoi: 'HAN', HoChiMinh: 'SGN', DaNang: 'DAD', PhuQuoc: 'PQC',
+                                HaiPhong: 'HPH', Hue: 'HUI', DaLat: 'DLI', CanTho: 'VCA',
+                                KhanhHoa: 'CXR', LamDong: 'DLI', NgheAn: 'VII', QuangNinh: 'VDO', QuangTri: 'VDH',
+                                AnGiang: 'VKG', DienBien: 'DIN', GiaLai: 'PXU', SonLa: 'SQH', ThanhHoa: 'THD'
+                            };
+                            const fromIATA = CITY_IATA[state.from] || 'XXX';
+                            const toIATA = CITY_IATA[state.to] || 'YYY';
+
+                            const outDep = (modal.querySelector('[data-out-dep-time]')?.textContent || '').trim();
+                            const outArr = (modal.querySelector('[data-out-arr-time]')?.textContent || '').trim();
+                            const inDep = (modal.querySelector('[data-in-dep-time]')?.textContent || '').trim();
+                            const inArr = (modal.querySelector('[data-in-arr-time]')?.textContent || '').trim();
+
+                            const parseMin = (s) => { const m = /^([0-2]?\d):([0-5]\d)$/.exec(String(s)); return m ? (parseInt(m[1],10)*60 + parseInt(m[2],10)) : null; };
+                            const diffMin = (a,b) => { const A=parseMin(a), B=parseMin(b); if (A==null||B==null) return null; let d=B-A; if (d<0) d+=1440; return d; };
+
+                            const priceLabel = (bookBtn.dataset && bookBtn.dataset.price) ? bookBtn.dataset.price : '';
+                            const priceVND = priceLabel ? Number(priceLabel.replace(/[^0-9]/g,''))||0 : 0;
+
+                            const trip = {
+                                fromCode: state.from,
+                                toCode: state.to,
+                                fromIATA,
+                                toIATA,
+                                fromName,
+                                toName,
+                                departDateISO: state.depart || '',
+                                returnDateISO: state.ret || '',
+                                priceLabel: priceLabel || '',
+                                priceVND,
+                                segments: [
+                                    { direction: 'outbound', departTime: outDep, arriveTime: outArr, departIATA: fromIATA, arriveIATA: toIATA, durationMin: diffMin(outDep,outArr) },
+                                    { direction: 'inbound', departTime: inDep, arriveTime: inArr, departIATA: toIATA, arriveIATA: fromIATA, durationMin: diffMin(inDep,inArr) }
+                                ]
+                            };
+                            try { localStorage.setItem('skyplan_trip_selection', JSON.stringify(trip)); } catch(_) {}
+                            // Provide simple route hints for other pages
+                            try {
+                                localStorage.setItem('route_from', state.from || '');
+                                localStorage.setItem('route_to', state.to || '');
+                            } catch(_) {}
+                        } catch(_) {}
                         window.location.href = 'fare.html';
                     });
                     bookBtn.dataset.navBound = '1';
