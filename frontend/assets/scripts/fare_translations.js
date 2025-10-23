@@ -56,7 +56,6 @@ const fareTranslations = {
         businessClass: "Business",
         
         // Seating options
-        autoAssigned: "Auto assigned",
         seatSelection: "Seat selection",
         
         // Baggage options
