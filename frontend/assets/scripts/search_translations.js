@@ -33,6 +33,9 @@ const searchTranslations = {
         timeTitle: "Departure time",
         budgetTitle: "Budget",
         anyLabel: "Any",
+        "search.from": "From",
+        "search.to": "To",
+
         // Cards / Modal CTA
         selectFlight: "Select flight",
         shareTrip: "Share trip",
@@ -41,6 +44,9 @@ const searchTranslations = {
         // Inline markers
         dotDeparture: "· Departure",
         dotReturn: "· Return",
+        nonstop: "Nonstop",
+        modalTitle: "Flight Details",
+        legTo: "To",
     },
     vi: {
         // Header
@@ -76,6 +82,9 @@ const searchTranslations = {
         timeTitle: "Giờ bay",
         budgetTitle: "Ngân sách",
         anyLabel: "Bất kỳ",
+        "search.from": "Từ",
+        "search.to": "Đến",
+
         // Cards / Modal CTA
         selectFlight: "Chọn chuyến bay",
         shareTrip: "Chia sẻ chuyến đi",
@@ -84,8 +93,68 @@ const searchTranslations = {
         // Inline markers
         dotDeparture: "· Khởi hành",
         dotReturn: "· Về",
+        nonstop: "Bay thẳng",
+        modalTitle: "Chi tiết chuyến bay",
+        legTo: "Đến",
     }
 };
+
+const MODAL_I18N = {
+    vi: {
+        share: 'Chia sẻ chuyến đi',
+        bookPrefix: 'Đặt ngay với giá ',
+        title: 'Chi tiết chuyến bay'
+    },
+    en: {
+        share: 'Share trip',
+        bookPrefix: 'Book now for ',
+        title: 'Flight Details'
+    }
+};
+
+window.SKYPLAN_CITY_TRANSLATIONS = {
+    vi: {
+        AnGiang: 'An Giang',
+        CanTho: 'Cần Thơ',
+        DaLat: 'Đà Lạt',
+        DaNang: 'Đà Nẵng',
+        DakLak: 'Đắk Lắk',
+        DienBien: 'Điện Biên',
+        GiaLai: 'Gia Lai',
+        HaNoi: 'Hà Nội',
+        HaiPhong: 'Hải Phòng',
+        HoChiMinh: 'Hồ Chí Minh',
+        Hue: 'Huế',
+        KhanhHoa: 'Khánh Hòa',
+        LamDong: 'Lâm Đồng',
+        NgheAn: 'Nghệ An',
+        QuangNinh: 'Quảng Ninh',
+        QuangTri: 'Quảng Trị',
+        SonLa: 'Sơn La',
+        ThanhHoa: 'Thanh Hóa'
+    },
+    en: {
+        AnGiang: 'An Giang',
+        CanTho: 'Can Tho',
+        DaLat: 'Da Lat',
+        DaNang: 'Da Nang',
+        DakLak: 'Dak Lak',
+        DienBien: 'Dien Bien',
+        GiaLai: 'Gia Lai',
+        HaNoi: 'Ha Noi',
+        HaiPhong: 'Hai Phong',
+        HoChiMinh: 'Ho Chi Minh',
+        Hue: 'Hue',
+        KhanhHoa: 'Khanh Hoa',
+        LamDong: 'Lam Dong',
+        NgheAn: 'Nghe An',
+        QuangNinh: 'Quang Ninh',
+        QuangTri: 'Quang Tri',
+        SonLa: 'Son La',
+        ThanhHoa: 'Thanh Hoa'
+    }
+};
+
 
 // Export (optional)
 if (typeof module !== 'undefined' && module.exports) {
@@ -185,15 +254,20 @@ function applySearchTranslations(lang) {
 
         const bookBtn = _$('#spBookBtn', modal);
         if (bookBtn) {
-            const txt = (bookBtn.textContent || '').trim();
-            const m = txt.match(/([\d\s.,]+(?:VND|₫|USD|€|£))$/i);
-            bookBtn.textContent = m ? `${dict.bookNowFor} ${m[1]}` : dict.bookNowFor;
+            const stored = (bookBtn.dataset && bookBtn.dataset.price) ? bookBtn.dataset.price : '';
+            if (stored) {
+                bookBtn.textContent = `${dict.bookNowFor} ${stored}`;
+            } else {
+                const txt = (bookBtn.textContent || '').trim();
+                const m = txt.match(/([\d\s.,]+(?:VND|₫|USD|€|£))$/i);
+                bookBtn.textContent = m ? `${dict.bookNowFor} ${m[1]}` : dict.bookNowFor;
+            }
         }
     }
 
     // 5) <html lang> + <title>
     if (dict.searchTitle) document.title = dict.searchTitle;
-    document.documentElement.lang = (lang === 'en' ? 'en' : 'vi');
+    document.documentElement.lang = (lang === 'vi' ? 'vi' : 'en');
 }
 
 // Đổi ngôn ngữ (public API cho trang search)
@@ -202,6 +276,12 @@ function changeSearchLanguage(lang) {
     try { localStorage.setItem('preferredLanguage', next); } catch (_) {}
     document.documentElement.lang = next;
     applySearchTranslations(next);
+
+    // Trigger date format update via custom event
+    const event = new CustomEvent('languageChanged', { 
+        detail: { lang: next }
+    });
+    document.dispatchEvent(event);
 
     if (typeof updateSelectedLanguage === 'function') {
         try { updateSelectedLanguage(next); } catch (_) {}
@@ -220,9 +300,9 @@ if (!localStorage.getItem('preferredLanguage')) {
 // Function để init translations sau khi components đã load
 function initSearchTranslations() {
     const qLang = new URLSearchParams(location.search).get('lang');
-    const lang = (qLang === 'en' || qLang === 'vi') ?
+    const lang = (qLang === 'vi' || qLang === 'en') ?
         qLang :
-        (localStorage.getItem('preferredLanguage') || 'vi');
+        (localStorage.getItem('preferredLanguage') || 'en');
 
     applySearchTranslations(lang);
 
@@ -248,3 +328,6 @@ function initSearchTranslations() {
 
 // Expose init function
 window.initSearchTranslations = initSearchTranslations;
+
+// Expose dictionary for other scripts that need to read translations directly
+try { window.searchTranslations = searchTranslations; } catch (_) {}

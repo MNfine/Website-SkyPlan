@@ -238,14 +238,20 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      console.log('Registration successful:', { fullName, email, phone, password, agreeTerms });
+      // NOTE: In production, send registration data to backend API
+      // Example: fetch('/api/auth/register', { method: 'POST', body: JSON.stringify({ fullName, email, phone, password }) })
       
       // Show success toast notification
       showToast(getTranslation('register.successToast'), {
         type: 'success',
-        duration: 3000,
+        duration: 2000,
         dismissible: true
       });
+
+      // Redirect to login page after successful registration
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 2000);
     });
   }
 
@@ -280,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
         type: 'info',
         duration: 3000
       });
-      console.log('Google registration clicked');
+      // NOTE: Implement Google OAuth registration here
     });
   }
 
@@ -290,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
         type: 'info',
         duration: 3000
       });
-      console.log('Facebook registration clicked');
+      // NOTE: Implement Facebook OAuth registration here
     });
   }
 

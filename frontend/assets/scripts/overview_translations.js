@@ -33,6 +33,29 @@ const overviewTranslations = {
         checkedLuggage: "Checked luggage",
         noExtras: "No additional services",
         passengerClass: "Economy",
+        // Overview specific labels we use in scripts
+        selectedExtrasTitle: "Selected extras",
+        fareLabel: "Fare",
+        extrasLabel: "Extras",
+        checkedBaggagePrefix: "Checked baggage: ",
+        fareClasses: {
+            economy: "Economy",
+            "premium-economy": "Premium Economy",
+            business: "Business"
+        },
+        seatFeatures: {
+            autoAssigned: "Auto-assigned seat",
+            seatSelection: "Seat selection"
+        },
+        baggageFeatures: {
+            handBaggage1: "Carry-on: 1 item",
+            handBaggage1Plus1: "Carry-on: 1 + Checked: 1",
+            handBaggage2Plus2: "Carry-on: 2 + Checked: 2"
+        },
+        flexFeatures: {
+            noRefund: "No refund",
+            changeable: "Change date allowed"
+        },
         // Steps
         step1: "Search",
         step2: "Select flight",
@@ -96,6 +119,29 @@ const overviewTranslations = {
         checkedLuggage: "Hành lý ký gửi",
         noExtras: "Không có dịch vụ thêm",
         passengerClass: "Phổ thông",
+        // Overview specific labels we use in scripts
+        selectedExtrasTitle: "Dịch vụ đã chọn",
+        fareLabel: "Giá vé",
+        extrasLabel: "Dịch vụ thêm",
+        checkedBaggagePrefix: "Hành lý ký gửi: ",
+        fareClasses: {
+            economy: "Phổ thông",
+            "premium-economy": "Phổ thông đặc biệt",
+            business: "Thương gia"
+        },
+        seatFeatures: {
+            autoAssigned: "Phân bổ chỗ ngồi tự động",
+            seatSelection: "Được chọn chỗ"
+        },
+        baggageFeatures: {
+            handBaggage1: "Hành lý xách tay: 1 kiện",
+            handBaggage1Plus1: "Xách tay: 1 kiện + Ký gửi: 1 kiện",
+            handBaggage2Plus2: "Xách tay: 2 kiện + Ký gửi: 2 kiện"
+        },
+        flexFeatures: {
+            noRefund: "Không hoàn tiền",
+            changeable: "Được đổi ngày bay"
+        },
         // Steps
         step1: "Tìm kiếm",
         step2: "Chọn chuyến bay",
@@ -152,43 +198,74 @@ function applyOverviewTranslations(lang) {
     }
 
     // Helpers
+    // If a real selected trip exists in storage, avoid overriding route cities here.
+    let storedTrip = null;
+    try { storedTrip = JSON.parse(localStorage.getItem('skyplan_trip_selection') || 'null'); } catch {}
+    const hasTrip = storedTrip && typeof storedTrip === 'object';
+
     const params = new URLSearchParams(window.location.search);
     const iataToCode = { HAN: 'HaNoi', SGN: 'HoChiMinh', DAD: 'DaNang', VCA: 'CanTho' };
     const cities = overviewTranslations[lang].cities || {};
     const routeBetween = overviewTranslations[lang].routeBetween || ((a, b) => `${a} - ${b}`);
     const formatDate = overviewTranslations[lang].formatDate || ((x) => x);
 
-    // Infer from/to codes
-    const segs = document.querySelectorAll('.flight-segment');
-    let fromCode = params.get('from');
-    let toCode = params.get('to');
-    if (!fromCode && segs[0]) {
-        const depIATA = segs[0].querySelector('.departure .location')?.textContent?.trim();
-        if (depIATA && iataToCode[depIATA]) fromCode = iataToCode[depIATA];
+    if (!hasTrip) {
+        // Infer from/to codes only when no explicit selected trip exists
+        const segs = document.querySelectorAll('.flight-segment');
+        let fromCode = params.get('from');
+        let toCode = params.get('to');
+        if (!fromCode && segs[0]) {
+            const depIATA = segs[0].querySelector('.departure .location')?.textContent?.trim();
+            if (depIATA && iataToCode[depIATA]) fromCode = iataToCode[depIATA];
+        }
+        if (!toCode && segs[0]) {
+            const arrIATA = segs[0].querySelector('.arrival .location')?.textContent?.trim();
+            if (arrIATA && iataToCode[arrIATA]) toCode = iataToCode[arrIATA];
+        }
+        fromCode = fromCode || 'HaNoi';
+        toCode = toCode || 'HoChiMinh';
+
+        const fromName = (typeof window !== 'undefined' && typeof window.resolveCityLabel === 'function')
+            ? window.resolveCityLabel(fromCode, lang)
+            : (cities[fromCode] || fromCode);
+        const toName = (typeof window !== 'undefined' && typeof window.resolveCityLabel === 'function')
+            ? window.resolveCityLabel(toCode, lang)
+            : (cities[toCode] || toCode);
+
+        // Update heading
+        const heading = document.getElementById('route-heading');
+        if (heading) heading.textContent = routeBetween(fromName, toName);
+
+        // Also update city labels inside segments
+        const cityDepartOut = document.querySelector('.city-depart-out');
+        const cityArriveOut = document.querySelector('.city-arrive-out');
+        const cityDepartRet = document.querySelector('.city-depart-ret');
+        const cityArriveRet = document.querySelector('.city-arrive-ret');
+        if (cityDepartOut) cityDepartOut.textContent = fromName;
+        if (cityArriveOut) cityArriveOut.textContent = toName;
+        if (cityDepartRet) cityDepartRet.textContent = toName;
+        if (cityArriveRet) cityArriveRet.textContent = fromName;
+    } else {
+        // When a selected trip exists, reflect it using current language dictionary
+        const fromCode = storedTrip.fromCode || storedTrip.from || '';
+        const toCode = storedTrip.toCode || storedTrip.to || '';
+        const fromName = (typeof window !== 'undefined' && typeof window.resolveCityLabel === 'function')
+            ? window.resolveCityLabel(fromCode, lang)
+            : ((cities && cities[fromCode]) || fromCode);
+        const toName = (typeof window !== 'undefined' && typeof window.resolveCityLabel === 'function')
+            ? window.resolveCityLabel(toCode, lang)
+            : ((cities && cities[toCode]) || toCode);
+        const heading = document.getElementById('route-heading');
+        if (heading) heading.textContent = routeBetween(fromName, toName);
+        const cityDepartOut = document.querySelector('.city-depart-out');
+        const cityArriveOut = document.querySelector('.city-arrive-out');
+        const cityDepartRet = document.querySelector('.city-depart-ret');
+        const cityArriveRet = document.querySelector('.city-arrive-ret');
+        if (cityDepartOut) cityDepartOut.textContent = fromName;
+        if (cityArriveOut) cityArriveOut.textContent = toName;
+        if (cityDepartRet) cityDepartRet.textContent = toName;
+        if (cityArriveRet) cityArriveRet.textContent = fromName;
     }
-    if (!toCode && segs[0]) {
-        const arrIATA = segs[0].querySelector('.arrival .location')?.textContent?.trim();
-        if (arrIATA && iataToCode[arrIATA]) toCode = iataToCode[arrIATA];
-    }
-    fromCode = fromCode || 'HaNoi';
-    toCode = toCode || 'HoChiMinh';
-
-    const fromName = cities[fromCode] || fromCode;
-    const toName = cities[toCode] || toCode;
-
-    // Update heading
-    const heading = document.getElementById('route-heading');
-    if (heading) heading.textContent = routeBetween(fromName, toName);
-
-    // Also update city labels inside segments
-    const cityDepartOut = document.querySelector('.city-depart-out');
-    const cityArriveOut = document.querySelector('.city-arrive-out');
-    const cityDepartRet = document.querySelector('.city-depart-ret');
-    const cityArriveRet = document.querySelector('.city-arrive-ret');
-    if (cityDepartOut) cityDepartOut.textContent = fromName;
-    if (cityArriveOut) cityArriveOut.textContent = toName;
-    if (cityDepartRet) cityDepartRet.textContent = toName;
-    if (cityArriveRet) cityArriveRet.textContent = fromName;
 
     // Dates
     function toISO(y, m, d) { const pad = n => String(n).padStart(2, '0'); return `${y}-${pad(m)}-${pad(d)}`; }
