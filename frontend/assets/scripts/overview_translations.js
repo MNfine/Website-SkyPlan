@@ -33,6 +33,29 @@ const overviewTranslations = {
         checkedLuggage: "Checked luggage",
         noExtras: "No additional services",
         passengerClass: "Economy",
+        // Overview specific labels we use in scripts
+        selectedExtrasTitle: "Selected extras",
+        fareLabel: "Fare",
+        extrasLabel: "Extras",
+        checkedBaggagePrefix: "Checked baggage: ",
+        fareClasses: {
+            economy: "Economy",
+            "premium-economy": "Premium Economy",
+            business: "Business"
+        },
+        seatFeatures: {
+            autoAssigned: "Auto-assigned seat",
+            seatSelection: "Seat selection"
+        },
+        baggageFeatures: {
+            handBaggage1: "Carry-on: 1 item",
+            handBaggage1Plus1: "Carry-on: 1 + Checked: 1",
+            handBaggage2Plus2: "Carry-on: 2 + Checked: 2"
+        },
+        flexFeatures: {
+            noRefund: "No refund",
+            changeable: "Change date allowed"
+        },
         // Steps
         step1: "Search",
         step2: "Select flight",
@@ -96,6 +119,29 @@ const overviewTranslations = {
         checkedLuggage: "Hành lý ký gửi",
         noExtras: "Không có dịch vụ thêm",
         passengerClass: "Phổ thông",
+        // Overview specific labels we use in scripts
+        selectedExtrasTitle: "Dịch vụ đã chọn",
+        fareLabel: "Giá vé",
+        extrasLabel: "Dịch vụ thêm",
+        checkedBaggagePrefix: "Hành lý ký gửi: ",
+        fareClasses: {
+            economy: "Phổ thông",
+            "premium-economy": "Phổ thông đặc biệt",
+            business: "Thương gia"
+        },
+        seatFeatures: {
+            autoAssigned: "Phân bổ chỗ ngồi tự động",
+            seatSelection: "Được chọn chỗ"
+        },
+        baggageFeatures: {
+            handBaggage1: "Hành lý xách tay: 1 kiện",
+            handBaggage1Plus1: "Xách tay: 1 kiện + Ký gửi: 1 kiện",
+            handBaggage2Plus2: "Xách tay: 2 kiện + Ký gửi: 2 kiện"
+        },
+        flexFeatures: {
+            noRefund: "Không hoàn tiền",
+            changeable: "Được đổi ngày bay"
+        },
         // Steps
         step1: "Tìm kiếm",
         step2: "Chọn chuyến bay",
