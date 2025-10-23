@@ -230,6 +230,8 @@
       if (typeof applyFareTranslations === 'function') {
         try { applyFareTranslations(currentLang); } catch (e) { console.error(e); }
       }
+      // Render dynamic route title from search selection
+      try { if (typeof initFareRouteTitle === 'function') initFareRouteTitle(currentLang); } catch (e) {}
 
       // Initialize language selector after translations are applied
       if (typeof initializeLanguageSelector === 'function') {
@@ -241,6 +243,7 @@
         const lang = (ev && ev.detail && ev.detail.lang) || currentLang;
         document.documentElement.lang = lang;
         try { applyFareTranslations && applyFareTranslations(lang); } catch (e) {}
+        try { initFareRouteTitle && initFareRouteTitle(lang); } catch (e) {}
       });
     }
   </script>
