@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkyPlan - Thông Tin Hành Khách</title>
+
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+    <!-- CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="assets/styles/reset.css" />
+    <link rel="stylesheet" href="assets/styles/index.css" />
+    <link rel="stylesheet" href="assets/styles/flags.css" />
+    <link rel="stylesheet" href="assets/styles/header.css" />
+    <link rel="stylesheet" href="assets/styles/footer.css" />
+    <link rel="stylesheet" href="assets/styles/passenger.css" />
+
+    <!-- Shared translations (header/footer), then page translations, then page logic -->
+    <script src="./assets/scripts/common.js" defer></script>
+    <script src="./assets/scripts/toast.js" defer></script>
+    <script src="./assets/scripts/index_translations.js" defer></script>
+    <script src="./assets/scripts/passenger_translations.js" defer></script>
+    <script src="./assets/scripts/passenger.js" defer></script>
+  </head>
+  <body>
+    <!-- Header will be injected here -->
+    <div id="header-container"></div>
+
+    <main class="main-content">
+      <div class="container">
+        <!-- Progress steps -->
+        <section class="fare-flow">
+          <div class="steps">
+            <div class="step completed">
+              <div class="dot">1</div>
+              <div class="label" data-i18n="steps.0">Tìm kiếm</div>
+            </div>
+            <div class="step completed">
+              <div class="dot">2</div>
+              <div class="label" data-i18n="steps.1">Chọn chuyến bay</div>
+            </div>
+            <div class="step completed">
+              <div class="dot">3</div>
+              <div class="label" data-i18n="steps.2">Chọn giá</div>
+            </div>
+            <div class="step active">
+              <div class="dot">4</div>
+              <div class="label" data-i18n="steps.3">Thông tin khách hàng</div>
+            </div>
+            <div class="step">
+              <div class="dot">5</div>
+              <div class="label" data-i18n="steps.4">Dịch vụ thêm</div>
+            </div>
+            <div class="step">
+              <div class="dot">6</div>
+              <div class="label" data-i18n="steps.5">Thanh toán</div>
+            </div>
+            <div class="progress"></div>
+          </div>
+        </section>
+
+        <!-- Passenger form -->
+        <div class="form-card">
+          <div class="form-header">
+            <h2 id="form-header-title" data-i18n="passengerHeader">
+              THÔNG TIN HÀNH KHÁCH
+            </h2>
+            <div class="form-header-line"></div>
+          </div>
+
+          <form id="passengerForm" novalidate>
+            <div class="form-grid">
+              <!-- Last name -->
+              <div class="form-group">
+                <label
+                  for="lastname"
+                  data-i18n="lbl.lastname"
+                  data-i18n-target="label"
+                  >Họ <span class="required">*</span></label
+                >
+                <input
+                  type="text"
+                  id="lastname"
+                  name="lastname"
+                  placeholder="Nhập họ"
+                  data-i18n="ph.lastname"
+                  data-i18n-target="placeholder"
+                  autocomplete="family-name"
+                />
+                <span class="error-message" id="lastname-error"></span>
+              </div>
+
+              <!-- First name -->
+              <div class="form-group">
+                <label
+                  for="firstname"
+                  data-i18n="lbl.firstname"
+                  data-i18n-target="label"
+                  >Tên <span class="required">*</span></label
+                >
+                <input
+                  type="text"
+                  id="firstname"
+                  name="firstname"
+                  placeholder="Nhập tên"
+                  data-i18n="ph.firstname"
+                  data-i18n-target="placeholder"
+                  autocomplete="given-name"
+                />
+                <span class="error-message" id="firstname-error"></span>
+              </div>
+
+              <!-- National ID (CCCD/CMND) -->
+              <div class="form-group full-width">
+                <label for="cccd" data-i18n="lbl.cccd" data-i18n-target="label"
+                  >Số CCCD/CMND <span class="required">*</span></label
+                >
+                <input
+                  type="text"
+                  id="cccd"
+                  name="cccd"
+                  placeholder="Nhập số CCCD/CMND"
+                  data-i18n="ph.cccd"
+                  data-i18n-target="placeholder"
+                  maxlength="12"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                />
+                <span class="error-message" id="cccd-error"></span>
+              </div>
+
+              <!-- Date of birth -->
+              <div class="form-group">
+                <label for="dob" data-i18n="lbl.dob" data-i18n-target="label"
+                  >Ngày sinh <span class="required">*</span></label
+                >
+                <input
+                  type="text"
+                  id="dob"
+                  name="dob"
+                  placeholder="DD/MM/YYYY"
+                  data-i18n="ph.dob"
+                  data-i18n-target="placeholder"
+                  inputmode="numeric"
+                />
+                <span class="error-message" id="dob-error"></span>
+              </div>
+
+              <!-- Gender -->
+              <div class="form-group">
+                <label
+                  for="gender"
+                  data-i18n="lbl.gender"
+                  data-i18n-target="label"
+                  >Giới tính <span class="required">*</span></label
+                >
+                <select id="gender" name="gender">
+                  <option value="" data-i18n="gender.0">Chọn giới tính</option>
+                  <option value="male" data-i18n="gender.1">Nam</option>
+                  <option value="female" data-i18n="gender.2">Nữ</option>
+                  <option value="other" data-i18n="gender.3">Khác</option>
+                </select>
+                <span class="error-message" id="gender-error"></span>
+              </div>
+
+              <!-- Phone number -->
+              <div class="form-group">
+                <label
+                  for="phoneNumber"
+                  data-i18n="lbl.phone"
+                  data-i18n-target="label"
+                  >Số điện thoại <span class="required">*</span></label
+                >
+                <input
+                  type="tel"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  placeholder="Nhập số điện thoại"
+                  data-i18n="ph.phone"
+                  data-i18n-target="placeholder"
+                  maxlength="10"
+                  inputmode="tel"
+                  autocomplete="tel"
+                />
+                <span class="error-message" id="phoneNumber-error"></span>
+              </div>
+
+              <!-- Email -->
+              <div class="form-group">
+                <label
+                  for="email"
+                  data-i18n="lbl.email"
+                  data-i18n-target="label"
+                  >Email <span class="required">*</span></label
+                >
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Nhập email"
+                  data-i18n="ph.email"
+                  data-i18n-target="placeholder"
+                  autocomplete="email"
+                />
+                <span class="error-message" id="email-error"></span>
+              </div>
+
+              <!-- Permanent address -->
+              <div class="form-group full-width">
+                <label
+                  for="address"
+                  data-i18n="lbl.address"
+                  data-i18n-target="label"
+                  >Địa chỉ thường trú <span class="required">*</span></label
+                >
+                <input
+                  type="text"
+                  id="address"
+                  name="address"
+                  placeholder="Nhập địa chỉ thường trú"
+                  data-i18n="ph.address"
+                  data-i18n-target="placeholder"
+                  autocomplete="street-address"
+                />
+                <span class="error-message" id="address-error"></span>
+              </div>
+
+              <!-- City/Province (Select dropdown with custom input option) -->
+              <div class="form-group">
+                <label for="city" data-i18n="lbl.city" data-i18n-target="label"
+                  >Tỉnh/Thành phố <span class="required">*</span></label
+                >
+                <select id="city" name="city">
+                  <option value="" data-i18n="cityDefault">
+                    Chọn tỉnh/thành phố
+                  </option>
+                  <option value="Hà Nội">Hà Nội</option>
+                  <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+                  <option value="Đà Nẵng">Đà Nẵng</option>
+                  <option value="Hải Phòng">Hải Phòng</option>
+                  <option value="Cần Thơ">Cần Thơ</option>
+                  <option value="An Giang">An Giang</option>
+                  <option value="Bà Rịa - Vũng Tàu">Bà Rịa - Vũng Tàu</option>
+                  <option value="Bắc Giang">Bắc Giang</option>
+                  <option value="Bắc Kạn">Bắc Kạn</option>
+                  <option value="Bạc Liêu">Bạc Liêu</option>
+                  <option value="Bắc Ninh">Bắc Ninh</option>
+                  <option value="Bến Tre">Bến Tre</option>
+                  <option value="Bình Định">Bình Định</option>
+                  <option value="Bình Dương">Bình Dương</option>
+                  <option value="Bình Phước">Bình Phước</option>
+                  <option value="Bình Thuận">Bình Thuận</option>
+                  <option value="Cà Mau">Cà Mau</option>
+                  <option value="Cao Bằng">Cao Bằng</option>
+                  <option value="Đắk Lắk">Đắk Lắk</option>
+                  <option value="Đắk Nông">Đắk Nông</option>
+                  <option value="Điện Biên">Điện Biên</option>
+                  <option value="Đồng Nai">Đồng Nai</option>
+                  <option value="Đồng Tháp">Đồng Tháp</option>
+                  <option value="Gia Lai">Gia Lai</option>
+                  <option value="Hà Giang">Hà Giang</option>
+                  <option value="Hà Nam">Hà Nam</option>
+                  <option value="Hà Tĩnh">Hà Tĩnh</option>
+                  <option value="Hải Dương">Hải Dương</option>
+                  <option value="Hậu Giang">Hậu Giang</option>
+                  <option value="Hòa Bình">Hòa Bình</option>
+                  <option value="Hưng Yên">Hưng Yên</option>
+                  <option value="Khánh Hòa">Khánh Hòa</option>
+                  <option value="Kiên Giang">Kiên Giang</option>
+                  <option value="Kon Tum">Kon Tum</option>
+                  <option value="Lai Châu">Lai Châu</option>
+                  <option value="Lâm Đồng">Lâm Đồng</option>
+                  <option value="Lạng Sơn">Lạng Sơn</option>
+                  <option value="Lào Cai">Lào Cai</option>
+                  <option value="Long An">Long An</option>
+                  <option value="Nam Định">Nam Định</option>
+                  <option value="Nghệ An">Nghệ An</option>
+                  <option value="Ninh Bình">Ninh Bình</option>
+                  <option value="Ninh Thuận">Ninh Thuận</option>
+                  <option value="Phú Thọ">Phú Thọ</option>
+                  <option value="Phú Yên">Phú Yên</option>
+                  <option value="Quảng Bình">Quảng Bình</option>
+                  <option value="Quảng Nam">Quảng Nam</option>
+                  <option value="Quảng Ngãi">Quảng Ngãi</option>
+                  <option value="Quảng Ninh">Quảng Ninh</option>
+                  <option value="Quảng Trị">Quảng Trị</option>
+                  <option value="Sóc Trăng">Sóc Trăng</option>
+                  <option value="Sơn La">Sơn La</option>
+                  <option value="Tây Ninh">Tây Ninh</option>
+                  <option value="Thái Bình">Thái Bình</option>
+                  <option value="Thái Nguyên">Thái Nguyên</option>
+                  <option value="Thanh Hóa">Thanh Hóa</option>
+                  <option value="Thừa Thiên Huế">Thừa Thiên Huế</option>
+                  <option value="Tiền Giang">Tiền Giang</option>
+                  <option value="Trà Vinh">Trà Vinh</option>
+                  <option value="Tuyên Quang">Tuyên Quang</option>
+                  <option value="Vĩnh Long">Vĩnh Long</option>
+                  <option value="Vĩnh Phúc">Vĩnh Phúc</option>
+                  <option value="Yên Bái">Yên Bái</option>
+                  <option value="other" data-i18n="cityOther">Khác</option>
+                </select>
+                <input
+                  type="text"
+                  id="city-custom"
+                  name="city-custom"
+                  placeholder="Nhập tỉnh/thành phố"
+                  data-i18n="ph.city"
+                  data-i18n-target="placeholder"
+                  style="display: none; margin-top: 10px"
+                />
+                <span class="error-message" id="city-error"></span>
+              </div>
+
+              <!-- Nationality (Select dropdown with custom input option) -->
+              <div class="form-group">
+                <label
+                  for="nationality"
+                  data-i18n="lbl.nationality"
+                  data-i18n-target="label"
+                  >Quốc tịch <span class="required">*</span></label
+                >
+                <select id="nationality" name="nationality">
+                  <option value="Việt Nam">Việt Nam</option>
+                  <option value="Lào">Lào</option>
+                  <option value="Campuchia">Campuchia</option>
+                  <option value="Thái Lan">Thái Lan</option>
+                  <option value="Singapore">Singapore</option>
+                  <option value="Malaysia">Malaysia</option>
+                  <option value="Indonesia">Indonesia</option>
+                  <option value="Philippines">Philippines</option>
+                  <option value="Myanmar">Myanmar</option>
+                  <option value="Brunei">Brunei</option>
+                  <option value="Hàn Quốc">Hàn Quốc</option>
+                  <option value="Nhật Bản">Nhật Bản</option>
+                  <option value="Trung Quốc">Trung Quốc</option>
+                  <option value="Hoa Kỳ">Hoa Kỳ</option>
+                  <option value="Anh">Anh</option>
+                  <option value="Pháp">Pháp</option>
+                  <option value="Đức">Đức</option>
+                  <option value="Úc">Úc</option>
+                  <option value="Canada">Canada</option>
+                  <option value="Ấn Độ">Ấn Độ</option>
+                  <option value="Nga">Nga</option>
+                  <option value="Hà Lan">Hà Lan</option>
+                  <option value="Ý">Ý</option>
+                  <option value="Tây Ban Nha">Tây Ban Nha</option>
+                  <option value="other" data-i18n="nationalityOther">
+                    Khác
+                  </option>
+                </select>
+                <input
+                  type="text"
+                  id="nationality-custom"
+                  name="nationality-custom"
+                  placeholder="Nhập quốc tịch"
+                  data-i18n="ph.nationality"
+                  data-i18n-target="placeholder"
+                  style="display: none; margin-top: 10px"
+                />
+                <span class="error-message" id="nationality-error"></span>
+              </div>
+
+              <!-- Notes -->
+              <div class="form-group full-width">
+                <label
+                  for="notes"
+                  data-i18n="lbl.notes"
+                  data-i18n-target="label"
+                  >Ghi chú</label
+                >
+                <textarea
+                  id="notes"
+                  name="notes"
+                  rows="4"
+                  placeholder="Nhập ghi chú (nếu có)"
+                  data-i18n="ph.notes"
+                  data-i18n-target="placeholder"
+                ></textarea>
+                <div class="char-counter" data-i18n="notesCounter">
+                  Tối đa 500 ký tự
+                </div>
+              </div>
+            </div>
+
+            <!-- Confirmation checkbox -->
+            <div class="form-checkbox">
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  id="confirm"
+                  name="confirm"
+                  class="custom-checkbox"
+                />
+                <span class="checkbox-text" data-i18n="terms"
+                  >Tôi đồng ý với điều khoản</span
+                >
+              </label>
+              <span class="error-message" id="confirm-error"></span>
+            </div>
+
+            <!-- Submit button -->
+            <div class="form-submit">
+              <button type="submit" class="btn-submit" data-i18n="submit">
+                Xác nhận thông tin
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer will be injected here -->
+    <div id="footer-container"></div>
+
+    <!-- Load header & footer; passenger_translations.js -->
+    <script>
+      (function () {
+        function applyAll(lang) {
+          if (typeof window.applyPassengerLang === "function") {
+            window.applyPassengerLang(lang);
+          } else if (typeof window.applyTranslations === "function") {
+            window.applyTranslations(lang);
+          }
+        }
+        function initializeApp() {
+          // Get current language from localStorage
+          let lang = "vi";
+          try {
+            lang = localStorage.getItem("preferredLanguage") || "vi";
+            localStorage.setItem("preferredLanguage", lang);
+          } catch (e) {
+            console.warn("LocalStorage not available:", e);
+          }
+
+          // Load header component
+          fetch("components/header.html")
+            .then((r) => r.text())
+            .then((html) => {
+              const container = document.getElementById("header-container");
+              if (container) container.innerHTML = html;
+              applyAll(lang);
+
+              // Initialize mobile menu after header is loaded
+              if (typeof initializeMobileMenu === "function") {
+                initializeMobileMenu();
+              }
+
+              // Initialize mobile language selector toggle
+              initMobileLangSelector();
+            })
+            .catch((err) => {
+              console.error("Failed to load header:", err);
+              applyAll(lang);
+            });
+
+          // Load footer component
+          fetch("components/footer.html")
+            .then((r) => r.text())
+            .then((html) => {
+              const container = document.getElementById("footer-container");
+              if (container) container.innerHTML = html;
+              applyAll(lang);
+            })
+            .catch((err) => console.error("Failed to load footer:", err));
+        }
+
+        // Mobile language selector toggle functionality
+        function initMobileLangSelector() {
+          const langSelector = document.querySelector(".language-selector");
+          const selectedLang = document.querySelector(".selected-lang");
+
+          // Add click event for mobile devices
+          if (selectedLang && window.innerWidth <= 768) {
+            if (!selectedLang.dataset.mobileBound) {
+              selectedLang.addEventListener("click", function (e) {
+                e.stopPropagation();
+                if (langSelector) {
+                  langSelector.classList.toggle("show-dropdown");
+                }
+              });
+              selectedLang.dataset.mobileBound = "1";
+            }
+          }
+
+          // Close dropdown when clicking outside
+          if (!document.body.dataset.langDropdownClickBound) {
+            document.addEventListener("click", function (event) {
+              if (langSelector && !event.target.closest(".language-selector")) {
+                langSelector.classList.remove("show-dropdown");
+              }
+            });
+            document.body.dataset.langDropdownClickBound = "1";
+          }
+        }
+
+        // Initialize on DOM ready
+        document.addEventListener("DOMContentLoaded", initializeApp);
+      })();
+    </script>
+  </body>
+</html>

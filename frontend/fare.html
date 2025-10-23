@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyPlan - Chọn giá vé</title>
+  <meta name="description" content="Chọn hạng giá vé phù hợp cho chuyến bay của bạn với SkyPlan.">
+
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <link rel="stylesheet" href="assets/styles/reset.css">
+  <link rel="stylesheet" href="assets/styles/index.css">
+  <link rel="stylesheet" href="assets/styles/flags.css">
+  <link rel="stylesheet" href="assets/styles/header.css">
+  <link rel="stylesheet" href="assets/styles/footer.css">
+  <link rel="stylesheet" href="assets/styles/fare.css">
+</head>
+<body>
+  <div id="header-container"></div>
+
+  <section class="container fare-flow">
+    <div class="steps">
+      <div class="step completed">
+        <div class="dot">1</div>
+        <div class="label" data-i18n="step1">Tìm kiếm</div>
+      </div>
+      <div class="step completed">
+        <div class="dot">2</div>
+        <div class="label" data-i18n="step2">Chọn chuyến bay</div>
+      </div>
+      <div class="step active">
+        <div class="dot">3</div>
+        <div class="label" data-i18n="step3">Chọn giá</div>
+      </div>
+      <div class="step">
+        <div class="dot">4</div>
+        <div class="label" data-i18n="step4">Thông tin khách hàng</div>
+      </div>
+      <div class="step">
+        <div class="dot">5</div>
+        <div class="label" data-i18n="step5">Dịch vụ thêm</div>
+      </div>
+      <div class="step">
+        <div class="dot">6</div>
+        <div class="label" data-i18n="step6">Thanh toán</div>
+      </div>
+      <div class="progress"></div>
+    </div>
+
+    <h2 class="route-title" data-i18n="routeTitle">Từ Hồ Chí Minh đến Hà Nội</h2>
+
+    <div class="fare-grid">
+      <article class="fare-card">
+        <h3 class="fare-name" data-i18n="economy">Phổ thông</h3>
+        <ul class="fare-features">
+          <li>
+            <span class="feat-title" data-i18n="seating">Chỗ ngồi</span>
+            <span class="feat-desc" data-i18n="seatSelection">Được chọn chỗ</span>
+          </li>
+          <li>
+            <span class="feat-title" data-i18n="baggage">Hành lý</span>
+            <span class="feat-desc" data-i18n="handBaggage1">1 kiện xách tay</span>
+          </li>
+          <li>
+            <span class="feat-title" data-i18n="flexibility">Giải pháp</span>
+            <span class="feat-desc" data-i18n="noRefund">Không hoàn tiền</span>
+          </li>
+        </ul>
+         <div class="fare-footer">
+           <div class="price" data-price-vnd="2374000">2.374.000 VND</div>
+           <a href="seat.html?class=economy" class="btn-select" data-i18n="select">Chọn</a>
+         </div>
+      </article>
+
+      <article class="fare-card">
+        <h3 class="fare-name" data-i18n="premiumEconomy">Phổ thông đặc biệt</h3>
+        <ul class="fare-features">
+          <li>
+            <span class="feat-title" data-i18n="seating">Chỗ ngồi</span>
+            <span class="feat-desc" data-i18n="seatSelection">Được chọn chỗ</span>
+          </li>
+          <li>
+            <span class="feat-title" data-i18n="baggage">Hành lý</span>
+            <span class="feat-desc" data-i18n="handBaggage1Plus1">1 kiện xách tay<br>1 kiện ký gửi</span>
+          </li>
+          <li>
+            <span class="feat-title" data-i18n="flexibility">Giải pháp</span>
+            <span class="feat-desc" data-i18n="noRefund">Không hoàn tiền</span>
+          </li>
+        </ul>
+         <div class="fare-footer">
+           <div class="price" data-price-vnd="3165000">3.165.000 VND</div>
+           <a href="seat.html?class=premium-economy" class="btn-select" data-i18n="select">Chọn</a>
+         </div>
+      </article>
+
+      <article class="fare-card">
+        <h3 class="fare-name" data-i18n="business">Thương gia</h3>
+        <ul class="fare-features">
+          <li>
+            <span class="feat-title" data-i18n="seating">Chỗ ngồi</span>
+            <span class="feat-desc" data-i18n="seatSelection">Được chọn chỗ</span>
+          </li>
+          <li>
+            <span class="feat-title" data-i18n="baggage">Hành lý</span>
+            <span class="feat-desc" data-i18n="handBaggage2Plus2">2 kiện xách tay<br>2 kiện ký gửi</span>
+          </li>
+          <li>
+            <span class="feat-title" data-i18n="flexibility">Giải pháp</span>
+            <span class="feat-desc" data-i18n="changeable">Được đổi ngày bay</span>
+          </li>
+        </ul>
+         <div class="fare-footer">
+           <div class="price" data-price-vnd="9230000">9.230.000 VND</div>
+           <a href="seat.html?class=business" class="btn-select" data-i18n="select">Chọn</a>
+         </div>
+      </article>
+    </div>
+  </section>
+
+  <div id="footer-container"></div>
+
+  <script src="assets/scripts/fare_translations.js"></script>
+  <script src="assets/scripts/common.js"></script>
+  <script>
+    // Persist selected fare class and price (VND) to localStorage
+    document.addEventListener('DOMContentLoaded', function(){
+      document.querySelectorAll('.fare-card .btn-select').forEach(function(a){
+        if (a.__bound) return; a.__bound = true;
+        a.addEventListener('click', function(){
+          try {
+            const card = a.closest('.fare-card');
+            const priceEl = card && card.querySelector('.price');
+            let vnd = 0;
+            if (priceEl) {
+              // 1) Prefer explicit data-price-vnd
+              const attrVnd = priceEl.getAttribute('data-price-vnd');
+              if (attrVnd) vnd = Number(attrVnd) || 0;
+              // 2) Fallback: parse from text like "2.374.000 VND"
+              if (!vnd) {
+                const text = priceEl.textContent || '';
+                const onlyDigits = text.replace(/[^0-9]/g, '');
+                if (onlyDigits) vnd = Number(onlyDigits) || 0;
+              }
+            }
+            // read fare class from href query
+            let fareClass = 'economy';
+            try {
+              const u = new URL(a.getAttribute('href'), location.href);
+              fareClass = u.searchParams.get('class') || 'economy';
+            } catch(_) {}
+            // Map features by fare class so overview can render correctly
+            const FEATURES_BY_CLASS = {
+              'economy': { seat: 'autoAssigned', baggage: 'handBaggage1', flex: 'noRefund' },
+              'premium-economy': { seat: 'seatSelection', baggage: 'handBaggage1Plus1', flex: 'noRefund' },
+              'business': { seat: 'seatSelection', baggage: 'handBaggage2Plus2', flex: 'changeable' }
+            };
+            const data = {
+              fareClass,
+              priceVND: vnd,
+              priceLabel: priceEl ? priceEl.textContent.trim() : '',
+              features: FEATURES_BY_CLASS[fareClass] || FEATURES_BY_CLASS['economy']
+            };
+            localStorage.setItem('skyplan_fare_selection', JSON.stringify(data));
+          } catch(e) { /* no-op */ }
+        }, { capture: true }); // capture to persist even if navigation happens
+      });
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Function to handle component loading errors
+      function handleComponentError(componentName) {
+        console.error(`Failed to load ${componentName} component`);
+      }
+      
+      // Load header
+      fetch('components/header.html')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        })
+        .then(data => {
+          document.getElementById('header-container').innerHTML = data;
+          
+          // Initialize all header functionalities after DOM is ready
+          requestAnimationFrame(() => {
+            // Initialize mobile menu
+            if (typeof initializeMobileMenu === 'function') {
+              initializeMobileMenu();
+            }
+            // Initialize language functionality after header loads
+            initializeLanguage();
+          });
+        })
+        .catch(error => {
+          handleComponentError('header');
+          initializeLanguage();
+        });
+
+      // Load footer
+      fetch('components/footer.html')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        })
+        .then(data => {
+          document.getElementById('footer-container').innerHTML = data;
+        })
+        .catch(error => {
+          handleComponentError('footer');
+        });
+    });
+
+    // Initialize language functionality
+    function initializeLanguage() {
+      // Respect saved language; do NOT override to Vietnamese on reload
+      const saved = localStorage.getItem('preferredLanguage');
+      let currentLang = saved || document.documentElement.lang || 'vi';
+
+      document.documentElement.lang = currentLang;
+
+      // Apply fare-specific translations
+      if (typeof applyFareTranslations === 'function') {
+        try { applyFareTranslations(currentLang); } catch (e) { console.error(e); }
+      }
+      // Render dynamic route title from search selection
+      try { if (typeof initFareRouteTitle === 'function') initFareRouteTitle(currentLang); } catch (e) {}
+
+      // Initialize language selector after translations are applied
+      if (typeof initializeLanguageSelector === 'function') {
+        try { initializeLanguageSelector(); } catch (e) { }
+      }
+
+      // React to language changes triggered from the header selector
+      document.addEventListener('languageChanged', function (ev) {
+        const lang = (ev && ev.detail && ev.detail.lang) || currentLang;
+        document.documentElement.lang = lang;
+        try { applyFareTranslations && applyFareTranslations(lang); } catch (e) {}
+        try { initFareRouteTitle && initFareRouteTitle(lang); } catch (e) {}
+      });
+    }
+  </script>
+</body>
+</html>

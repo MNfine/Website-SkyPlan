@@ -1,0 +1,394 @@
+.fare-flow {
+  padding: 30px 0 60px;
+  padding-top: calc(var(--header-height, 80px) + 30px);
+}
+
+.steps {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0;
+  padding: 10px 0 30px;
+}
+
+.steps .progress {
+  position: absolute;
+  left: 8.33%;
+  right: 8.33%;
+  top: 26px;
+  height: 4px;
+  background: #e6e6e6;
+  border-radius: 2px;
+  z-index: 1;
+}
+
+.steps .progress::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #0a969d 0%, #1fb6a0 100%);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  width: 40%; 
+}
+
+.step {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.step .dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #cfd8dc;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  font-size: 12px;
+  position: relative;
+}
+
+.step .label {
+  font-size: 14px;
+  color: #6b6f72;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.step.completed .dot {
+  background: #0a969d;
+  border-color: #0a969d;
+  transform: scale(1.05);
+}
+
+.step.completed .label {
+  color: #0a969d;
+  font-weight: 600;
+}
+
+.step.active .dot {
+  background: #1fb6a0;
+  border-color: #1fb6a0;
+  box-shadow: 0 0 0 4px rgba(31, 182, 160, 0.15);
+  transform: scale(1.1);
+}
+
+.step.active .label {
+  color: #1fb6a0;
+  font-weight: 700;
+}
+
+/* Hover effects for interactive steps */
+
+
+.route-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 18px 0 24px;
+  color: #2b2f32;
+}
+
+.fare-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.fare-card {
+  border: 2px solid #19b1a5;
+  border-radius: 8px;
+  background: #fff;
+  padding: 18px 18px 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.fare-name {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.fare-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+}
+
+.fare-features li {
+  margin: 10px 0;
+}
+
+.feat-title {
+  display: block;
+  font-weight: 700;
+  color: #2b2f32;
+}
+
+.feat-desc {
+  display: block;
+  color: #a0a6ab;
+}
+
+.fare-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 4px solid #e8e8e8;
+}
+
+.price {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.btn-select {
+  background: #1fb6a0;
+  color: #fff;
+  padding: 6px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 700;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+}
+
+.btn-select:hover {
+  background: #189a87;
+}
+
+/* Responsive for Steps */
+@media (max-width: 768px) {
+  .fare-flow {
+    padding: 20px 0 40px;
+    padding-top: calc(var(--header-height, 80px) + 20px);
+  }
+  
+  .steps {
+    gap: 0;
+    padding: 10px 0 20px;
+  }
+  
+  .step .dot {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  
+  .step .label {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+  
+  .steps .progress {
+    top: 21px;
+    height: 3px;
+  }
+  
+  .steps .progress::before {
+    height: 3px;
+  }
+  
+  .route-title {
+    font-size: 20px;
+    margin: 16px 0 20px;
+  }
+  
+  .fare-card {
+    padding: 16px 16px 12px;
+  }
+  
+  .fare-name {
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+  
+  .fare-features li {
+    margin: 8px 0;
+  }
+  
+  .feat-title {
+    font-size: 14px;
+  }
+  
+  .feat-desc {
+    font-size: 13px;
+  }
+  
+  .price {
+    font-size: 18px;
+  }
+  
+  .btn-select {
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fare-flow {
+    padding: 15px 20px 30px;
+    padding-top: calc(var(--header-height, 80px) + 15px);
+  }
+  
+  .steps {
+    gap: 0;
+    padding: 10px 0 15px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .steps::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .step .dot {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+  
+  .step .label {
+    font-size: 10px;
+    max-width: 45px;
+    word-wrap: break-word;
+    hyphens: auto;
+    line-height: 1.1;
+  }
+  
+  .steps .progress {
+    top: 19px;
+    height: 2px;
+  }
+  
+  .steps .progress::before {
+    height: 2px;
+  }
+  
+  .route-title {
+    font-size: 18px;
+    margin: 12px 0 16px;
+    text-align: center;
+  }
+  
+  .fare-grid {
+    gap: 20px;
+    padding: 0;
+  }
+  
+  .fare-card {
+    padding: 18px 16px 14px;
+    margin: 0;
+  }
+  
+  .fare-name {
+    font-size: 16px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  
+  .fare-features li {
+    margin: 8px 0;
+  }
+  
+  .feat-title {
+    font-size: 13px;
+  }
+  
+  .feat-desc {
+    font-size: 12px;
+  }
+  
+  .fare-footer {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+    margin-top: 12px;
+  }
+  
+  .price {
+    font-size: 18px;
+    font-weight: 700;
+  }
+  
+  .btn-select {
+    padding: 10px 20px;
+    font-size: 14px;
+    align-self: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 1228px) {
+  .fare-flow {
+    padding: 30px 30px 60px;
+    padding-top: calc(var(--header-height, 80px) + 30px);
+  }
+  
+  .fare-grid {
+    gap: 20px;
+    padding: 0 15px;
+  }
+}
+
+@media (max-width: 992px) {
+  .fare-flow {
+    padding: 25px 20px 50px;
+    padding-top: calc(var(--header-height, 80px) + 25px);
+  }
+  
+  .fare-grid { 
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .fare-flow {
+    padding: 20px 15px 40px;
+    padding-top: calc(var(--header-height, 80px) + 20px);
+  }
+  
+  .fare-grid {
+    gap: 20px;
+    padding: 0 5px;
+  }
+}
+
+@media (max-width: 640px) {
+  .fare-grid { 
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fare-grid {
+    gap: 20px;
+    padding: 0;
+  }
+}
+
+

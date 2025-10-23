@@ -1,0 +1,158 @@
+footer {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  padding: 60px 0 0;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.footer-column {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footer-logo {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.footer-desc {
+  margin-bottom: 20px;
+  line-height: 1.6;
+  opacity: 0.8;
+}
+
+.social-links {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: background-color var(--transition-speed);
+}
+
+.social-link:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-links a {
+  opacity: 0.8;
+  transition: opacity var(--transition-speed);
+}
+
+.footer-links a:hover {
+  opacity: 1;
+}
+
+.footer-title {
+  font-weight: bold;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.payment-methods {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.payment-icon {
+  font-size: 24px;
+}
+
+.app-download {
+  margin-top: 25px;
+}
+
+.download-title {
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.download-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--border-radius);
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: background-color var(--transition-speed);
+  font-size: 14px;
+}
+
+.download-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 20px 0;
+  text-align: center;
+}
+
+.copyright {
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .footer-container {
+    flex-wrap: wrap;
+  }
+  
+  .footer-column {
+    flex-basis: 45%;
+  }
+}
+
+@media (max-width: 768px) {
+  footer {
+    padding: 40px 0 0;
+  }
+  
+  .footer-container {
+    flex-direction: column;
+    gap: 40px;
+  }
+  
+  .footer-column {
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .section-title {
+    text-align: center;
+  }
+  .footer-bottom {
+    padding: 15px 0;
+  }
+}

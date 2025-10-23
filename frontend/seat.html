@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyPlan - Chọn ghế</title>
+  <meta name="description" content="Chọn ghế ngồi phù hợp cho chuyến bay của bạn.">
+
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <link rel="stylesheet" href="assets/styles/reset.css">
+  <link rel="stylesheet" href="assets/styles/index.css">
+  <link rel="stylesheet" href="assets/styles/flags.css">
+  <link rel="stylesheet" href="assets/styles/header.css">
+  <link rel="stylesheet" href="assets/styles/footer.css">
+  <link rel="stylesheet" href="assets/styles/seat.css">
+</head>
+<body>
+  <div id="header-container"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="seat-selection-page">
+        <!-- Page Title -->
+        <div class="page-header">
+          <h1 class="page-title" data-i18n="seatTitle">Chọn ghế của bạn</h1>
+          <p class="flight-info" data-i18n="flightInfo">Chọn ghế cho chuyến bay VN 1234 từ Hồ Chí Minh đến Hà Nội</p>
+        </div>
+
+        <!-- Seat Selection Layout -->
+        <div class="seat-layout">
+          <!-- Seat Map Container -->
+          <div class="seat-map-container">
+            <!-- Airplane Shape -->
+            <div class="airplane">
+              <!-- Front Emergency Exits -->
+              <div class="emergency-exits front-exits">
+                <div class="exit-row">
+                  <div class="exit-door left-exit">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>EXIT</span>
+                  </div>
+                  <div class="exit-door right-exit">
+                    <span>EXIT</span>
+                    <i class="fas fa-arrow-right"></i>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Business Class Section -->
+              <div class="cabin-section business-class-section">
+                <h3 class="section-header" data-i18n="businessClass">Business Class</h3>
+                
+                <!-- Row 1 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat business-class" data-seat="1A">1A</div>
+                    <div class="seat business-class" data-seat="1B">1B</div>
+                    <div class="seat business-class" data-seat="1C">1C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat business-class" data-seat="1D">1D</div>
+                    <div class="seat business-class" data-seat="1E">1E</div>
+                    <div class="seat business-class" data-seat="1F">1F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 2 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat business-class occupied" data-seat="2A">2A</div>
+                    <div class="seat business-class" data-seat="2B">2B</div>
+                    <div class="seat business-class" data-seat="2C">2C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat business-class" data-seat="2D">2D</div>
+                    <div class="seat business-class" data-seat="2E">2E</div>
+                    <div class="seat business-class occupied" data-seat="2F">2F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 3 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat business-class" data-seat="3A">3A</div>
+                    <div class="seat business-class" data-seat="3B">3B</div>
+                    <div class="seat business-class" data-seat="3C">3C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat business-class" data-seat="3D">3D</div>
+                    <div class="seat business-class" data-seat="3E">3E</div>
+                    <div class="seat business-class" data-seat="3F">3F</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Premium Economy Section -->
+              <div class="cabin-section premium-economy-section">
+                <h3 class="section-header" data-i18n="premiumEconomy">Premium Economy Class</h3>
+                
+                <!-- Row 4 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat premium-economy" data-seat="4A">4A</div>
+                    <div class="seat premium-economy" data-seat="4B">4B</div>
+                    <div class="seat premium-economy" data-seat="4C">4C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat premium-economy" data-seat="4D">4D</div>
+                    <div class="seat premium-economy" data-seat="4E">4E</div>
+                    <div class="seat premium-economy" data-seat="4F">4F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 5 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat premium-economy" data-seat="5A">5A</div>
+                    <div class="seat premium-economy" data-seat="5B">5B</div>
+                    <div class="seat premium-economy" data-seat="5C">5C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat premium-economy" data-seat="5D">5D</div>
+                    <div class="seat premium-economy" data-seat="5E">5E</div>
+                    <div class="seat premium-economy" data-seat="5F">5F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 6 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat premium-economy" data-seat="6A">6A</div>
+                    <div class="seat premium-economy" data-seat="6B">6B</div>
+                    <div class="seat premium-economy" data-seat="6C">6C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat premium-economy" data-seat="6D">6D</div>
+                    <div class="seat premium-economy" data-seat="6E">6E</div>
+                    <div class="seat premium-economy" data-seat="6F">6F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 7 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat premium-economy" data-seat="7A">7A</div>
+                    <div class="seat premium-economy occupied" data-seat="7B">7B</div>
+                    <div class="seat premium-economy" data-seat="7C">7C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat premium-economy" data-seat="7D">7D</div>
+                    <div class="seat premium-economy" data-seat="7E">7E</div>
+                    <div class="seat premium-economy" data-seat="7F">7F</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Economy Class Section -->
+              <div class="cabin-section economy-section">
+                <h3 class="section-header" data-i18n="economyClass">Economy Class</h3>
+                
+                <!-- Row 8 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat economy" data-seat="8A">8A</div>
+                    <div class="seat economy" data-seat="8B">8B</div>
+                    <div class="seat economy" data-seat="8C">8C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat economy" data-seat="8D">8D</div>
+                    <div class="seat economy" data-seat="8E">8E</div>
+                    <div class="seat economy" data-seat="8F">8F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 9 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat economy" data-seat="9A">9A</div>
+                    <div class="seat economy" data-seat="9B">9B</div>
+                    <div class="seat economy" data-seat="9C">9C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat economy" data-seat="9D">9D</div>
+                    <div class="seat economy" data-seat="9E">9E</div>
+                    <div class="seat economy" data-seat="9F">9F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 10 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat economy" data-seat="10A">10A</div>
+                    <div class="seat economy" data-seat="10B">10B</div>
+                    <div class="seat economy" data-seat="10C">10C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat economy" data-seat="10D">10D</div>
+                    <div class="seat economy" data-seat="10E">10E</div>
+                    <div class="seat economy" data-seat="10F">10F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 11 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat economy" data-seat="11A">11A</div>
+                    <div class="seat economy" data-seat="11B">11B</div>
+                    <div class="seat economy" data-seat="11C">11C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat economy" data-seat="11D">11D</div>
+                    <div class="seat economy" data-seat="11E">11E</div>
+                    <div class="seat economy" data-seat="11F">11F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 12 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat economy" data-seat="12A">12A</div>
+                    <div class="seat economy" data-seat="12B">12B</div>
+                    <div class="seat economy" data-seat="12C">12C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat economy" data-seat="12D">12D</div>
+                    <div class="seat economy" data-seat="12E">12E</div>
+                    <div class="seat economy" data-seat="12F">12F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 13 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat economy" data-seat="13A">13A</div>
+                    <div class="seat economy" data-seat="13B">13B</div>
+                    <div class="seat economy" data-seat="13C">13C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat economy" data-seat="13D">13D</div>
+                    <div class="seat economy" data-seat="13E">13E</div>
+                    <div class="seat economy" data-seat="13F">13F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 14 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat economy" data-seat="14A">14A</div>
+                    <div class="seat economy" data-seat="14B">14B</div>
+                    <div class="seat economy" data-seat="14C">14C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat economy" data-seat="14D">14D</div>
+                    <div class="seat economy" data-seat="14E">14E</div>
+                    <div class="seat economy" data-seat="14F">14F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 15 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat economy" data-seat="15A">15A</div>
+                    <div class="seat economy" data-seat="15B">15B</div>
+                    <div class="seat economy" data-seat="15C">15C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat economy" data-seat="15D">15D</div>
+                    <div class="seat economy" data-seat="15E">15E</div>
+                    <div class="seat economy" data-seat="15F">15F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 16 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat economy" data-seat="16A">16A</div>
+                    <div class="seat economy" data-seat="16B">16B</div>
+                    <div class="seat economy" data-seat="16C">16C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat economy" data-seat="16D">16D</div>
+                    <div class="seat economy" data-seat="16E">16E</div>
+                    <div class="seat economy" data-seat="16F">16F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 17 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat economy" data-seat="17A">17A</div>
+                    <div class="seat economy" data-seat="17B">17B</div>
+                    <div class="seat economy" data-seat="17C">17C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat economy" data-seat="17D">17D</div>
+                    <div class="seat economy" data-seat="17E">17E</div>
+                    <div class="seat economy" data-seat="17F">17F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 18 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat economy" data-seat="18A">18A</div>
+                    <div class="seat economy" data-seat="18B">18B</div>
+                    <div class="seat economy" data-seat="18C">18C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat economy" data-seat="18D">18D</div>
+                    <div class="seat economy" data-seat="18E">18E</div>
+                    <div class="seat economy" data-seat="18F">18F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 19 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat economy" data-seat="19A">19A</div>
+                    <div class="seat economy" data-seat="19B">19B</div>
+                    <div class="seat economy" data-seat="19C">19C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat economy" data-seat="19D">19D</div>
+                    <div class="seat economy" data-seat="19E">19E</div>
+                    <div class="seat economy" data-seat="19F">19F</div>
+                  </div>
+                </div>
+                
+                <!-- Row 20 -->
+                <div class="seat-row">
+                  <div class="seats">
+                    <div class="seat economy" data-seat="20A">20A</div>
+                    <div class="seat economy" data-seat="20B">20B</div>
+                    <div class="seat economy" data-seat="20C">20C</div>
+                    <div class="seat-gap"></div>
+                    <div class="seat economy" data-seat="20D">20D</div>
+                    <div class="seat economy" data-seat="20E">20E</div>
+                    <div class="seat economy" data-seat="20F">20F</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rear Emergency Exits -->
+              <div class="emergency-exits rear-exits">
+                <div class="exit-row">
+                  <div class="exit-door left-exit">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>EXIT</span>
+                  </div>
+                  <div class="exit-door right-exit">
+                    <span>EXIT</span>
+                    <i class="fas fa-arrow-right"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Selection Panel -->
+          <div class="selection-panel">
+            <div class="panel-content">
+              <h3 class="panel-title" data-i18n="yourSelection">Chọn ghế của bạn</h3>
+              
+              <!-- Fare Class Info -->
+              <div class="fare-class-info" id="fareClassInfo" style="display: none;">
+                <p class="fare-class-label" data-i18n="selectedFareClass">Hạng vé đã chọn:</p>
+                <p class="fare-class-value" id="fareClassName"></p>
+              </div>
+              
+              <div class="selected-seats">
+                <p class="selected-label" data-i18n="selectedSeats">Ghế đã chọn:</p>
+                <p class="seat-numbers" data-i18n="noSeatsSelected">Chưa có ghế nào được chọn</p>
+              </div>
+
+              <!-- Simple Countdown Timer -->
+              <div class="countdown-box" id="countdownBox" style="display: none;">
+                <div class="countdown-title"><i class="far fa-clock"></i> <span data-i18n="seatReserved">Ghế được giữ trong:</span></div>
+                <div class="countdown-display" id="countdownDisplay">0:30</div>
+                <div class="countdown-note" data-i18n="pleaseComplete">Vui lòng hoàn thành việc chọn ghế!</div>
+              </div>
+
+              <div class="annotation">
+                <h4 class="annotation-title" data-i18n="annotation">Chú thích</h4>
+                <div class="legend">
+                  <div class="legend-item">
+                    <div class="legend-color business-class"></div>
+                    <span data-i18n="businessClass">Hạng Thương Gia</span>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-color premium-economy"></div>
+                    <span data-i18n="premiumEconomy">Hạng Phổ Thông Đặc Biệt</span>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-color economy"></div>
+                    <span data-i18n="economyClass">Hạng Phổ Thông</span>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-color occupied"></div>
+                    <span data-i18n="occupied">Đã Đặt</span>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-color selected"></div>
+                    <span data-i18n="selecting">Đang Chọn</span>
+                  </div>
+                  <div class="legend-item" id="restrictedLegend" style="display: none;">
+                    <div class="legend-color restricted"></div>
+                    <span data-i18n="notAvailable">Không khả dụng</span>
+                  </div>
+                </div>
+              </div>
+
+              <button class="continue-btn" data-i18n="continue">Tiếp Tục</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <div id="footer-container"></div>
+
+  <!-- JavaScript -->
+  <script src="assets/scripts/toast.js"></script>
+  <script src="assets/scripts/seat_translations.js"></script>
+  <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/seat.js"></script>
+
+  <!-- Load Components -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Function to handle component loading errors
+      function handleComponentError(componentName) {
+        console.error(`Failed to load ${componentName} component`);
+      }
+      
+      // Load header
+      fetch('components/header.html')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        })
+        .then(data => {
+          document.getElementById('header-container').innerHTML = data;
+          
+          // Initialize all header functionalities after DOM is ready
+          requestAnimationFrame(() => {
+            // Initialize mobile menu
+            if (typeof initializeMobileMenu === 'function') {
+              initializeMobileMenu();
+            }
+            // Initialize language functionality after header loads
+            initializeLanguage();
+          });
+        })
+        .catch(error => {
+          handleComponentError('header');
+          initializeLanguage();
+        });
+      
+      // Load footer
+      fetch('components/footer.html')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        })
+        .then(data => {
+          document.getElementById('footer-container').innerHTML = data;
+        })
+        .catch(error => {
+          handleComponentError('footer');
+        });
+
+      // Seat selection functionality
+      initializeSeatSelection();
+    });
+
+    // Initialize language functionality
+    function initializeLanguage() {
+      // Force Vietnamese as default for seat page
+      let currentLang = 'vi';
+      localStorage.setItem('preferredLanguage', 'vi');
+      
+      document.documentElement.lang = currentLang;
+      
+      // Apply seat-specific translations
+      if (typeof applySeatTranslations === 'function') {
+        applySeatTranslations(currentLang);
+      }
+      
+      // Initialize language selector after translations are applied
+      if (typeof initializeLanguageSelector === 'function') {
+        initializeLanguageSelector();
+      }
+    }
+
+    // Function to get URL parameter
+    function getUrlParameter(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    // Function to restrict seats based on fare class
+    function restrictSeatsByFareClass(fareClass) {
+      const allSeats = document.querySelectorAll('.seat');
+      const businessSection = document.querySelector('.business-class-section');
+      const premiumEconomySection = document.querySelector('.premium-economy-section');
+      const economySection = document.querySelector('.economy-section');
+      const fareClassInfo = document.getElementById('fareClassInfo');
+      const fareClassName = document.getElementById('fareClassName');
+      const restrictedLegend = document.getElementById('restrictedLegend');
+      
+      // Remove any existing restrictions first
+      allSeats.forEach(seat => {
+        seat.classList.remove('restricted');
+        seat.style.pointerEvents = 'auto';
+        seat.style.opacity = '1';
+      });
+      
+      // Reset section opacities
+      if (businessSection) businessSection.style.opacity = '1';
+      if (premiumEconomySection) premiumEconomySection.style.opacity = '1';
+      if (economySection) economySection.style.opacity = '1';
+      
+      // Display fare class info
+      if (fareClassInfo && fareClassName) {
+        const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+        let fareDisplayName = '';
+        
+        switch(fareClass) {
+          case 'economy':
+            fareDisplayName = seatTranslations[currentLang]['economy'] || 'Economy';
+            break;
+          case 'premium-economy':
+            fareDisplayName = seatTranslations[currentLang]['premiumEconomy'] || 'Premium Economy';
+            break;
+          case 'business':
+            fareDisplayName = seatTranslations[currentLang]['business'] || 'Business';
+            break;
+        }
+        
+        fareClassName.textContent = fareDisplayName;
+        fareClassInfo.style.display = 'block';
+      }
+      
+      // Apply restrictions based on fare class
+      let hasRestrictions = false;
+      switch(fareClass) {
+        case 'economy':
+          // Only allow economy seats
+          document.querySelectorAll('.seat.business-class, .seat.premium-economy').forEach(seat => {
+            seat.classList.add('restricted');
+            seat.style.pointerEvents = 'none';
+            seat.style.opacity = '0.3';
+          });
+          // Dim the section headers for restricted sections
+          if (businessSection) businessSection.style.opacity = '0.5';
+          if (premiumEconomySection) premiumEconomySection.style.opacity = '0.5';
+          hasRestrictions = true;
+          break;
+          
+        case 'premium-economy':
+          // Allow premium economy and economy seats
+          document.querySelectorAll('.seat.business-class').forEach(seat => {
+            seat.classList.add('restricted');
+            seat.style.pointerEvents = 'none';
+            seat.style.opacity = '0.3';
+          });
+          // Dim business class section
+          if (businessSection) businessSection.style.opacity = '0.5';
+          hasRestrictions = true;
+          break;
+          
+        case 'business':
+          // Allow all seats (business can choose any seat)
+          break;
+          
+        default:
+          // No restrictions if no fare class specified
+          break;
+      }
+      
+      // Show/hide restricted legend
+      if (restrictedLegend) {
+        restrictedLegend.style.display = hasRestrictions ? 'flex' : 'none';
+      }
+    }
+
+    // Seat selection functionality
+    function initializeSeatSelection() {
+      // Get fare class from URL parameter
+      const fareClass = getUrlParameter('class');
+      
+      // Apply seat restrictions based on fare class
+      if (fareClass) {
+        restrictSeatsByFareClass(fareClass);
+      }
+      
+      const seats = document.querySelectorAll('.seat:not(.occupied)');
+      const selectedSeatsDisplay = document.querySelector('.seat-numbers');
+      const continueBtn = document.querySelector('.continue-btn');
+      const countdownBox = document.getElementById('countdownBox');
+      const countdownDisplay = document.getElementById('countdownDisplay');
+      
+      // Simple countdown variables
+      let countdownTimer = null;
+      let timeLeft = 30; // 30 seconds
+      
+      // Initialize with already selected seats from HTML
+      let selectedSeats = [];
+      document.querySelectorAll('.seat.selected').forEach(seat => {
+        selectedSeats.push(seat.dataset.seat);
+      });
+
+      // Update selected seats display
+      function updateSelectedDisplay() {
+        const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+        if (selectedSeats.length === 0) {
+          const noSeatsText = seatTranslations[currentLang]['noSeatsSelected'] || 'No seats selected';
+          selectedSeatsDisplay.textContent = noSeatsText;
+        } else {
+          selectedSeats.sort();
+          selectedSeatsDisplay.textContent = selectedSeats.join(', ');
+        }
+      }
+
+      // Start simple countdown
+      function startCountdown() {
+        // Reset timer if already running
+        if (countdownTimer) {
+          clearInterval(countdownTimer);
+        }
+        
+        timeLeft = 30;
+        countdownBox.style.display = 'block';
+        countdownBox.classList.remove('warning');
+        
+        countdownTimer = setInterval(function() {
+          timeLeft = timeLeft - 1;
+          
+          // Format time display (minutes:seconds)
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+          countdownDisplay.textContent = minutes + ':' + (seconds < 10 ? '0' + seconds : seconds);
+          
+          // Show warning when less than 10 seconds
+          if (timeLeft <= 10) {
+            countdownBox.classList.add('warning');
+          }
+          
+          // Time's up!
+          if (timeLeft <= 0) {
+            clearInterval(countdownTimer);
+            
+            // Clear all selected seats
+            selectedSeats.forEach(function(seatCode) {
+              const seat = document.querySelector('[data-seat="' + seatCode + '"]');
+              if (seat) {
+                seat.classList.remove('selected');
+              }
+            });
+            
+            selectedSeats = [];
+            updateSelectedDisplay();
+            hideCountdown();
+            
+            // Show toast notification for timeout
+            if (typeof SeatNotifications !== 'undefined') {
+              SeatNotifications.showTimeExpired();
+            } else {
+              const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+              const timeExpiredMsg = seatTranslations[currentLang]['timeExpired'] || 'Time expired! Please select your seats again.';
+              alert(timeExpiredMsg);
+            }
+          }
+        }, 1000); // Update every 1 second
+      }
+
+      // Hide countdown
+      function hideCountdown() {
+        if (countdownTimer) {
+          clearInterval(countdownTimer);
+          countdownTimer = null;
+        }
+        countdownBox.style.display = 'none';
+        countdownBox.classList.remove('warning');
+      }
+
+      // Add click handlers to seats
+      seats.forEach(seat => {
+        seat.addEventListener('click', function() {
+          // Check if seat is restricted
+          if (this.classList.contains('restricted')) {
+            // Show restricted seat notification
+            if (typeof SeatNotifications !== 'undefined') {
+              SeatNotifications.showRestrictedSeat();
+            }
+            return;
+          }
+          
+          const seatCode = this.dataset.seat;
+          
+          if (this.classList.contains('selected')) {
+            // Deselect seat
+            this.classList.remove('selected');
+            selectedSeats = selectedSeats.filter(s => s !== seatCode);
+            
+            // Show deselection notification
+            if (typeof SeatNotifications !== 'undefined') {
+              SeatNotifications.showSeatDeselected(seatCode);
+            }
+            
+            // Hide countdown if no seats selected
+            if (selectedSeats.length === 0) {
+              hideCountdown();
+            }
+          } else {
+            // Select seat
+            this.classList.add('selected');
+            selectedSeats.push(seatCode);
+            
+            // Show selection notification
+            if (typeof SeatNotifications !== 'undefined') {
+              SeatNotifications.showSeatSelected(seatCode);
+            }
+            
+            // Start countdown when first seat is selected or restart it
+            startCountdown();
+          }
+          
+          updateSelectedDisplay();
+        });
+      });
+
+      // Continue button functionality (enhanced with toast)
+      continueBtn.addEventListener('click', function(e) {
+        if (selectedSeats.length === 0) {
+          e.preventDefault();
+          if (typeof SeatNotifications !== 'undefined') {
+            SeatNotifications.showNoSeatsSelected();
+          } else {
+            const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+            const selectAtLeastOneMsg = seatTranslations[currentLang]['selectAtLeastOne'] || 'Please select at least one seat before continuing.';
+            alert(selectAtLeastOneMsg);
+          }
+        } else {
+          // Stop countdown when continuing
+          hideCountdown();
+          
+          // Navigate to next page
+          window.location.href = 'passenger.html';
+        }
+      });
+
+      // Initialize display
+      updateSelectedDisplay();
+    }
+  </script>
+</body>
+</html>

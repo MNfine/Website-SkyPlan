@@ -1,0 +1,803 @@
+/* Seat Selection Page Styles */
+
+/* Main Content */
+.main-content {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  padding: 2rem 0;
+  padding-top: calc(80px + 2rem); /* Account for fixed header height */
+}
+
+.seat-selection-page {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Page Header */
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 6 00;
+  color: #1fb6a0;
+  margin-bottom: 0.5rem;
+}
+
+.flight-info {
+  font-size: 1.1rem;
+  color: #718096;
+  margin: 0;
+}
+
+/* Seat Layout Container */
+.seat-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Seat Map Container */
+.seat-map-container {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+/* Airplane Shape */
+.airplane {
+  background: #e8f4f8;
+  border-radius: 80px 80px 20px 20px;
+  padding: 2rem 1.5rem;
+  position: relative;
+  min-width: 400px;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+.airplane::before {
+  content: "";
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  max-width: 200px;
+  min-width: 120px;
+  height: 15px;
+  background: #1fb6a0;
+  border-radius: 30px 30px 0 0;
+}
+
+/* Cabin Sections */
+.cabin-section {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.section-header {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 30px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.business-class-section {
+  border-bottom: 3px solid #c9c4c4;
+  padding-bottom: 1.5rem;
+  background: #f1f8f8;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.business-class-section .section-header {
+  background: #fd9d85;
+  color: white;
+}
+
+.premium-economy-section {
+  border-bottom: 3px solid #c9c4c4;
+  padding-bottom: 1.5rem;
+  background: #f1f8f8;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.premium-economy-section .section-header {
+  background: #60a5fa;
+  color: white;
+}
+
+.economy-section {
+  border-bottom: 3px solid #c9c4c4;
+  padding-bottom: 1.5rem;
+  background: #f1f8f8;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.economy-section .section-header {
+  background: #08b9e4;
+  color: #fff;
+}
+
+.first-class {
+  border-bottom: 2px solid #d1d5db;
+  padding-bottom: 1rem;
+}
+
+.rear-section {
+  border-bottom: 2px solid #d1d5db;
+  padding-bottom: 1rem;
+}
+
+/* Seat Rows */
+.seat-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  gap: 0.25rem;
+}
+
+.seats {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Emergency Exits */
+.emergency-exits {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+}
+
+.exit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.exit-door {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ffa000c7;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  min-width: 80px;
+  justify-content: center;
+}
+
+.exit-door i {
+  font-size: 1rem;
+}
+
+
+.business-class-section .seats {
+  gap: 0.3rem;
+}
+
+.business-class-section .seat-gap {
+  width: 2rem;
+}
+
+
+.premium-economy-section .seats,
+.economy-section .seats {
+  gap: 0.25rem;
+}
+
+.seat-gap {
+  width: 2rem;
+}
+
+/* Seat Styles */
+.seat {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.1rem;
+}
+
+/* Business Class seats */
+.seat.business-class {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 0.8rem;
+  border-radius: 8px;
+}
+
+/* Premium Economy seats */
+.seat.premium-economy {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 0.8rem;
+}
+
+/* Economy seats */
+.seat.economy {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 0.8rem;
+}
+
+.seat:hover:not(.occupied) {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Seat Types */
+.seat.business-class {
+  background-color: #fff;
+  color: #000;
+  border-color: #fd9d85;
+}
+
+.seat.premium-economy {
+  background-color: #fff;
+  color: #000;
+  border-color: #60a5fa;
+}
+
+.seat.economy {
+  background-color: #fff;
+  color: #000;
+  border-color: #08b9e4;
+}
+
+/* Seat States */
+.seat.occupied {
+  background-color: #ff6b6b;
+  color: white;
+  border-color: #ff5252;
+  cursor: not-allowed;
+}
+
+.seat.occupied:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Restricted seats (not available for selected fare class) */
+.seat.restricted {
+  background-color: #e0e0e0;
+  color: #999;
+  border-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+.seat.restricted:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.seat.selected {
+  background-color: #1fb6a0;
+  color: white;
+  border-color: #0a969d;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(31, 182, 160, 0.4);
+}
+
+/* Selection Panel */
+.selection-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+  position: sticky;
+  top: 2rem;
+}
+
+.panel-title {
+  color: #1fb6a0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.selected-seats {
+  margin-bottom: 2rem;
+}
+
+.selected-label {
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.seat-numbers {
+  font-weight: 600;
+  color: #1fb6a0;
+  font-size: 1.1rem;
+}
+
+/* Annotation */
+.annotation {
+  margin-bottom: 2rem;
+}
+
+.annotation-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1rem;
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.legend-color {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 4px;
+  border: 2px solid transparent;
+}
+
+.legend-color.business-class {
+  background-color: #fff;
+  border-color: #fd9d85;
+}
+
+.legend-color.premium-economy {
+  background-color: #fff;
+  border-color: #60a5fa;
+}
+
+.legend-color.economy {
+  background-color: #fff;
+  border-color: #08b9e4;
+}
+
+.legend-color.occupied {
+  background-color: #ff6b6b;
+  border-color: #ff5252;
+}
+
+.legend-color.selected {
+  background-color: #1fb6a0;
+  border-color: #0a969d;
+}
+
+.legend-color.restricted {
+  background-color: #e0e0e0;
+  border-color: #ccc;
+}
+
+.legend-item span {
+  font-size: 0.9rem;
+  color: #4a5568;
+}
+
+/* Fare Class Info */
+.fare-class-info {
+  background-color: #f0f8ff;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.fare-class-label {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin: 0 0 0.25rem 0;
+}
+
+.fare-class-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* Continue Button */
+.continue-btn {
+  width: 100%;
+  background: #1fb6a0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.continue-btn:hover {
+  background-color: #189a87;
+}
+
+
+.continue-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .main-content {
+    padding-top: calc(75px + 2rem); 
+  }
+
+  .seat-layout {
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+  }
+
+  .page-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 968px) {
+  .main-content {
+    padding-top: calc(70px + 1.5rem); /* Adjust for tablet header */
+  }
+
+  .seat-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .selection-panel {
+    position: static;
+    order: -1;
+  }
+
+  .seat-map-container {
+    padding: 1.5rem;
+  }
+
+  .airplane {
+    padding: 1.5rem 1rem;
+    min-width: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem 0;
+    padding-top: calc(70px + 1rem); 
+  }
+
+  .page-title {
+    font-size: 1.75rem;
+  }
+
+  .flight-info {
+    font-size: 1rem;
+  }
+
+  .seat-map-container {
+    padding: 1rem;
+    border-radius: 15px;
+  }
+
+  .airplane {
+    min-width: 320px;
+    padding: 2rem 1rem;
+  }
+
+  .airplane::before {
+    top: -12px;
+    width: 55%;
+    max-width: 150px;
+    min-width: 100px;
+    height: 12px;
+  }
+
+  .section-header {
+    font-size: 0.95rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .business-class-section,
+  .premium-economy-section,
+  .economy-section {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .emergency-exits {
+    margin: 0.75rem 0;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .exit-door {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+    min-width: 70px;
+  }
+
+  .exit-door i {
+    font-size: 0.9rem;
+  }
+
+  .seat {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.7rem;
+  }
+
+  .seat.business-class {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.7rem;
+  }
+
+  .seat.premium-economy {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.7rem;
+  }
+
+  .seat.economy {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.7rem;
+  }
+
+  .business-class-section .seat-gap {
+    width: 1.5rem;
+  }
+
+  .seat-gap {
+    width: 1.5rem;
+  }
+
+  .selection-panel {
+    padding: 1rem;
+  }
+
+  .panel-title {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding-top: calc(65px + 0.75rem);
+  }
+
+  .airplane {
+    min-width: 280px;
+    padding: 1.5rem 0.75rem;
+  }
+
+  .airplane::before {
+    top: -10px;
+    width: 50%;
+    max-width: 120px;
+    min-width: 80px;
+    height: 10px;
+  }
+
+  .section-header {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .business-class-section,
+  .premium-economy-section,
+  .economy-section {
+    padding: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .emergency-exits {
+    margin: 0.5rem 0;
+    padding: 0.4rem 0.5rem;
+  }
+
+  .exit-door {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+    min-width: 60px;
+    gap: 0.3rem;
+  }
+
+  .exit-door i {
+    font-size: 0.8rem;
+  }
+
+  .seat {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.6rem;
+  }
+
+  .seat.business-class {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.6rem;
+  }
+
+  .seat.premium-economy {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.6rem;
+  }
+
+  .seat.economy {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.6rem;
+  }
+
+  .business-class-section .seat-gap {
+    width: 1.2rem;
+  }
+
+  .seat-gap {
+    width: 1.2rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .flight-info {
+    font-size: 0.9rem;
+    padding: 0 1rem;
+  }
+}
+
+/* Simple Countdown Timer Styles */
+.countdown-box {
+  background-color: #e6f7f8;
+  border: 2px solid #0a969d;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 15px 0;
+  text-align: center;
+}
+
+.countdown-box.warning {
+  background-color: #fff3e6;
+  border-color: #ff8a00;
+}
+
+.countdown-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0a969d;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.countdown-title i {
+  font-size: 16px;
+  color: #0a969d;
+  animation: tick-rotation 2s ease-in-out infinite;
+}
+
+.countdown-box.warning .countdown-title {
+  color: #cc6e00;
+}
+
+.countdown-box.warning .countdown-title i {
+  color: #ff8a00;
+  animation: warning-pulse 0.8s ease-in-out infinite alternate;
+}
+
+.countdown-display {
+  font-size: 32px;
+  font-weight: bold;
+  color: #0a969d;
+  font-family: 'Courier New', monospace;
+  margin: 10px 0;
+}
+
+.countdown-box.warning .countdown-display {
+  color: #ff8a00;
+}
+
+.countdown-note {
+  font-size: 12px;
+  color: #087278;
+  font-style: italic;
+}
+
+.countdown-box.warning .countdown-note {
+  color: #cc6e00;
+}
+
+/* Blinking effect for warning */
+.countdown-box.warning .countdown-display {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.5; }
+}
+
+/* Clock icon animations */
+@keyframes tick-rotation {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes warning-pulse {
+  from { 
+    transform: scale(1) rotate(0deg);
+    color: #ff8a00;
+  }
+  to { 
+    transform: scale(1.1) rotate(3deg);
+    color: #ff6b00;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .countdown-box {
+    padding: 12px;
+    margin: 12px 0;
+  }
+  
+  .countdown-display {
+    font-size: 24px;
+  }
+  
+  .countdown-title {
+    font-size: 13px;
+  }
+  
+  .countdown-note {
+    font-size: 11px;
+  }
+}
