@@ -397,10 +397,13 @@
           }
           if (hasSvc){
             extras.services.forEach(id=>{
+              // Skip unsupported/unused service keys
+              if (id === 'svc_infant') return; // no infant service exists in extras, avoid showing raw key
               let icon = 'fa-user';
               if (id === 'svc_wheelchair') icon = 'fa-wheelchair';
               else if (id === 'svc_pet') icon = 'fa-paw';
-              else if (id === 'svc_elderly') icon = 'fa-person-cane';
+              // Use a widely-supported icon for elderly support (Font Awesome Free)
+              else if (id === 'svc_elderly') icon = 'fa-blind';
               const name = t('services', id) || id;
               rows.push({ icon, text: name });
             });
