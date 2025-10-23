@@ -38,6 +38,11 @@ const overviewTranslations = {
         fareLabel: "Fare",
         extrasLabel: "Extras",
         checkedBaggagePrefix: "Checked baggage: ",
+        // Payment/overview shared labels
+        ticketLabelBase: "Ticket",
+        ticketOneWaySuffix: "(one way)",
+        ticketRoundTripSuffix: "(round trip)",
+        taxesAndFees: "Taxes and fees",
         fareClasses: {
             economy: "Economy",
             "premium-economy": "Premium Economy",
@@ -124,6 +129,11 @@ const overviewTranslations = {
         fareLabel: "Giá vé",
         extrasLabel: "Dịch vụ thêm",
         checkedBaggagePrefix: "Hành lý ký gửi: ",
+        // Payment/overview shared labels
+        ticketLabelBase: "Vé máy bay",
+        ticketOneWaySuffix: "(1 chiều)",
+        ticketRoundTripSuffix: "(2 chiều)",
+        taxesAndFees: "Thuế và phí",
         fareClasses: {
             economy: "Phổ thông",
             "premium-economy": "Phổ thông đặc biệt",
@@ -200,7 +210,7 @@ function applyOverviewTranslations(lang) {
     // Helpers
     // If a real selected trip exists in storage, avoid overriding route cities here.
     let storedTrip = null;
-    try { storedTrip = JSON.parse(localStorage.getItem('skyplan_trip_selection') || 'null'); } catch {}
+    try { storedTrip = JSON.parse(localStorage.getItem('skyplan_trip_selection') || 'null'); } catch { }
     const hasTrip = storedTrip && typeof storedTrip === 'object';
 
     const params = new URLSearchParams(window.location.search);

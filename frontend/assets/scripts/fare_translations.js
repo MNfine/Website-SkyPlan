@@ -216,6 +216,8 @@ function changeFareLanguage(lang) {
     document.documentElement.lang = lang;
     applyFareTranslations(lang);
     try { if (typeof initFareRouteTitle === 'function') initFareRouteTitle(lang); } catch(e) {}
+    // Broadcast to let other modules refresh (date inputs, common, etc.)
+    try { document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } })); } catch(e) {}
 }
 
 // Ensure Vietnamese is set as default on first visit

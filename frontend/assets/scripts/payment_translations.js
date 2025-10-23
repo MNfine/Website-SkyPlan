@@ -252,6 +252,10 @@ function changePaymentLanguage(lang) {
     localStorage.setItem('preferredLanguage', lang);
     document.documentElement.lang = lang;
     applyPaymentTranslations(lang);
+    // Broadcast so other modules (payment_order.js, header/footer) can react immediately
+    try {
+        document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
+    } catch (e) { /* ignore */ }
 }
 
 // Ensure Vietnamese is set as default on first visit
