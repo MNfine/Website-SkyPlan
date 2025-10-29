@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="assets/styles/header.css" />
     <link rel="stylesheet" href="assets/styles/footer.css" />
     <link rel="stylesheet" href="assets/styles/passenger.css" />
+    <link rel="stylesheet" href="assets/styles/loader.css" />
 
     <!-- Shared translations (header/footer), then page translations, then page logic -->
     <script src="./assets/scripts/common.js" defer></script>
@@ -500,6 +501,29 @@
         // Initialize on DOM ready
         document.addEventListener("DOMContentLoaded", initializeApp);
       })();
+    </script>
+    <script src="assets/scripts/loader.js"></script>
+    <script>
+      // Import loader HTML vào DOM càng sớm càng tốt
+      fetch('components/loader.html').then(r => r.text()).then(html => {
+        document.body.insertAdjacentHTML('beforeend', html);
+      });
+      // Gắn sự kiện submit form: chỉ show loader và chuyển trang nếu validateForm() trả về true
+      document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('passengerForm');
+        if (form) {
+          form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (typeof validateForm === 'function' && validateForm()) {
+              if (window.Loader) window.Loader.show();
+              setTimeout(function() {
+                window.location.href = 'extras.html';
+              }, 1200);
+            }
+            // Nếu không hợp lệ, chỉ hiện lỗi, không show loader, không chuyển trang
+          });
+        }
+      });
     </script>
   </body>
 </html>

@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="assets/styles/footer.css" />
     <link rel="stylesheet" href="assets/styles/fare.css" />
     <link rel="stylesheet" href="assets/styles/extras.css" />
+    <link rel="stylesheet" href="assets/styles/loader.css" />
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
     <link
       rel="stylesheet"
@@ -177,5 +178,26 @@
     <script src="assets/scripts/common.js"></script>
     <script src="assets/scripts/extras_translations.js"></script>
     <script src="assets/scripts/extras.js"></script>
+    <script src="assets/scripts/loader.js"></script>
+    <script>
+      // Import loader HTML vào DOM càng sớm càng tốt
+      fetch('components/loader.html').then(r => r.text()).then(html => {
+        document.body.insertAdjacentHTML('beforeend', html);
+      });
+      // Gắn sự kiện click cho nút tiếp tục thanh toán để show loader và chuyển trang
+      document.addEventListener('DOMContentLoaded', function() {
+        var btn = document.getElementById('toPaymentBtn');
+        if (btn) {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var href = btn.getAttribute('href');
+            if (window.Loader) window.Loader.show();
+            setTimeout(function() {
+              window.location.href = href;
+            }, 1200);
+          });
+        }
+      });
+    </script>
   </body>
 </html>
