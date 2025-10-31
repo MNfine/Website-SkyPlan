@@ -372,7 +372,7 @@
                 <div class="legend">
                   <div class="legend-item">
                     <div class="legend-color business-class"></div>
-                    <span data-i18n="businessClass">Hạng Thương Gia</span>
+                    <span data-i18n="business">Hạng Thương Gia</span>
                   </div>
                   <div class="legend-item">
                     <div class="legend-color premium-economy"></div>
@@ -380,7 +380,7 @@
                   </div>
                   <div class="legend-item">
                     <div class="legend-color economy"></div>
-                    <span data-i18n="economyClass">Hạng Phổ Thông</span>
+                    <span data-i18n="economy">Hạng Phổ Thông</span>
                   </div>
                   <div class="legend-item">
                     <div class="legend-color occupied"></div>
@@ -578,6 +578,38 @@
       }
     }
 
+    // Bổ sung cập nhật fareClassName khi đổi ngôn ngữ
+function updateFareClassNameByLang() {
+  const fareClassInfo = document.getElementById('fareClassInfo');
+  const fareClassName = document.getElementById('fareClassName');
+  if (fareClassInfo && fareClassName && fareClassInfo.style.display !== 'none') {
+    const fareClass = new URLSearchParams(window.location.search).get('class');
+    const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+    let fareDisplayName = '';
+    switch(fareClass) {
+      case 'economy':
+        fareDisplayName = seatTranslations[currentLang]['economy'] || 'Economy';
+        break;
+      case 'premium-economy':
+        fareDisplayName = seatTranslations[currentLang]['premiumEconomy'] || 'Premium Economy';
+        break;
+      case 'business':
+        fareDisplayName = seatTranslations[currentLang]['business'] || 'Business';
+        break;
+    }
+    fareClassName.textContent = fareDisplayName;
+  }
+}
+
+// Gọi lại sau khi đổi ngôn ngữ
+const originalApplySeatTranslations = window.applySeatTranslations;
+window.applySeatTranslations = function(lang) {
+  if (typeof originalApplySeatTranslations === 'function') {
+    originalApplySeatTranslations(lang);
+  }
+  updateFareClassNameByLang();
+};
+
     // Seat selection functionality
     function initializeSeatSelection() {
       // Get fare class from URL parameter
@@ -690,37 +722,37 @@
             }
             return;
           }
-
           const seatCode = this.dataset.seat;
-
           if (this.classList.contains('selected')) {
             // Deselect seat
             this.classList.remove('selected');
             selectedSeats = selectedSeats.filter(s => s !== seatCode);
-
             // Show deselection notification
             if (typeof SeatNotifications !== 'undefined') {
               SeatNotifications.showSeatDeselected(seatCode);
             }
-
             // Hide countdown if no seats selected
             if (selectedSeats.length === 0) {
               hideCountdown();
             }
           } else {
+            // Nếu đã chọn 1 ghế, bỏ chọn ghế cũ trước khi chọn ghế mới
+            if (selectedSeats.length === 1) {
+              const oldSeatCode = selectedSeats[0];
+              const oldSeat = document.querySelector('[data-seat="' + oldSeatCode + '"]');
+              if (oldSeat) oldSeat.classList.remove('selected');
+              selectedSeats = [];
+            }
             // Select seat
             this.classList.add('selected');
             selectedSeats.push(seatCode);
-
             // Show selection notification
             if (typeof SeatNotifications !== 'undefined') {
               SeatNotifications.showSeatSelected(seatCode);
             }
-
             // Start countdown when first seat is selected or restart it
             startCountdown();
           }
-
           updateSelectedDisplay();
         });
       });
