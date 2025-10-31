@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="assets/styles/flags.css">
   <link rel="stylesheet" href="assets/styles/header.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
+  <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
 <body>
   <!-- Header -->
@@ -285,6 +286,27 @@
     // Language initialization
     document.addEventListener('DOMContentLoaded', function() {
       initializeApp();
+    });
+  </script>
+  <!-- Loader component (JS) và logic show loader khi submit form -->
+  <script src="assets/scripts/loader.js"></script>
+  <script>
+    // Import loader HTML vào DOM càng sớm càng tốt
+    fetch('components/loader.html').then(r => r.text()).then(html => {
+      document.body.insertAdjacentHTML('afterbegin', html);
+    });
+    // Luôn gắn sự kiện submit form và logic Loader khi DOM ready
+    document.addEventListener('DOMContentLoaded', function() {
+      var form = document.querySelector('.search-box');
+      if (form && window.Loader) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          window.Loader.show();
+          setTimeout(function() {
+            form.submit();
+          }, 1500);
+        });
+      }
     });
   </script>
 </body>
