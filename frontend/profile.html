@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="metaProfileTitle">SkyPlan - Hồ sơ</title>
+  <meta name="description" content="Quản lý thông tin tài khoản SkyPlan của bạn.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/styles/reset.css">
+  <link rel="stylesheet" href="assets/styles/flags.css">
+  <link rel="stylesheet" href="assets/styles/index.css">
+  <link rel="stylesheet" href="assets/styles/header.css">
+  <link rel="stylesheet" href="assets/styles/footer.css">
+  <link rel="stylesheet" href="assets/styles/profile.css">
+</head>
+<body>
+  <div id="header-container"></div>
+
+  <main class="profile-page">
+    <div class="container">
+      <div class="profile-container">
+        <div class="profile-header">
+          <h1 class="page-title" data-i18n="profile.pageTitle">Hồ sơ của bạn</h1>
+          <p class="page-subtitle" data-i18n="profile.pageSubtitle">Cập nhật thông tin tài khoản để trải nghiệm tốt hơn</p>
+        </div>
+
+        <div class="profile-layout">
+          <aside class="profile-sidebar" aria-label="Profile sections">
+            <ul class="sidebar-menu" id="profileMenu">
+              <li class="menu-item active" data-target="#accountSection">
+                <span class="menu-icon"><i class="fas fa-user-circle"></i></span>
+                <span class="menu-text" data-i18n="profile.sidebar.account">Tài khoản của tôi</span>
+              </li>
+              <li class="menu-item" data-target="#personalSection">
+                <span class="menu-icon"><i class="fas fa-id-card"></i></span>
+                <span class="menu-text" data-i18n="profile.sidebar.personal">Thông tin cá nhân</span>
+              </li>
+            </ul>
+          </aside>
+
+          <section class="profile-content">
+            <div class="card" id="accountSection">
+              <div class="card-header">
+                <h2 class="card-title" data-i18n="profile.account.title">Tài khoản</h2>
+              </div>
+              <div class="card-body">
+                <div class="account-info-grid">
+                  <div class="info-item">
+                    <div class="info-label" data-i18n="profile.account.memberId">Mã số thành viên</div>
+                    <div class="info-value" id="memberId">SP2024089456</div>
+                  </div>
+                  <div class="info-item">
+                    <div class="info-label" data-i18n="profile.account.tier">Hạng thẻ</div>
+                    <div class="info-value" id="memberTier">REGISTERED</div>
+                  </div>
+                  <div class="info-item">
+                    <div class="info-label" data-i18n="profile.account.points">Điểm tích luỹ</div>
+                    <div class="info-value" id="memberPoints">1,250 <span data-i18n="profile.account.pointsUnit">điểm</span></div>
+                  </div>
+                  <div class="info-item">
+                    <div class="info-label" data-i18n="profile.account.phone">Số điện thoại</div>
+                    <div class="info-value" id="accountPhone">+84 987 654 321</div>
+                  </div>
+                  <div class="info-item">
+                    <div class="info-label" data-i18n="profile.account.email">Email</div>
+                    <div class="info-value" id="accountEmail">nguyenvana@email.com</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" id="personalSection" hidden>
+              <div class="card-header">
+                <h2 class="card-title" data-i18n="profile.personal.title">Thông tin cá nhân</h2>
+              </div>
+              <div class="card-body">
+                <form class="profile-form" id="profileForm" novalidate>
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label class="form-label" for="fullName" data-i18n="profile.fullNameLabel">Họ và tên</label>
+                      <input type="text" id="fullName" class="form-input" data-i18n-placeholder="profile.fullNamePlaceholder" autocomplete="name">
+                      <div class="form-error" id="fullNameError"></div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" for="email" data-i18n="profile.emailLabel">Email</label>
+                      <input type="text" id="email" class="form-input" data-i18n-placeholder="profile.emailPlaceholder" autocomplete="email" inputmode="email">
+                      <div class="form-error" id="emailError"></div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" for="phone" data-i18n="profile.phoneLabel">Số điện thoại</label>
+                      <input type="text" id="phone" class="form-input" data-i18n-placeholder="profile.phonePlaceholder" autocomplete="tel" inputmode="tel" maxlength="10">
+                      <div class="form-error" id="phoneError"></div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" for="dob" data-i18n="profile.dobLabel">Ngày sinh</label>
+                      <input type="text" id="dob" class="form-input" placeholder="DD/MM/YYYY" maxlength="10" inputmode="numeric">
+                      <div class="form-error" id="dobError"></div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" for="gender" data-i18n="profile.genderLabel">Giới tính</label>
+                      <select id="gender" class="form-input">
+                        <option value="" data-i18n="profile.genderSelect">Chọn</option>
+                        <option value="male" data-i18n="profile.genderMale">Nam</option>
+                        <option value="female" data-i18n="profile.genderFemale">Nữ</option>
+                        <option value="other" data-i18n="profile.genderOther">Khác</option>
+                      </select>
+                      <div class="form-error" id="genderError"></div>
+                    </div>
+                  </div>
+                  <div class="form-actions">
+                    <button type="submit" class="btn-primary" data-i18n="profile.saveBtn">Lưu thay đổi</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="assets/scripts/index_translations.js"></script>
+  <script src="assets/scripts/profile_translations.js"></script>
+  <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/profile.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      function handleComponentError(name) { console.error('Failed to load ' + name); }
+
+      fetch('components/header.html')
+        .then(r => { if (!r.ok) throw new Error('header'); return r.text(); })
+        .then(html => {
+          document.getElementById('header-container').innerHTML = html;
+          if (typeof initializeMobileMenu === 'function') initializeMobileMenu();
+          if (typeof initializeLanguageSelector === 'function') initializeLanguageSelector();
+          const lang = localStorage.getItem('preferredLanguage') || 'vi';
+          if (typeof updateSelectedLanguage === 'function') {
+            updateSelectedLanguage(lang);
+          }
+          if (typeof applyProfileTranslations === 'function') {
+            applyProfileTranslations(lang);
+          }
+        })
+        .catch(() => handleComponentError('header'));
+
+      fetch('components/footer.html')
+        .then(r => { if (!r.ok) throw new Error('footer'); return r.text(); })
+        .then(html => { 
+          document.getElementById('footer-container').innerHTML = html;
+          const lang = localStorage.getItem('preferredLanguage') || 'vi';
+          if (typeof applyProfileTranslations === 'function') {
+            applyProfileTranslations(lang);
+          }
+        })
+        .catch(() => handleComponentError('footer'));
+    });
+  </script>
+</body>
+</html>
