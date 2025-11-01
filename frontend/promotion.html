@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkyPlan - Khuyến mãi</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- CSS của dự án -->
+    <link rel="stylesheet" href="assets/styles/reset.css">
+    <link rel="stylesheet" href="assets/styles/index.css">
+    <link rel="stylesheet" href="assets/styles/flags.css">
+    <link rel="stylesheet" href="assets/styles/header.css">
+    <link rel="stylesheet" href="assets/styles/footer.css">
+
+    <!-- Trang này -->
+    <link rel="stylesheet" href="assets/styles/promotion.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <div id="header-container"></div>
+
+    <!-- MAIN -->
+    <main class="promo">
+        <div class="promo-wrap">
+            <!-- HERO Banner có ô tìm kiếm đè -->
+            <section class="promo-banner">
+                <img src="assets/images/banner.jpg" alt="SkyPlan Promotion Banner">
+                <form class="promo-search" onsubmit="event.preventDefault();">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Nhập khuyến mãi mà bạn muốn (ví dụ giảm giá chuyến bay)" />
+                    <button type="submit" aria-label="Tìm">
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+                </form>
+            </section>
+
+
+            <!-- List heading + (fake) Lọc/Sắp xếp -->
+            <div class="promo-list-head">
+                <div class="head-left">
+                    <h2>Các chương trình khuyến mãi</h2>
+                </div>
+            </div>
+
+            <!-- GRID danh sách -->
+            <section id="promo-grid" class="promo-grid"></section>
+
+            <!-- DETAIL (ẩn mặc định) -->
+            <section id="promo-detail" class="promo-detail" hidden>
+                <div class="promo-hero">
+                    <img id="d-hero" alt="">
+                    <div class="promo-hero-text">
+                        <h2 id="d-title"></h2>
+                        <p id="d-subtitle"></p>
+                        <div class="promo-hero-ctas">
+                            <button id="d-book" class="btn btn-ghost">Đặt vé ngay!</button>
+                        </div>
+                    </div>
+                </div>
+
+                <ul id="d-bullets" class="promo-bullets"></ul>
+
+                <div class="promo-coupons">
+                    <h3 class="promo-section-title">Mã đang có</h3>
+                    <div id="d-coupons" class="coupon-row"></div>
+                </div>
+
+                <div class="promo-detail-actions">
+                    <button id="d-back" class="back-btn">Quay về danh sách</button>
+                </div>
+            </section>
+
+            <!-- Phân trang -->
+            <nav class="promo-pagination" aria-label="Phân trang">
+                <button id="pg-prev" class="pg-btn" aria-label="Trang trước">‹</button>
+                <div id="pg-numbers"></div>
+                <button id="pg-next" class="pg-btn" aria-label="Trang sau">›</button>
+            </nav>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-container"></div>
+
+    <script src="assets/scripts/common.js" defer></script>
+    <script src="assets/scripts/promotion.js" defer></script>
+
+    <!-- Load components -->
+    <script>
+        // Header
+        fetch('components/header.html')
+            .then(res => res.ok ? res.text() : Promise.reject())
+            .then(html => {
+                document.getElementById('header-container').innerHTML = html;
+                if (typeof initializeLanguageSelector === 'function') initializeLanguageSelector();
+                if (typeof initializeMobileMenu === 'function') initializeMobileMenu();
+            });
+
+        // Footer
+        fetch('components/footer.html')
+            .then(res => res.ok ? res.text() : Promise.reject())
+            .then(html => {
+                document.getElementById('footer-container').innerHTML = html;
+            });
+    </script>
+</body>
+
+</html>
