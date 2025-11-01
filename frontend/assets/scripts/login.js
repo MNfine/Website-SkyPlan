@@ -149,6 +149,11 @@ document.addEventListener("DOMContentLoaded", () => {
         duration: 2000,
       });
 
+      // Show loader
+      if (window.Loader) {
+        window.Loader.show();
+      }
+
       // Redirect to home page after successful login
       setTimeout(() => {
         window.location.href = "index.html";
@@ -188,7 +193,14 @@ document.addEventListener("DOMContentLoaded", () => {
   /* Back button functionality */
   if (backButton) {
     backButton.addEventListener("click", () => {
-      window.location.href = "./index.html";
+      if (window.Loader) {
+        window.Loader.show();
+        setTimeout(function() {
+          window.location.href = "./index.html";
+        }, 1500);
+      } else {
+        window.location.href = "./index.html";
+      }
     });
   }
 });

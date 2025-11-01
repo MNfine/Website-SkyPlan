@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="assets/styles/flags.css">
     <link rel="stylesheet" href="assets/styles/header.css">
     <link rel="stylesheet" href="assets/styles/footer.css">
+    <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
 
 <body class="with-fixed-header with-fixed-footer">
@@ -82,7 +83,7 @@
         <div class="sp-modal__dialog" role="document" aria-labelledby="spModalTitle">
             <div class="sp-modal__header">
                 <h2 id="spModalTitle">Flight Details</h2>
-                <button class="sp-modal__close" aria-label="Close" data-close>&times;</button>
+                <button type="button" class="sp-modal__close" aria-label="Close" data-close>&times;</button>
             </div>
 
             <div class="sp-modal__content">
@@ -414,7 +415,16 @@
 
             const data = { fromCode, fromName, toCode, toName, depart, ret };
             sessionStorage.setItem('skyplan:lastSearch', JSON.stringify(data));
-            location.href = `search.html?from=${fromCode}&to=${toCode}&departure=${depart}&return=${ret}`;
+            
+            // Show loader trước khi redirect
+            if (window.Loader) {
+                window.Loader.show();
+                setTimeout(function() {
+                    location.href = `search.html?from=${fromCode}&to=${toCode}&departure=${depart}&return=${ret}`;
+                }, 1500);
+            } else {
+                location.href = `search.html?from=${fromCode}&to=${toCode}&departure=${depart}&return=${ret}`;
+            }
         });
     </script>
 
@@ -797,7 +807,20 @@
                                 localStorage.setItem('route_to', state.to || '');
                             } catch(_) {}
                         } catch(_) {}
-                        window.location.href = 'fare.html';
+                        
+                        // Đóng modal trước
+                        modal.classList.remove('is-open');
+                        modal.setAttribute('aria-hidden', 'true');
+                        
+                        // Show loader sau khi đóng modal
+                        if (window.Loader) {
+                            window.Loader.show();
+                            setTimeout(function() {
+                                window.location.href = 'fare.html';
+                            }, 1500);
+                        } else {
+                            window.location.href = 'fare.html';
+                        }
                     });
                     bookBtn.dataset.navBound = '1';
                 }
@@ -883,6 +906,29 @@
         })();
     </script>
 
+    <!-- Loader component (JS) -->
+    <script src="assets/scripts/loader.js"></script>
+    <script>
+        // Import loader HTML vào DOM càng sớm càng tốt
+        fetch('components/loader.html').then(r => r.text()).then(html => {
+            document.body.insertAdjacentHTML('afterbegin', html);
+            // Show loader ngay khi vừa insert vào DOM (cho F5/reload)
+            if (window.Loader) {
+                window.Loader.show();
+                document.body.style.overflow = 'hidden';
+            }
+        });
+        
+        // Ẩn loader khi tất cả resources đã load xong (window.load)
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                if (window.Loader) {
+                    window.Loader.hide();
+                    document.body.style.overflow = '';
+                }
+            }, 500); // Delay 500ms để smooth
+        });
+    </script>
 
 </body>
 

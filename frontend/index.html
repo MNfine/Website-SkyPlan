@@ -294,6 +294,11 @@
     // Import loader HTML vào DOM càng sớm càng tốt
     fetch('components/loader.html').then(r => r.text()).then(html => {
       document.body.insertAdjacentHTML('afterbegin', html);
+      // THÊM: Show loader ngay khi vừa insert vào DOM (cho F5/reload)
+      if (window.Loader) {
+        window.Loader.show();
+        document.body.style.overflow = 'hidden';
+      }
     });
     // Luôn gắn sự kiện submit form và logic Loader khi DOM ready
     document.addEventListener('DOMContentLoaded', function() {
@@ -307,6 +312,16 @@
           }, 1500);
         });
       }
+    });
+    
+    // THÊM: Ẩn loader khi tất cả resources đã load xong (window.load)
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        if (window.Loader) {
+          window.Loader.hide();
+          document.body.style.overflow = '';
+        }
+      }, 500); // Delay 500ms để smooth
     });
   </script>
 </body>
