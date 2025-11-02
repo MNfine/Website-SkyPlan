@@ -62,6 +62,8 @@ function initializeLanguageSelector() {
                     changeSearchLanguage(selectedLangValue);
                 } else if (typeof changeSearchLanguage === 'function' && (path.includes('404.html') || path.endsWith('/404'))) {
                     changeSearchLanguage(selectedLangValue);
+                } else if (typeof applyMyTripsTranslations === 'function' && (path.includes('my_trips.html') || path.endsWith('/my_trips'))) {
+                    applyMyTripsTranslations(selectedLangValue);
                 } else if (typeof changeLanguage === 'function') {
                     changeLanguage(selectedLangValue);
                 }
