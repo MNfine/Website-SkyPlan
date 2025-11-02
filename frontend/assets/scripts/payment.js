@@ -284,7 +284,14 @@ function processCardPayment() {
 // Process bank transfer
 function processBankTransfer() {
   // Giả lập đã nhận được tiền, chuyển đến trang xác nhận
-  window.location.href = 'confirmation.html';
+  if (window.Loader) {
+    window.Loader.show();
+    setTimeout(function() {
+      window.location.href = 'confirmation.html';
+    }, 1500);
+  } else {
+    window.location.href = 'confirmation.html';
+  }
 }
 
 // Process e-wallet payment
@@ -350,7 +357,16 @@ function showPaymentSuccess() {
   }
   localStorage.setItem('lastTxnRef', bookingCode);
   localStorage.setItem('lastAmount', amount);
-  window.location.href = 'confirmation.html';
+  
+  // Show loader trước khi redirect
+  if (window.Loader) {
+    window.Loader.show();
+    setTimeout(function() {
+      window.location.href = 'confirmation.html';
+    }, 1500);
+  } else {
+    window.location.href = 'confirmation.html';
+  }
 }
 
 // E-wallet selection functionality
