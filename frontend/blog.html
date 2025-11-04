@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyPlan - Blog Du Lịch</title>
+  <meta name="description" content="Khám phá blog du lịch và chat với AI để nhận gợi ý lịch trình.">
+
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <link rel="stylesheet" href="assets/styles/reset.css">
+  <link rel="stylesheet" href="assets/styles/index.css">
+  <link rel="stylesheet" href="assets/styles/flags.css">
+  <link rel="stylesheet" href="assets/styles/header.css">
+  <link rel="stylesheet" href="assets/styles/footer.css">
+  <link rel="stylesheet" href="assets/styles/blog.css">
+  <link rel="stylesheet" href="assets/styles/loader.css">
+</head>
+
+<body>
+  <div id="header-container"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="blog-page">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1 class="page-title" data-i18n="blogTitle">Blog Du Lịch</h1>
+          <p class="page-subtitle" data-i18n="blogSubtitle">Khám phá những bài viết du lịch và nhận gợi ý từ AI</p>
+        </div>
+
+        <!-- Blog Layout -->
+        <div class="blog-layout">
+          <!-- Sidebar -->
+          <aside class="blog-sidebar">
+            <!-- Categories -->
+            <div class="sidebar-section">
+              <h3 class="sidebar-title" data-i18n="categories">Danh mục</h3>
+              <ul class="category-list">
+                <li class="category-item active" data-category="all">
+                  <i class="fas fa-th"></i>
+                  <span data-i18n="allPosts">Tất cả</span>
+                </li>
+                <li class="category-item" data-category="destination">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span data-i18n="destination">Điểm đến</span>
+                </li>
+                <li class="category-item" data-category="tips">
+                  <i class="fas fa-lightbulb"></i>
+                  <span data-i18n="tips">Mẹo</span>
+                </li>
+                <li class="category-item" data-category="food">
+                  <i class="fas fa-utensils"></i>
+                  <span data-i18n="food">Ẩm thực</span>
+                </li>
+              </ul>
+            </div>
+
+          </aside>
+
+          <!-- Main Blog Content -->
+          <div class="blog-content">
+            <!-- Search Bar -->
+            <div class="search-container">
+              <input type="text" id="searchInput" class="search-input" data-i18n-placeholder="searchPlaceholder" placeholder="Tìm kiếm bài viết...">
+              <i class="fas fa-search search-icon"></i>
+            </div>
+
+            <!-- Blog Grid -->
+            <div class="blog-grid" id="blogGrid">
+              <!-- Blog posts will be dynamically generated -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+              <button class="pagination-btn" id="prevBtn" disabled>
+                <i class="fas fa-chevron-left"></i>
+                <span data-i18n="previous">Trước</span>
+              </button>
+              <div class="page-numbers" id="pageNumbers"></div>
+              <button class="pagination-btn" id="nextBtn">
+                <span data-i18n="next">Sau</span>
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- AI Chat Modal -->
+  <div class="chat-modal" id="chatModal">
+    <div class="chat-container">
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <div class="chat-header-left">
+          <div class="ai-avatar">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div class="chat-title-group">
+            <h3 class="chat-title" data-i18n="aiTravelAssistant">AI Trợ lý Du lịch</h3>
+            <span class="chat-status">
+              <span class="status-dot"></span>
+              <span data-i18n="online">Trực tuyến</span>
+            </span>
+          </div>
+        </div>
+        <button class="close-chat" id="closeChatBtn">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Chat Messages Area -->
+      <div class="chat-messages" id="chatMessages">
+        <!-- Welcome message -->
+        <div class="message bot-message">
+          <div class="message-avatar">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div class="message-content">
+            <p data-i18n="welcomeMessage">Xin chào! Tôi là AI trợ lý du lịch. Tôi có thể giúp bạn:</p>
+            <ul class="help-list">
+              <li data-i18n="help1">✈️ Gợi ý lịch trình du lịch</li>
+              <li data-i18n="help2">🗺️ Tư vấn điểm đến</li>
+              <li data-i18n="help3">🍜 Giới thiệu ẩm thực</li>
+              <li data-i18n="help4">💡 Chia sẻ mẹo du lịch</li>
+            </ul>
+            <p data-i18n="askMe">Bạn muốn hỏi gì?</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Suggestions -->
+      <div class="chat-suggestions" id="chatSuggestions">
+        <button class="suggestion-chip" data-suggestion="itinerary">
+          <i class="fas fa-route"></i>
+          <span data-i18n="suggestItinerary">Lịch trình 3 ngày</span>
+        </button>
+        <button class="suggestion-chip" data-suggestion="destination">
+          <i class="fas fa-map-marked-alt"></i>
+          <span data-i18n="suggestDestination">Điểm đến hot</span>
+        </button>
+        <button class="suggestion-chip" data-suggestion="budget">
+          <i class="fas fa-wallet"></i>
+          <span data-i18n="suggestBudget">Du lịch rẻ</span>
+        </button>
+        <button class="suggestion-chip" data-suggestion="food">
+          <i class="fas fa-utensils"></i>
+          <span data-i18n="suggestFood">Ẩm thực</span>
+        </button>
+      </div>
+
+      <!-- Chat Input -->
+      <div class="chat-input-container">
+        <div class="chat-input-wrapper">
+          <input 
+            type="text" 
+            class="chat-input" 
+            id="chatInput" 
+            data-i18n-placeholder="chatPlaceholder"
+            placeholder="Nhập câu hỏi..."
+            autocomplete="off"
+          >
+          <button class="send-button" id="sendButton">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+        <div class="chat-note">
+          <i class="fas fa-info-circle"></i>
+          <span data-i18n="aiNote">Demo AI - Phản hồi được mô phỏng</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating AI Button -->
+  <button class="floating-ai-btn" id="openChatBtn" title="Chat với AI">
+    <i class="fas fa-robot"></i>
+    <span class="ai-pulse"></span>
+  </button>
+
+  <div id="footer-container"></div>
+
+  <!-- JavaScript -->
+  <script src="assets/scripts/blog_translations.js"></script>
+  <script src="assets/scripts/toast.js"></script>
+  <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/blog.js"></script>
+
+  <!-- Load Components and Initialize -->
+  <script>
+    // Load header
+    fetch('components/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header-container').innerHTML = data;
+        
+        // Initialize language
+        let currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+        document.documentElement.lang = currentLang;
+        
+        if (typeof applyBlogTranslations === 'function') {
+          applyBlogTranslations(currentLang);
+        }
+        
+        if (typeof initializeLanguageSelector === 'function') {
+          initializeLanguageSelector();
+        }
+        
+        if (typeof updateSelectedLanguage === 'function') {
+          updateSelectedLanguage(currentLang);
+        }
+        
+        if (typeof initializeMobileMenu === 'function') {
+          initializeMobileMenu();
+        }
+      })
+      .catch(error => console.error('Error loading header:', error));
+
+    // Load footer
+    fetch('components/footer.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('footer-container').innerHTML = data;
+        
+        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        if (typeof applyBlogTranslations === 'function') {
+          applyBlogTranslations(lang);
+        }
+      })
+      .catch(error => console.error('Error loading footer:', error));
+
+    // Set default language
+    if (!localStorage.getItem('preferredLanguage')) {
+      localStorage.setItem('preferredLanguage', 'vi');
+    }
+  </script>
+
+  <!-- Loader -->
+  <script src="assets/scripts/loader.js"></script>
+  <script>
+    fetch('components/loader.html')
+      .then(r => r.text())
+      .then(html => {
+        document.body.insertAdjacentHTML('afterbegin', html);
+        if (window.Loader) {
+          window.Loader.show();
+        }
+      });
+
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        if (window.Loader) {
+          window.Loader.hide();
+        }
+      }, 500);
+    });
+  </script>
+</body>
+
+</html>
