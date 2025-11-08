@@ -3,10 +3,22 @@
     --sp-panel: #ffffff;
     --sp-ink: #1f2937;
     --sp-muted: #6b7280;
-    --sp-primary: #20B2AA;
+    --sp-primary: #0A969D;
     --sp-line: #e5e7eb;
-    --sp-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+    --sp-shadow: 0 4px 12px #0000000f;
     --sp-radius: 14px;
+    html,
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    button,
+    input,
+    select,
+    textarea {
+        font-family: inherit;
+    }
 }
 
 
@@ -52,6 +64,7 @@
 
 .sp-filters {
     margin-left: -32px;
+    display: block !important;
     position: sticky;
     top: 88px;
     background: transparent;
@@ -76,6 +89,45 @@
 
 .sp-field {
     margin-bottom: 12px;
+}
+
+/* Trip type - radio buttons with black color instead of teal */
+.sp-trip-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0;
+    cursor: pointer;
+    user-select: none;
+}
+
+.sp-trip-option input {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #374151; /* Black instead of teal */
+    display: inline-grid;
+    place-content: center;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+.sp-trip-option input::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    transform: scale(0);
+    transition: .12s ease-in-out;
+    background: #374151; /* Black instead of teal */
+}
+
+.sp-trip-option input:checked::before {
+    transform: scale(1);
 }
 
 .sp-row {
@@ -118,9 +170,10 @@ select.sp-input {
 .sp-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    border: 0;
-    cursor: pointer;
+    line-height: 1;
+    vertical-align: middle;
 }
 
 .sp-btn.sp-btn-secondary {
@@ -131,6 +184,20 @@ select.sp-input {
     color: #fff;
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.25);
     padding: 10px 14px;
+}
+
+.sp-btn.sp-btn-secondary:hover {
+    background: #4b5563;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.3);
+    transition: all 0.25s ease;
+}
+
+.sp-btn.sp-btn-secondary:active {
+    background: #1f2937;
+    transform: translateY(0);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
 }
 
 .sp-section {
@@ -213,7 +280,7 @@ select.sp-input {
 }
 
 
-/* ===== Price slider ===== */
+/* ===== Price ===== */
 
 .sp-price-top,
 .sp-price-bottom {
@@ -266,6 +333,8 @@ select.sp-input {
     display: flex;
     flex-direction: column;
     gap: 50px;
+    /* When using scrollIntoView, ensure results stop below fixed header */
+    scroll-margin-top: 90px;
 }
 
 .sp-card {
@@ -323,6 +392,13 @@ select.sp-input {
 .sp-meta {
     font-size: 12px;
     color: var(--sp-muted);
+}
+
+.sp-airport-name {
+    font-size: 10px;
+    color: var(--sp-muted);
+    margin-top: 2px;
+    opacity: 0.8;
 }
 
 .sp-card-footer {
@@ -542,9 +618,6 @@ body.modal-open {
     position: relative;
 }
 
-
-/* Node chung */
-
 .sp-node {
     display: grid;
     grid-template-columns: 80px 28px 1fr;
@@ -554,9 +627,6 @@ body.modal-open {
     padding: 14px 0;
 }
 
-
-/* Biểu tượng tròn 28px để tính đúng tâm */
-
 .sp-node__icon {
     width: 28px;
     height: 28px;
@@ -564,9 +634,6 @@ body.modal-open {
     place-items: center;
     border-radius: 50%;
 }
-
-
-/* giữ node plane đúng vị trí */
 
 .sp-node--plane {
     position: relative;
@@ -578,14 +645,13 @@ body.modal-open {
     color: #F2C94C;
 }
 
-
-/* 2 đoạn gạch gạch dọc quanh icon máy bay */
-
 .sp-node--plane::before,
 .sp-node--plane::after {
     content: "";
     position: absolute;
-    left: calc(80px + 24px - 1px);
+    /* align dashed line center with plane icon (includes first col + gap + half of icon col) */
+    /* fine-tune half-pixel to visually center with FA plane glyph */
+    left: calc(80px + 10px + 14px - 1px);
     border-left: 2px dashed #9ca3af;
     pointer-events: none;
     width: 0;
@@ -618,24 +684,149 @@ body.modal-open {
     display: none !important;
 }
 
-/* Phần chọn khứ hồi/một chiều */
-.sp-trip-type {
-    display: flex;
-    margin: 15px 0;
+
+/* ========== RESPONSIVE ========== */
+
+@media (max-width:960px) {
+    .sp-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 12px;
+        margin: 80px auto 90px;
+    }
+    .sp-filters {
+        margin-left: 0;
+        position: static;
+        top: auto;
+        background: #fff;
+        border: 1px solid var(--sp-line);
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: var(--sp-shadow);
+    }
+    .sp-results {
+        gap: 24px;
+    }
+    .sp-card {
+        grid-template-columns: 1fr;
+    }
+    .sp-card-aside {
+        border-left: 0;
+        border-top: 1px solid var(--sp-line);
+        padding: 12px 16px;
+    }
+    .sp-itinerary {
+        grid-template-columns: 1fr 160px 1fr;
+        gap: 14px;
+    }
+    .sp-time {
+        font-size: 22px;
+    }
+    .sp-price {
+        font-size: 16px;
+    }
 }
 
-.sp-radio {
-    display: flex;
-    align-items: center;
-    margin-right: 20px;
-    cursor: pointer;
+@media (max-width:700px) {
+    .sp-filter-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--sp-primary);
+        color: #fff;
+        border: 0;
+        padding: 10px 14px;
+        border-radius: 10px;
+        box-shadow: var(--sp-shadow);
+        font-size: 14px;
+        margin: 0 0 10px 0;
+        cursor: pointer;
+    }
+    .sp-results {
+        gap: 16px;
+    }
+    .sp-card {
+        border-radius: 12px;
+    }
+    .sp-card-body {
+        padding: 14px;
+    }
+    .sp-card-aside {
+        padding: 12px;
+    }
+    .sp-time {
+        font-size: 20px;
+    }
+    .sp-meta {
+        font-size: 11px;
+    }
+    .sp-duration {
+        font-size: 11px;
+    }
+    .sp-btn.sp-btn-block {
+        align-items: center;
+        font-size: 13px;
+        padding: 10px 12px;
+    }
+    .sp-itinerary {
+        grid-template-columns: 1fr 120px 1fr;
+        gap: 10px;
+    }
+    .sp-modal__dialog {
+        width: min(720px, 94vw);
+        margin: 34px auto;
+    }
+    .sp-modal__header h2 {
+        font-size: 22px;
+    }
+    .sp-leg__title {
+        font-size: 18px;
+    }
+    .sp-leg__grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .sp-node {
+        grid-template-columns: 64px 24px 1fr;
+        padding: 10px 0;
+    }
+    /* Match icon cell size to the 24px column to keep plane centered */
+    .sp-node__icon {
+        width: 24px;
+        height: 24px;
+    }
+    .sp-node--plane::before,
+    .sp-node--plane::after {
+        /* 64 (col1) + 10 (gap) + 12 (half of 24px icon col) - 1 */
+    left: calc(64px + 10px + 12px - 0.5px);
+    }
 }
 
-.sp-radio input {
-    margin-right: 6px;
-}
-
-.sp-radio span {
-    font-size: 14px;
-    color: var(--sp-ink);
+@media (max-width:480px) {
+    .sp-container {
+        padding: 0 10px;
+    }
+    .sp-time {
+        font-size: 18px;
+    }
+    .sp-price {
+        font-size: 15px;
+    }
+    .sp-itinerary {
+        grid-template-columns: 1fr 100px 1fr;
+        gap: 8px;
+    }
+    .sp-btn--primary,
+    .sp-btn--ghost {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+    /* Stack modal footer buttons vertically on small screens */
+    .sp-modal__footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .sp-modal__footer .sp-btn {
+        width: 100%;
+    }
 }

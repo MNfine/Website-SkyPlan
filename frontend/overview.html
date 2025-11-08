@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-i18n="overviewTitle">SkyPlan - Tổng quan chuyến đi</title>
-  
+
   <!-- Favicon -->
   <link rel="icon" href="favicon.ico" type="image/x-icon">
-  
+
   <!-- Font Awesome CDN for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  
+
   <!-- CSS -->
   <link rel="stylesheet" href="assets/styles/reset.css">
   <link rel="stylesheet" href="assets/styles/index.css">
@@ -19,6 +20,7 @@
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/overview.css">
 </head>
+
 <body>
   <!-- Header -->
   <div id="header-container"></div>
@@ -60,21 +62,24 @@
       <!-- Trip Summary -->
       <div class="trip-summary">
         <h2>
-          Hà Nội đến Hồ Chí Minh - <span data-i18n="overviewTitle">Tổng quan chuyến đi</span>
+          <span id="route-heading">Hà Nội đến Hồ Chí Minh</span>
+
+          - <span data-i18n="overviewTitle">Tổng quan chuyến đi</span>
         </h2>
-        
+
         <!-- Flight Information -->
         <div class="flight-info">
           <div class="flight-segment">
             <div class="flight-header">
-              <span class="flight-date">Ngày 10 thg 6, 2023 - Chiều đi</span>
+              <span class="flight-date"><span class="date-text" data-iso="2023-06-10">Ngày 10 thg 6, 2023</span> -
+                <span data-i18n="outboundLabel">Chiều đi</span></span>
               <span class="flight-type" data-i18n="passengerClass">Phổ thông</span>
-            </div>
+              </div>
             <div class="flight-details">
               <div class="departure">
                 <div class="time">10:45</div>
                 <div class="location">HAN</div>
-                <div class="city">Hà Nội</div>
+                <div class="city city-depart-out">Hà Nội</div>
               </div>
               <div class="flight-path">
                 <div class="duration">2h 15m</div>
@@ -88,21 +93,22 @@
               <div class="arrival">
                 <div class="time">13:00</div>
                 <div class="location">SGN</div>
-                <div class="city">Hồ Chí Minh</div>
+                <div class="city city-arrive-out">Hồ Chí Minh</div>
               </div>
             </div>
           </div>
 
           <div class="flight-segment">
             <div class="flight-header">
-              <span class="flight-date">Ngày 18 thg 8, 2023 - Chiều về</span>
+              <span class="flight-date"><span class="date-text" data-iso="2023-08-18">Ngày 18 thg 8, 2023</span> -
+                <span data-i18n="inboundLabel">Chiều về</span></span>
               <span class="flight-type" data-i18n="passengerClass">Phổ thông</span>
-            </div>
+              </div>
             <div class="flight-details">
               <div class="departure">
                 <div class="time">16:20</div>
                 <div class="location">SGN</div>
-                <div class="city">Hồ Chí Minh</div>
+                <div class="city city-depart-ret">Hồ Chí Minh</div>
               </div>
               <div class="flight-path">
                 <div class="duration">2h 10m</div>
@@ -116,7 +122,7 @@
               <div class="arrival">
                 <div class="time">18:30</div>
                 <div class="location">HAN</div>
-                <div class="city">Hà Nội</div>
+                <div class="city city-arrive-ret">Hà Nội</div>
               </div>
             </div>
           </div>
@@ -156,7 +162,7 @@
         <div class="total-section">
           <div class="total-price">
             <span class="price-label" data-i18n="totalLabel">Tổng cộng</span>
-            <span class="price-amount">1.598.000 ₫</span>
+            <span class="price-amount">1.598.000 VND</span>
           </div>
           <a href="payment.html" class="confirm-btn pay-btn">
             <span data-i18n="confirmBooking">Xác nhận đặt vé</span>
@@ -173,6 +179,8 @@
   <!-- JavaScript -->
   <script src="assets/scripts/common.js"></script>
   <script src="assets/scripts/overview_translations.js"></script>
+  <script src="assets/scripts/extras_translations.js"></script>
+  <script src="assets/scripts/overview.js"></script>
 
   <!-- Load Components -->
   <script>
@@ -180,7 +188,7 @@
     function handleComponentError(componentName) {
       console.error(`Failed to load ${componentName} component`);
     }
-    
+
     // Load header
     fetch('components/header.html')
       .then(response => {
@@ -199,16 +207,20 @@
         if (typeof initializeMobileMenu === 'function') {
           initializeMobileMenu();
         }
-        // Re-apply translations for header
-        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        // Re-apply translations and sync header UI with saved language
+        const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
         if (typeof applyOverviewTranslations === 'function') {
           applyOverviewTranslations(lang);
+        }
+        // Update selected language UI in header to reflect saved language
+        if (typeof updateSelectedLanguage === 'function') {
+          updateSelectedLanguage(lang);
         }
       })
       .catch(error => {
         handleComponentError('header');
       });
-    
+
     // Load footer
     fetch('components/footer.html')
       .then(response => {
@@ -219,6 +231,11 @@
       })
       .then(data => {
         document.getElementById('footer-container').innerHTML = data;
+        // Re-apply all translations to include footer
+        const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+        if (typeof applyOverviewTranslations === 'function') {
+          applyOverviewTranslations(lang);
+        }
       })
       .catch(error => {
         handleComponentError('footer');
@@ -226,38 +243,226 @@
   </script>
 
   <script>
-  // Ẩn nút thanh toán nếu đã thanh toán thành công (dựa vào localStorage hoặc query string)
-  (function() {
-    const paid = localStorage.getItem('lastTxnRef') && localStorage.getItem('lastAmount');
-    if (paid) {
-      const payBtn = document.querySelector('.pay-btn');
-      if (payBtn) payBtn.style.display = 'none';
-    }
-  })();
+    // Ẩn nút thanh toán nếu đã thanh toán thành công (dựa vào localStorage hoặc query string)
+    (function () {
+      const paid = localStorage.getItem('lastTxnRef') && localStorage.getItem('lastAmount');
+      if (paid) {
+        const payBtn = document.querySelector('.pay-btn');
+        if (payBtn) payBtn.style.display = 'none';
+      }
+    })();
   </script>
 
   <script>
-  // Ẩn nút thanh toán cho từng vé đã thanh toán thành công
-  (function() {
-    // Giả sử mỗi vé có 1 container với id hoặc class chứa bookingCode
-    document.querySelectorAll('[data-booking-code]').forEach(function(ticket) {
-      const code = ticket.getAttribute('data-booking-code');
-      if (code && localStorage.getItem('paid_' + code) === 'true') {
-        const payBtn = ticket.querySelector('.pay-btn');
-        if (payBtn) payBtn.style.display = 'none';
-      }
-    });
-  })();
+    // Ẩn nút thanh toán cho từng vé đã thanh toán thành công
+    (function () {
+      // Giả sử mỗi vé có 1 container với id hoặc class chứa bookingCode
+      document.querySelectorAll('[data-booking-code]').forEach(function (ticket) {
+        const code = ticket.getAttribute('data-booking-code');
+        if (code && localStorage.getItem('paid_' + code) === 'true') {
+          const payBtn = ticket.querySelector('.pay-btn');
+          if (payBtn) payBtn.style.display = 'none';
+        }
+      });
+    })();
   </script>
 
   <script>
     // Tự động dịch khi trang load
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       const lang = localStorage.getItem('preferredLanguage') || 'vi';
       if (typeof applyOverviewTranslations === 'function') {
         applyOverviewTranslations(lang);
       }
     });
   </script>
+
+  <script>
+    // Read fare selection and extras, render services summary and total
+  (function(){
+      const EXTRAS_KEY = 'skyplan_extras_v2';
+      const FARE_KEY = 'skyplan_fare_selection';
+
+      function formatVND(val){
+        return new Intl.NumberFormat('vi-VN').format(Number(val)||0) + ' VND';
+      }
+      function readJSON(key, fallback){
+        try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch { return fallback; }
+      }
+        function getOT(lang){
+          const OVT = (typeof window !== 'undefined' && window.overviewTranslations) || (typeof overviewTranslations !== 'undefined' ? overviewTranslations : null);
+          return (OVT && OVT[lang]) ? OVT[lang] : null;
+        }
+      function inferClassFromFeatures(features){
+        if (!features) return '';
+        const bag = features.baggage;
+        if (bag === 'handBaggage2Plus2') return 'business';
+        if (bag === 'handBaggage1Plus1') return 'premium-economy';
+        if (bag === 'handBaggage1') return 'economy';
+        return '';
+      }
+      function mapFareClassLabelFromFare(fare, lang){
+        const ot = getOT(lang) || {};
+        const dict = ot.fareClasses || {};
+        let key = fare && fare.fareClass ? String(fare.fareClass) : '';
+        if (!key && fare && fare.features) key = inferClassFromFeatures(fare.features);
+        return dict[key] || (ot.passengerClass || (lang==='vi'?'Phổ thông':'Economy'));
+      }
+      function render(){
+  const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+        const fare = readJSON(FARE_KEY, null);
+        const extras = readJSON(EXTRAS_KEY, { meals:[], baggage:{kg:0}, services:[], total:0 });
+        // Update fare class labels
+        {
+          const label = mapFareClassLabelFromFare(fare, lang);
+          document.querySelectorAll('.flight-type,[data-i18n="passengerClass"]').forEach(function(el){
+            el.textContent = label;
+            el.removeAttribute('data-i18n'); // prevent later translation override
+          });
+          // Explicitly set left summary card title as well
+          const leftTitle = document.querySelector('.summary-card:not(.services-card) h3');
+          if (leftTitle){
+            leftTitle.textContent = label;
+            leftTitle.removeAttribute('data-i18n');
+          }
+        }
+        // Render left card features according to selected fare
+        const leftCard = document.querySelector('.summary-card:not(.services-card)');
+        if (leftCard){
+          const content = leftCard.querySelector('.card-content');
+          if (content && fare && fare.features){
+            const ot = getOT(lang) || {};
+            const seatText = (ot.seatFeatures && ot.seatFeatures[fare.features.seat]) || '';
+            const bagText = (ot.baggageFeatures && ot.baggageFeatures[fare.features.baggage]) || '';
+            const flexText = (ot.flexFeatures && ot.flexFeatures[fare.features.flex]) || '';
+            const rows = [];
+            if (seatText) rows.push({ icon: 'fa-chair', text: seatText });
+            if (bagText) rows.push({ icon: 'fa-suitcase', text: bagText });
+            if (flexText) rows.push({ icon: (fare.features.flex==='noRefund'?'fa-ban':'fa-rotate-right'), text: flexText });
+            if (rows.length){
+              content.innerHTML = rows.map(r=>`<div class="luggage-info"><i class="fas ${r.icon}"></i><span>${r.text}</span></div>`).join('');
+            }
+          }
+        }
+        // Update total price
+        const totalEl = document.querySelector('.total-price .price-amount');
+        if (totalEl){
+          const fareVND = fare && Number(fare.priceVND) > 0 ? Number(fare.priceVND) : 0;
+          const extrasTotal = Number(extras.total)||0;
+          const total = fareVND + extrasTotal;
+          if (total > 0){ totalEl.textContent = formatVND(total); }
+          else if (fare && fare.priceLabel){ totalEl.textContent = fare.priceLabel; }
+        }
+        // Render per-card price subtotals
+        const fareCard = document.querySelector('.summary-card:not(.services-card)');
+        if (fareCard){
+          const fareVND = fare && Number(fare.priceVND) > 0 ? Number(fare.priceVND) : 0;
+            const label = getOT(lang)?.fareLabel || (lang==='vi'?'Giá vé':'Fare');
+          let row = fareCard.querySelector('.card-price');
+          if (!row){
+            row = document.createElement('div');
+            row.className = 'card-price';
+            row.innerHTML = '<span class="label"></span><span class="amount"></span>';
+            fareCard.appendChild(row);
+          }
+          row.querySelector('.label').textContent = label;
+          row.querySelector('.amount').textContent = fareVND ? formatVND(fareVND) : (fare?.priceLabel || '');
+        }
+        // Render selected extras list
+        const card = document.querySelector('.summary-card.services-card');
+        if (!card) return;
+        const hasMeals = Array.isArray(extras.meals) && extras.meals.some(m=> (m.qty||0) > 0);
+        const hasBag = extras.baggage && Number(extras.baggage.kg) > 0;
+        const hasSvc = Array.isArray(extras.services) && extras.services.length>0;
+        const t = (dictName, key) => {
+          try { return (window.extrasI18n && window.extrasI18n[lang] && window.extrasI18n[lang][dictName] && window.extrasI18n[lang][dictName][key]) || null; } catch { return null; }
+        };
+        if (hasMeals || hasBag || hasSvc){
+          card.classList.add('has-extras');
+          const titleEl = card.querySelector('h3');
+            const title = getOT(lang)?.selectedExtrasTitle || (titleEl?.textContent || 'Selected extras');
+          if (titleEl){ titleEl.removeAttribute('data-i18n'); titleEl.textContent = title; }
+          const content = card.querySelector('.card-content');
+          const rows = [];
+          if (hasMeals){
+            extras.meals.filter(m=> (m.qty||0)>0).forEach(m=>{
+              const name = t('meals', m.id) || m.id;
+              rows.push({ icon: 'fa-utensils', text: `${name} × ${m.qty||0}` });
+            });
+          }
+          if (hasBag){
+              const label = (t('baggagePkgs', String(extras.baggage.kg)) || `${extras.baggage.kg}kg`);
+              const prefix = getOT(lang)?.checkedBaggagePrefix || 'Checked baggage: ';
+            rows.push({ icon: 'fa-suitcase-rolling', text: prefix + label });
+          }
+          if (hasSvc){
+            extras.services.forEach(id=>{
+              // Skip unsupported/unused service keys
+              if (id === 'svc_infant') return; // no infant service exists in extras, avoid showing raw key
+              let icon = 'fa-user';
+              if (id === 'svc_wheelchair') icon = 'fa-wheelchair';
+              else if (id === 'svc_pet') icon = 'fa-paw';
+              // Use a widely-supported icon for elderly support (Font Awesome Free)
+              else if (id === 'svc_elderly') icon = 'fa-blind';
+              const name = t('services', id) || id;
+              rows.push({ icon, text: name });
+            });
+          }
+          content.innerHTML = `
+            <ul class="extras-list pretty">
+              ${rows.map(r=>`<li class="extra-row"><i class="fas ${r.icon}"></i><span>${r.text}</span></li>`).join('')}
+            </ul>`;
+          // Extras price row
+            const label = getOT(lang)?.extrasLabel || 'Extras';
+          let priceRow = card.querySelector('.card-price');
+          if (!priceRow){
+            priceRow = document.createElement('div');
+            priceRow.className = 'card-price';
+            priceRow.innerHTML = '<span class="label"></span><span class="amount"></span>';
+            card.appendChild(priceRow);
+          }
+          priceRow.querySelector('.label').textContent = label;
+          priceRow.querySelector('.amount').textContent = formatVND(Number(extras.total)||0);
+        } else {
+          card.classList.remove('has-extras');
+          // keep default "no extras" card; ensure image is visible
+          const title = card.querySelector('h3');
+          title.setAttribute('data-i18n','noExtras');
+          // Re-apply translation for this title only
+          if (typeof applyOverviewTranslations==='function'){
+            applyOverviewTranslations(lang);
+          }
+          // Render 0 VND for extras subtotal even when none selected
+          let priceRow = card.querySelector('.card-price');
+          if (!priceRow){
+            priceRow = document.createElement('div');
+            priceRow.className = 'card-price';
+            priceRow.innerHTML = '<span class="label"></span><span class="amount"></span>';
+            card.appendChild(priceRow);
+          }
+            priceRow.querySelector('.label').textContent = getOT(lang)?.extrasLabel || 'Extras';
+          priceRow.querySelector('.amount').textContent = formatVND(0);
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', render);
+      document.addEventListener('languageChanged', render);
+      window.addEventListener('load', function(){
+        try { render(); } catch(_) {}
+        // safety re-render after header/footer async work
+        setTimeout(()=>{ try { render(); } catch(_) {} }, 50);
+      });
+
+      // Ensure render runs after overview translations (which may reset the title)
+      try {
+        const orig = window.applyOverviewTranslations;
+        window.applyOverviewTranslations = function(lang){
+          if (typeof orig === 'function') orig(lang);
+          try { render(); } catch(_){}
+        }
+      } catch(_) {}
+    })();
+  </script>
 </body>
+
 </html>

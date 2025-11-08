@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SkyPlane – Search Results</title>
-    <link rel="stylesheet" href="assets/styles/search.css" />
+    <link rel="stylesheet" href="assets/styles/search.css">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="assets/styles/reset.css">
@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="assets/styles/flags.css">
     <link rel="stylesheet" href="assets/styles/header.css">
     <link rel="stylesheet" href="assets/styles/footer.css">
+    <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
 
 <body class="with-fixed-header with-fixed-footer">
@@ -22,201 +23,69 @@
         <aside class="sp-filters" aria-label="Search filters">
             <h2 class="sp-title">Chuyến đi của bạn</h2>
 
-            <div class="sp-field">
-                <label for="from" class="sp-label">Từ</label>
-                <select id="from" class="sp-input">
-                    <option value="HaNoi">Hà Nội</option>
-                    <option value="HoChiMinh">Hồ Chí Minh</option>
-                    <option value="DaNang">Đà Nẵng</option>
-                    <option value="CanTho">Cần Thơ</option>
-                    <option value="LamDong">Lâm Đồng</option>
-                    <option value="QuangTri">Quảng Trị</option>
-                    <option value="DakLak">Đắk Lắk</option>
-                    <option value="KhanhHoa">Khánh Hòa</option>
-                    <option value="HaiPhong">Hải Phòng</option>
-                    <option value="Hue">Huế</option>
-                    <option value="DienBien">Điện Biên</option>
-                    <option value="GiaLai">Gia Lai</option>
-                    <option value="AnGiang">An Giang</option>
-                    <option value="ThanhHoa">Thanh Hóa</option>
-                    <option value="NgheAn">Nghệ An</option>
-                    <option value="QuangNinh">Quảng Ninh</option>
-                    <option value="SonLa">Sơn La</option>
-                </select>
-            </div>
-
-            <div class="sp-field">
-                <label for="to" class="sp-label">Đến</label>
-                <select id="to" class="sp-input">
-                    <option value="HaNoi">Hà Nội</option>
-                    <option value="HoChiMinh">Hồ Chí Minh</option>
-                    <option value="DaNang">Đà Nẵng</option>
-                    <option value="CanTho">Cần Thơ</option>
-                    <option value="LamDong">Lâm Đồng</option>
-                    <option value="QuangTri">Quảng Trị</option>
-                    <option value="DakLak">Đắk Lắk</option>
-                    <option value="KhanhHoa">Khánh Hòa</option>
-                    <option value="HaiPhong">Hải Phòng</option>
-                    <option value="Hue">Huế</option>
-                    <option value="DienBien">Điện Biên</option>
-                    <option value="GiaLai">Gia Lai</option>
-                    <option value="AnGiang">An Giang</option>
-                    <option value="ThanhHoa">Thanh Hóa</option>
-                    <option value="NgheAn">Nghệ An</option>
-                    <option value="QuangNinh">Quảng Ninh</option>
-                    <option value="SonLa">Sơn La</option>
-                </select>
-            </div>
-
-            <div class="sp-trip-type">
-                <label class="sp-radio">
-                    <input type="radio" name="trip-type" value="round-trip" checked>
-                    <span>Khứ hồi</span>
-                </label>
-                <label class="sp-radio">
-                    <input type="radio" name="trip-type" value="one-way">
-                    <span>Một chiều</span>
-                </label>
-            </div>
-            
-            <div class="sp-row sp-field-group">
+            <form id="spSearchForm">
                 <div class="sp-field">
-                    <label for="dep" class="sp-label">Ngày đi</label>
-                    <input id="dep" class="sp-input" type="date" />
+                    <label class="sp-label" data-i18n="search.from">Từ</label>
+                    <select id="fromCity" class="sp-input sp-city-dropdown" required></select>
                 </div>
-                <div class="sp-field" id="return-date-field">
-                    <label for="ret" class="sp-label">Ngày về</label>
-                    <input id="ret" class="sp-input" type="date" />
+
+                <div class="sp-field">
+                    <label class="sp-label" data-i18n="search.to">Đến</label>
+                    <select id="toCity" class="sp-input sp-city-dropdown" required></select>
                 </div>
-            </div>
-            <script>
-                // Thiết lập ngày mặc định là ngày hiện tại và ngày mai
-                document.addEventListener('DOMContentLoaded', function() {
-                    const today = new Date();
-                    const tomorrow = new Date(today);
-                    tomorrow.setDate(tomorrow.getDate() + 1);
-                    
-                    const formatDate = (date) => {
-                        return date.toISOString().split('T')[0];
-                    };
-                    
-                    const depInput = document.getElementById('dep');
-                    const retInput = document.getElementById('ret');
-                    
-                    // Chỉ đặt giá trị mặc định nếu chưa có giá trị từ URL
-                    if (!depInput.value) {
-                        depInput.value = formatDate(today);
-                    }
-                    
-                    if (!retInput.value) {
-                        retInput.value = formatDate(tomorrow);
-                    }
-                });
-            </script>
 
-            <button class="sp-btn sp-btn-secondary" type="button">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                Tìm kiếm
-            </button>
-            <script>
-            // Khi bấm nút Tìm kiếm, lấy giá trị input và redirect với query mới
-            document.addEventListener('DOMContentLoaded', function() {
-                // Xử lý hiển thị trường ngày về dựa vào lựa chọn loại vé
-                const tripTypeRadios = document.querySelectorAll('input[name="trip-type"]');
-                const returnDateField = document.getElementById('return-date-field');
-                
-                // Set initial state based on URL params
-                const urlParams = new URLSearchParams(window.location.search);
-                const tripType = urlParams.get('type') || 'round-trip';
-                
-                // Set the correct radio button
-                const activeRadio = document.querySelector(`input[name="trip-type"][value="${tripType}"]`);
-                if (activeRadio) {
-                    activeRadio.checked = true;
-                }
-                
-                // Initial visibility
-                returnDateField.style.display = tripType === 'one-way' ? 'none' : 'block';
-                
-                // Handle radio button change
-                tripTypeRadios.forEach(radio => {
-                    radio.addEventListener('change', function() {
-                        returnDateField.style.display = this.value === 'one-way' ? 'none' : 'block';
-                    });
-                });
-                
-                const btn = document.querySelector('.sp-btn-secondary');
-                if (btn) {
-                    btn.addEventListener('click', function() {
-                        const from = document.getElementById('from').value.trim();
-                        const to = document.getElementById('to').value.trim();
-                        const dep = document.getElementById('dep').value;
-                        const tripType = document.querySelector('input[name="trip-type"]:checked').value;
-                        
-                        // Lấy giá trị ngày về chỉ khi là vé khứ hồi
-                        let params = [
-                            'from=' + encodeURIComponent(from),
-                            'to=' + encodeURIComponent(to),
-                            'dep=' + encodeURIComponent(dep),
-                            'type=' + encodeURIComponent(tripType)
-                        ];
-                        
-                        // Thêm ngày về nếu là vé khứ hồi
-                        if (tripType === 'round-trip') {
-                            const ret = document.getElementById('ret').value;
-                            params.push('ret=' + encodeURIComponent(ret));
-                        }
-                        
-                        window.location.search = '?' + params.join('&');
-                    });
-                }
-            });
-            </script>
-
-            <h3 class="sp-subtitle">Bộ lọc</h3>
-
-            <section class="sp-section">
-                <div class="sp-section-title">Số điểm dừng</div>
-                <label class="sp-choice"><input type="radio" name="stops" checked> Bay thẳng</label>
-                <label class="sp-choice"><input type="radio" name="stops"> 1 điểm dừng</label>
-                <label class="sp-choice"><input type="radio" name="stops"> 2 điểm dừng</label>
-                <label class="sp-choice"><input type="radio" name="stops"> 3 điểm dừng</label>
-            </section>
-
-            <section class="sp-section">
-                <div class="sp-section-title">Hành lý</div>
-                <div class="sp-counter" data-counter="cabin">
-                    <span>Hành lý sách tay</span>
-                    <button class="sp-chip" data-minus aria-label="decrease cabin">−</button>
-                    <span class="sp-count" data-value>2</span>
-                    <button class="sp-chip" data-plus aria-label="increase cabin">＋</button>
+                <div class="sp-row sp-field-group">
+                    <div class="sp-field">
+                        <label for="dep" class="sp-label">Ngày đi</label>
+                        <input id="dep" class="sp-input" type="date">
+                    </div>
+                    <div class="sp-field">
+                        <label for="ret" class="sp-label">Ngày về</label>
+                        <input id="ret" class="sp-input" type="date">
+                    </div>
                 </div>
-                <div class="sp-counter" data-counter="checked">
-                    <span>Hành lý ký gửi</span>
-                    <button class="sp-chip" data-minus aria-label="decrease checked">−</button>
-                    <span class="sp-count" data-value>0</span>
-                    <button class="sp-chip" data-plus aria-label="increase checked">＋</button>
+
+                <!-- Trip Type Selection - moved below dates -->
+                <div class="sp-row sp-field-group">
+                    <label class="sp-trip-option">
+                        <input type="radio" name="tripType" value="round-trip" checked>
+                        <span data-i18n="search.roundTrip">Khứ hồi</span>
+                    </label>
+                    <label class="sp-trip-option">
+                        <input type="radio" name="tripType" value="one-way">
+                        <span data-i18n="search.oneWay">Một chiều</span>
+                    </label>
                 </div>
-            </section>
 
-            <section class="sp-section">
-                <div class="sp-section-title">Giờ bay</div>
-                <label class="sp-choice"><input type="radio" name="time" checked>5:00 - 11:49</label>
-                <label class="sp-choice"><input type="radio" name="time">12:00 - 17:59</label>
-                <label class="sp-choice"><input type="radio" name="time"> 18:00 - 23:59</label>
-                <label class="sp-choice"><input type="radio" name="time"> 00:00 - 4:59</label>
-            </section>
+                <button class="sp-btn sp-btn-secondary" type="button" id="searchButton">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    Tìm kiếm
+                </button>
 
-            <section class="sp-section">
-                <div class="sp-section-title">Ngân sách</div>
-                <div class="sp-price-top"><span>0 VND – 5.000.000 VND</span><span>Bất kỳ</span></div>
-                <input id="priceRange" class="sp-range" type="range" max="5000000" step="50000" value="2000000" />
-                <div class="sp-price-bottom"><span>0 VND</span><span id="priceOut">2.000.000 VND</span></div>
-            </section>
+                <h3 class="sp-subtitle">Bộ lọc</h3>
+
+                <section class="sp-section" aria-labelledby="budget-heading">
+                    <h4 id="budget-heading" class="sp-section-title">Ngân sách</h4>
+                    <div class="sp-price-top"><span>0 VND – 5.000.000 VND</span><span>Bất kỳ</span></div>
+                    <input id="priceRange" class="sp-range" type="range" max="5000000" step="50000" value="3000000">
+                    <div class="sp-price-bottom"><span>0 VND</span><span id="priceOut">3.000.000 VND</span></div>
+                </section>
+
+
+                <section class="sp-section" aria-labelledby="time-heading">
+                    <h4 id="time-heading" class="sp-section-title">Giờ bay</h4>
+                    <label class="sp-choice"><input type="radio" name="time" checked>5:00 - 11:49</label>
+                    <label class="sp-choice"><input type="radio" name="time">12:00 - 17:59</label>
+                    <label class="sp-choice"><input type="radio" name="time"> 18:00 - 23:59</label>
+                    <label class="sp-choice"><input type="radio" name="time"> 00:00 - 4:59</label>
+                </section>
+
+
         </aside>
 
-        <section class="sp-results" aria-live="polite">
-
+        <section class="sp-results" aria-live="polite" aria-labelledby="results-heading">
+            <h2 id="results-heading" class="sr-only">Kết quả tìm kiếm</h2>
+            <!-- Results will be injected dynamically -->
         </section>
     </main>
 
@@ -225,14 +94,15 @@
 
         <div class="sp-modal__dialog" role="document" aria-labelledby="spModalTitle">
             <div class="sp-modal__header">
-                <h2 id="spModalTitle">Chi tiết chuyến bay</h2>
-                <button class="sp-modal__close" aria-label="Close" data-close>&times;</button>
+                <h2 id="spModalTitle">Flight Details</h2>
+                <button type="button" class="sp-modal__close" aria-label="Close" data-close>&times;</button>
             </div>
 
             <div class="sp-modal__content">
                 <!-- OUTBOUND -->
-                <section class="sp-leg">
-                    <div class="sp-leg__title">Đến <span data-to-city>—</span></div>
+                <section class="sp-leg" aria-labelledby="outbound-heading">
+                    <h3 id="outbound-heading" class="sr-only">Chiều đi</h3>
+                    <div class="sp-leg__title"><span data-i18n="legTo">To</span> <span data-to-city>—</span></div>
                     <div class="sp-leg__panel">
                         <div class="sp-leg__grid">
                             <div class="sp-leg__date">
@@ -260,8 +130,9 @@
                 </section>
 
                 <!-- INBOUND -->
-                <section class="sp-leg">
-                    <div class="sp-leg__title">Đến <span data-from-city>—</span></div>
+                <section class="sp-leg" aria-labelledby="inbound-heading">
+                    <h3 id="inbound-heading" class="sr-only">Chiều về</h3>
+                    <div class="sp-leg__title">To <span data-from-city>—</span></div>
                     <div class="sp-leg__panel">
                         <div class="sp-leg__grid">
                             <div class="sp-leg__date">
@@ -287,6 +158,7 @@
                         </div>
                     </div>
                 </section>
+
             </div>
 
             <div class="sp-modal__footer">
@@ -306,251 +178,77 @@
     <script src="assets/scripts/search_filter.js"></script>
     
     <script>
-        
-        // Setup event delegation for modal triggers
-        document.addEventListener('click', function(event) {
-            if (event.target.matches('.sp-modal-trigger') || event.target.closest('.sp-modal-trigger')) {
-                event.preventDefault();
-                console.log('Modal trigger clicked via delegation!');
-                
-                const btn = event.target.matches('.sp-modal-trigger') ? 
-                    event.target : event.target.closest('.sp-modal-trigger');
-                    
-                try {
-                    const modal = document.getElementById('spModal');
-                    if (!modal) {
-                        console.error('Modal not found in DOM!');
-                        return;
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loadComponent = async (id, file) => {
+                const container = document.getElementById(id);
+                if (container) {
+                    try {
+                        const html = await fetch(file).then(r => r.text());
+                        container.innerHTML = html;
+                    } catch (e) {
+                        console.error(`Không load được ${file}:`, e);
                     }
-                    
-                    // Get flight data
-                    const out = JSON.parse(btn.getAttribute('data-out') || '{}');
-                    const inn = JSON.parse(btn.getAttribute('data-in') || '{}');
-                    const tripType = btn.getAttribute('data-trip-type') || 'round-trip';
-                    
-                    // Store trip type in the modal for later use
-                    modal.setAttribute('data-trip-type', tripType);
-                    
-                    // Mark this button as selected for reference when booking
-                    document.querySelectorAll('.sp-modal-trigger').forEach(trigger => {
-                        trigger.setAttribute('data-selected', 'false');
-                    });
-                    btn.setAttribute('data-selected', 'true');
-                    
-                    // Hiển thị hoặc ẩn phần chuyến về dựa vào loại vé
-                    const inboundSection = modal.querySelector('.sp-leg:nth-child(2)');
-                    if (inboundSection) {
-                        inboundSection.style.display = tripType === 'one-way' ? 'none' : 'block';
-                    }
-                    
-                    // Update modal content directly
-                    // Modal element is already defined above
-                    const bookBtn = document.getElementById('spBookBtn');
-                    
-                    // Utility function to format airport name
-                    function formatAirport(code) {
-                        if (!code) return '—';
-                        const airports = {
-                            'HAN': 'Hà Nội (HAN)',
-                            'SGN': 'Hồ Chí Minh (SGN)',
-                            'DAD': 'Đà Nẵng (DAD)',
-                            'CXR': 'Nha Trang (CXR)',
-                            'DLI': 'Đà Lạt (DLI)',
-                            'PQC': 'Phú Quốc (PQC)',
-                            'VCA': 'Cần Thơ (VCA)',
-                            'VCS': 'Côn Đảo (VCS)',
-                            'UIH': 'Quy Nhơn (UIH)',
-                            'THD': 'Thanh Hóa (THD)',
-                            'VDH': 'Đồng Hới (VDH)',
-                            'HUI': 'Huế (HUI)',
-                        };
-                        return airports[code] || code;
-                    }
-                    
-                    // Helper to set text content
-                    function setText(root, sel, val) {
-                        const el = root.querySelector(sel);
-                        if (el) el.textContent = (val && String(val).trim()) || '—';
-                    }
-                    
-                    // Lấy tên thành phố từ sân bay
-                    let outArrCity = formatAirport(out.arrival_airport || '').split('(')[0].trim();
-                    let inArrCity = formatAirport(inn.arrival_airport || '').split('(')[0].trim();
-                    
-                    // Set modal cho chiều đi và về
-                    setText(modal, '[data-to-city]', outArrCity || '—');
-                    setText(modal, '[data-from-city]', inArrCity || '—');
-                    
-                    // Outbound
-                    setText(modal, '[data-out-date]', out.departure_time ? new Date(out.departure_time).toLocaleDateString('vi-VN') : '—');
-                    setText(modal, '[data-out-dep-time]', out.departure_time ? new Date(out.departure_time).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '—');
-                    setText(modal, '[data-out-dep-airport]', formatAirport(out.departure_airport) || '—');
-                    setText(modal, '[data-out-arr-time]', out.arrival_time ? new Date(out.arrival_time).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '—');
-                    setText(modal, '[data-out-arr-airport]', formatAirport(out.arrival_airport) || '—');
-                    
-                    // Inbound
-                    setText(modal, '[data-in-date]', inn.departure_time ? new Date(inn.departure_time).toLocaleDateString('vi-VN') : '—');
-                    setText(modal, '[data-in-dep-time]', inn.departure_time ? new Date(inn.departure_time).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '—');
-                    setText(modal, '[data-in-dep-airport]', formatAirport(inn.departure_airport) || '—');
-                    setText(modal, '[data-in-arr-time]', inn.arrival_time ? new Date(inn.arrival_time).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '—');
-                    setText(modal, '[data-in-arr-airport]', formatAirport(inn.arrival_airport) || '—');
-                    
-                    // Tính tổng giá từ dữ liệu thực tế với logic phát sinh nếu không có giá
-                    let outPrice = Number(out.price) || 0;
-                    let inPrice = tripType === 'one-way' ? 0 : Number(inn.price) || 0;
-                    
-                    // Tính giá cho chuyến đi nếu không có giá
-                    if (outPrice === 0 && out.departure_time && out.arrival_time) {
-                        const depTime = new Date(out.departure_time);
-                        const arrTime = new Date(out.arrival_time);
-                        const durationHours = Math.floor((arrTime - depTime) / (1000 * 60 * 60));
-                        outPrice = Math.round(500000 + durationHours * 300000);
-                    }
-                    
-                    // Tính giá cho chuyến về nếu là khứ hồi và không có giá
-                    if (tripType === 'round-trip' && inPrice === 0 && inn && inn.departure_time && inn.arrival_time) {
-                        const depTime = new Date(inn.departure_time);
-                        const arrTime = new Date(inn.arrival_time);
-                        const durationHours = Math.floor((arrTime - depTime) / (1000 * 60 * 60));
-                        inPrice = Math.round(500000 + durationHours * 300000);
-                    }
-                    
-                    // Đảm bảo giá không quá thấp
-                    if (outPrice < 500000) outPrice = 500000 + Math.round(Math.random() * 200000);
-                    if (tripType === 'round-trip' && inPrice < 500000) inPrice = 500000 + Math.round(Math.random() * 200000);
-                    
-                    // Đảm bảo giá không quá cao
-                    if (outPrice > 2000000) outPrice = 2000000 - Math.round(Math.random() * 200000);
-                    if (tripType === 'round-trip' && inPrice > 2000000) inPrice = 2000000 - Math.round(Math.random() * 200000);
-                    
-                    const totalPrice = tripType === 'one-way' ? outPrice : outPrice + inPrice;
-                    if (bookBtn) {
-                        bookBtn.textContent = 'Đặt ngay với giá ' + totalPrice.toLocaleString('vi-VN') + ' VND';
-                    }
-                    
-                    // Open modal
-                    document.body.classList.add('modal-open');
-                    modal.classList.add('is-open');
-                    modal.setAttribute('aria-hidden', 'false');
-                    console.log('Modal opened via delegation');
-                } catch(e) {
-                    console.error('Error opening modal:', e);
                 }
-            }
+            };
+            await loadComponent('header-container', 'components/header.html');
+            await loadComponent('footer-container', 'components/footer.html');
         });
-        
-        // Setup close handlers
-        document.addEventListener('click', function(event) {
-            if (event.target.hasAttribute('data-close') || 
-                event.target.classList.contains('sp-modal__backdrop')) {
-                
-                const modal = document.getElementById('spModal');
-                if (modal) {
-                    document.body.classList.remove('modal-open');
-                    modal.classList.remove('is-open');
-                    modal.setAttribute('aria-hidden', 'true');
-                    console.log('Modal closed via delegation');
+    </script>
+
+    <script>
+        (function () {
+            function $(sel, ctx) {
+                return (ctx || document).querySelector(sel);
+            }
+
+            function $all(sel, ctx) {
+                return Array.prototype.slice.call((ctx || document).querySelectorAll(sel));
+            }
+
+            function text(el) {
+                return el && el.textContent ? el.textContent.trim() : '';
+            }
+
+            function setText(root, sel, val) {
+                var el = root.querySelector(sel);
+                if (el) el.textContent = (val && String(val).trim()) || '—';
+            }
+
+            function initSlider() {
+                var slider = document.getElementById('priceRange');
+                var out = document.getElementById('priceOut');
+                if (!slider || !out) return;
+
+                function fmt(v) {
+                    return Number(v).toLocaleString('vi-VN') + ' VND';
                 }
-            }
-        });
-        
-        // ESC key to close
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                const modal = document.getElementById('spModal');
-                if (modal && modal.classList.contains('is-open')) {
-                    document.body.classList.remove('modal-open');
-                    modal.classList.remove('is-open');
-                    modal.setAttribute('aria-hidden', 'true');
-                    console.log('Modal closed via ESC key');
+
+                function paintRange() {
+                    var min = Number(slider.min || 0);
+                    var max = Number(slider.max || 100);
+                    var val = Number(slider.value || 0);
+                    var pct = ((val - min) / (max - min)) * 100;
+
+                    try {
+                        slider.style.setProperty('--sp-range-pct', pct + '%');
+                    } catch (e) { }
+
+                    slider.style.background = 'linear-gradient(to right, var(--sp-primary) ' + pct + '%, #e5e7eb ' + pct + '%)';
+                    out.textContent = fmt(val);
                 }
+                paintRange();
+                slider.addEventListener('input', paintRange);
+                slider.addEventListener('change', paintRange);
             }
-        });
-        
-        // Handle booking button click
-        document.getElementById('spBookBtn').addEventListener('click', function() {
-            // Get currently selected flight data from the modal
-            const modal = document.getElementById('spModal');
-            const tripType = modal.getAttribute('data-trip-type') || 'round-trip';
-            
-            // Get flight data from the modal trigger button that was clicked
-            const triggerButton = document.querySelector('.sp-modal-trigger[data-selected="true"]');
-            if (!triggerButton) {
-                console.error('No selected flight found');
-                return;
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function () {
+                    initSlider();
+                });
+            } else {
+                initSlider();
             }
-            
-            const out = JSON.parse(triggerButton.getAttribute('data-out') || '{}');
-            const inn = JSON.parse(triggerButton.getAttribute('data-in') || '{}');
-            
-            // Get passenger counts from URL
-            const searchParams = new URLSearchParams(window.location.search);
-            const numAdults = searchParams.get('adults') || 1;
-            const numChildren = searchParams.get('children') || 0;
-            const numInfants = searchParams.get('infants') || 0;
-            
-            // Calculate prices (should match the modal calculation)
-            let outPrice = Number(out.price) || 0;
-            let inPrice = tripType === 'one-way' ? 0 : Number(inn.price) || 0;
-            
-            // Calculate fare if missing
-            if (outPrice === 0 && out.departure_time && out.arrival_time) {
-                const depTime = new Date(out.departure_time);
-                const arrTime = new Date(out.arrival_time);
-                const durationHours = Math.floor((arrTime - depTime) / (1000 * 60 * 60));
-                outPrice = Math.round(500000 + durationHours * 300000);
-            }
-            
-            if (tripType === 'round-trip' && inPrice === 0 && inn && inn.departure_time && inn.arrival_time) {
-                const depTime = new Date(inn.departure_time);
-                const arrTime = new Date(inn.arrival_time);
-                const durationHours = Math.floor((arrTime - depTime) / (1000 * 60 * 60));
-                inPrice = Math.round(500000 + durationHours * 300000);
-            }
-            
-            // Apply price limits
-            if (outPrice < 500000) outPrice = 500000 + Math.round(Math.random() * 200000);
-            if (tripType === 'round-trip' && inPrice < 500000) inPrice = 500000 + Math.round(Math.random() * 200000);
-            if (outPrice > 2000000) outPrice = 2000000 - Math.round(Math.random() * 200000);
-            if (tripType === 'round-trip' && inPrice > 2000000) inPrice = 2000000 - Math.round(Math.random() * 200000);
-            
-            const totalPrice = tripType === 'one-way' ? outPrice : outPrice + inPrice;
-            
-            // Build URL parameters
-            const params = new URLSearchParams();
-            params.append('outbound_id', out.id);
-            if (tripType === 'round-trip') {
-                params.append('inbound_id', inn.id);
-            }
-            
-            // Add outbound flight details
-            params.append('outbound_flight_number', out.flight_number);
-            params.append('outbound_departure_airport', out.departure_airport);
-            params.append('outbound_arrival_airport', out.arrival_airport);
-            params.append('outbound_departure_time', out.departure_time);
-            params.append('outbound_arrival_time', out.arrival_time);
-            params.append('outbound_price', outPrice);
-            
-            // Add inbound flight details if round-trip
-            if (tripType === 'round-trip' && inn) {
-                params.append('inbound_flight_number', inn.flight_number);
-                params.append('inbound_departure_airport', inn.departure_airport);
-                params.append('inbound_arrival_airport', inn.arrival_airport);
-                params.append('inbound_departure_time', inn.departure_time);
-                params.append('inbound_arrival_time', inn.arrival_time);
-                params.append('inbound_price', inPrice);
-            }
-            
-            // Add search criteria to maintain context
-            params.append('trip_type', tripType);
-            params.append('adults', numAdults);
-            params.append('children', numChildren);
-            params.append('infants', numInfants);
-            params.append('total_price', totalPrice);
-            
-            // Navigate to fare selection page
-            window.location.href = `/fare?${params.toString()}`;
-        });
+        })();
     </script>
 
 
@@ -601,6 +299,7 @@
                     updateSelectedLanguage(currentLang);
                     console.log('Language selector updated:', currentLang);
                 }
+                // changeSearchLanguage already fires languageChanged; avoid re-dispatching here.
             }, 200);
         }
 
@@ -646,7 +345,7 @@
         }
 
         // Initialize when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             initializeApp();
             
             // Tự động tải dữ liệu chuyến bay khi trang được tải
@@ -657,6 +356,648 @@
             }, 500);
         });
     </script>
+
+    <script>
+        (function () {
+            // Lấy ngôn ngữ hiện tại
+            function getLang() {
+                return localStorage.getItem('preferredLanguage') || 'vi';
+            }
+
+            // Tạo dropdown cho phần "From" và "To"
+            const citySelects = document.querySelectorAll('.sp-city-dropdown');
+
+            citySelects.forEach(select => {
+                const lang = getLang();
+                const cities = window.SKYPLAN_CITY_TRANSLATIONS[lang];
+                select.innerHTML = ''; // xoá sạch option cũ
+
+                // Tạo option mặc định
+                const defOpt = document.createElement('option');
+                defOpt.textContent = lang === 'vi' ? 'Chọn thành phố' : 'Select city';
+                defOpt.value = '';
+                defOpt.disabled = true;
+                defOpt.selected = true;
+                select.appendChild(defOpt);
+
+                // Đổ danh sách thành phố
+                for (const code in cities) {
+                    const opt = document.createElement('option');
+                    opt.value = code; // ví dụ: HaNoi
+                    opt.textContent = cities[code]; // ví dụ: Hà Nội
+                    select.appendChild(opt);
+                }
+            });
+
+            // Khi đổi ngôn ngữ thì dropdown tự cập nhật
+            document.addEventListener('languageChanged', (e) => {
+                const newLang = e.detail.lang;
+                citySelects.forEach(select => {
+                    const currentValue = select.value;
+                    const cities = window.SKYPLAN_CITY_TRANSLATIONS[newLang];
+                    select.innerHTML = '';
+                    const defOpt = document.createElement('option');
+                    defOpt.textContent = newLang === 'vi' ? 'Chọn thành phố' : 'Select city';
+                    defOpt.value = '';
+                    defOpt.disabled = true;
+                    select.appendChild(defOpt);
+
+                    for (const code in cities) {
+                        const opt = document.createElement('option');
+                        opt.value = code;
+                        opt.textContent = cities[code];
+                        if (code === currentValue) opt.selected = true;
+                        select.appendChild(opt);
+                    }
+                });
+            });
+
+
+        })();
+    </script>
+
+    <script>
+        document.getElementById('spSearchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const lang = localStorage.getItem('preferredLanguage') || 'vi';
+            const dict = (window.SKYPLAN_CITY_TRANSLATIONS && window.SKYPLAN_CITY_TRANSLATIONS[lang]) || {};
+
+            const fromCode = document.getElementById('fromCity').value;
+            const toCode = document.getElementById('toCity').value;
+            const fromName = dict[fromCode];
+            const toName = dict[toCode];
+
+            // Always submit ISO (YYYY-MM-DD), use dataset when in text display mode
+            const depEl = document.getElementById('dep');
+            const retEl = document.getElementById('ret');
+            const depart = (depEl && (depEl.dataset.isoValue || depEl.value)) || '';
+            const ret = (retEl && (retEl.dataset.isoValue || retEl.value)) || '';
+
+            const data = { fromCode, fromName, toCode, toName, depart, ret };
+            sessionStorage.setItem('skyplan:lastSearch', JSON.stringify(data));
+            
+            // Show loader trước khi redirect
+            if (window.Loader) {
+                window.Loader.show();
+                setTimeout(function() {
+                    location.href = `search.html?from=${fromCode}&to=${toCode}&departure=${depart}&return=${ret}`;
+                }, 1500);
+            } else {
+                location.href = `search.html?from=${fromCode}&to=${toCode}&departure=${depart}&return=${ret}`;
+            }
+        });
+    </script>
+
+
+
+    <script>
+        (function () {
+            const KEY = 'skyplan:lastSearch';
+
+            function getLang() {
+                return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+            }
+
+            function formatDate(dateStr, lang) {
+                if (!dateStr) return '';
+                const [year, month, day] = dateStr.split('-');
+                return lang === 'vi' ? `${day}/${month}/${year}` : `${month}/${day}/${year}`;
+            }
+
+            function readState() {
+                const p = new URLSearchParams(location.search);
+                let state = {
+                    from: p.get('from') || '',
+                    to: p.get('to') || '',
+                    depart: p.get('departure') || '',
+                    ret: p.get('return') || '',
+                };
+                if ((!state.from || !state.to) && sessionStorage.getItem(KEY)) {
+                    try {
+                        const s = JSON.parse(sessionStorage.getItem(KEY));
+                        state.from = state.from || s.fromCode || '';
+                        state.to = state.to || s.toCode || '';
+                        state.depart = state.depart || s.depart || '';
+                        state.ret = state.ret || s.ret || '';
+                    } catch { }
+                }
+                return state;
+            }
+
+            function ensureOption(select, code, label) {
+                if (!select || !code) return;
+                const found = Array.from(select.options).some(o => o.value === code);
+                if (!found) {
+                    const opt = document.createElement('option');
+                    opt.value = code;
+                    opt.textContent = label || code;
+                    select.appendChild(opt);
+                }
+                select.value = code;
+            }
+
+            function applyState(state) {
+                const lang = getLang();
+
+                const fromSel = document.getElementById('fromCity');
+                const toSel = document.getElementById('toCity');
+                const depart = document.getElementById('dep');
+                const ret = document.getElementById('ret');
+
+                if (fromSel) fromSel.value = state.from || '';
+                if (toSel) toSel.value = state.to || '';
+
+                // Normalize incoming dates to ISO (YYYY-MM-DD)
+                const isISO = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s || '');
+                const isDDMM = (s) => /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s || '');
+                const isMMDD = (s) => /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s || '');
+                const parseToISO = (s) => {
+                    if (!s) return '';
+                    if (isISO(s)) return s;
+                    const h = window.dateFormatHandler;
+                    // Try DD/MM/YYYY first (VI), then MM/DD/YYYY (EN)
+                    let iso = h && h.parseDDMMToISO ? h.parseDDMMToISO(s) : '';
+                    if (!iso && h && h.parseMMDDToISO) iso = h.parseMMDDToISO(s);
+                    return iso || '';
+                };
+
+                // Initialize date handler first, but skip if we have URL params to preserve
+                const hasDateParams = state.depart || state.ret;
+                
+                if (window.dateFormatHandler && !hasDateParams) {
+                    // Only call ensureTodayAndMins if we don't have URL params
+                    window.dateFormatHandler.ensureTodayAndMins();
+                } else if (window.dateFormatHandler) {
+                    // Just set minimum dates without overriding values
+                    const today = new Date().toISOString().slice(0, 10);
+                    if (depart) depart.min = today;
+                    if (ret) ret.min = depart ? (depart.value || today) : today;
+                }
+
+                // Apply URL parameter values
+                if (depart && state.depart) {
+                    const depISO = parseToISO(state.depart);
+                    if (depISO) {
+                        depart.dataset.isoValue = depISO;
+                        depart.value = depISO;
+                        if (ret) ret.min = depISO; // Update return minimum
+                    }
+                }
+
+                if (ret && state.ret) {
+                    const retISO = parseToISO(state.ret);
+                    if (retISO) {
+                        ret.dataset.isoValue = retISO;
+                        ret.value = retISO;
+                    }
+                }
+
+                // Finally update UI formatting and constraints
+                if (window.dateFormatHandler) {
+                    window.dateFormatHandler.updateDateInputsByLang(lang);
+                    if (!hasDateParams) {
+                        window.dateFormatHandler.enforceReturnAfterDeparture();
+                    }
+                }
+            }
+
+            function readState() {
+                const p = new URLSearchParams(location.search);
+                return {
+                    from: p.get('from') || '',
+                    to: p.get('to') || '',
+                    depart: p.get('departure') || '',
+                    ret: p.get('return') || '',
+                };
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const state = readState();
+                applyState(state);
+            });
+        })();
+    </script>
+
+    <script>
+        (function () {
+            // Bảng song ngữ theo mã IATA (bổ sung thêm nếu cần)
+            const CITY_BY_CODE = {
+                HAN: {
+                    vi: 'Hà Nội',
+                    en: 'Ha Noi'
+                },
+                SGN: {
+                    vi: 'Hồ Chí Minh',
+                    en: 'Ho Chi Minh'
+                },
+                DAD: {
+                    vi: 'Đà Nẵng',
+                    en: 'Da Nang'
+                },
+                PQC: {
+                    vi: 'Phú Quốc',
+                    en: 'Phu Quoc'
+                },
+                HPH: {
+                    vi: 'Hải Phòng',
+                    en: 'Hai Phong'
+                },
+                HUI: {
+                    vi: 'Huế',
+                    en: 'Hue'
+                },
+                DLI: {
+                    vi: 'Đà Lạt',
+                    en: 'Da Lat'
+                },
+                VCA: {
+                    vi: 'Cần Thơ',
+                    en: 'Can Tho'
+                }
+            };
+
+            function getLang() {
+                return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+            }
+
+            // Tự bắt mã IATA trong text "(XXX)" nếu chưa có data-iata
+            function ensureIata(el) {
+                if (el.dataset.iata) return el.dataset.iata;
+                const m = el.textContent.trim().match(/\(([A-Z]{3})\)\s*$/);
+                if (!m) return null;
+                el.dataset.iata = m[1];
+                return m[1];
+            }
+
+            // Cập nhật tên địa điểm theo ngôn ngữ cho cả card & modal
+            function renderAirportLabels(lang) {
+                const TARGETS = [
+                    '.sp-card .sp-meta', // các card kết quả
+                    '.sp-modal [data-out-dep-airport]',
+                    '.sp-modal [data-out-arr-airport]',
+                    '.sp-modal [data-in-dep-airport]',
+                    '.sp-modal [data-in-arr-airport]'
+                ].join(',');
+                document.querySelectorAll(TARGETS).forEach(el => {
+                    const code = ensureIata(el);
+                    if (!code) return;
+                    const row = CITY_BY_CODE[code];
+                    if (row && row[lang]) el.textContent = `${row[lang]} (${code})`;
+                });
+            }
+
+            // Lúc trang load
+            document.addEventListener('DOMContentLoaded', () => {
+                renderAirportLabels(getLang());
+            });
+
+            // Khi header đổi ngôn ngữ
+            document.addEventListener('languageChanged', function (e) {
+                // dùng cú pháp "an toàn" không optional chaining để khỏi lỗi
+                var lang = (e && e.detail && e.detail.lang) || getLang();
+                renderAirportLabels(lang);
+            });
+
+            // Export nhẹ để gọi sau parseCard
+            window.__spRenderAirports = renderAirportLabels;
+            window.__spGetLang = getLang;
+        })();
+    </script>
+
+    <script>
+        // hàm phụ an toàn lấy lang
+        function getLangSafe(e) {
+            return (e && e.detail && e.detail.lang) || localStorage.getItem('preferredLanguage') || 'vi';
+        }
+
+        // ====== Lắng nghe đổi ngôn ngữ từ header ======
+        document.addEventListener('languageChanged', function (e) {
+            const lang = getLangSafe(e);
+
+            // 1) Text tĩnh dùng i18n được xử lý bởi nơi phát sự kiện (header/common),
+            // tránh gọi lại changeSearchLanguage/initSearchTranslations để không tạo vòng lặp.
+
+            // 2) Relabel dropdown From/To (không thay value đang chọn)
+            (function relabelSelects() {
+                const dict = (window.SKYPLAN_CITY_TRANSLATIONS && window.SKYPLAN_CITY_TRANSLATIONS[lang]) || {};
+                ['fromCity', 'toCity'].forEach(id => {
+                    const sel = document.getElementById(id);
+                    if (!sel) return;
+                    Array.from(sel.options).forEach(opt => {
+                        if (dict[opt.value]) opt.textContent = dict[opt.value];
+                    });
+                });
+            })();
+
+            // 3) Đổi city labels trong **card kết quả + modal**
+            if (typeof window.__spRenderAirports === 'function') window.__spRenderAirports(lang);
+
+            // 4) Thông điệp "không có chuyến bay" (nếu có phần tử này)
+            const empty = document.querySelector('.sp-empty, [data-empty]');
+            if (empty) empty.textContent = (lang === 'vi') ?
+                'Không có chuyến bay phù hợp với bộ lọc.' :
+                'No flights match your filters.';
+
+            // 5) Nút/CTA trong modal (nếu đang mở)
+            if (window.MODAL_I18N && window.MODAL_I18N[lang]) {
+                const btn = document.getElementById('spBookBtn');
+                const storedPrice = btn && btn.dataset ? (btn.dataset.price || '') : '';
+                if (btn) btn.textContent = window.MODAL_I18N[lang].bookPrefix + storedPrice;
+                const titleEl = document.getElementById('spModalTitle');
+                if (titleEl) titleEl.textContent = window.MODAL_I18N[lang].title;
+            }
+        });
+
+        // ====== Gọi một lần khi trang vừa load (đồng bộ ngôn ngữ hiện tại)
+        // Sự kiện languageChanged đã được phát từ changeSearchLanguage trong initializeLanguage/header; tránh phát lặp.
+    </script>
+
+    <!-- Date format handling moved to global date_format_handler.js -->
+    <script src="assets/scripts/date_format_handler.js"></script>
+
+    <script>
+    // Render dynamic result cards based on URL params (from, to, departure, return)
+        (function() {
+            const CITY_IATA = {
+                HaNoi: 'HAN', HoChiMinh: 'SGN', DaNang: 'DAD', PhuQuoc: 'PQC',
+                HaiPhong: 'HPH', Hue: 'HUI', DaLat: 'DLI', CanTho: 'VCA',
+                KhanhHoa: 'CXR', LamDong: 'DLI', NgheAn: 'VII', QuangNinh: 'VDO', QuangTri: 'VDH',
+                AnGiang: 'VKG', DienBien: 'DIN', GiaLai: 'PXU', SonLa: 'SQH', ThanhHoa: 'THD'
+            };
+            const CITY_LABELS = window.SKYPLAN_CITY_TRANSLATIONS || { vi: {}, en: {} };
+            const getLang = () => localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+
+            const fmtDate = (iso) => {
+                const h = window.dateFormatHandler;
+                const lang = getLang();
+                if (h && h.formatDate) return h.formatDate(iso, lang);
+                if (!iso) return '';
+                const [y,m,d] = iso.split('-');
+                return lang === 'vi' ? `${d}/${m}/${y}` : `${m}/${d}/${y}`;
+            };
+
+            function readState() {
+                const p = new URLSearchParams(location.search);
+                return {
+                    from: p.get('from') || 'HaNoi',
+                    to: p.get('to') || 'HoChiMinh',
+                    depart: p.get('departure') || '',
+                    ret: p.get('return') || ''
+                };
+            }
+
+            function generateFlights(state) {
+                const seeds = ['06:00','07:30','09:00','11:30','13:00','14:30','16:00','18:00','20:00','22:00'];
+                const pick = (n) => seeds.slice(0, Math.min(6, Math.max(3, n)));
+                const dateNum = Number((state.depart || '').replace(/\D/g,'')) || 5;
+                const outTimes = pick((dateNum % 6) + 3);
+                const addMin = (hhmm, add) => {
+                    const [h,m] = hhmm.split(':').map(Number);
+                    const total = h*60 + m + add;
+                    const hh = String(Math.floor(total/60)%24).padStart(2,'0');
+                    const mm = String(total%60).padStart(2,'0');
+                    return `${hh}:${mm}`;
+                };
+                return outTimes.map((t, idx) => {
+                    const dur1 = 125 + (idx%3)*5;
+                    const arr1 = addMin(t, dur1);
+                    const retBase = addMin(t, 60 + (idx%2)*30);
+                    const dur2 = 120 + (idx%4)*10;
+                    const arr2 = addMin(retBase, dur2);
+                    const price = 1200000 + idx*150000;
+                    return { outDep: t, outArr: arr1, outDur: dur1, inDep: retBase, inArr: arr2, inDur: dur2, price };
+                });
+            }
+
+            function labelFor(code, lang) {
+                const dict = CITY_LABELS[lang] || CITY_LABELS.vi || {};
+                return dict[code] || code;
+            }
+
+            // Format airport with city name and airport name
+            function formatAirport(cityCode, lang) {
+                // Use the same logic as in search.js
+                const cityDict = CITY_LABELS[lang] || CITY_LABELS.vi || {};
+                const cityName = cityDict[cityCode] || cityCode;
+                
+                // Airport names mapping
+                const AIRPORTS = {
+                    'hanoi': { vi: 'Sân bay Nội Bài', en: 'Noi Bai Airport' },
+                    'ho-chi-minh': { vi: 'Sân bay Tân Sơn Nhất', en: 'Tan Son Nhat Airport' },
+                    'da-nang': { vi: 'Sân bay Đà Nẵng', en: 'Da Nang Airport' },
+                    'hai-phong': { vi: 'Sân bay Cát Bi', en: 'Cat Bi Airport' },
+                    'hue': { vi: 'Sân bay Phú Bài', en: 'Phu Bai Airport' },
+                    'nha-trang': { vi: 'Sân bay Cam Ranh', en: 'Cam Ranh Airport' },
+                    'da-lat': { vi: 'Sân bay Liên Khương', en: 'Lien Khuong Airport' },
+                    'phu-quoc': { vi: 'Sân bay Phú Quốc', en: 'Phu Quoc Airport' },
+                    'can-tho': { vi: 'Sân bay Cần Thơ', en: 'Can Tho Airport' },
+                    'quy-nhon': { vi: 'Sân bay Phù Cát', en: 'Phu Cat Airport' }
+                };
+                
+                const airportInfo = AIRPORTS[cityCode];
+                const airportName = airportInfo ? (airportInfo[lang] || airportInfo.vi) : '';
+                
+                if (airportName) {
+                    return `${cityName} - ${airportName}`;
+                }
+                return cityName;
+            }
+
+            function ensureModalHandlers() {
+                const modal = document.getElementById('spModal');
+                if (!modal || modal.dataset.closeBound === '1') return;
+                modal.addEventListener('click', function(e){
+                    if (e.target && e.target.getAttribute('data-close') !== null) {
+                        modal.classList.remove('is-open');
+                        modal.setAttribute('aria-hidden','true');
+                    }
+                });
+                document.addEventListener('keydown', function(e){
+                    if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+                        modal.classList.remove('is-open');
+                        modal.setAttribute('aria-hidden','true');
+                    }
+                });
+                // Navigate to fare.html when clicking book button
+                const bookBtn = document.getElementById('spBookBtn');
+                if (bookBtn && !bookBtn.dataset.navBound) {
+                    bookBtn.addEventListener('click', function(){
+                        try {
+                            // Build a persistent selection object from current modal contents
+                            const state = readState();
+                            const lang = getLang();
+                            const CITY_LABELS = window.SKYPLAN_CITY_TRANSLATIONS || { vi: {}, en: {} };
+                            const fromName = (CITY_LABELS[lang] && CITY_LABELS[lang][state.from]) || state.from;
+                            const toName = (CITY_LABELS[lang] && CITY_LABELS[lang][state.to]) || state.to;
+                            const CITY_IATA = {
+                                HaNoi: 'HAN', HoChiMinh: 'SGN', DaNang: 'DAD', PhuQuoc: 'PQC',
+                                HaiPhong: 'HPH', Hue: 'HUI', DaLat: 'DLI', CanTho: 'VCA',
+                                KhanhHoa: 'CXR', LamDong: 'DLI', NgheAn: 'VII', QuangNinh: 'VDO', QuangTri: 'VDH',
+                                AnGiang: 'VKG', DienBien: 'DIN', GiaLai: 'PXU', SonLa: 'SQH', ThanhHoa: 'THD'
+                            };
+                            const fromIATA = CITY_IATA[state.from] || 'XXX';
+                            const toIATA = CITY_IATA[state.to] || 'YYY';
+
+                            const outDep = (modal.querySelector('[data-out-dep-time]')?.textContent || '').trim();
+                            const outArr = (modal.querySelector('[data-out-arr-time]')?.textContent || '').trim();
+                            const inDep = (modal.querySelector('[data-in-dep-time]')?.textContent || '').trim();
+                            const inArr = (modal.querySelector('[data-in-arr-time]')?.textContent || '').trim();
+
+                            const parseMin = (s) => { const m = /^([0-2]?\d):([0-5]\d)$/.exec(String(s)); return m ? (parseInt(m[1],10)*60 + parseInt(m[2],10)) : null; };
+                            const diffMin = (a,b) => { const A=parseMin(a), B=parseMin(b); if (A==null||B==null) return null; let d=B-A; if (d<0) d+=1440; return d; };
+
+                            const priceLabel = (bookBtn.dataset && bookBtn.dataset.price) ? bookBtn.dataset.price : '';
+                            const priceVND = priceLabel ? Number(priceLabel.replace(/[^0-9]/g,''))||0 : 0;
+
+                            const trip = {
+                                fromCode: state.from,
+                                toCode: state.to,
+                                fromIATA,
+                                toIATA,
+                                fromName,
+                                toName,
+                                departDateISO: state.depart || '',
+                                returnDateISO: state.ret || '',
+                                priceLabel: priceLabel || '',
+                                priceVND,
+                                segments: [
+                                    { direction: 'outbound', departTime: outDep, arriveTime: outArr, departIATA: fromIATA, arriveIATA: toIATA, durationMin: diffMin(outDep,outArr) },
+                                    { direction: 'inbound', departTime: inDep, arriveTime: inArr, departIATA: toIATA, arriveIATA: fromIATA, durationMin: diffMin(inDep,inArr) }
+                                ]
+                            };
+                            try { localStorage.setItem('skyplan_trip_selection', JSON.stringify(trip)); } catch(_) {}
+                            // Provide simple route hints for other pages
+                            try {
+                                localStorage.setItem('route_from', state.from || '');
+                                localStorage.setItem('route_to', state.to || '');
+                            } catch(_) {}
+                        } catch(_) {}
+                        
+                        // Đóng modal trước
+                        modal.classList.remove('is-open');
+                        modal.setAttribute('aria-hidden', 'true');
+                        
+                        // Show loader sau khi đóng modal
+                        if (window.Loader) {
+                            window.Loader.show();
+                            setTimeout(function() {
+                                window.location.href = 'fare.html';
+                            }, 1500);
+                        } else {
+                            window.location.href = 'fare.html';
+                        }
+                    });
+                    bookBtn.dataset.navBound = '1';
+                }
+                modal.dataset.closeBound = '1';
+            }
+
+            function renderResults() {
+                const state = readState();
+                const lang = getLang();
+                const results = document.querySelector('.sp-results');
+                if (!results) return;
+                const fromIATA = CITY_IATA[state.from] || 'XXX';
+                const toIATA = CITY_IATA[state.to] || 'YYY';
+                const fromName = formatAirport(state.from, lang);
+                const toName = formatAirport(state.to, lang);
+
+                const flights = generateFlights(state);
+                const dict = (window.searchTranslations && (window.searchTranslations[lang] || window.searchTranslations.vi)) || {};
+                const nonstopLbl = dict.nonstop || (lang === 'vi' ? 'Bay thẳng' : 'Nonstop');
+                const selectFlightLbl = dict.selectFlight || (lang === 'vi' ? 'Chọn chuyến bay' : 'Select flight');
+                const outDateLabel = `${fmtDate(state.depart)} ${dict.dotDeparture || (lang==='vi'?'· Khởi hành':'· Departure')}`;
+                const inDateLabel = `${fmtDate(state.ret || state.depart)} ${dict.dotReturn || (lang==='vi'?'· Về':'· Return')}`;
+                const durTxt = (min) => `${Math.floor(min/60)}h${String(min%60).padStart(2,'0')}m`;
+
+                const cards = flights.map((f, i) => `
+                    <article class=\"sp-card\" aria-labelledby=\"card${i+1}-heading\">\n                        <h3 id=\"card${i+1}-heading\" class=\"sr-only\">${fromName} → ${toName} ${f.outDep} / ${toName} → ${fromName} ${f.inDep}</h3>\n                        <div class=\"sp-card-body\">\n                            <div class=\"sp-date\">${outDateLabel}</div>\n                            <div class=\"sp-itinerary\">\n                                <div>\n                                    <div class=\"sp-time\">${f.outDep}</div>\n                                    <div class=\"sp-meta\">${fromName} (${fromIATA})</div>\n                                </div>\n                                <div class=\"sp-mid\">\n                                    <i class=\"fa-solid fa-plane sp-plane\"></i>\n                                    <span class=\"sp-duration\">${durTxt(f.outDur)}<br>${nonstopLbl}</span>\n                                </div>\n                                <div>\n                                    <div class=\"sp-time\">${f.outArr}</div>\n                                    <div class=\"sp-meta\">${toName} (${toIATA})</div>\n                                </div>\n                            </div>\n                            <hr class=\"sp-divider\">\n                            <div class=\"sp-date\">${inDateLabel}</div>\n                            <div class=\"sp-itinerary\">\n                                <div>\n                                    <div class=\"sp-time\">${f.inDep}</div>\n                                    <div class=\"sp-meta\">${toName} (${toIATA})</div>\n                                </div>\n                                <div class=\"sp-mid\">\n                                    <i class=\"fa-solid fa-plane sp-plane\"></i>\n                                    <span class=\"sp-duration\">${durTxt(f.inDur)}<br>${nonstopLbl}</span>\n                                </div>\n                                <div>\n                                    <div class=\"sp-time\">${f.inArr}</div>\n                                    <div class=\"sp-meta\">${fromName} (${fromIATA})</div>\n                                </div>\n                            </div>\n                        </div>\n                        <aside class=\"sp-card-aside\">\n                            <div class=\"sp-price\">${(f.price).toLocaleString('vi-VN')} VND</div>\n                            <button class=\"sp-btn sp-btn-block\">${selectFlightLbl}</button>\n                        </aside>\n                    </article>`).join('');
+
+                results.innerHTML = cards;
+                // Override all card prices with requested fixed amount
+                document.querySelectorAll('.sp-card .sp-price').forEach(function(el){
+                    el.textContent = '2.374.000 VND';
+                });
+
+                // Refresh filters
+                setTimeout(() => {
+                    const slider = document.getElementById('priceRange');
+                    if (slider) slider.dispatchEvent(new Event('input', { bubbles: true }));
+                }, 0);
+
+                // Basic modal binding for new cards
+                document.querySelectorAll('.sp-card .sp-btn.sp-btn-block').forEach(btn => {
+                    if (btn.dataset.bound === '1') return;
+                    btn.addEventListener('click', function() {
+                        const card = btn.closest('.sp-card');
+                        const modal = document.getElementById('spModal');
+                        const bookBtn = document.getElementById('spBookBtn');
+                        if (!card || !modal || !bookBtn) return;
+                        const setText = (root, sel, val) => { const el = root.querySelector(sel); if (el) el.textContent = val; };
+                        setText(modal, '[data-to-city]', toName);
+                        setText(modal, '[data-from-city]', fromName);
+                        setText(modal, '[data-out-date]', fmtDate(readState().depart));
+                        setText(modal, '[data-in-date]', fmtDate(readState().ret || readState().depart));
+                        const times = card.querySelectorAll('.sp-time');
+                        setText(modal, '[data-out-dep-time]', times[0]?.textContent || '');
+                        setText(modal, '[data-out-arr-time]', times[1]?.textContent || '');
+                        setText(modal, '[data-in-dep-time]', times[2]?.textContent || '');
+                        setText(modal, '[data-in-arr-time]', times[3]?.textContent || '');
+                        const currentLang = getLang();
+                        const currentFromName = formatAirport(readState().from, currentLang);
+                        const currentToName = formatAirport(readState().to, currentLang);
+                        setText(modal, '[data-out-dep-airport]', `${currentFromName.split(' - ')[0]} (${fromIATA})`);
+                        setText(modal, '[data-out-arr-airport]', `${currentToName.split(' - ')[0]} (${toIATA})`);
+                        setText(modal, '[data-in-dep-airport]', `${currentToName.split(' - ')[0]} (${toIATA})`);
+                        setText(modal, '[data-in-arr-airport]', `${currentFromName.split(' - ')[0]} (${fromIATA})`);
+                        const price = card.querySelector('.sp-price')?.textContent.trim() || '';
+                        const langNow = getLang();
+                        const lbl = (window.MODAL_I18N && window.MODAL_I18N[langNow]) ? window.MODAL_I18N[langNow].bookPrefix : (langNow==='vi'?'Đặt ngay với giá ':'Book now for ');
+                        bookBtn.textContent = lbl + price;
+                        if (bookBtn && bookBtn.dataset) bookBtn.dataset.price = price;
+                        // Localize modal title if dictionary available
+                        const titleEl = modal.querySelector('#spModalTitle');
+                        if (titleEl && window.MODAL_I18N && window.MODAL_I18N[langNow]) titleEl.textContent = window.MODAL_I18N[langNow].title;
+                        // Ensure airport labels use current language inside modal
+                        if (typeof window.__spRenderAirports === 'function') window.__spRenderAirports(langNow);
+                        modal.classList.add('is-open');
+                        modal.setAttribute('aria-hidden', 'false');
+                    });
+                    btn.dataset.bound = '1';
+                });
+                ensureModalHandlers();
+            }
+
+            // Render on load only - don't re-render on language change to preserve current flight data
+            document.addEventListener('DOMContentLoaded', function(){ ensureModalHandlers(); renderResults(); });
+        })();
+    </script>
+
+    <!-- Loader component (JS) -->
+    <script src="assets/scripts/loader.js"></script>
+    <script>
+        // Import loader HTML vào DOM càng sớm càng tốt
+        fetch('components/loader.html').then(r => r.text()).then(html => {
+            document.body.insertAdjacentHTML('afterbegin', html);
+            // Show loader ngay khi vừa insert vào DOM (cho F5/reload)
+            if (window.Loader) {
+                window.Loader.show();
+                document.body.style.overflow = 'hidden';
+            }
+        });
+        
+        // Ẩn loader khi tất cả resources đã load xong (window.load)
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                if (window.Loader) {
+                    window.Loader.hide();
+                    document.body.style.overflow = '';
+                }
+            }, 500); // Delay 500ms để smooth
+        });
+    </script>
+
 </body>
 
 </html>

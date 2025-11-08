@@ -1,0 +1,200 @@
+// Authentication utilities for SkyPlan frontend
+
+// AuthState - Centralized authentication management
+const AuthState = {
+  // Get current authentication token
+  getToken: function() {
+    // Check localStorage first (for "remember me")
+    let token = localStorage.getItem('authToken');
+    if (token) return token;
+    
+    // Check sessionStorage (for current session)
+    token = sessionStorage.getItem('authToken');
+    if (token) return token;
+    
+    // Try other token keys
+    const keys = ['accessToken', 'token', 'jwt'];
+    for (const key of keys) {
+      token = localStorage.getItem(key) || sessionStorage.getItem(key);
+      if (token) return token;
+    }
+    
+    return null;
+  },
+  
+  // Get current user data
+  getUser: function() {
+    try {
+      let user = localStorage.getItem('currentUser');
+      if (user) return JSON.parse(user);
+      
+      user = sessionStorage.getItem('currentUser');
+      if (user) return JSON.parse(user);
+      
+      return null;
+    } catch {
+      return null;
+    }
+  },
+  
+  // Check if user is authenticated
+  isAuthenticated: function() {
+    const token = this.getToken();
+    return !!token;
+  },
+  
+  // Set authentication data
+  setAuth: function(token, user, remember = false) {
+    const storage = remember ? localStorage : sessionStorage;
+    
+    storage.setItem('authToken', token);
+    storage.setItem('currentUser', JSON.stringify(user));
+    
+    // Clear from other storage
+    const otherStorage = remember ? sessionStorage : localStorage;
+    otherStorage.removeItem('authToken');
+    otherStorage.removeItem('currentUser');
+  },
+  
+  // Clear authentication data
+  clearAuth: function() {
+    // Clear from both storages
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('currentUser');
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('currentUser');
+    
+    // Clear other possible token keys
+    const keys = ['accessToken', 'token', 'jwt'];
+    keys.forEach(key => {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    });
+  },
+  
+  // Logout user
+  logout: function() {
+    this.clearAuth();
+    
+    // Clear any booking data (optional, depends on requirements)
+    try {
+      localStorage.removeItem('currentPassenger');
+      localStorage.removeItem('selectedSeats');
+      localStorage.removeItem('skyplan_extras_v2');
+      localStorage.removeItem('bookingTotal');
+      localStorage.removeItem('skyplan_trip_selection');
+    } catch {}
+    
+    // Redirect to login page
+    window.location.href = 'login.html';
+  },
+  
+  // Check token validity (simple check - real implementation should verify with backend)
+  isTokenValid: function() {
+    const token = this.getToken();
+    if (!token) return false;
+    
+    try {
+      // Simple JWT decode to check expiration (if using JWT)
+      if (token.includes('.')) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.exp && payload.exp < Date.now() / 1000) {
+          return false;
+        }
+      }
+      return true;
+    } catch {
+      return true; // Assume valid if can't decode
+    }
+  },
+  
+  // Redirect to login if not authenticated
+  requireAuth: function(returnUrl = null) {
+    if (!this.isAuthenticated() || !this.isTokenValid()) {
+      const url = returnUrl || window.location.pathname + window.location.search;
+      this.clearAuth();
+      window.location.href = `login.html?returnUrl=${encodeURIComponent(url)}`;
+      return false;
+    }
+    return true;
+  },
+  
+  // Make authenticated API request
+  fetchWithAuth: function(url, options = {}) {
+    const token = this.getToken();
+    if (!token) {
+      throw new Error('No authentication token available');
+    }
+    
+    const headers = {
+      ...options.headers,
+      'Authorization': `Bearer ${token}`
+    };
+    
+    return fetch(url, {
+      ...options,
+      headers
+    }).then(response => {
+      // Auto-logout on 401
+      if (response.status === 401) {
+        this.clearAuth();
+        window.location.href = 'login.html?message=session-expired';
+        throw new Error('Authentication expired');
+      }
+      return response;
+    });
+  }
+};
+
+// Header user info update
+function updateHeaderUserInfo() {
+  const user = AuthState.getUser();
+  const userNameElements = document.querySelectorAll('.user-name, .header-user-name');
+  const loginButtons = document.querySelectorAll('.login-btn, .header-login');
+  const logoutButtons = document.querySelectorAll('.logout-btn, .header-logout');
+  const userMenus = document.querySelectorAll('.user-menu, .header-user-menu');
+  
+  if (user && AuthState.isAuthenticated()) {
+    // Show user info
+    userNameElements.forEach(el => {
+      el.textContent = user.fullname || user.email || 'User';
+    });
+    
+    // Hide login buttons, show logout and user menus
+    loginButtons.forEach(el => el.style.display = 'none');
+    logoutButtons.forEach(el => el.style.display = 'block');
+    userMenus.forEach(el => el.style.display = 'block');
+  } else {
+    // Show login buttons, hide user info
+    loginButtons.forEach(el => el.style.display = 'block');
+    logoutButtons.forEach(el => el.style.display = 'none');
+    userMenus.forEach(el => el.style.display = 'none');
+  }
+}
+
+// Setup logout buttons
+function setupLogoutButtons() {
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('.logout-btn, .header-logout') || e.target.closest('.logout-btn, .header-logout')) {
+      e.preventDefault();
+      AuthState.logout();
+    }
+  });
+}
+
+// Auto-update header on page load and auth changes
+document.addEventListener('DOMContentLoaded', function() {
+  updateHeaderUserInfo();
+  setupLogoutButtons();
+});
+
+// Listen for storage changes (cross-tab auth sync)
+window.addEventListener('storage', function(e) {
+  if (e.key === 'authToken' || e.key === 'currentUser') {
+    updateHeaderUserInfo();
+  }
+});
+
+// Make AuthState globally available
+window.AuthState = AuthState;
+window.updateHeaderUserInfo = updateHeaderUserInfo;

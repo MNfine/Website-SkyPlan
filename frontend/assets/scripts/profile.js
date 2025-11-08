@@ -1,352 +1,264 @@
-/**
- * Profile page functionality for SkyPlan
- */
 document.addEventListener('DOMContentLoaded', function() {
-  // API endpoint
-  const API_URL = '/api/auth';
+  // Helper to get current language from localStorage
+  function getCurrentLang() {
+    try { 
+      return localStorage.getItem('preferredLanguage') || 'vi'; 
+    } catch { 
+      return 'vi'; 
+    }
+  }
   
-  // DOM elements for profile data display
-  const userAvatarLarge = document.getElementById('userAvatarLarge');
-  const userFullName = document.getElementById('userFullName');
-  const userEmail = document.getElementById('userEmail');
-  const displayFullName = document.getElementById('displayFullName');
-  const displayEmail = document.getElementById('displayEmail');
-  const displayPhone = document.getElementById('displayPhone');
-  
-  // DOM elements for forms
-  const editPersonalInfoBtn = document.getElementById('editPersonalInfo');
-  const viewMode = document.getElementById('viewMode');
-  const editMode = document.getElementById('editMode');
-  const cancelEditBtn = document.getElementById('cancelEdit');
-  
-  const fullnameInput = document.getElementById('fullname');
-  const emailInput = document.getElementById('email');
-  const phoneInput = document.getElementById('phone');
-  
-  // Password change form elements
-  const passwordForm = document.getElementById('passwordForm');
-  const currentPasswordInput = document.getElementById('currentPassword');
-  const newPasswordInput = document.getElementById('newPassword');
-  const confirmPasswordInput = document.getElementById('confirmPassword');
-  
-  // Navigation
-  const navItems = document.querySelectorAll('.profile-nav li');
-  const sections = document.querySelectorAll('.profile-section');
-  
-  // Load user data
-  loadUserData();
-  
-  // Section navigation
-  navItems.forEach(item => {
-    item.addEventListener('click', function(e) {
-      e.preventDefault();
-      const targetId = this.querySelector('a').getAttribute('href').substring(1);
-      
-      // Update active state in navigation
-      navItems.forEach(nav => nav.classList.remove('active'));
-      this.classList.add('active');
-      
-      // Show selected section
-      sections.forEach(section => {
-        section.classList.remove('active');
-        if (section.id === targetId) {
-          section.classList.add('active');
-        }
+  // Apply translations on load
+  if (typeof applyProfileTranslations === 'function') {
+    applyProfileTranslations(getCurrentLang());
+  }
+
+  // Get translation by key for current language
+  function getTranslation(key) {
+    var lang = getCurrentLang();
+    var translations = window.profileTranslations || {};
+    return (translations[lang] && translations[lang][key]) || key;
+  }
+
+  // Toast notification with auto-hide
+  function showToast(title, message, type) {
+    var existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+
+    var toast = document.createElement('div');
+    toast.className = 'toast ' + (type || 'success');
+    toast.innerHTML = 
+      '<div class="toast-icon">' + (type === 'error' ? '✕' : '✓') + '</div>' +
+      '<div class="toast-content">' +
+        '<div class="toast-title">' + title + '</div>' +
+        (message ? '<div class="toast-message">' + message + '</div>' : '') +
+      '</div>' +
+      '<button class="toast-close">×</button>';
+    
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.classList.add('show'); }, 10);
+    
+    toast.querySelector('.toast-close').addEventListener('click', function() {
+      toast.classList.remove('show');
+      setTimeout(function() { toast.remove(); }, 300);
+    });
+    
+    setTimeout(function() {
+      if (toast.parentNode) {
+        toast.classList.remove('show');
+        setTimeout(function() { if (toast.parentNode) toast.remove(); }, 300);
+      }
+    }, 3000);
+  }
+
+  // Validation functions
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function validatePhone(phone) {
+    return /^(\+84|0)[0-9]{9,10}$/.test(phone.replace(/\s/g, ''));
+  }
+
+  function validateDate(dateString) {
+    if (!dateString) return false;
+    
+    var parts = dateString.split('/');
+    if (parts.length !== 3) return false;
+    
+    var day = parseInt(parts[0], 10);
+    var month = parseInt(parts[1], 10);
+    var year = parseInt(parts[2], 10);
+    
+    if (isNaN(day) || isNaN(month) || isNaN(year)) return false;
+    if (day < 1 || day > 31 || month < 1 || month > 12) return false;
+    if (year < 1900 || year > new Date().getFullYear()) return false;
+    
+    var date = new Date(year, month - 1, day);
+    if (date.getDate() !== day || date.getMonth() !== month - 1 || date.getFullYear() !== year) {
+      return false;
+    }
+    
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date < today;
+  }
+
+  // Error handling functions
+  function showError(fieldId, message) {
+    var field = document.getElementById(fieldId);
+    var errorDiv = document.getElementById(fieldId + 'Error');
+    if (field && errorDiv) {
+      field.classList.add('error');
+      errorDiv.textContent = message;
+      errorDiv.classList.add('show');
+    }
+  }
+
+  function clearError(fieldId) {
+    var field = document.getElementById(fieldId);
+    var errorDiv = document.getElementById(fieldId + 'Error');
+    if (field && errorDiv) {
+      field.classList.remove('error');
+      errorDiv.textContent = '';
+      errorDiv.classList.remove('show');
+    }
+  }
+
+  function clearAllErrors() {
+    ['fullName', 'email', 'phone', 'dob', 'gender'].forEach(clearError);
+  }
+
+  // Language selector handler
+  setTimeout(function() {
+    document.querySelectorAll('.lang-option').forEach(function(option) {
+      option.addEventListener('click', function() {
+        var lang = this.getAttribute('data-lang');
+        if (lang) changeProfileLanguage(lang);
       });
     });
-  });
+  }, 500);
+
+  // DOM references
+  var inputs = {
+    fullName: document.getElementById('fullName'),
+    email: document.getElementById('email'),
+    phone: document.getElementById('phone'),
+    dob: document.getElementById('dob'),
+    gender: document.getElementById('gender')
+  };
+
+  // Input event handlers
+  if (inputs.fullName) inputs.fullName.addEventListener('input', function() { clearError('fullName'); });
+  if (inputs.email) inputs.email.addEventListener('input', function() { clearError('email'); });
   
-  // Switch to edit mode
-  if (editPersonalInfoBtn) {
-    editPersonalInfoBtn.addEventListener('click', function() {
-      viewMode.classList.add('hidden');
-      editMode.classList.remove('hidden');
+  if (inputs.phone) {
+    inputs.phone.addEventListener('input', function() {
+      this.value = this.value.replace(/\D/g, '');
+      clearError('phone');
     });
   }
   
-  // Cancel edit mode
-  if (cancelEditBtn) {
-    cancelEditBtn.addEventListener('click', function() {
-      viewMode.classList.remove('hidden');
-      editMode.classList.add('hidden');
-      loadFormData(); // Reset form data
+  if (inputs.dob) {
+    inputs.dob.addEventListener('input', function(e) {
+      var value = e.target.value.replace(/\D/g, '');
+      if (value.length >= 2) value = value.slice(0, 2) + '/' + value.slice(2);
+      if (value.length >= 5) value = value.slice(0, 5) + '/' + value.slice(5);
+      if (value.length > 10) value = value.slice(0, 10);
+      e.target.value = value;
+      clearError('dob');
     });
   }
   
-  // Handle personal info form submission
-  if (editMode && editMode.tagName === 'FORM') {
-    editMode.addEventListener('submit', function(e) {
+  if (inputs.gender) inputs.gender.addEventListener('change', function() { clearError('gender'); });
+
+  // Sidebar menu navigation
+  var menu = document.getElementById('profileMenu');
+  if (menu) {
+    menu.addEventListener('click', function(e) {
+      var item = e.target.closest('.menu-item');
+      if (!item || item.getAttribute('data-disabled') === '1') return;
+      var targetSel = item.getAttribute('data-target');
+      if (!targetSel) return;
+      
+      menu.querySelectorAll('.menu-item').forEach(function(m) { m.classList.remove('active'); });
+      item.classList.add('active');
+      
+      document.querySelectorAll('.profile-content .card').forEach(function(card) { card.hidden = true; });
+      var target = document.querySelector(targetSel);
+      if (target) target.hidden = false;
+    });
+  }
+
+  // Form submission handler
+  var form = document.querySelector('.profile-form');
+  if (form) {
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
-      updateUserProfile();
-    });
-  }
-  
-  // Handle password form submission
-  if (passwordForm) {
-    passwordForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      updatePassword();
-    });
-  }
-  
-  // Function to load user data from API or local storage
-  function loadUserData() {
-    // First try to get from localStorage/sessionStorage
-    const userData = getUserData();
-    
-    if (userData && userData.user) {
-      displayUserData(userData.user);
-      loadFormData();
-    } else {
-      // If not in storage, try to get from API
-      const token = getAuthToken();
+      clearAllErrors();
       
-      if (token) {
-        fetch(`${API_URL}/profile`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to load profile data');
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (data.success && data.user) {
-            displayUserData(data.user);
-            loadFormData();
-          }
-        })
-        .catch(error => {
-          console.error('Error loading profile:', error);
-          // If API call fails, redirect to login
-          window.location.href = './login.html?redirect=' + encodeURIComponent(window.location.href);
-        });
-      }
-    }
-  }
-  
-  // Display user data in the UI
-  function displayUserData(user) {
-    // Set avatar initial
-    if (userAvatarLarge) {
-      userAvatarLarge.textContent = user.fullname.charAt(0).toUpperCase();
-    }
-    
-    // Set user info
-    if (userFullName) userFullName.textContent = user.fullname;
-    if (userEmail) userEmail.textContent = user.email;
-    
-    // Set display values
-    if (displayFullName) displayFullName.textContent = user.fullname;
-    if (displayEmail) displayEmail.textContent = user.email;
-    if (displayPhone) displayPhone.textContent = user.phone;
-  }
-  
-  // Load user data into form inputs
-  function loadFormData() {
-    const userData = getUserData();
-    
-    if (userData && userData.user) {
-      const user = userData.user;
+      var isValid = true;
+      var fullName = inputs.fullName ? inputs.fullName.value.trim() : '';
+      var email = inputs.email ? inputs.email.value.trim() : '';
+      var phone = inputs.phone ? inputs.phone.value.trim() : '';
+      var dob = inputs.dob ? inputs.dob.value : '';
+      var gender = inputs.gender ? inputs.gender.value : '';
       
-      if (fullnameInput) fullnameInput.value = user.fullname;
-      if (emailInput) emailInput.value = user.email;
-      if (phoneInput) phoneInput.value = user.phone;
+      // Validate fields
+      if (!fullName) {
+        showError('fullName', getTranslation('error.requiredName'));
+        isValid = false;
+      } else if (fullName.length < 2) {
+        showError('fullName', getTranslation('error.nameMinLength'));
+        isValid = false;
+      }
       
-      // Clear any error messages
-      clearErrors();
-    }
-  }
-  
-  // Update user profile
-  function updateUserProfile() {
-    const token = getAuthToken();
-    
-    if (!token) {
-      window.location.href = './login.html';
-      return;
-    }
-    
-    // Get form values
-    const fullname = fullnameInput ? fullnameInput.value.trim() : '';
-    const phone = phoneInput ? phoneInput.value.trim() : '';
-    
-    // Validate inputs
-    let hasError = false;
-    
-    if (!fullname) {
-      showError('fullname', 'Họ và tên không được để trống');
-      hasError = true;
-    }
-    
-    if (!phone) {
-      showError('phone', 'Số điện thoại không được để trống');
-      hasError = true;
-    } else if (!/^\+?[0-9]{10,15}$/.test(phone)) {
-      showError('phone', 'Số điện thoại không hợp lệ');
-      hasError = true;
-    }
-    
-    if (hasError) return;
-    
-    // Submit data to API
-    fetch(`${API_URL}/update`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        fullname,
-        phone
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        // Update local storage data
-        const userData = getUserData();
-        if (userData) {
-          userData.user = data.user;
-          
-          // Update in the same storage it was found in
-          if (sessionStorage.getItem('user')) {
-            sessionStorage.setItem('user', JSON.stringify(data.user));
-          }
-          
-          if (localStorage.getItem('user')) {
-            localStorage.setItem('user', JSON.stringify(data.user));
-          }
-        }
-        
-        // Update UI
-        displayUserData(data.user);
-        
-        // Show success message
-        showToast('Cập nhật thông tin thành công', 'success');
-        
-        // Switch back to view mode
-        viewMode.classList.remove('hidden');
-        editMode.classList.add('hidden');
-      } else {
-        showToast(data.message || 'Không thể cập nhật thông tin', 'error');
+      if (!email) {
+        showError('email', getTranslation('error.requiredEmail'));
+        isValid = false;
+      } else if (!validateEmail(email)) {
+        showError('email', getTranslation('error.invalidEmail'));
+        isValid = false;
       }
-    })
-    .catch(error => {
-      console.error('Error updating profile:', error);
-      showToast('Đã xảy ra lỗi khi cập nhật thông tin', 'error');
-    });
-  }
-  
-  // Update password
-  function updatePassword() {
-    const token = getAuthToken();
-    
-    if (!token) {
-      window.location.href = './login.html';
-      return;
-    }
-    
-    // Get form values
-    const currentPassword = currentPasswordInput ? currentPasswordInput.value : '';
-    const newPassword = newPasswordInput ? newPasswordInput.value : '';
-    const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
-    
-    // Validate inputs
-    let hasError = false;
-    
-    if (!currentPassword) {
-      showError('currentPassword', 'Vui lòng nhập mật khẩu hiện tại');
-      hasError = true;
-    }
-    
-    if (!newPassword) {
-      showError('newPassword', 'Vui lòng nhập mật khẩu mới');
-      hasError = true;
-    } else if (newPassword.length < 8) {
-      showError('newPassword', 'Mật khẩu phải có ít nhất 8 ký tự');
-      hasError = true;
-    } else if (!/[A-Za-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
-      showError('newPassword', 'Mật khẩu phải có cả chữ và số');
-      hasError = true;
-    }
-    
-    if (!confirmPassword) {
-      showError('confirmPassword', 'Vui lòng xác nhận mật khẩu');
-      hasError = true;
-    } else if (confirmPassword !== newPassword) {
-      showError('confirmPassword', 'Mật khẩu xác nhận không khớp');
-      hasError = true;
-    }
-    
-    if (hasError) return;
-    
-    // Submit data to API
-    fetch(`${API_URL}/update`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        current_password: currentPassword,
-        password: newPassword
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        // Clear form
-        if (passwordForm) passwordForm.reset();
-        clearErrors();
-        
-        // Show success message
-        showToast('Đổi mật khẩu thành công', 'success');
-      } else {
-        showError('currentPassword', data.message || 'Mật khẩu hiện tại không đúng');
+      
+      if (!phone) {
+        showError('phone', getTranslation('error.requiredPhone'));
+        isValid = false;
+      } else if (!validatePhone(phone)) {
+        showError('phone', getTranslation('error.phoneFormat'));
+        isValid = false;
       }
-    })
-    .catch(error => {
-      console.error('Error updating password:', error);
-      showToast('Đã xảy ra lỗi khi đổi mật khẩu', 'error');
+      
+      if (!dob) {
+        showError('dob', getTranslation('error.requiredDob'));
+        isValid = false;
+      } else if (!validateDate(dob)) {
+        showError('dob', getTranslation('error.invalidDate'));
+        isValid = false;
+      }
+      
+      if (!gender) {
+        showError('gender', getTranslation('error.requiredGender'));
+        isValid = false;
+      }
+      
+      if (isValid) {
+        var lang = getCurrentLang();
+        showToast(lang === 'vi' ? 'Thành công!' : 'Success!', getTranslation('successMessage'), 'success');
+      }
     });
   }
   
-  // Utility functions
-  function showError(fieldId, message) {
-    const errorElement = document.getElementById(fieldId + 'Error');
-    const inputElement = document.getElementById(fieldId);
-    
-    if (errorElement) {
-      errorElement.textContent = message;
-    }
-    
-    if (inputElement) {
-      inputElement.classList.add('error');
-    }
-  }
-  
-  function clearErrors() {
-    // Clear all error messages
-    document.querySelectorAll('.error-message').forEach(el => {
-      el.textContent = '';
-    });
-    
-    // Remove error class from inputs
-    document.querySelectorAll('.form-input').forEach(input => {
-      input.classList.remove('error');
-    });
-  }
-  
-  function showToast(message, type = 'info') {
-    // Create toast element if function exists
-    if (typeof createToast === 'function') {
-      createToast(message, type);
-    } else {
-      alert(message);
-    }
-  }
+  window.profileGetCurrentLang = getCurrentLang;
 });
+
+// Language switcher for profile page
+function changeProfileLanguage(lang) {
+  localStorage.setItem('preferredLanguage', lang);
+  document.documentElement.lang = lang;
+  
+  // Apply profile translations first (including title)
+  if (typeof applyProfileTranslations === 'function') {
+    applyProfileTranslations(lang);
+  }
+  
+  // Update language selector display
+  if (typeof updateSelectedLanguage === 'function') {
+    updateSelectedLanguage(lang);
+  }
+  
+  // Apply translations to header and footer (but not title)
+  if (window.translations) {
+    document.querySelectorAll('#header-container [data-i18n], #footer-container [data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      var translation = window.translations[lang] && window.translations[lang][key];
+      if (translation) {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+          el.placeholder = translation;
+        } else {
+          el.textContent = translation;
+        }
+      }
+    });
+  }
+}

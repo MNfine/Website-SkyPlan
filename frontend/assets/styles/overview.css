@@ -318,6 +318,25 @@ body {
   height: 90px;
 }
 
+/* Price block inside each summary card */
+.card-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+.card-price .label {
+  font-size: 14px;
+  color: var(--dark-color);
+}
+.card-price .amount {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
 /* Total Section */
 .total-section {
   display: flex;
@@ -498,4 +517,33 @@ body {
   .price-amount {
     font-size: 28px;
   }
+}
+
+/* Extras pretty list */
+.services-card.has-extras .card-content {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.extras-list.pretty {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.extra-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--dark-color);
+}
+
+.extra-row i {
+  color: var(--primary-color);
+  width: 18px;
 }

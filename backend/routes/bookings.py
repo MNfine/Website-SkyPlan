@@ -17,7 +17,7 @@ def _get_user_id_from_bearer() -> int | None:
 	return User.verify_auth_token(token)
 
 
-@bookings_bp.route('/api/bookings/passenger', methods=['POST'])
+@bookings_bp.route('/passenger', methods=['POST'])
 def create_or_update_passenger():
 	"""Create a passenger profile for the logged-in user (or update if exists).
 

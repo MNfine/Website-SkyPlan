@@ -23,6 +23,11 @@ const fareTranslations = {
         appStore: "App Store",
         googlePlay: "Google Play",
         copyright: "© 2024 SkyPlan. All rights reserved.",
+        helpText: "Help",
+        myTripsText: "My Trips",
+        signUpText: "Sign Up",
+        signInText: "Sign In",
+        
 
         // Steps
         step1: "Search",
@@ -34,11 +39,8 @@ const fareTranslations = {
 
         // Fare Selection Page Specific
         fareTitle: "Select fare",
-        routeTitle: "Select your route",
-        flightDetailsTitle: "Flight details",
-        outboundTitle: "Outbound",
-        inboundTitle: "Return",
-
+        routeTitle: "From Ho Chi Minh to Hanoi",
+        
         // Fare Types
         economy: "Economy",
         premiumEconomy: "Premium Economy",
@@ -56,7 +58,6 @@ const fareTranslations = {
         businessClass: "Business",
 
         // Seating options
-        autoAssigned: "Auto assigned",
         seatSelection: "Seat selection",
 
         // Baggage options
@@ -72,16 +73,17 @@ const fareTranslations = {
         select: "Select",
 
         // Prices (USD)
-        price90: "$90",
-        price120: "$120",
-        price350: "$350"
+        price90: "2.374.000 VND",
+        price120: "3.165.000 VND", 
+        price350: "9.230.000 VND"
     },
     vi: {
         // Header 
         helpText: "Trợ giúp",
         myTripsText: "Chuyến đi của tôi",
-        signInText: "Đăng ký",
-        logInText: "Đăng nhập",
+        signUpText: "Đăng ký",
+        signInText: "Đăng nhập",
+        
         // Footer 
         footerDesc: "Đối tác du lịch đáng tin cậy của bạn cho các ưu đãi vé máy bay tốt nhất và những hành trình khó quên.",
         quickLinksTitle: "Liên kết nhanh",
@@ -110,11 +112,8 @@ const fareTranslations = {
 
         // Fare Selection Page Specific
         fareTitle: "Chọn giá vé",
-        routeTitle: "Chọn tuyến đường của bạn",
-        flightDetailsTitle: "Chi tiết chuyến bay",
-        outboundTitle: "Chuyến đi",
-        inboundTitle: "Chuyến về",
-
+        routeTitle: "Từ Hồ Chí Minh đến Hà Nội",
+        
         // Fare Types
         economy: "Phổ thông",
         premiumEconomy: "Phổ thông đặc biệt",
@@ -148,9 +147,9 @@ const fareTranslations = {
         select: "Chọn",
 
         // Prices (VND) - USD to VND conversion rate ~25,000
-        price90: "2.374.000₫",
-        price120: "3.165.000₫",
-        price350: "9.230.000₫"
+        price90: "2.374.000 VND",
+        price120: "3.165.000 VND", 
+        price350: "9.230.000 VND"
     }
 };
 
@@ -196,21 +195,93 @@ function changeFareLanguage(lang) {
     document.documentElement.lang = lang;
 
     applyFareTranslations(lang);
-
-    // Re-render dynamic pieces (route title, airline, city names, times)
-    if (typeof window.refreshFareDynamicContent === 'function') {
-        window.refreshFareDynamicContent();
-    }
-
-    // If there is no flight data, update the static route title text
-    const routeTitle = document.getElementById('routeTitle');
-    const urlParams = new URLSearchParams(window.location.search);
-    if (routeTitle && (!urlParams.get('outbound_departure_airport') || !urlParams.get('outbound_arrival_airport'))) {
-        routeTitle.textContent = (lang === 'vi') ? 'Chọn hạng vé của bạn' : 'Select your fare class';
-    }
+    try { if (typeof initFareRouteTitle === 'function') initFareRouteTitle(lang); } catch(e) {}
+    // Broadcast to let other modules refresh (date inputs, common, etc.)
+    try { document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } })); } catch(e) {}
 }
+
+// Airport name translations
+window.AIRPORT_NAMES = {
+    HAN: { vi: 'Hà Nội', en: 'Ha Noi' },
+    SGN: { vi: 'Hồ Chí Minh', en: 'Ho Chi Minh City' },
+    DAD: { vi: 'Đà Nẵng', en: 'Da Nang' },
+    PQC: { vi: 'Phú Quốc', en: 'Phu Quoc' },
+    VCA: { vi: 'Cần Thơ', en: 'Can Tho' },
+    DLI: { vi: 'Đà Lạt', en: 'Da Lat' },
+    HUI: { vi: 'Huế', en: 'Hue' },
+    DIN: { vi: 'Điện Biên', en: 'Dien Bien' },
+    PXU: { vi: 'Pleiku', en: 'Pleiku' },
+    VKG: { vi: 'Rạch Giá', en: 'Rach Gia' },
+    THD: { vi: 'Thanh Hóa', en: 'Thanh Hoa' },
+    VII: { vi: 'Vinh', en: 'Vinh' },
+    VDO: { vi: 'Vân Đồn', en: 'Van Don' },
+    SQH: { vi: 'Sơn La', en: 'Son La' },
+    CXR: { vi: 'Nha Trang', en: 'Nha Trang' },
+    BMV: { vi: 'Buôn Ma Thuột', en: 'Buon Ma Thuot' },
+    VDH: { vi: 'Đông Hà', en: 'Dong Ha' },
+    VCL: { vi: 'Chu Lai', en: 'Chu Lai' },
+    HPH: { vi: 'Hải Phòng', en: 'Hai Phong' }
+};
+
+// Airline name translations
+window.AIRLINE_NAMES = {
+    VJ: { vi: 'VietJet Air', en: 'VietJet Air' },
+    VN: { vi: 'Vietnam Airlines', en: 'Vietnam Airlines' },
+    BL: { vi: 'Jetstar Pacific', en: 'Jetstar Pacific' },
+    QH: { vi: 'Bamboo Airways', en: 'Bamboo Airways' },
+    VU: { vi: 'Vietravel Airlines', en: 'Vietravel Airlines' }
+};
+
+// Global functions for airport and airline names
+window.getLocalizedAirportName = function(code, lang = 'vi') {
+    const airport = window.AIRPORT_NAMES[code];
+    if (airport) {
+        return airport[lang] || airport['vi'] || code;
+    }
+    return code || '';
+};
+
+window.getLocalizedAirlineName = function(flightNumber, lang = 'vi') {
+    if (!flightNumber) return '';
+    const prefix = flightNumber.substring(0, 2);
+    const airline = window.AIRLINE_NAMES[prefix];
+    if (airline) {
+        return airline[lang] || airline['vi'];
+    }
+    return lang === 'en' ? 'Airline' : 'Hãng hàng không';
+};
 
 // Ensure Vietnamese is set as default on first visit
 if (!localStorage.getItem('preferredLanguage')) {
     localStorage.setItem('preferredLanguage', 'vi');
+}
+
+// Initialize route title from real search selection
+function initFareRouteTitle(langOverride) {
+    try {
+        const L = langOverride || localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+        // Prefer skyplan_trip_selection from search modal
+        let trip = null; try { trip = JSON.parse(localStorage.getItem('skyplan_trip_selection') || 'null'); } catch {}
+        const p = new URLSearchParams(location.search);
+        let fromRaw = (trip && (trip.fromCode || trip.from)) || localStorage.getItem('route_from') || p.get('from') || '';
+        let toRaw = (trip && (trip.toCode || trip.to)) || localStorage.getItem('route_to') || p.get('to') || '';
+        // Fallback sensible defaults
+        if (!fromRaw) fromRaw = 'HoChiMinh';
+        if (!toRaw) toRaw = 'HaNoi';
+        const resolve = (val) => {
+            if (typeof window !== 'undefined' && typeof window.resolveCityLabel === 'function') return window.resolveCityLabel(val, L);
+            const MAP = (typeof window !== 'undefined' && window.SKYPLAN_CITY_TRANSLATIONS) || {};
+            const dict = MAP[L] || MAP.vi || {};
+            return dict[val] || val;
+        };
+        const fromName = resolve(fromRaw);
+        const toName = resolve(toRaw);
+        const phrase = (L === 'vi') ? { a: 'Từ', b: 'đến' } : { a: 'From', b: 'to' };
+        const el = document.querySelector('.route-title');
+        if (el) {
+            // prevent later static translation override
+            el.removeAttribute('data-i18n');
+            el.textContent = `${phrase.a} ${fromName} ${phrase.b} ${toName}`;
+        }
+    } catch(e) { /* no-op */ }
 }

@@ -1,7 +1,77 @@
 document.addEventListener('DOMContentLoaded', () => {
   'use strict';
 
-  /* DOM refs */
+  // Helper to get translated text
+  function getTranslation(key) {
+    try {
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      
+      if (window.translations && window.translations[lang]) {
+        // Try flat key first (e.g., "register.errorFullNameRequired")
+        if (window.translations[lang][key]) {
+          return window.translations[lang][key];
+        }
+        
+        // Try nested path (e.g., register -> errorFullNameRequired)
+        const keys = key.split('.');
+        let value = window.translations[lang];
+        for (const k of keys) {
+          if (value && typeof value === 'object') {
+            value = value[k];
+          } else {
+            break;
+          }
+        }
+        if (typeof value === 'string') {
+          return value;
+        }
+      }
+    } catch (e) {
+      console.error('Translation error:', e);
+    }
+    
+    // Fallback - return English if lang is 'en', Vietnamese otherwise
+    const lang = localStorage.getItem('preferredLanguage') || 'vi';
+    
+    const fallbacksEn = {
+      'register.successToast': 'Registration successful!',
+      'register.googleInfoToast': 'Google sign up feature is under development',
+      'register.facebookInfoToast': 'Facebook sign up feature is under development',
+      'register.errorFullNameRequired': 'Please enter your full name',
+      'register.errorFullNameInvalid': 'Full name must have at least 2 words, each word at least 2 characters',
+      'register.errorEmailRequired': 'Please enter your email',
+      'register.errorEmailInvalid': 'Invalid email address',
+      'register.errorPhoneRequired': 'Please enter your phone number',
+      'register.errorPhoneInvalid': 'Invalid phone number (10-11 digits, starting with 0)',
+      'register.errorPasswordRequired': 'Please enter your password',
+      'register.errorPasswordInvalid': 'Password must be at least 8 characters, including uppercase, lowercase and number',
+      'register.errorConfirmPasswordRequired': 'Please confirm your password',
+      'register.errorConfirmPasswordMismatch': 'Passwords do not match',
+      'register.errorAgreeTerms': 'Please agree to the terms and privacy policy',
+    };
+    
+    const fallbacksVi = {
+      'register.successToast': 'Đăng ký thành công!',
+      'register.googleInfoToast': 'Tính năng đăng ký với Google đang được phát triển',
+      'register.facebookInfoToast': 'Tính năng đăng ký với Facebook đang được phát triển',
+      'register.errorFullNameRequired': 'Vui lòng nhập họ và tên',
+      'register.errorFullNameInvalid': 'Họ và tên phải có ít nhất 2 từ, mỗi từ ít nhất 2 ký tự',
+      'register.errorEmailRequired': 'Vui lòng nhập email',
+      'register.errorEmailInvalid': 'Email không hợp lệ',
+      'register.errorPhoneRequired': 'Vui lòng nhập số điện thoại',
+      'register.errorPhoneInvalid': 'Số điện thoại không hợp lệ (10-11 số, bắt đầu bằng 0)',
+      'register.errorPasswordRequired': 'Vui lòng nhập mật khẩu',
+      'register.errorPasswordInvalid': 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số',
+      'register.errorConfirmPasswordRequired': 'Vui lòng xác nhận mật khẩu',
+      'register.errorConfirmPasswordMismatch': 'Mật khẩu không trùng khớp',
+      'register.errorAgreeTerms': 'Vui lòng đồng ý với điều khoản và chính sách',
+    };
+    
+    const fallbacks = lang === 'en' ? fallbacksEn : fallbacksVi;
+    return fallbacks[key] || '';
+  }
+
+  // DOM references
   const form = document.getElementById('registerForm');
   const fullNameInput = document.getElementById('fullName');
   const emailInput = document.getElementById('email');
@@ -16,15 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnGoogle = document.getElementById('btnGoogle');
   const btnFacebook = document.getElementById('btnFacebook');
   const backButton = document.getElementById('backButton');
-  const submitButton = form ? form.querySelector('button[type="submit"]') : null;
-  
-  // API endpoint
-  const API_URL = '/api/auth';
-  
-  // Check if user is already logged in and redirect if needed
-  checkLoginStatus();
-  
-  /* Helpers */
+
+  // Helper functions
   const getErrorEl = (fieldId) => document.getElementById(fieldId + 'Error');
 
   function clearError(fieldId) {
@@ -61,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function isValidPhone(value) {
-    // Vietnamese phone number validation (10-11 digits, starting with 0)
+    // Vietnamese phone number validation 
     return /^0[0-9]{9,10}$/.test(value);
   }
 
@@ -191,6 +254,70 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /* Registration API call */
+  async function performRegistration(fullName, email, phone, password) {
+    try {
+      // Show loader
+      if (window.Loader) {
+        window.Loader.show();
+      }
+
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fullname: fullName,
+          email: email,
+          phone: phone,
+          password: password
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      // Show success message
+      showToast(getTranslation('register.successToast'), {
+        type: 'success',
+        duration: 2000,
+        dismissible: true
+      });
+
+      // Redirect to login page after successful registration
+      setTimeout(() => {
+        window.location.href = 'login.html?message=registration-success';
+      }, 2000);
+
+    } catch (error) {
+      console.error('Registration error:', error);
+      
+      // Hide loader
+      if (window.Loader) {
+        window.Loader.hide();
+      }
+
+      // Show error message
+      const errorMessage = error.message || 'Đã xảy ra lỗi khi đăng ký';
+      
+      // Handle specific field errors
+      if (errorMessage.includes('email') && errorMessage.includes('already')) {
+        showError('email', 'Email này đã được đăng ký');
+      } else if (errorMessage.includes('phone') && errorMessage.includes('already')) {
+        showError('phone', 'Số điện thoại này đã được đăng ký');
+      } else {
+        showToast(errorMessage, {
+          type: 'error',
+          duration: 4000,
+        });
+      }
+    }
+  }
+
   /* Form submit */
   if (form && fullNameInput && emailInput && phoneInput && passwordInput && confirmPasswordInput && agreeTermsCheckbox) {
     form.addEventListener('submit', (e) => {
@@ -202,6 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
       clearError('phone');
       clearError('password');
       clearError('confirmPassword');
+      clearError('agreeTerms');
 
       const fullName = fullNameInput.value.trim();
       const email = emailInput.value.trim();
@@ -214,67 +342,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Full name validation
       if (!fullName) {
-        showError('fullName', 'Vui lòng nhập họ và tên');
+        showError('fullName', getTranslation('register.errorFullNameRequired'));
         hasError = true;
       } else if (!isValidFullName(fullName)) {
-        showError('fullName', 'Họ và tên phải có ít nhất 2 từ, mỗi từ ít nhất 2 ký tự');
+        showError('fullName', getTranslation('register.errorFullNameInvalid'));
         hasError = true;
       }
 
       // Email validation
       if (!email) {
-        showError('email', 'Vui lòng nhập email');
+        showError('email', getTranslation('register.errorEmailRequired'));
         hasError = true;
       } else if (!isValidEmail(email)) {
-        showError('email', 'Email không hợp lệ');
+        showError('email', getTranslation('register.errorEmailInvalid'));
         hasError = true;
       }
 
       // Phone validation
       if (!phone) {
-        showError('phone', 'Vui lòng nhập số điện thoại');
+        showError('phone', getTranslation('register.errorPhoneRequired'));
         hasError = true;
       } else if (!isValidPhone(phone)) {
-        showError('phone', 'Số điện thoại không hợp lệ (10-11 số, bắt đầu bằng 0)');
+        showError('phone', getTranslation('register.errorPhoneInvalid'));
         hasError = true;
       }
 
       // Password validation
       if (!password) {
-        showError('password', 'Vui lòng nhập mật khẩu');
+        showError('password', getTranslation('register.errorPasswordRequired'));
         hasError = true;
       } else if (!isValidPassword(password)) {
-        showError('password', 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số');
+        showError('password', getTranslation('register.errorPasswordInvalid'));
         hasError = true;
       }
 
       // Confirm password validation
       if (!confirmPassword) {
-        showError('confirmPassword', 'Vui lòng xác nhận mật khẩu');
+        showError('confirmPassword', getTranslation('register.errorConfirmPasswordRequired'));
         hasError = true;
       } else if (password !== confirmPassword) {
-        showError('confirmPassword', 'Mật khẩu không trùng khớp');
+        showError('confirmPassword', getTranslation('register.errorConfirmPasswordMismatch'));
         hasError = true;
       }
 
-      // Terms validation
-      if (!agreeTerms) {
-        alert('Vui lòng đồng ý với điều khoản sử dụng');
-        hasError = true;
-      }
-
+      // If there are errors in the fields above, don't check terms yet
       if (hasError) return;
 
-      // Create user data object
-      const userData = {
-        fullname: fullName,
-        email: email,
-        phone: phone,
-        password: password
-      };
+      // Terms validation - only check if all other fields are valid
+      if (!agreeTerms) {
+        showError('agreeTerms', getTranslation('register.errorAgreeTerms'));
+        return;
+      }
 
-      // Call API to register
-      performRegistration(userData);
+      // Call registration API
+      performRegistration(fullName, email, phone, password);
     });
   }
 
@@ -298,19 +419,28 @@ document.addEventListener('DOMContentLoaded', () => {
   if (confirmPasswordInput) {
     confirmPasswordInput.addEventListener('input', () => clearError('confirmPassword'));
   }
+  if (agreeTermsCheckbox) {
+    agreeTermsCheckbox.addEventListener('change', () => clearError('agreeTerms'));
+  }
 
   /* Social buttons */
   if (btnGoogle) {
     btnGoogle.addEventListener('click', () => {
-      alert('Đăng ký với Google');
-      console.log('Google registration clicked');
+      showToast(getTranslation('register.googleInfoToast'), {
+        type: 'info',
+        duration: 3000
+      });
+      // NOTE: Implement Google OAuth registration here
     });
   }
 
   if (btnFacebook) {
     btnFacebook.addEventListener('click', () => {
-      alert('Đăng ký với Facebook');
-      console.log('Facebook registration clicked');
+      showToast(getTranslation('register.facebookInfoToast'), {
+        type: 'info',
+        duration: 3000
+      });
+      // NOTE: Implement Facebook OAuth registration here
     });
   }
 
@@ -318,18 +448,41 @@ document.addEventListener('DOMContentLoaded', () => {
   if (backButton) {
     backButton.addEventListener('click', () => {
       // Navigate to home page (index.html)
-      window.location.href = '/';
+      if (window.Loader) {
+        window.Loader.show();
+        setTimeout(function() {
+          window.location.href = './index.html';
+        }, 1500);
+      } else {
+        window.location.href = './index.html';
+      }
     });
   }
 
   /* Phone input formatting */
   if (phoneInput) {
     phoneInput.addEventListener('input', (e) => {
-      let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+      let value = e.target.value.replace(/\D/g, ''); 
       if (value.length > 11) {
         value = value.slice(0, 11); // Limit to 11 digits
       }
       e.target.value = value;
+    });
+  }
+
+  /* Clear all error messages when language is changed */
+  const langToggle = document.getElementById('langToggle');
+  if (langToggle) {
+    langToggle.addEventListener('click', () => {
+      // Clear all visible errors when switching language
+      setTimeout(() => {
+        clearError('fullName');
+        clearError('email');
+        clearError('phone');
+        clearError('password');
+        clearError('confirmPassword');
+        clearError('agreeTerms');
+      }, 100);
     });
   }
 });

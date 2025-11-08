@@ -8,7 +8,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="./assets/styles/login.css" />
     <link rel="stylesheet" href="./assets/styles/flags.css" />
-    <link rel="stylesheet" href="./assets/styles/auth.css" />
+    <link rel="stylesheet" href="./assets/styles/loader.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
@@ -17,7 +17,6 @@
     <!-- Translations -->
     <script src="./assets/scripts/index_translations.js"></script>
     <script src="./assets/scripts/login_translations.js" defer></script>
-
   </head>
 
   <body>
@@ -40,7 +39,7 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <path d="M19 12H5M12 19l-7-7 7-7" />
+            <path d="M19 12H5M12 19l-7-7 7-7"></path>
           </svg>
         </button>
 
@@ -84,7 +83,6 @@
             <label class="form-label" data-i18n="login.emailLabel">Email</label>
             <div class="input-wrapper">
               <div class="input-icon">
-                <!-- Keep SVG icon -->
                 <svg
                   width="18"
                   height="18"
@@ -95,10 +93,8 @@
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 >
-                  <rect x="2" y="4" width="20" height="16" rx="2" />
-                  <path
-                    d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
-                  />
+                  <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
                 </svg>
               </div>
               <input
@@ -130,8 +126,15 @@
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 >
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  <rect
+                    x="3"
+                    y="11"
+                    width="18"
+                    height="11"
+                    rx="2"
+                    ry="2"
+                  ></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
               </div>
               <input
@@ -160,10 +163,8 @@
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 >
-                  <path
-                    d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"
-                  />
-                  <circle cx="12" cy="12" r="3" />
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
                 </svg>
               </button>
             </div>
@@ -250,7 +251,10 @@
             <span class="switch-page-text" data-i18n="login.noAccount"
               >Chưa có tài khoản?
             </span>
-            <a href="#" class="switch-page-link" data-i18n="login.signupNow"
+            <a
+              href="register.html"
+              class="switch-page-link"
+              data-i18n="login.signupNow"
               >Đăng ký ngay</a
             >
           </div>
@@ -259,7 +263,31 @@
     </div>
 
     <!-- Scripts -->
-    <script src="./assets/scripts/common.js"></script>
+    <script src="./assets/scripts/toast.js"></script>
     <script src="./assets/scripts/login.js"></script>
+
+    <!-- Loader component (JS) -->
+    <script src="assets/scripts/loader.js"></script>
+    <script>
+      // Import loader HTML vào DOM càng sớm càng tốt
+      fetch('components/loader.html').then(r => r.text()).then(html => {
+        document.body.insertAdjacentHTML('afterbegin', html);
+        // Show loader ngay khi vừa insert vào DOM (cho F5/reload)
+        if (window.Loader) {
+          window.Loader.show();
+          document.body.style.overflow = 'hidden';
+        }
+      });
+      
+      // Ẩn loader khi tất cả resources đã load xong (window.load)
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          if (window.Loader) {
+            window.Loader.hide();
+            document.body.style.overflow = '';
+          }
+        }, 500); // Delay 500ms để smooth
+      });
+    </script>
   </body>
 </html>

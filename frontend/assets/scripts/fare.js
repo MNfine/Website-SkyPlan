@@ -11,69 +11,106 @@
     return result;
   }
 
-  function formatAirportName(code) {
-    const airportNames = {
+  function formatAirportName(code, lang = 'vi') {
+    // Fallback function - prefer using getLocalizedAirportName from fare_translations.js
+    if (typeof window.getLocalizedAirportName === 'function') {
+      return window.getLocalizedAirportName(code, lang);
+    }
+    
+    // Simple fallback
+    const basicNames = {
       HAN: 'Hà Nội',
-      SGN: 'Hồ Chí Minh',
-      DAD: 'Đà Nẵng',
-      PQC: 'Phú Quốc',
-      VCA: 'Cần Thơ',
-      DLI: 'Lâm Đồng',
-      HUI: 'Huế',
-      DIN: 'Điện Biên',
-      PXU: 'Gia Lai',
-      VKG: 'An Giang',
-      THD: 'Thanh Hóa',
-      VII: 'Nghệ An',
-      VDO: 'Quảng Ninh',
-      SQH: 'Sơn La',
-      CXR: 'Khánh Hòa',
-      BMV: 'Đắk Lắk',
-      VDH: 'Quảng Trị',
-      VCL: 'Chu Lai',
-      HPH: 'Hải Phòng'
+      SGN: 'Hồ Chí Minh', 
+      DAD: 'Đà Nẵng'
     };
-    return airportNames[code] || code || '';
+    return basicNames[code] || code || '';
   }
 
-  function getAirlineName(flightNumber) {
+  function getAirlineName(flightNumber, lang = 'vi') {
+    // Fallback function - prefer using getLocalizedAirlineName from fare_translations.js  
+    if (typeof window.getLocalizedAirlineName === 'function') {
+      return window.getLocalizedAirlineName(flightNumber, lang);
+    }
+    
+    // Simple fallback
     if (!flightNumber) return '';
-    const airlineMap = {
-      VJ: 'VietJet Air',
-      VN: 'Vietnam Airlines',
-      BL: 'Jetstar Pacific',
-      QH: 'Bamboo Airways',
-      VU: 'Vietravel Airlines'
-    };
     const prefix = flightNumber.substring(0, 2);
-    return airlineMap[prefix] || 'Hãng hàng không';
+    const basicNames = {
+      VJ: 'VietJet Air',
+      VN: 'Vietnam Airlines'
+    };
+    return basicNames[prefix] || (lang === 'en' ? 'Airline' : 'Hãng hàng không');
   }
 
   function getLangAndLocale() {
-    const lang = localStorage.getItem('preferredLanguage') || 'vi';
+    // Ưu tiên: URL parameter > localStorage > document lang > fallback 'vi'
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlLang = urlParams.get('lang');
+    
+    let lang = urlLang || localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+    
+    // Validate language (chỉ chấp nhận 'vi' hoặc 'en')
+    if (lang !== 'en' && lang !== 'vi') {
+      lang = 'vi';
+    }
+    
     return { lang, locale: lang === 'en' ? 'en-US' : 'vi-VN' };
   }
 
   function localizedCity(code) {
     const { lang } = getLangAndLocale();
+    
+    // Ưu tiên sử dụng function từ translations nếu có
     if (typeof window.getLocalizedAirportName === 'function') {
-      return window.getLocalizedAirportName(code, lang);
+      try {
+        return window.getLocalizedAirportName(code, lang);
+      } catch (e) {
+        console.warn('Error calling getLocalizedAirportName:', e);
+      }
     }
-    return formatAirportName(code);
+    
+    // Fallback về logic tích hợp sẵn
+    return formatAirportName(code, lang);
   }
 
   function localizedAirline(flightNumber) {
     const { lang } = getLangAndLocale();
     if (!flightNumber) return '';
+    
+    // Ưu tiên sử dụng function từ translations nếu có
     if (typeof window.getLocalizedAirlineName === 'function') {
-      return window.getLocalizedAirlineName(flightNumber, lang);
+      try {
+        return window.getLocalizedAirlineName(flightNumber, lang);
+      } catch (e) {
+        console.warn('Error calling getLocalizedAirlineName:', e);
+      }
     }
-    return getAirlineName(flightNumber);
+    
+    // Fallback về logic tích hợp sẵn
+    return getAirlineName(flightNumber, lang);
   }
 
-  function updatePriceDisplay(elementId, price) {
-    const el = document.getElementById(elementId);
-    if (el) el.textContent = Number(price).toLocaleString('vi-VN') + '₫';
+  function updatePriceDisplay(fareClass, price) {
+    // Tìm fare card theo class và cập nhật giá
+    const fareCards = document.querySelectorAll('.fare-card');
+    let targetCard;
+    
+    if (fareClass === 'economy') {
+      targetCard = fareCards[0]; // First card is Economy
+    } else if (fareClass === 'premium') {
+      targetCard = fareCards[1]; // Second card is Premium Economy  
+    } else if (fareClass === 'business') {
+      targetCard = fareCards[2]; // Third card is Business
+    }
+    
+    if (targetCard) {
+      const priceEl = targetCard.querySelector('.price');
+      if (priceEl) {
+        const formattedPrice = Number(price).toLocaleString('vi-VN') + ' VND';
+        priceEl.textContent = formattedPrice;
+        priceEl.setAttribute('data-price-vnd', price);
+      }
+    }
   }
 
   function updateSelectButtons(params, economyPrice, premiumPrice, businessPrice) {
@@ -204,35 +241,51 @@
       return;
     }
     window.__fare_initialized = true;
+    
+    // Đảm bảo DOM đã sẵn sàng
+    setTimeout(function() {
 
     const params = getUrlParams();
-    const routeTitle = document.getElementById('routeTitle');
+    const routeTitle = document.querySelector('.route-title');
 
     const hasFlightData = params.outbound_departure_airport && params.outbound_arrival_airport;
 
     if (hasFlightData) {
       const fromCity = localizedCity(params.outbound_departure_airport);
       const toCity = localizedCity(params.outbound_arrival_airport);
-      routeTitle.textContent = params.trip_type === 'round-trip' ? `${fromCity} ⇄ ${toCity}` : `${fromCity} → ${toCity}`;
+      if (routeTitle) {
+        const { lang } = getLangAndLocale();
+        if (params.trip_type === 'round-trip') {
+          routeTitle.textContent = lang === 'en' 
+            ? `${fromCity} ⇄ ${toCity}` 
+            : `${fromCity} ⇄ ${toCity}`;
+        } else {
+          routeTitle.textContent = lang === 'en' 
+            ? `From ${fromCity} to ${toCity}` 
+            : `Từ ${fromCity} đến ${toCity}`;
+        }
+      }
 
       // details
       displayFlightDetails(params);
 
-      // pricing
-      let basePrice = 0;
-      if (params.outbound_price) basePrice = parseInt(params.outbound_price, 10) || 0;
+      // pricing - Giá hạng Phổ thông chính xác từ trang search
+      let economyPrice = 0;
+      if (params.outbound_price) economyPrice = parseInt(params.outbound_price, 10) || 0;
       if (params.trip_type === 'round-trip' && params.inbound_price) {
-        basePrice += parseInt(params.inbound_price, 10) || 0;
+        economyPrice += parseInt(params.inbound_price, 10) || 0;
       }
-      if (!basePrice) basePrice = 1_200_000;
+      
+      // Fallback price nếu không có giá từ search
+      if (!economyPrice) economyPrice = 1_200_000;
 
-      const economyPrice = basePrice;
-      const premiumPrice = Math.round(basePrice * 1.4);
-      const businessPrice = Math.round(basePrice * 2.5);
+      // Tính giá các hạng ghế khác dựa trên hạng Phổ thông
+      const premiumPrice = Math.round(economyPrice * 1.35); // Tăng 35% cho Premium Economy
+      const businessPrice = Math.round(economyPrice * 2.2);  // Tăng 120% cho Business Class
 
-      updatePriceDisplay('economyPrice', economyPrice);
-      updatePriceDisplay('premiumPrice', premiumPrice);
-      updatePriceDisplay('businessPrice', businessPrice);
+      updatePriceDisplay('economy', economyPrice);
+      updatePriceDisplay('premium', premiumPrice);
+      updatePriceDisplay('business', businessPrice);
 
       updateSelectButtons(params, economyPrice, premiumPrice, businessPrice);
     } else {
@@ -242,6 +295,7 @@
 
     // important: show body after render to avoid flash of initial state
     document.body.style.visibility = 'visible';
+    }, 100); // Đợi 100ms để DOM sẵn sàng
   }
 
   // Re-render dynamic pieces (called after language change)
@@ -249,11 +303,20 @@
     const params = getUrlParams();
 
     if (params.outbound_departure_airport && params.outbound_arrival_airport) {
-      const routeTitle = document.getElementById('routeTitle');
+      const routeTitle = document.querySelector('.route-title');
       const fromCity = localizedCity(params.outbound_departure_airport);
       const toCity = localizedCity(params.outbound_arrival_airport);
       if (routeTitle) {
-        routeTitle.textContent = params.trip_type === 'round-trip' ? `${fromCity} ⇄ ${toCity}` : `${fromCity} → ${toCity}`;
+        const { lang } = getLangAndLocale();
+        if (params.trip_type === 'round-trip') {
+          routeTitle.textContent = lang === 'en' 
+            ? `${fromCity} ⇄ ${toCity}` 
+            : `${fromCity} ⇄ ${toCity}`;
+        } else {
+          routeTitle.textContent = lang === 'en' 
+            ? `From ${fromCity} to ${toCity}` 
+            : `Từ ${fromCity} đến ${toCity}`;
+        }
       }
     }
     displayFlightDetails(params); // will use current locale

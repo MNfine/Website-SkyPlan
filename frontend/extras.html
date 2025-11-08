@@ -5,16 +5,18 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta
       name="description"
-      content="Chọn dịch vụ thêm cho chuyến bay của bạn với SkyPlan."
+      content="Chọn dịch vụ thêm cho chuyến bay với SkyPlan"
     />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <title>SkyPlan – Dịch vụ thêm</title>
-    <link rel="stylesheet" href="assets/styles/header.css" />
-    <link rel="stylesheet" href="assets/styles/footer.css" />
     <link rel="stylesheet" href="assets/styles/reset.css" />
     <link rel="stylesheet" href="assets/styles/index.css" />
     <link rel="stylesheet" href="assets/styles/flags.css" />
+    <link rel="stylesheet" href="assets/styles/header.css" />
+    <link rel="stylesheet" href="assets/styles/footer.css" />
     <link rel="stylesheet" href="assets/styles/fare.css" />
     <link rel="stylesheet" href="assets/styles/extras.css" />
+    <link rel="stylesheet" href="assets/styles/loader.css" />
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
     <link
       rel="stylesheet"
@@ -51,41 +53,42 @@
         </div>
         <div class="progress"></div>
       </div>
-      <h2 class="route-title" id="routeTitle">Từ Hồ Chí Minh tới Hà Nội</h2>
-
+      <h2 class="route-title" id="routeTitle">Từ Hà Nội tới Hồ Chí Minh</h2>
       <section class="extras-grid">
         <!-- Meal -->
-        <article class="extra-card" data-key="meal" data-price="150000">
+        <article class="extra-card" data-key="meal" data-type="meal">
           <div class="extra-card__img">
-            <img src="assets/images/meal.png" alt="Meal" />
+            <!-- Đổi ảnh -->
+            <img src="assets/images/meal.svg" alt="Meal" />
           </div>
           <h3 class="extra-card__title" data-i18n="mealTitle">Suất ăn</h3>
           <p class="extra-card__desc" data-i18n="mealDesc">
             Suất ăn tiêu chuẩn cho chuyến bay.
           </p>
-          <button class="extra-card__btn" data-action="toggle">
-            <span class="btn-text" data-i18n="addFor">Thêm với giá</span>
+          <button class="extra-card__btn" data-action="details">
+            <span class="btn-text" data-i18n="viewDetails">Xem chi tiết</span>
           </button>
         </article>
 
         <!-- Baggage -->
-        <article class="extra-card" data-key="baggageXL" data-price="150000">
+        <article class="extra-card" data-key="baggage" data-type="baggage">
           <div class="extra-card__img">
-            <img src="assets/images/baggage.png" alt="Extra Large Baggage" />
+            <!-- Đổi ảnh -->
+            <img src="assets/images/baggage.svg" alt="Baggage" />
           </div>
           <h3 class="extra-card__title" data-i18n="baggageTitle">
-            Hành lý cỡ lớn
+            Chọn hành lý
           </h3>
           <p class="extra-card__desc" data-i18n="baggageDesc">
-            Tăng giới hạn hành lý.
+            Lựa chọn gói hành lý phù hợp
           </p>
-          <button class="extra-card__btn" data-action="toggle">
-            <span class="btn-text" data-i18n="addFor">Thêm với giá</span>
+          <button class="extra-card__btn" data-action="details">
+            <span class="btn-text" data-i18n="viewDetails">Xem chi tiết</span>
           </button>
         </article>
 
         <!-- Taxi -->
-        <article class="extra-card" data-key="taxi" data-price="400000">
+        <!-- <article class="extra-card" data-key="taxi" data-type="taxi" >
           <div class="extra-card__img">
             <img src="assets/images/taxi.png" alt="Airport Taxi" />
           </div>
@@ -93,8 +96,24 @@
           <p class="extra-card__desc" data-i18n="taxiDesc">
             Đặt xe đưa đón sân bay trước.
           </p>
-          <button class="extra-card__btn" data-action="toggle">
-            <span class="btn-text" data-i18n="addFor">Thêm với giá</span>
+          <button class="extra-card__btn" data-action="details">
+            <span class="btn-text" data-i18n="viewDetails">Xem chi tiết</span>
+          </button>
+        </article> -->
+        <!-- Services -->
+        <article class="extra-card" data-key="services" data-type="services">
+          <div class="extra-card__img">
+            <!-- Đổi ảnh -->
+            <img src="assets/images/service.svg" alt="Services" />
+          </div>
+          <h3 class="extra-card__title" data-i18n="servicesTitle">
+            Dịch vụ theo hành khách
+          </h3>
+          <p class="extra-card__desc" data-i18n="servicesDesc">
+            Hỗ trợ xe lăn, thú cưng, người cao tuổi, .
+          </p>
+          <button class="extra-card__btn" data-action="details">
+            <span class="btn-text" data-i18n="viewDetails">Xem chi tiết</span>
           </button>
         </article>
       </section>
@@ -103,19 +122,82 @@
       <section class="extras-actions">
         <div class="extras-total">
           <span data-i18n="yourExtras">Dịch vụ đã chọn:</span>
-          <strong id="extrasTotal">0 VNĐ</strong>
+          <strong id="extrasTotal">0 VND</strong>
         </div>
-
-        <!-- Liên kết sang Payment -->
-        <a id="toPaymentBtn" class="next-btn" href="payment.html">
+        <!--Quay lại-->
+        <!-- <a class="next-btn" href="passenger.html" id="backToPassenger">
+        <i class="fas fa-arrow-left"></i>
+        <span data-i18n="backToPassenger">Quay lại</span>
+      </a> -->
+        <!-- Liên kết sang Overview -->
+        <a id="toPaymentBtn" class="next-btn" href="overview.html">
           <i class="fas fa-arrow-right"></i>
           <span data-i18n="continuePayment">Tiếp tục thanh toán</span>
         </a>
       </section>
     </main>
     <div id="footer-container"></div>
+    <!-- Side Panels -->
+    <div id="extras-backdrop" class="extras-backdrop" hidden></div>
+    <aside
+      id="extras-panel"
+      class="extras-drawer"
+      hidden
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="drawerTitle"
+      aria-describedby="drawerContent"
+      tabindex="-1"
+    >
+      <div class="drawer-header">
+        <h3 id="drawerTitle" data-i18n="panelTitle">Chi tiết</h3>
+        <button
+          id="drawerClose"
+          class="drawer-close"
+          type="button"
+          aria-label="Close extras panel"
+        >
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div id="drawerContent" class="drawer-content"></div>
+      <div class="drawer-footer">
+        <div class="drawer-total">
+          <span data-i18n="totalLabel">Tổng</span>
+          <strong id="drawerTotal">0 VND</strong>
+        </div>
+        <button id="drawerConfirm" class="next-btn" type="button">
+          <i class="fas fa-check"></i>
+          <span data-i18n="confirmSelection">Xacs nhận</span>
+        </button>
+      </div>
+    </aside>
     <script src="assets/scripts/config.js"></script>
+    <script src="assets/scripts/index_translations.js"></script>
+    <script src="assets/scripts/common.js"></script>
     <script src="assets/scripts/extras_translations.js"></script>
     <script src="assets/scripts/extras.js"></script>
+    <script src="assets/scripts/loader.js"></script>
+    <script>
+      // Import loader HTML vào DOM càng sớm càng tốt
+      fetch('components/loader.html').then(r => r.text()).then(html => {
+        document.body.insertAdjacentHTML('beforeend', html);
+      });
+      // Gắn sự kiện click cho nút tiếp tục thanh toán để show loader và chuyển trang
+      document.addEventListener('DOMContentLoaded', function() {
+        var btn = document.getElementById('toPaymentBtn');
+        if (btn) {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var href = btn.getAttribute('href');
+            if (window.Loader) window.Loader.show();
+            setTimeout(function() {
+              window.location.href = href;
+            }, 1200);
+          });
+        }
+      });
+    </script>
   </body>
 </html>

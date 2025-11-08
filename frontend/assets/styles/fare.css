@@ -172,7 +172,7 @@
   background: linear-gradient(90deg, #0a969d 0%, #1fb6a0 100%);
   border-radius: 2px;
   transition: width 0.3s ease;
-  width: 50%; /* Step 3 của 6 = 50% */
+  width: 40%; 
 }
 
 .step {
@@ -234,14 +234,7 @@
 }
 
 /* Hover effects for interactive steps */
-.step:not(.active):hover .dot {
-  transform: scale(1.05);
-  cursor: pointer;
-}
 
-.step:not(.active):hover .label {
-  color: #2b2f32;
-}
 
 .route-title {
   font-size: 24px;
@@ -392,7 +385,7 @@
 
 @media (max-width: 480px) {
   .fare-flow {
-    padding: 15px 0 30px;
+    padding: 15px 20px 30px;
     padding-top: calc(var(--header-height, 80px) + 15px);
   }
   
@@ -438,18 +431,24 @@
     text-align: center;
   }
   
+  .fare-grid {
+    gap: 20px;
+    padding: 0;
+  }
+  
   .fare-card {
-    padding: 14px 14px 10px;
+    padding: 18px 16px 14px;
+    margin: 0;
   }
   
   .fare-name {
     font-size: 16px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     text-align: center;
   }
   
   .fare-features li {
-    margin: 6px 0;
+    margin: 8px 0;
   }
   
   .feat-title {
@@ -462,8 +461,9 @@
   
   .fare-footer {
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     text-align: center;
+    margin-top: 12px;
   }
   
   .price {
@@ -475,32 +475,59 @@
     padding: 10px 20px;
     font-size: 14px;
     align-self: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 1228px) {
+  .fare-flow {
+    padding: 30px 30px 60px;
+    padding-top: calc(var(--header-height, 80px) + 30px);
+  }
+  
+  .fare-grid {
+    gap: 20px;
+    padding: 0 15px;
   }
 }
 
 @media (max-width: 992px) {
+  .fare-flow {
+    padding: 25px 20px 50px;
+    padding-top: calc(var(--header-height, 80px) + 25px);
+  }
+  
   .fare-grid { 
     grid-template-columns: 1fr 1fr;
     gap: 20px;
+    padding: 0 10px;
   }
 }
 
 @media (max-width: 768px) {
+  .fare-flow {
+    padding: 20px 15px 40px;
+    padding-top: calc(var(--header-height, 80px) + 20px);
+  }
+  
   .fare-grid {
-    gap: 16px;
+    gap: 20px;
+    padding: 0 5px;
   }
 }
 
 @media (max-width: 640px) {
   .fare-grid { 
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 20px;
+    padding: 0 10px;
   }
 }
 
 @media (max-width: 480px) {
   .fare-grid {
-    gap: 12px;
+    gap: 20px;
+    padding: 0;
   }
 }
 

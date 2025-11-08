@@ -4,7 +4,13 @@ Run this script once after creating the flights table and model.
 """
 
 import csv
+import sys
+import os
 from datetime import datetime
+
+# Add parent directory to path so we can import backend modules
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from backend.models.db import session_scope
 from backend.models.flights import Flight
 

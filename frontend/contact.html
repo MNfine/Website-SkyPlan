@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyPlan - Liên hệ</title>
+  <meta name="description" content="Liên hệ với đội ngũ hỗ trợ SkyPlan. Chúng tôi luôn sẵn sàng giúp đỡ bạn 24/7.">
+
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <link rel="stylesheet" href="assets/styles/reset.css">
+  <link rel="stylesheet" href="assets/styles/index.css">
+  <link rel="stylesheet" href="assets/styles/flags.css">
+  <link rel="stylesheet" href="assets/styles/header.css">
+  <link rel="stylesheet" href="assets/styles/footer.css">
+  <link rel="stylesheet" href="assets/styles/contact.css">
+  <link rel="stylesheet" href="assets/styles/loader.css">
+</head>
+<body>
+  <div id="header-container"></div>
+
+  <section class="container contact-page">
+    <div class="contact-hero">
+      <h1 data-i18n="contactTitle">Liên hệ với chúng tôi</h1>
+      <p data-i18n="contactSubtitle">Chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7. Hãy để lại thông tin và chúng tôi sẽ phản hồi trong thời gian sớm nhất.</p>
+    </div>
+
+    <div class="contact-content">
+      <div class="contact-grid">
+        <!-- Contact Information -->
+        <div class="contact-info-section">
+          <h2 data-i18n="contactInfoTitle">Thông tin liên hệ</h2>
+          
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-phone"></i>
+            </div>
+            <div class="contact-details">
+              <h3 data-i18n="phoneTitle">Điện thoại</h3>
+              <p data-i18n="phoneNumber">1900 1234 (24/7)</p>
+              <p data-i18n="phoneInternational">+84 28 1234 5678</p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div class="contact-details">
+              <h3 data-i18n="emailTitle">Email</h3>
+              <p>support@skyplan.vn</p>
+              <p>booking@skyplan.vn</p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="contact-details">
+              <h3 data-i18n="addressTitle">Địa chỉ</h3>
+              <p data-i18n="addressContent">Tầng 12, Tòa nhà SkyTower<br>123 Đường Nguyễn Huệ, Quận 1<br>TP. Hồ Chí Minh, Việt Nam</p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="contact-details">
+              <h3 data-i18n="hoursTitle">Giờ làm việc</h3>
+              <p data-i18n="hoursContent">Thứ 2 - Chủ nhật: 24/7<br>Hỗ trợ khẩn cấp: 24/7</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="contact-form-section">
+          <h2 data-i18n="contactFormTitle">Gửi tin nhắn cho chúng tôi</h2>
+          
+          <form id="contactForm" class="contact-form" novalidate>
+            <div class="form-group">
+              <label for="fullName" data-i18n="formFullName">Họ và tên *</label>
+              <input type="text" id="fullName" name="fullName" required>
+            </div>
+
+            <div class="form-group">
+              <label for="email" data-i18n="formEmail">Email *</label>
+              <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+              <label for="phone" data-i18n="formPhone">Số điện thoại</label>
+              <input type="tel" id="phone" name="phone">
+            </div>
+
+            <div class="form-group">
+              <label for="subject" data-i18n="formSubject">Chủ đề *</label>
+              <select id="subject" name="subject" required>
+                <option value="" data-i18n="formSubjectPlaceholder">Chọn chủ đề</option>
+                <option value="booking" data-i18n="formSubjectBooking">Đặt vé / Hủy vé</option>
+                <option value="payment" data-i18n="formSubjectPayment">Thanh toán / Hoàn tiền</option>
+                <option value="technical" data-i18n="formSubjectTechnical">Lỗi kỹ thuật</option>
+                <option value="feedback" data-i18n="formSubjectFeedback">Góp ý / Khiếu nại</option>
+                <option value="other" data-i18n="formSubjectOther">Khác</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="message" data-i18n="formMessage">Nội dung tin nhắn *</label>
+              <textarea id="message" name="message" placeholder="Vui lòng mô tả chi tiết vấn đề của bạn..." data-i18n-placeholder="formMessagePlaceholder" required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit" data-i18n="formSubmit">Gửi tin nhắn</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Contact Section -->
+    <div class="quick-contact-section">
+      <h2 data-i18n="quickContactTitle">Cần hỗ trợ nhanh?</h2>
+      
+      <div class="quick-contact-grid">
+        <div class="quick-contact-item">
+          <i class="fas fa-headset"></i>
+          <h3 data-i18n="liveChatTitle">Live Chat</h3>
+          <p data-i18n="liveChatDesc">Trò chuyện trực tiếp với đội ngũ hỗ trợ</p>
+        </div>
+
+        <div class="quick-contact-item">
+          <i class="fab fa-facebook-messenger"></i>
+          <h3 data-i18n="messengerTitle">Facebook Messenger</h3>
+          <p data-i18n="messengerDesc">Liên hệ qua Messenger Facebook</p>
+        </div>
+
+        <div class="quick-contact-item">
+          <i class="fab fa-whatsapp"></i>
+          <h3 data-i18n="whatsappTitle">WhatsApp</h3>
+          <p data-i18n="whatsappDesc">+84 901 234 567</p>
+        </div>
+
+        <div class="quick-contact-item">
+          <i class="fas fa-question-circle"></i>
+          <h3 data-i18n="faqTitle">FAQ</h3>
+          <p data-i18n="faqDesc">Tìm câu trả lời nhanh chóng</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-container"></div>
+
+  <script src="assets/scripts/toast.js"></script>
+  <script src="assets/scripts/contact_translations.js"></script>
+  <script src="assets/scripts/common.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Function to handle component loading errors
+      function handleComponentError(componentName) {
+        console.error(`Failed to load ${componentName} component`);
+      }
+      
+      // Load header
+      fetch('components/header.html')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        })
+        .then(data => {
+          document.getElementById('header-container').innerHTML = data;
+          
+          // Initialize all header functionalities after DOM is ready
+          requestAnimationFrame(() => {
+            // Initialize mobile menu
+            if (typeof initializeMobileMenu === 'function') {
+              initializeMobileMenu();
+            }
+            // Initialize language functionality after header loads
+            initializeLanguage();
+          });
+        })
+        .catch(error => {
+          handleComponentError('header');
+          initializeLanguage();
+        });
+
+      // Load footer
+      fetch('components/footer.html')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        })
+        .then(data => {
+          document.getElementById('footer-container').innerHTML = data;
+        })
+        .catch(error => {
+          handleComponentError('footer');
+        });
+
+      // Initialize contact form
+      initializeContactForm();
+    });
+
+    // Initialize language functionality
+    function initializeLanguage() {
+      // Get preferred language from localStorage or default to Vietnamese
+      let currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+      
+      console.log('Contact page - Initializing language:', currentLang);
+      document.documentElement.lang = currentLang;
+      
+      // Apply contact-specific translations
+      if (typeof applyContactTranslations === 'function') {
+        console.log('Contact page - Applying translations');
+        applyContactTranslations(currentLang);
+      } else {
+        console.error('Contact page - applyContactTranslations function not found');
+      }
+      
+      // Initialize language selector after translations are applied
+      if (typeof initializeLanguageSelector === 'function') {
+        initializeLanguageSelector();
+      }
+    }
+
+    // Initialize contact form functionality
+    function initializeContactForm() {
+      const contactForm = document.getElementById('contactForm');
+      
+      if (contactForm) {
+        // Add real-time validation
+        const requiredFields = contactForm.querySelectorAll('[required]');
+        requiredFields.forEach(field => {
+          field.addEventListener('blur', validateField);
+          field.addEventListener('input', clearError);
+        });
+
+        contactForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          // Clear previous errors
+          clearAllErrors();
+          
+          // Get form data
+          const formData = new FormData(contactForm);
+          const data = Object.fromEntries(formData);
+          const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+          
+          // Validate all fields
+          let isValid = true;
+          
+          if (!data.fullName.trim()) {
+            showError('fullName', contactTranslations[currentLang]?.errorFullName || 'Vui lòng nhập họ và tên');
+            isValid = false;
+          }
+          
+          if (!data.email.trim()) {
+            showError('email', contactTranslations[currentLang]?.errorEmail || 'Vui lòng nhập địa chỉ email');
+            isValid = false;
+          } else if (!isValidEmail(data.email)) {
+            showError('email', contactTranslations[currentLang]?.errorInvalidEmail || 'Vui lòng nhập địa chỉ email hợp lệ');
+            isValid = false;
+          }
+          
+          if (!data.subject) {
+            showError('subject', contactTranslations[currentLang]?.errorSubject || 'Vui lòng chọn chủ đề');
+            isValid = false;
+          }
+          
+          if (!data.message.trim()) {
+            showError('message', contactTranslations[currentLang]?.errorMessage || 'Vui lòng nhập nội dung tin nhắn');
+            isValid = false;
+          }
+          
+          if (!isValid) {
+            return;
+          }
+          
+          // Simulate form submission
+          submitForm(contactForm, data);
+        });
+      }
+    }
+
+    // Validation functions
+    function validateField(e) {
+      const field = e.target;
+      const value = field.value.trim();
+      const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+      
+      clearError(field.name);
+      
+      if (field.hasAttribute('required') && !value) {
+        const fieldLabel = field.previousElementSibling.textContent.replace(' *', '');
+        const errorMsg = `${contactTranslations[currentLang]?.errorRequired || 'Vui lòng điền'} ${fieldLabel}`;
+        showError(field.name, errorMsg);
+        return false;
+      }
+      
+      if (field.type === 'email' && value && !isValidEmail(value)) {
+        showError(field.name, contactTranslations[currentLang]?.errorInvalidEmail || 'Vui lòng nhập địa chỉ email hợp lệ');
+        return false;
+      }
+      
+      return true;
+    }
+
+    function isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    function showError(fieldName, message) {
+      const field = document.querySelector(`[name="${fieldName}"]`);
+      
+      // Add error class to field
+      if (field) {
+        field.classList.add('error');
+        
+        // Focus on the first error field
+        if (!document.querySelector('.form-group input.error, .form-group select.error, .form-group textarea.error')) {
+          field.focus();
+        }
+      }
+      
+      // Show toast notification
+      if (typeof showToast === 'function') {
+        showToast(message, { type: 'error', duration: 4000 });
+      }
+    }
+
+    function clearError(fieldName) {
+      const field = typeof fieldName === 'string' 
+        ? document.querySelector(`[name="${fieldName}"]`)
+        : fieldName.target || fieldName;
+      
+      if (field && field.name) {
+        field.classList.remove('error');
+      }
+    }
+
+    function clearAllErrors() {
+      const errorFields = document.querySelectorAll('.form-group input.error, .form-group select.error, .form-group textarea.error');
+      errorFields.forEach(field => {
+        field.classList.remove('error');
+      });
+    }
+
+    function submitForm(form, data) {
+      const submitBtn = form.querySelector('.btn-submit');
+      const originalText = submitBtn.textContent;
+      const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+      
+      // Show loading state
+      submitBtn.textContent = contactTranslations[currentLang]?.btnSubmitting || 'Đang gửi...';
+      submitBtn.disabled = true;
+      form.classList.add('form-loading');
+      
+      // Simulate API call
+      setTimeout(() => {
+        // Show success toast
+        const successMessage = contactTranslations[currentLang]?.successMessage || 
+                               'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.';
+        
+        if (typeof showToast === 'function') {
+          showToast(successMessage, { type: 'success', duration: 5000 });
+        }
+        
+        // Reset form
+        form.reset();
+        
+        // Restore button state
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        form.classList.remove('form-loading');
+        
+      }, 2000);
+    }
+  </script>
+
+  <!-- Loader component (JS) -->
+  <script src="assets/scripts/loader.js"></script>
+  <script>
+    // Import loader HTML vào DOM càng sớm càng tốt
+    fetch('components/loader.html').then(r => r.text()).then(html => {
+      document.body.insertAdjacentHTML('afterbegin', html);
+      // Show loader ngay khi vừa insert vào DOM (cho F5/reload)
+      if (window.Loader) {
+        window.Loader.show();
+        document.body.style.overflow = 'hidden';
+      }
+    });
+    
+    // Ẩn loader khi tất cả resources đã load xong (window.load)
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        if (window.Loader) {
+          window.Loader.hide();
+          document.body.style.overflow = '';
+        }
+      }, 500); // Delay 500ms để smooth
+    });
+  </script>
+</body>
+</html>

@@ -16,22 +16,7 @@
   <link rel="stylesheet" href="assets/styles/header.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/fare.css">
-
-  <style>
-    body {
-      visibility: hidden;
-    }
-
-    /* Add transition for smoother language changes */
-    [data-i18n] {
-      transition: opacity 0.3s ease;
-    }
-
-    /* Special class for elements that need translation but don't have data-i18n attribute */
-    .translatable {
-      transition: opacity 0.3s ease;
-    }
-  </style>
+  <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
 
 <body>
@@ -66,67 +51,15 @@
       <div class="progress"></div>
     </div>
 
-    <h2 class="route-title" id="routeTitle">Chọn hạng vé của bạn</h2>
-
-    <!-- Flight details section -->
-    <div class="flight-details" id="flightDetails" style="display: none;">
-      <h3>
-        <i class="fas fa-plane"></i>
-        <span data-i18n="flightDetailsTitle">Chi tiết chuyến bay</span>
-      </h3>
-
-      <div class="flight-info">
-        <div class="flight-segment" id="outboundFlight">
-          <h4>
-            <i class="fas fa-plane-departure"></i>
-            <span data-i18n="outboundTitle">Chuyến đi</span>
-          </h4>
-          <div class="flight-data">
-            <div class="flight-info-row">
-              <span class="flight-number" id="outboundFlightNumber"></span>
-              <span class="airline" id="outboundAirline"></span>
-            </div>
-            <div class="route" id="outboundRoute">
-              <i class="fas fa-arrow-right"></i>
-            </div>
-            <div class="datetime" id="outboundDateTime">
-              <i class="far fa-clock"></i>
-            </div>
-          </div>
-        </div>
-
-        <div class="flight-segment" id="inboundFlight" style="display: none;">
-          <h4>
-            <i class="fas fa-plane-arrival"></i>
-            <span data-i18n="inboundTitle">Chuyến về</span>
-          </h4>
-          <div class="flight-data">
-            <div class="flight-info-row">
-              <span class="flight-number" id="inboundFlightNumber"></span>
-              <span class="airline" id="inboundAirline"></span>
-            </div>
-            <div class="route" id="inboundRoute">
-              <i class="fas fa-arrow-right"></i>
-            </div>
-            <div class="datetime" id="inboundDateTime">
-              <i class="far fa-clock"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <h2 class="route-title" data-i18n="routeTitle">Từ Hồ Chí Minh đến Hà Nội</h2>
 
     <div class="fare-grid">
       <article class="fare-card">
         <h3 class="fare-name" data-i18n="economy">Phổ thông</h3>
         <ul class="fare-features">
           <li>
-            <span class="feat-title" data-i18n="seatClass">Hạng ghế:</span>
-            <span class="feat-desc" data-i18n="economyClass">Phổ thông</span>
-          </li>
-          <li>
             <span class="feat-title" data-i18n="seating">Chỗ ngồi</span>
-            <span class="feat-desc" data-i18n="autoAssigned">Phân bổ tự động</span>
+            <span class="feat-desc" data-i18n="seatSelection">Được chọn chỗ</span>
           </li>
           <li>
             <span class="feat-title" data-i18n="baggage">Hành lý</span>
@@ -137,19 +70,15 @@
             <span class="feat-desc" data-i18n="noRefund">Không hoàn tiền</span>
           </li>
         </ul>
-        <div class="fare-footer">
-          <div class="price" id="economyPrice" data-price-usd="90" data-i18n-price="price90">$90</div>
-          <a href="/seat?class=economy" id="economySelect" class="btn-select" data-i18n="select">Chọn</a>
-        </div>
+         <div class="fare-footer">
+           <div class="price" data-price-vnd="2374000">2.374.000 VND</div>
+           <a href="seat.html?class=economy" class="btn-select" data-i18n="select">Chọn</a>
+         </div>
       </article>
 
       <article class="fare-card">
         <h3 class="fare-name" data-i18n="premiumEconomy">Phổ thông đặc biệt</h3>
         <ul class="fare-features">
-          <li>
-            <span class="feat-title" data-i18n="seatClass">Hạng ghế:</span>
-            <span class="feat-desc" data-i18n="premiumEconomyClass">Phổ thông đặc biệt</span>
-          </li>
           <li>
             <span class="feat-title" data-i18n="seating">Chỗ ngồi</span>
             <span class="feat-desc" data-i18n="seatSelection">Được chọn chỗ</span>
@@ -163,19 +92,15 @@
             <span class="feat-desc" data-i18n="noRefund">Không hoàn tiền</span>
           </li>
         </ul>
-        <div class="fare-footer">
-          <div class="price" id="premiumPrice" data-price-usd="120" data-i18n-price="price120">$120</div>
-          <a href="/seat?class=premium-economy" id="premiumSelect" class="btn-select" data-i18n="select">Chọn</a>
-        </div>
+         <div class="fare-footer">
+           <div class="price" data-price-vnd="3165000">3.165.000 VND</div>
+           <a href="seat.html?class=premium-economy" class="btn-select" data-i18n="select">Chọn</a>
+         </div>
       </article>
 
       <article class="fare-card">
         <h3 class="fare-name" data-i18n="business">Thương gia</h3>
         <ul class="fare-features">
-          <li>
-            <span class="feat-title" data-i18n="seatClass">Hạng ghế</span>
-            <span class="feat-desc" data-i18n="businessClass">Thương gia</span>
-          </li>
           <li>
             <span class="feat-title" data-i18n="seating">Chỗ ngồi</span>
             <span class="feat-desc" data-i18n="seatSelection">Được chọn chỗ</span>
@@ -189,10 +114,10 @@
             <span class="feat-desc" data-i18n="changeable">Được đổi ngày bay</span>
           </li>
         </ul>
-        <div class="fare-footer">
-          <div class="price" id="businessPrice" data-price-usd="350" data-i18n-price="price350">$350</div>
-          <a href="/seat?class=business" id="businessSelect" class="btn-select" data-i18n="select">Chọn</a>
-        </div>
+         <div class="fare-footer">
+           <div class="price" data-price-vnd="9230000">9.230.000 VND</div>
+           <a href="seat.html?class=business" class="btn-select" data-i18n="select">Chọn</a>
+         </div>
       </article>
     </div>
   </section>
@@ -200,8 +125,53 @@
   <div id="footer-container"></div>
 
   <script src="assets/scripts/fare_translations.js"></script>
-  <script src="assets/scripts/common.js"></script>
   <script src="assets/scripts/fare.js"></script>
+  <script src="assets/scripts/common.js"></script>
+  <script>
+    // Persist selected fare class and price (VND) to localStorage
+    document.addEventListener('DOMContentLoaded', function(){
+      document.querySelectorAll('.fare-card .btn-select').forEach(function(a){
+        if (a.__bound) return; a.__bound = true;
+        a.addEventListener('click', function(){
+          try {
+            const card = a.closest('.fare-card');
+            const priceEl = card && card.querySelector('.price');
+            let vnd = 0;
+            if (priceEl) {
+              // 1) Prefer explicit data-price-vnd
+              const attrVnd = priceEl.getAttribute('data-price-vnd');
+              if (attrVnd) vnd = Number(attrVnd) || 0;
+              // 2) Fallback: parse from text like "2.374.000 VND"
+              if (!vnd) {
+                const text = priceEl.textContent || '';
+                const onlyDigits = text.replace(/[^0-9]/g, '');
+                if (onlyDigits) vnd = Number(onlyDigits) || 0;
+              }
+            }
+            // read fare class from href query
+            let fareClass = 'economy';
+            try {
+              const u = new URL(a.getAttribute('href'), location.href);
+              fareClass = u.searchParams.get('class') || 'economy';
+            } catch(_) {}
+            // Map features by fare class so overview can render correctly
+            const FEATURES_BY_CLASS = {
+              'economy': { seat: 'autoAssigned', baggage: 'handBaggage1', flex: 'noRefund' },
+              'premium-economy': { seat: 'seatSelection', baggage: 'handBaggage1Plus1', flex: 'noRefund' },
+              'business': { seat: 'seatSelection', baggage: 'handBaggage2Plus2', flex: 'changeable' }
+            };
+            const data = {
+              fareClass,
+              priceVND: vnd,
+              priceLabel: priceEl ? priceEl.textContent.trim() : '',
+              features: FEATURES_BY_CLASS[fareClass] || FEATURES_BY_CLASS['economy']
+            };
+            localStorage.setItem('skyplan_fare_selection', JSON.stringify(data));
+          } catch(e) { /* no-op */ }
+        }, { capture: true }); // capture to persist even if navigation happens
+      });
+    });
+  </script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -225,13 +195,20 @@
         })
         .then(data => {
           document.getElementById('header-container').innerHTML = data;
-          // Now manually initialize language and fare functionality
-          if (typeof window.initializeLanguage === 'function') {
-            window.initializeLanguage();
-          }
-          if (typeof window.initializeFarePage === 'function') {
-            window.initializeFarePage();
-          }
+          
+          // Initialize all header functionalities after DOM is ready
+          requestAnimationFrame(() => {
+            // Initialize mobile menu
+            if (typeof initializeMobileMenu === 'function') {
+              initializeMobileMenu();
+            }
+            // Initialize language functionality after header loads
+            initializeLanguage();
+            // Initialize fare page functionality
+            if (typeof window.initializeFarePage === 'function') {
+              window.initializeFarePage();
+            }
+          });
         })
         .catch(error => {
           handleComponentError('header');
@@ -258,6 +235,55 @@
         .catch(error => {
           handleComponentError('footer');
         });
+    });
+
+    // Initialize language functionality
+    function initializeLanguage() {
+      // Respect saved language; do NOT override to Vietnamese on reload
+      const saved = localStorage.getItem('preferredLanguage');
+      let currentLang = saved || document.documentElement.lang || 'vi';
+
+      document.documentElement.lang = currentLang;
+
+      // Apply fare-specific translations
+      if (typeof applyFareTranslations === 'function') {
+        try { applyFareTranslations(currentLang); } catch (e) { console.error(e); }
+      }
+      // Render dynamic route title from search selection
+      try { if (typeof initFareRouteTitle === 'function') initFareRouteTitle(currentLang); } catch (e) {}
+
+      // Initialize language selector after translations are applied
+      if (typeof initializeLanguageSelector === 'function') {
+        try { initializeLanguageSelector(); } catch (e) { }
+      }
+
+      // React to language changes triggered from the header selector
+      document.addEventListener('languageChanged', function (ev) {
+        const lang = (ev && ev.detail && ev.detail.lang) || currentLang;
+        document.documentElement.lang = lang;
+        try { applyFareTranslations && applyFareTranslations(lang); } catch (e) {}
+        try { initFareRouteTitle && initFareRouteTitle(lang); } catch (e) {}
+      });
+    }
+  </script>
+  <script src="assets/scripts/loader.js"></script>
+  <script>
+    // Import loader HTML vào DOM càng sớm càng tốt
+    fetch('components/loader.html').then(r => r.text()).then(html => {
+      document.body.insertAdjacentHTML('beforeend', html);
+    });
+    // Gắn sự kiện click cho nút chọn để show loader và chuyển trang
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.btn-select').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          var href = btn.getAttribute('href');
+          if (window.Loader) window.Loader.show();
+          setTimeout(function() {
+            window.location.href = href;
+          }, 1200);
+        });
+      });
     });
   </script>
 </body>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SkyPlane – Search Results</title>
+    <link rel="stylesheet" href="assets/styles/404.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/styles/reset.css">
+    <link rel="stylesheet" href="assets/styles/index.css">
+    <link rel="stylesheet" href="assets/styles/flags.css">
+    <link rel="stylesheet" href="assets/styles/header.css">
+    <link rel="stylesheet" href="assets/styles/footer.css">
+    <link rel="stylesheet" href="assets/styles/loader.css">
+</head>
+
+
+<!-- Header -->
+
+<body class="with-fixed-header with-fixed-footer">
+    <div id="header-container"></div>
+
+
+    <main class="sp404-surface">
+        <div class="sp404-grid">
+            <div class="sp404-left">
+                <span class="sp404-badge">404</span>
+                <h1 class="sp404-title">Đây không phải là trang bạn đang tìm!</h1>
+                <p class="sp404-desc">
+                    Liên kết có thể không chính xác hoặc trang đã được di chuyển.<br> Hãy quay lại trang chủ để tìm trang bạn cần.
+                </p>
+                <div class="sp404-actions">
+                    <a href="index.html" id="homeBtn" class="sp404-btn">Về trang chủ</a>
+                </div>
+            </div>
+
+            <div class="sp404-right">
+                <img src="assets/images/404.jpg" alt=" " class="sp404-img">
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-container"></div>
+
+    <script src="assets/scripts/common.js"></script>
+    <script src="assets/scripts/404.js"></script>
+    <script src="assets/scripts/404_translations.js"></script>
+
+    <script>
+        function handleComponentError(componentName) {
+            console.error(`Failed to load ${componentName} component`);
+        }
+
+        function initializeApp() {
+            fetch('components/header.html')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                    initializeLanguage();
+                    if (typeof initializeMobileMenu === 'function') {
+                        initializeMobileMenu();
+                    }
+                })
+                .catch(error => {
+                    handleComponentError('header');
+                    initializeLanguage();
+                });
+
+            fetch('components/footer.html')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById('footer-container').innerHTML = data;
+                    // Re-apply translations to include freshly injected footer
+                    try {
+                        const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+                        if (typeof applyTranslations === 'function') {
+                            applyTranslations(lang);
+                        }
+                    } catch (e) {}
+                })
+                .catch(error => {
+                    handleComponentError('footer');
+                });
+        }
+
+        // Initialize language functionality
+        function initializeLanguage() {
+            // Set Vietnamese as default language if not already set
+            let currentLang = localStorage.getItem('preferredLanguage');
+            if (!currentLang) {
+                currentLang = 'vi';
+                localStorage.setItem('preferredLanguage', 'vi');
+            }
+            // bind language switch after header injected
+            const langButtons = document.querySelectorAll('[data-lang]');
+            langButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const newLang = btn.getAttribute('data-lang'); // 'vi' hoặc 'en'
+                    localStorage.setItem('preferredLanguage', newLang);
+                    document.documentElement.lang = newLang;
+
+                    if (typeof apply404Translations === 'function') {
+                        apply404Translations(newLang);
+                    }
+                    if (typeof updateSelectedLanguage === 'function') {
+                        updateSelectedLanguage(newLang);
+                    }
+
+                    // thông báo cho các phần khác (nếu cần)
+                    try {
+                        document.dispatchEvent(new CustomEvent('languageChanged', {
+                            detail: {
+                                lang: newLang
+                            }
+                        }));
+                    } catch (e) {}
+                });
+            });
+
+
+            document.documentElement.lang = currentLang;
+
+            // Apply translations when page loads (check if function exists)
+            if (typeof apply404Translations === 'function') {
+                apply404Translations(currentLang);
+                // emit a custom event so page parts can react
+                try {
+                    const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+                    if (typeof apply404Translations === 'function') {
+                        apply404Translations(lang);
+                    }
+                } catch (e) {}
+            } else {
+                console.error('apply404Translations function not found');
+            }
+
+            // Initialize language selector ONLY after header is loaded and language is set
+            if (typeof initializeLanguageSelector === 'function') {
+                initializeLanguageSelector();
+            }
+            // Keep the selected language UI in sync with current setting
+            if (typeof updateSelectedLanguage === 'function') {
+                updateSelectedLanguage(currentLang);
+            }
+        }
+
+        // Language initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+    </script>
+
+    <!-- Loader component (JS) -->
+    <script src="assets/scripts/loader.js"></script>
+    <script>
+        // Import loader HTML vào DOM càng sớm càng tốt
+        fetch('components/loader.html').then(r => r.text()).then(html => {
+            document.body.insertAdjacentHTML('afterbegin', html);
+            // Show loader ngay khi vừa insert vào DOM (cho F5/reload)
+            if (window.Loader) {
+                window.Loader.show();
+                document.body.style.overflow = 'hidden';
+            }
+        });
+        
+        // Ẩn loader khi tất cả resources đã load xong (window.load)
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                if (window.Loader) {
+                    window.Loader.hide();
+                    document.body.style.overflow = '';
+                }
+            }, 500); // Delay 500ms để smooth
+        });
+    </script>
+</body>
+
+</html>

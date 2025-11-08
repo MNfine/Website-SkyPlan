@@ -2,13 +2,11 @@
 
 // Global function to open the modal directly - available from anywhere
 window.openFlightModal = function() {
-    console.log('Opening flight modal directly...');
     const modal = document.getElementById('spModal');
     if (modal) {
         document.body.classList.add('modal-open');
         modal.classList.add('is-open');
         modal.setAttribute('aria-hidden', 'false');
-        console.log('Modal opened, status:', modal.classList.contains('is-open'));
     } else {
         console.error('Modal not found in DOM!');
     }
@@ -54,9 +52,24 @@ function setDateInputsFromQuery() {
     const retInput = document.getElementById('ret') || document.getElementById('return');
     const fromInput = document.getElementById('from');
     const toInput = document.getElementById('to');
+    const tripTypeRadios = document.querySelectorAll('input[name="tripType"]');
     const today = new Date();
     function fmt(d) {
         return d.toISOString().slice(0, 10);
+    }
+    
+    // Set trip type from URL if available
+    if (params.type) {
+        tripTypeRadios.forEach(radio => {
+            if (radio.value === params.type) {
+                radio.checked = true;
+            }
+        });
+        // Update return field visibility
+        const returnField = retInput ? retInput.closest('.sp-field') : null;
+        if (returnField) {
+            returnField.style.display = params.type === 'one-way' ? 'none' : 'block';
+        }
     }
     if (fromInput && params.from) {
         // Select hiển thị theo IATA hay slug đều được; nếu là slug, giữ nguyên; nếu là IATA, chuyển về slug tương ứng nếu có option
@@ -76,110 +89,70 @@ function setDateInputsFromQuery() {
             toInput.value = params.to;
         }
     }
-    if (depInput) depInput.value = params.dep || fmt(today);
-    if (retInput) retInput.value = params.ret || fmt(today);
+    // Set trip type from URL if available
+    if (params.type) {
+        tripTypeRadios.forEach(radio => {
+            if (radio.value === params.type) {
+                radio.checked = true;
+            }
+        });
+        // Update return field visibility
+        const returnField = retInput ? retInput.closest('.sp-field') : null;
+        if (returnField) {
+            returnField.style.display = params.type === 'one-way' ? 'none' : 'block';
+        }
+    }
+    // Only set dates if they exist in URL params, don't force default dates
+    if (depInput && params.dep) {
+        depInput.value = params.dep;
+        depInput.dataset.isoValue = params.dep;
+    }
+    if (retInput && params.ret) {
+        retInput.value = params.ret;
+        retInput.dataset.isoValue = params.ret;
+    }
 }
 
-// Dữ liệu chuyến bay mẫu để luôn hiển thị
-const sampleFlights = {
-    outbound: [
-        {
-            id: 'sample-out-1',
-            flight_number: 'VJ123',
-            departure_airport: 'HAN',
-            arrival_airport: 'SGN',
-            departure_time: '2025-10-10T08:00:00',
-            arrival_time: '2025-10-10T10:00:00',
-            price: 1200000,
-            airline: 'VietJet Air'
-        },
-        {
-            id: 'sample-out-2',
-            flight_number: 'VN456',
-            departure_airport: 'HAN',
-            arrival_airport: 'SGN',
-            departure_time: '2025-10-10T10:30:00',
-            arrival_time: '2025-10-10T12:30:00',
-            price: 1500000,
-            airline: 'Vietnam Airlines'
-        },
-        {
-            id: 'sample-out-3',
-            flight_number: 'BL789',
-            departure_airport: 'HAN',
-            arrival_airport: 'SGN',
-            departure_time: '2025-10-10T15:45:00',
-            arrival_time: '2025-10-10T17:45:00',
-            price: 1100000,
-            airline: 'Jetstar Pacific'
-        }
-    ],
-    inbound: [
-        {
-            id: 'sample-in-1',
-            flight_number: 'VN321',
-            departure_airport: 'SGN',
-            arrival_airport: 'HAN',
-            departure_time: '2025-10-12T09:15:00',
-            arrival_time: '2025-10-12T11:15:00',
-            price: 1300000,
-            airline: 'Vietnam Airlines'
-        },
-        {
-            id: 'sample-in-2',
-            flight_number: 'VJ654',
-            departure_airport: 'SGN',
-            arrival_airport: 'HAN',
-            departure_time: '2025-10-12T14:20:00',
-            arrival_time: '2025-10-12T16:20:00',
-            price: 1100000,
-            airline: 'VietJet Air'
-        },
-        {
-            id: 'sample-in-3',
-            flight_number: 'BL987',
-            departure_airport: 'SGN',
-            arrival_airport: 'HAN',
-            departure_time: '2025-10-12T18:30:00',
-            arrival_time: '2025-10-12T20:30:00',
-            price: 950000,
-            airline: 'Jetstar Pacific'
-        }
-    ]
-};
+
 
 // Gọi API backend để lấy danh sách chuyến bay
 async function fetchFlights() {
+    // Wait a bit to ensure other scripts have finished their initialization
+    await new Promise(resolve => setTimeout(resolve, 100));
     setDateInputsFromQuery();
     const params = getQueryParams();
+    // Get trip type from radio button (prioritize over URL param)
+    const tripTypeRadio = document.querySelector('input[name="tripType"]:checked');
+    const tripType = tripTypeRadio ? tripTypeRadio.value : (params.type || 'round-trip');
+    
     // Normalize input (slug or IATA) -> IATA for backend query
     const fromCity = CITY_TO_IATA[params.from] || CITY_TO_IATA[params.from && params.from.toString()] || params.from || '';
     const toCity = CITY_TO_IATA[params.to] || CITY_TO_IATA[params.to && params.to.toString()] || params.to || '';
     const dep = params.dep || '';
     const ret = params.ret || '';
-    const tripType = params.type || 'round-trip';
     
-    // Nếu không có đủ thông tin tìm kiếm, hiển thị dữ liệu mẫu
+    // Nếu không có đủ thông tin tìm kiếm, render với dữ liệu rỗng
     if (!fromCity || !toCity || !dep) {
-        renderFlights(
-            sampleFlights.outbound, 
-            tripType === 'round-trip' ? sampleFlights.inbound : [], 
-            tripType
-        );
-        if (typeof window.applyFilters === 'function') window.applyFilters();
+        renderFlights([], [], tripType);
+        // Delay để đảm bảo filter script đã sẵn sàng
+        setTimeout(() => {
+            if (typeof window.applyFilters === 'function') window.applyFilters();
+        }, 200);
         return;
     }
     
     try {
         // Luôn lấy dữ liệu chuyến đi
-    const resOut = await fetch(`/api/flights?from=${encodeURIComponent(fromCity)}&to=${encodeURIComponent(toCity)}&date=${encodeURIComponent(dep)}`);
+        const outboundUrl = `/api/flights?from=${encodeURIComponent(fromCity)}&to=${encodeURIComponent(toCity)}&date=${encodeURIComponent(dep)}`;
+    const resOut = await fetch(outboundUrl);
         const dataOut = await resOut.json();
         
         let dataIn = { flights: [] };
         
         // Chỉ lấy dữ liệu chuyến về nếu là vé khứ hồi và có ngày về
         if (tripType === 'round-trip' && ret) {
-            const resIn = await fetch(`/api/flights?from=${encodeURIComponent(toCity)}&to=${encodeURIComponent(fromCity)}&date=${encodeURIComponent(ret)}`);
+            const returnUrl = `/api/flights?from=${encodeURIComponent(toCity)}&to=${encodeURIComponent(fromCity)}&date=${encodeURIComponent(ret)}`;
+            const resIn = await fetch(returnUrl);
             dataIn = await resIn.json();
         }
 
@@ -191,13 +164,12 @@ async function fetchFlights() {
         if (typeof window.applyFilters === 'function') window.applyFilters();
     } catch (e) {
         console.error('Error fetching flights:', e);
-        // Khi có lỗi, sử dụng dữ liệu mẫu
-        renderFlights(
-            sampleFlights.outbound, 
-            tripType === 'round-trip' ? sampleFlights.inbound : [], 
-            tripType
-        );
-        if (typeof window.applyFilters === 'function') window.applyFilters();
+        // Render với dữ liệu rỗng để filter script xử lý
+        renderFlights([], [], tripType);
+        // Delay để đảm bảo filter script đã sẵn sàng
+        setTimeout(() => {
+            if (typeof window.applyFilters === 'function') window.applyFilters();
+        }, 200);
     }
 }
 
@@ -209,378 +181,350 @@ function renderFlights(outbounds, inbounds, tripType = 'round-trip') {
         return;
     }
 
-    console.log('Element .sp-results before update:', results);
     results.innerHTML = '';
+    
+    // Get current language for formatting airports and dates - use same key as search_translations.js
+    let currentLang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
     
     let isOneWay = tripType === 'one-way';
     const hasOut = Array.isArray(outbounds) && outbounds.length > 0;
     const hasIn = Array.isArray(inbounds) && inbounds.length > 0;
+    
     // Nếu tìm khứ hồi nhưng không có chuyến về, vẫn hiển thị chiều đi như một chiều
     if (!isOneWay && hasOut && !hasIn) {
         console.info('[search] No inbound flights; show outbound as one-way.');
+        // Add a message about no return flights
+        results.innerHTML = `<div class="sp-no-return-message" style="padding: 20px; text-align: center; color: #666; margin-bottom: 20px;">
+            <i class="fa-solid fa-info-circle"></i> 
+            <span data-i18n="noReturnFlights">Không tìm thấy chuyến về cho ngày đã chọn. Hiển thị chuyến đi:</span>
+        </div>`;
         isOneWay = true;
     }
+    
     // Không có dữ liệu phù hợp nào
     if (!hasOut && (!isOneWay ? !hasIn : true)) {
-        // Để trống; filter script sẽ hiển thị empty-state của riêng nó
         results.innerHTML = '';
         console.warn('[search] No flights found: outbounds=', outbounds ? outbounds.length : 0, 'inbounds=', inbounds ? inbounds.length : 0, 'type=', tripType);
         return;
     }
 
-    // Xác định số lượng card sẽ hiển thị
     let htmlContent = '';
     
-    // Hiển thị từng chuyến bay
     if (isOneWay) {
-        // Nếu là một chiều, chỉ hiển thị các chuyến đi
+        // Hiển thị chuyến một chiều - mỗi chuyến bay sẽ hiển thị riêng biệt
         for (let i = 0; i < outbounds.length; i++) {
             const out = outbounds[i];
-            const inn = null; // Không có chuyến về
-
-        let outDepTime = '', outArrTime = '', outDepAirport = '', outArrAirport = '', outDateStr = '', outPrice = 0, outDuration = '';
-        if (out) {
+            
+            if (!out) continue;
+            
+            let outDepTime = '', outArrTime = '', outDepAirport = '', outArrAirport = '', outDateStr = '', outPrice = 0, outDuration = '';
+            
             const depTime = out.departure_time ? new Date(out.departure_time) : null;
             const arrTime = out.arrival_time ? new Date(out.arrival_time) : null;
             outDepTime = depTime ? depTime.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '';
             outArrTime = arrTime ? arrTime.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '';
             
-            // Định dạng sân bay theo kiểu "Hà Nội (HAN)"
-            outDepAirport = formatAirport(out.departure_airport);
-            outArrAirport = formatAirport(out.arrival_airport);
+            outDepAirport = formatAirport(out.departure_airport, currentLang);
+            outArrAirport = formatAirport(out.arrival_airport, currentLang);
             
             outDateStr = depTime ? depTime.toLocaleDateString('vi-VN') : '';
-            
-            // Tính giá dựa trên dữ liệu thực tế hoặc dựa vào thời gian bay nếu không có giá
             outPrice = Number(out.price) || 0;
-            if (outPrice === 0 && depTime && arrTime) {
-                const durationMs = arrTime - depTime;
-                const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
-                // Tính giá dựa vào thời gian bay: Khoảng 300,000 VND mỗi giờ bay + cơ bản 500,000 VND
-                outPrice = Math.round(500000 + durationHours * 300000);
-            } 
-            // Đảm bảo giá không quá thấp và không quá cao
-            if (outPrice < 500000) outPrice = 500000 + Math.round(Math.random() * 200000);
-            if (outPrice > 2000000) outPrice = 2000000 - Math.round(Math.random() * 200000);
             
-            // Tính thời gian bay nếu có cả giờ đi và đến
             if (depTime && arrTime) {
                 const durationMs = arrTime - depTime;
                 const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
                 const durationMinutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
                 outDuration = `${durationHours}h${durationMinutes.toString().padStart(2, '0')}m`;
             }
-        }
-
-        let inDepTime = '', inArrTime = '', inDepAirport = '', inArrAirport = '', inDateStr = '', inPrice = 0, inDuration = '';
-        if (inn) {
-            const depTime = inn.departure_time ? new Date(inn.departure_time) : null;
-            const arrTime = inn.arrival_time ? new Date(inn.arrival_time) : null;
-            inDepTime = depTime ? depTime.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '';
-            inArrTime = arrTime ? arrTime.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '';
             
-            // Định dạng sân bay theo kiểu "Hà Nội (HAN)"
-            inDepAirport = formatAirport(inn.departure_airport);
-            inArrAirport = formatAirport(inn.arrival_airport);
-            
-            inDateStr = depTime ? depTime.toLocaleDateString('vi-VN') : '';
-            
-            // Tính giá dựa trên dữ liệu thực tế hoặc dựa vào thời gian bay nếu không có giá
-            inPrice = Number(inn.price) || 0;
-            if (inPrice === 0 && depTime && arrTime) {
-                const durationMs = arrTime - depTime;
-                const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
-                // Tính giá dựa vào thời gian bay: Khoảng 300,000 VND mỗi giờ bay + cơ bản 500,000 VND
-                inPrice = Math.round(500000 + durationHours * 300000);
-            }
-            // Đảm bảo giá không quá thấp và không quá cao
-            if (inPrice < 500000) inPrice = 500000 + Math.round(Math.random() * 200000);
-            if (inPrice > 2000000) inPrice = 2000000 - Math.round(Math.random() * 200000);
-            
-            // Tính thời gian bay nếu có cả giờ đi và đến
-            if (depTime && arrTime) {
-                const durationMs = arrTime - depTime;
-                const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
-                const durationMinutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
-                inDuration = `${durationHours}h${durationMinutes.toString().padStart(2, '0')}m`;
-            }
-        }
-
-        if (isOneWay) {
-            // Card cho chuyến bay một chiều
             htmlContent += `
             <article class="sp-card">
                 <div class="sp-card-body">
-                    <div class="sp-date">${outDateStr} · Khởi hành</div>
+                    <div class="sp-date">${outDateStr} <span data-i18n="dotDeparture">· Khởi hành</span></div>
                     <div class="sp-itinerary">
                         <div>
                             <div class="sp-time">${outDepTime}</div>
                             <div class="sp-meta">${outDepAirport}</div>
+                            <div class="sp-airport-name">${getAirportFullName(out.departure_airport, currentLang)}</div>
                         </div>
                         <div class="sp-mid">
                             <i class="fa-solid fa-plane sp-plane"></i>
                             <div class="sp-duration">${outDuration}</div>
-                            <div class="sp-duration-detail">${outDuration.includes('2h') ? 'Bay thẳng' : (Math.random() > 0.7 ? '1 điểm dừng' : 'Bay thẳng')}</div>
+                            <div class="sp-duration-detail" data-i18n="nonstop">${out.flight_type || 'Bay thẳng'}</div>
                         </div>
                         <div>
                             <div class="sp-time">${outArrTime}</div>
                             <div class="sp-meta">${outArrAirport}</div>
+                            <div class="sp-airport-name">${getAirportFullName(out.arrival_airport, currentLang)}</div>
                         </div>
                     </div>
                 </div>
                 <aside class="sp-card-aside">
-                    <div class="sp-price">${outPrice.toLocaleString('vi-VN')} VND</div>
-                    <button class="sp-btn sp-btn-block sp-modal-trigger" data-out='${JSON.stringify(out || {})}' data-trip-type="one-way">Chọn chuyến bay</button>
+                    <div class="sp-price">${outPrice > 0 ? outPrice.toLocaleString('vi-VN') + ' VND' : 'Liên hệ'}</div>
+                    <button class="sp-btn sp-btn-block sp-modal-trigger" data-out='${JSON.stringify(out || {})}' data-trip-type="one-way" data-i18n="selectFlight">Chọn chuyến bay</button>
                 </aside>
             </article>`;
-        } else {
-            // Card cho chuyến bay khứ hồi
-            const totalPrice = outPrice + inPrice;
-            htmlContent += `
-            <article class="sp-card">
-                <div class="sp-card-body">
-                    <div class="sp-date">${outDateStr} · Khởi hành</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">${outDepTime}</div>
-                            <div class="sp-meta">${outDepAirport}</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <div class="sp-duration">${outDuration}</div>
-                            <div class="sp-duration-detail">${outDuration.includes('2h') ? 'Bay thẳng' : (Math.random() > 0.7 ? '1 điểm dừng' : 'Bay thẳng')}</div>
-                        </div>
-                        <div>
-                            <div class="sp-time">${outArrTime}</div>
-                            <div class="sp-meta">${outArrAirport}</div>
-                        </div>
-                    </div>
-                    <hr style="margin: 16px 0; border: none; border-top: 1px solid #eee;" />
-                    <div class="sp-date">${inDateStr} · Về</div>
-                    <div class="sp-itinerary">
-                        <div>
-                            <div class="sp-time">${inDepTime}</div>
-                            <div class="sp-meta">${inDepAirport}</div>
-                        </div>
-                        <div class="sp-mid">
-                            <i class="fa-solid fa-plane sp-plane"></i>
-                            <div class="sp-duration">${inDuration}</div>
-                            <div class="sp-duration-detail">${inDuration.includes('2h') ? 'Bay thẳng' : (Math.random() > 0.7 ? '1 điểm dừng' : 'Bay thẳng')}</div>
-                        </div>
-                        <div>
-                            <div class="sp-time">${inArrTime}</div>
-                            <div class="sp-meta">${inArrAirport}</div>
-                        </div>
-                    </div>
-                </div>
-                <aside class="sp-card-aside">
-                    <div class="sp-price">${totalPrice.toLocaleString('vi-VN')} VND</div>
-                    <button class="sp-btn sp-btn-block sp-modal-trigger" data-out='${JSON.stringify(out || {})}' data-in='${JSON.stringify(inn || {})}' data-trip-type="round-trip">Chọn chuyến bay</button>
-                </aside>
-            </article>`;
-        }
         }
     } else {
-        // Hiển thị chuyến bay khứ hồi
-        const pairCount = Math.min(outbounds.length, inbounds.length || 0);
-        for (let i = 0; i < pairCount; i++) {
-            const out = outbounds[i] || null;
-            const inn = inbounds[i] || null;
+        // Hiển thị chuyến khứ hồi - ghép chuyến bay hợp lệ theo thời gian
+        for (let outIdx = 0; outIdx < outbounds.length; outIdx++) {
+            const out = outbounds[outIdx];
+            if (!out) continue;
             
-            if (out && inn) {
-                // Xử lý logic hiển thị cho khứ hồi (đã được triển khai trong if-else ở trên)
+            const outArrTime = out.arrival_time ? new Date(out.arrival_time) : null;
+            if (!outArrTime) continue;
+            
+            // Tìm chuyến về phù hợp: xuất phát sau khi chuyến đi kết thúc
+            for (let inIdx = 0; inIdx < inbounds.length; inIdx++) {
+                const inn = inbounds[inIdx];
+                if (!inn) continue;
                 
-                let outDepTime = '', outArrTime = '', outDepAirport = '', outArrAirport = '', outDateStr = '', outPrice = 0, outDuration = '';
-                let inDepTime = '', inArrTime = '', inDepAirport = '', inArrAirport = '', inDateStr = '', inPrice = 0, inDuration = '';
+                const inDepTime = inn.departure_time ? new Date(inn.departure_time) : null;
+                if (!inDepTime) continue;
                 
-                // Logic xử lý cho chuyến đi
-                if (out) {
-                    // Code đã được triển khai ở trên cho chiều đi
-                    const depTime = out.departure_time ? new Date(out.departure_time) : null;
-                    const arrTime = out.arrival_time ? new Date(out.arrival_time) : null;
-                    outDepTime = depTime ? depTime.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '';
-                    outArrTime = arrTime ? arrTime.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '';
+                // Kiểm tra: chuyến về phải xuất phát ít nhất 1 giờ sau khi chuyến đi kết thúc
+                const minLayoverTime = 60 * 60 * 1000; // 1 giờ tính bằng milliseconds
+                if (inDepTime.getTime() >= (outArrTime.getTime() + minLayoverTime)) {
+                    // Đây là cặp chuyến bay hợp lệ - xử lý thông tin hiển thị
                     
+                    // Xử lý thông tin chuyến đi
+                    let outDepTimeStr = '', outArrTimeStr = '', outDepAirport = '', outArrAirport = '', outDateStr = '', outPrice = 0, outDuration = '';
+                    const outDepTimeParsed = out.departure_time ? new Date(out.departure_time) : null;
+                    const outArrTimeParsed = out.arrival_time ? new Date(out.arrival_time) : null;
+                    outDepTimeStr = outDepTimeParsed ? outDepTimeParsed.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '';
+                    outArrTimeStr = outArrTimeParsed ? outArrTimeParsed.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '';
                     outDepAirport = formatAirport(out.departure_airport);
                     outArrAirport = formatAirport(out.arrival_airport);
-                    
-                    outDateStr = depTime ? depTime.toLocaleDateString('vi-VN') : '';
-                    
-                    // Tính giá dựa vào dữ liệu
+                    outDateStr = outDepTimeParsed ? outDepTimeParsed.toLocaleDateString('vi-VN') : '';
                     outPrice = Number(out.price) || 0;
-                    if (outPrice === 0 && depTime && arrTime) {
-                        const durationMs = arrTime - depTime;
-                        const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
-                        outPrice = Math.round(500000 + durationHours * 300000);
-                    }
-                    if (outPrice < 500000) outPrice = 500000 + Math.round(Math.random() * 200000);
-                    if (outPrice > 2000000) outPrice = 2000000 - Math.round(Math.random() * 200000);
                     
-                    // Tính thời gian bay
-                    if (depTime && arrTime) {
-                        const durationMs = arrTime - depTime;
+                    if (outDepTimeParsed && outArrTimeParsed) {
+                        const durationMs = outArrTimeParsed - outDepTimeParsed;
                         const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
                         const durationMinutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
                         outDuration = `${durationHours}h${durationMinutes.toString().padStart(2, '0')}m`;
                     }
-                }
-                
-                // Logic xử lý cho chuyến về
-                if (inn) {
-                    // Code đã được triển khai ở trên cho chiều về
-                    const depTime = inn.departure_time ? new Date(inn.departure_time) : null;
-                    const arrTime = inn.arrival_time ? new Date(inn.arrival_time) : null;
-                    inDepTime = depTime ? depTime.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '';
-                    inArrTime = arrTime ? arrTime.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '';
                     
-                    inDepAirport = formatAirport(inn.departure_airport);
-                    inArrAirport = formatAirport(inn.arrival_airport);
-                    
-                    inDateStr = depTime ? depTime.toLocaleDateString('vi-VN') : '';
-                    
-                    // Tính giá dựa vào dữ liệu
+                    // Xử lý thông tin chuyến về
+                    let inDepTimeStr = '', inArrTimeStr = '', inDepAirport = '', inArrAirport = '', inDateStr = '', inPrice = 0, inDuration = '';
+                    const inDepTimeParsed = inn.departure_time ? new Date(inn.departure_time) : null;
+                    const inArrTimeParsed = inn.arrival_time ? new Date(inn.arrival_time) : null;
+                    inDepTimeStr = inDepTimeParsed ? inDepTimeParsed.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '';
+                    inArrTimeStr = inArrTimeParsed ? inArrTimeParsed.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '';
+                    inDepAirport = formatAirport(inn.departure_airport, currentLang);
+                    inArrAirport = formatAirport(inn.arrival_airport, currentLang);
+                    inDateStr = inDepTimeParsed ? inDepTimeParsed.toLocaleDateString('vi-VN') : '';
                     inPrice = Number(inn.price) || 0;
-                    if (inPrice === 0 && depTime && arrTime) {
-                        const durationMs = arrTime - depTime;
-                        const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
-                        inPrice = Math.round(500000 + durationHours * 300000);
-                    }
-                    if (inPrice < 500000) inPrice = 500000 + Math.round(Math.random() * 200000);
-                    if (inPrice > 2000000) inPrice = 2000000 - Math.round(Math.random() * 200000);
                     
-                    // Tính thời gian bay
-                    if (depTime && arrTime) {
-                        const durationMs = arrTime - depTime;
+                    if (inDepTimeParsed && inArrTimeParsed) {
+                        const durationMs = inArrTimeParsed - inDepTimeParsed;
                         const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
                         const durationMinutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
                         inDuration = `${durationHours}h${durationMinutes.toString().padStart(2, '0')}m`;
                     }
+                    
+                    const totalPrice = outPrice + inPrice;
+            
+                    htmlContent += `
+                    <article class="sp-card">
+                        <div class="sp-card-body">
+                            <div class="sp-date">${outDateStr} <span data-i18n="dotDeparture">· Khởi hành</span></div>
+                            <div class="sp-itinerary">
+                                <div>
+                                    <div class="sp-time">${outDepTimeStr}</div>
+                                    <div class="sp-meta">${outDepAirport}</div>
+                                    <div class="sp-airport-name">${getAirportFullName(out.departure_airport, currentLang)}</div>
+                                </div>
+                                <div class="sp-mid">
+                                    <i class="fa-solid fa-plane sp-plane"></i>
+                                    <div class="sp-duration">${outDuration}</div>
+                                    <div class="sp-duration-detail" data-i18n="nonstop">${out.flight_type || 'Bay thẳng'}</div>
+                                </div>
+                                <div>
+                                    <div class="sp-time">${outArrTimeStr}</div>
+                                    <div class="sp-meta">${outArrAirport}</div>
+                                    <div class="sp-airport-name">${getAirportFullName(out.arrival_airport, currentLang)}</div>
+                                </div>
+                            </div>
+                            <hr style="margin: 16px 0; border: none; border-top: 1px solid #eee;" />
+                            <div class="sp-date">${inDateStr} <span data-i18n="dotReturn">· Về</span></div>
+                            <div class="sp-itinerary">
+                                <div>
+                                    <div class="sp-time">${inDepTimeStr}</div>
+                                    <div class="sp-meta">${inDepAirport}</div>
+                                    <div class="sp-airport-name">${getAirportFullName(inn.departure_airport, currentLang)}</div>
+                                </div>
+                                <div class="sp-mid">
+                                    <i class="fa-solid fa-plane sp-plane"></i>
+                                    <div class="sp-duration">${inDuration}</div>
+                                    <div class="sp-duration-detail" data-i18n="nonstop">${inn.flight_type || 'Bay thẳng'}</div>
+                                </div>
+                                <div>
+                                    <div class="sp-time">${inArrTimeStr}</div>
+                                    <div class="sp-meta">${inArrAirport}</div>
+                                    <div class="sp-airport-name">${getAirportFullName(inn.arrival_airport, currentLang)}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <aside class="sp-card-aside">
+                            <div class="sp-price">${totalPrice > 0 ? totalPrice.toLocaleString('vi-VN') + ' VND' : 'Liên hệ'}</div>
+                            <button class="sp-btn sp-btn-block sp-modal-trigger" data-out='${JSON.stringify(out || {})}' data-in='${JSON.stringify(inn || {})}' data-trip-type="round-trip" data-i18n="selectFlight">Chọn chuyến bay</button>
+                        </aside>
+                    </article>`;
+                    
+                    // Chỉ lấy cặp đầu tiên tìm được cho mỗi chuyến đi
+                    break;
                 }
-                
-                // Render the round-trip card
-                const totalPrice = outPrice + inPrice;
-                htmlContent += `
-                <article class="sp-card">
-                    <div class="sp-card-body">
-                        <div class="sp-date">${outDateStr} · Khởi hành</div>
-                        <div class="sp-itinerary">
-                            <div>
-                                <div class="sp-time">${outDepTime}</div>
-                                <div class="sp-meta">${outDepAirport}</div>
-                            </div>
-                            <div class="sp-mid">
-                                <i class="fa-solid fa-plane sp-plane"></i>
-                                <div class="sp-duration">${outDuration}</div>
-                                <div class="sp-duration-detail">${outDuration.includes('2h') ? 'Bay thẳng' : (Math.random() > 0.7 ? '1 điểm dừng' : 'Bay thẳng')}</div>
-                            </div>
-                            <div>
-                                <div class="sp-time">${outArrTime}</div>
-                                <div class="sp-meta">${outArrAirport}</div>
-                            </div>
-                        </div>
-                        <hr style="margin: 16px 0; border: none; border-top: 1px solid #eee;" />
-                        <div class="sp-date">${inDateStr} · Về</div>
-                        <div class="sp-itinerary">
-                            <div>
-                                <div class="sp-time">${inDepTime}</div>
-                                <div class="sp-meta">${inDepAirport}</div>
-                            </div>
-                            <div class="sp-mid">
-                                <i class="fa-solid fa-plane sp-plane"></i>
-                                <div class="sp-duration">${inDuration}</div>
-                                <div class="sp-duration-detail">${inDuration.includes('2h') ? 'Bay thẳng' : (Math.random() > 0.7 ? '1 điểm dừng' : 'Bay thẳng')}</div>
-                            </div>
-                            <div>
-                                <div class="sp-time">${inArrTime}</div>
-                                <div class="sp-meta">${inArrAirport}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <aside class="sp-card-aside">
-                        <div class="sp-price">${totalPrice.toLocaleString('vi-VN')} VND</div>
-                        <button class="sp-btn sp-btn-block sp-modal-trigger" data-out='${JSON.stringify(out || {})}' data-in='${JSON.stringify(inn || {})}' data-trip-type="round-trip">Chọn chuyến bay</button>
-                    </aside>
-                </article>`;
             }
         }
     }
 
-    console.log('Generated HTML:', htmlContent);
-    results.innerHTML = htmlContent;
-    console.log('Element .sp-results after update:', results);    // Khởi tạo lại modal cho các nút mới
-    console.log('Initializing modal and filters after rendering...');
+
+    // If we have a no-return message, append to it, otherwise replace
+    if (results.querySelector('.sp-no-return-message')) {
+        results.innerHTML += htmlContent;
+    } else {
+        results.innerHTML = htmlContent;
+    }
+    // Khởi tạo lại modal cho các nút mới
     
-    // Đảm bảo gọi setupCardButtons sau khi DOM đã được cập nhật
     setTimeout(function() {
-        console.log('Timeout triggered for setting up card buttons');
-        // Direct setup of card button listeners without using the function
+
         const cardButtons = document.querySelectorAll('.sp-card .sp-btn.sp-btn-block');
-        console.log('Found card buttons (direct):', cardButtons.length);
-        
         cardButtons.forEach(function(btn) {
-            console.log('Setting up button:', btn);
-            // Remove existing event listeners
             const newBtn = btn.cloneNode(true);
             btn.parentNode.replaceChild(newBtn, btn);
             
-            // Add new event listener
             newBtn.addEventListener('click', function(e) {
-                console.log('Flight card button clicked directly!');
                 e.preventDefault();
                 
                 try {
+                    // Get flight data from data attributes
+                    const outDataStr = newBtn.getAttribute('data-out');
+                    const inDataStr = newBtn.getAttribute('data-in');
+                    const tripType = newBtn.getAttribute('data-trip-type');
+                    
+                    if (outDataStr) {
+                        const outData = JSON.parse(outDataStr);
+                        const inData = inDataStr ? JSON.parse(inDataStr) : null;
+                        
+                        // Update modal content
+                        updateModalContent(outData, inData);
+                    }
+                    
                     const modal = document.getElementById('spModal');
                     if (!modal) {
                         console.error('Modal not found in DOM!');
                         return;
                     }
                     
-                    // Force modal to open
                     document.body.classList.add('modal-open');
                     modal.classList.add('is-open');
                     modal.setAttribute('aria-hidden', 'false');
-                    console.log('Modal forced open, status:', modal.classList.contains('is-open'));
                 } catch(e) {
                     console.error('Error opening modal:', e);
                 }
             });
         });
+        
         if (typeof initModal === 'function') {
-            console.log('Calling initModal...');
             initModal();
         }
         if (typeof window.applyFilters === 'function') {
-            console.log('Applying filters...');
             window.applyFilters();
         }
+        
+        // Apply translations to newly rendered flight cards
+        if (typeof window.applySearchTranslations === 'function') {
+            // Try multiple methods to get the current language
+            let currentLang = localStorage.getItem('preferredLanguage');
+            
+            // Also check DOM elements for language indicators
+            if (!currentLang) {
+                const langSelector = document.querySelector('.sp-header__lang');
+                if (langSelector && langSelector.textContent) {
+                    currentLang = langSelector.textContent.toLowerCase().includes('eng') ? 'en' : 'vi';
+                }
+            }
+            
+            if (!currentLang) {
+                // Check localStorage first, then URL parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                currentLang = urlParams.get('lang') || localStorage.getItem('preferredLanguage') || 'vi';
+            }
+            
+            window.applySearchTranslations(currentLang);
+        }
     }, 100);
-}// Hàm chuyển đổi mã sân bay sang tên đầy đủ
-function formatAirport(code) {
-    const airportMap = {
-        'HAN': 'Hà Nội (HAN)',
-        'SGN': 'Hồ Chí Minh (SGN)',
-        'DAD': 'Đà Nẵng (DAD)',
-        'CXR': 'Nha Trang (CXR)',
-        'PQC': 'Phú Quốc (PQC)',
-        'VCA': 'Cần Thơ (VCA)',
-        'VCS': 'Côn Đảo (VCS)',
-        'UIH': 'Quy Nhơn (UIH)',
-        'BMV': 'Buôn Ma Thuột (BMV)',
-        'VDH': 'Đồng Hới (VDH)',
-        'HPH': 'Hải Phòng (HPH)',
-        'HUI': 'Huế (HUI)',
-        'VII': 'Vinh (VII)',
-        'VDO': 'Vân Đồn (VDO)',
-        'THD': 'Thanh Hóa (THD)',
-        'DLI': 'Lâm Đồng (DLI)',
-        'DIN': 'Điện Biên (DIN)',
-        'PXU': 'Pleiku (PXU)',
-        'VKG': 'Rạch Giá (VKG)',
-        'SQH': 'Sơn La (SQH)',
-        'VCL': 'Chu Lai (VCL)'
+}
+
+// Hàm chuyển đổi mã sân bay sang tên đầy đủ với đa ngôn ngữ
+function formatAirport(code, lang = 'vi', includeAirportName = false) {
+    const airportData = {
+        'HAN': {
+            city: { vi: 'Hà Nội', en: 'Hanoi' },
+            airport: { vi: 'Sân bay Nội Bài', en: 'Noi Bai Airport' }
+        },
+        'SGN': {
+            city: { vi: 'Hồ Chí Minh', en: 'Ho Chi Minh' },
+            airport: { vi: 'Sân bay Tân Sơn Nhất', en: 'Tan Son Nhat Airport' }
+        },
+        'DAD': {
+            city: { vi: 'Đà Nẵng', en: 'Da Nang' },
+            airport: { vi: 'Sân bay Đà Nẵng', en: 'Da Nang Airport' }
+        },
+        'CXR': {
+            city: { vi: 'Nha Trang', en: 'Nha Trang' },
+            airport: { vi: 'Sân bay Cam Ranh', en: 'Cam Ranh Airport' }
+        },
+        'PQC': {
+            city: { vi: 'Phú Quốc', en: 'Phu Quoc' },
+            airport: { vi: 'Sân bay Phú Quốc', en: 'Phu Quoc Airport' }
+        },
+        'VCA': {
+            city: { vi: 'Cần Thơ', en: 'Can Tho' },
+            airport: { vi: 'Sân bay Cần Thơ', en: 'Can Tho Airport' }
+        },
+        'HUI': {
+            city: { vi: 'Huế', en: 'Hue' },
+            airport: { vi: 'Sân bay Phú Bài', en: 'Phu Bai Airport' }
+        },
+        'VII': {
+            city: { vi: 'Vinh', en: 'Vinh' },
+            airport: { vi: 'Sân bay Vinh', en: 'Vinh Airport' }
+        }
     };
     
-    return airportMap[code] || code;
+    const data = airportData[code];
+    if (!data) {
+        return code;
+    }
+    
+    const cityName = data.city[lang] || data.city.vi;
+    const airportName = data.airport[lang] || data.airport.vi;
+    
+    if (includeAirportName) {
+        return `${cityName} (${code})`;
+    } else {
+        return `${cityName} (${code})`;
+    }
+}
+
+// Hàm lấy tên sân bay đầy đủ
+function getAirportFullName(code, lang = 'vi') {
+    const airportData = {
+        'HAN': { vi: 'Sân bay Nội Bài', en: 'Noi Bai Airport' },
+        'SGN': { vi: 'Sân bay Tân Sơn Nhất', en: 'Tan Son Nhat Airport' },
+        'DAD': { vi: 'Sân bay Đà Nẵng', en: 'Da Nang Airport' },
+        'CXR': { vi: 'Sân bay Cam Ranh', en: 'Cam Ranh Airport' },
+        'PQC': { vi: 'Sân bay Phú Quốc', en: 'Phu Quoc Airport' },
+        'VCA': { vi: 'Sân bay Cần Thơ', en: 'Can Tho Airport' },
+        'HUI': { vi: 'Sân bay Phú Bài', en: 'Phu Bai Airport' },
+        'VII': { vi: 'Sân bay Vinh', en: 'Vinh Airport' }
+    };
+    
+    const result = airportData[code] ? airportData[code][lang] || airportData[code].vi : code;
+    return result;
 }
 
 // Hàm trực tiếp để mở modal từ bên ngoài
@@ -592,8 +536,134 @@ function openFlightModal(outData, inData) {
     }
 }
 
-// Khi trang load, tự động fetch chuyến bay
-document.addEventListener('DOMContentLoaded', fetchFlights);
+// Flag to prevent multiple initializations
+let searchInitialized = false;
+
+// Khi trang load, chỉ khởi tạo handlers, không tự động fetch
+document.addEventListener('DOMContentLoaded', function() {
+    if (!searchInitialized) {
+        initializeTripTypeHandlers();
+        // Remove automatic flight fetching - only search when button is clicked
+        // fetchFlights();
+        searchInitialized = true;
+    }
+});
+
+// Initialize trip type radio button handlers
+function initializeTripTypeHandlers() {
+    const tripTypeRadios = document.querySelectorAll('input[name="tripType"]');
+    const returnField = document.querySelector('#ret');
+    const returnFieldContainer = returnField ? returnField.closest('.sp-field') : null;
+    const form = document.getElementById('spSearchForm');
+    
+    function updateReturnFieldVisibility() {
+        const selectedTripType = document.querySelector('input[name="tripType"]:checked');
+        
+        if (selectedTripType && selectedTripType.value === 'one-way') {
+            if (returnFieldContainer) returnFieldContainer.style.display = 'none';
+            if (returnField) returnField.value = ''; // Clear return date
+        } else {
+            if (returnFieldContainer) returnFieldContainer.style.display = 'block';
+        }
+    }
+    
+    // Set initial state
+    updateReturnFieldVisibility();
+    
+    // Add event listeners - both on radio and label
+    tripTypeRadios.forEach(radio => {
+        
+        // Add change listener to radio input
+        radio.addEventListener('change', handleTripTypeChange);
+        
+        // Also add click listener to the parent label
+        const label = radio.closest('.sp-trip-option');
+        if (label) {
+            label.addEventListener('click', function(e) {
+
+                // Manually check the radio if it's not already checked
+                if (!radio.checked) {
+                    radio.checked = true;
+                    setTimeout(handleTripTypeChange, 10);
+                }
+            });
+        }
+        
+        // Direct click on radio as backup
+        radio.addEventListener('click', function(e) {
+
+            setTimeout(handleTripTypeChange, 10);
+        });
+    });
+    
+    function handleTripTypeChange() {
+
+        const selectedTripType = document.querySelector('input[name="tripType"]:checked');
+
+        
+        // Update URL immediately to prevent override
+        if (selectedTripType) {
+            const url = new URL(window.location);
+            url.searchParams.set('type', selectedTripType.value);
+            window.history.pushState({}, '', url.toString());
+
+        }
+        
+        updateReturnFieldVisibility();
+        // Remove automatic search - only search when button is clicked
+        // fetchFlights();
+    }
+    
+    // Handle search button click
+    const searchButton = document.getElementById('searchButton');
+    if (searchButton && !searchButton.hasAttribute('data-listener-added')) {
+        searchButton.addEventListener('click', function(e) {
+
+            e.preventDefault();
+            e.stopPropagation();
+            handleSearchSubmit();
+            return false;
+        });
+        
+        searchButton.setAttribute('data-listener-added', 'true');
+    }
+    
+    // Also handle form submit for Enter key
+    if (form && !form.hasAttribute('data-listener-added')) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            handleSearchSubmit();
+            return false;
+        });
+        
+        form.setAttribute('data-listener-added', 'true');
+    }
+    
+    function handleSearchSubmit() {
+        const fromCity = document.getElementById('fromCity').value;
+        const toCity = document.getElementById('toCity').value;
+        const depDate = document.getElementById('dep').value;
+        const retDate = document.getElementById('ret').value;
+        const tripType = document.querySelector('input[name="tripType"]:checked')?.value || 'round-trip';
+        
+
+        
+        // Build URL with all parameters
+        const params = new URLSearchParams();
+        if (fromCity) params.set('from', fromCity);
+        if (toCity) params.set('to', toCity);
+        if (depDate) params.set('dep', depDate);
+        if (retDate && tripType === 'round-trip') params.set('ret', retDate);
+        params.set('type', tripType);
+        
+        // Update URL and fetch flights
+        const newUrl = window.location.pathname + '?' + params.toString();
+        window.history.pushState({}, '', newUrl);
+
+        fetchFlights();
+    }
+}
 
 // ...existing code chuyển từ script cũ (slider, modal, language, ...)
 (function() {
@@ -610,12 +680,100 @@ document.addEventListener('DOMContentLoaded', fetchFlights);
         var el = root.querySelector(sel);
         if (el) el.textContent = (val && String(val).trim()) || '—';
     }
+
+    // Global function to update modal content
+    function updateModalContent(outData, inData) {
+
+        
+        const modal = document.getElementById('spModal');
+        const bookBtn = document.getElementById('spBookBtn');
+        
+        if (!modal || !bookBtn || !outData) {
+            console.error('Modal elements not found or no flight data');
+            return;
+        }
+        
+        // Store flight data globally for booking
+        window.currentFlightSelection = {
+            outbound: outData,
+            inbound: inData,
+            tripType: inData ? 'round-trip' : 'one-way'
+        };
+        
+        // Get current language
+        const currentLang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+        
+        // Lấy tên thành phố từ sân bay
+        let outArrCity = formatAirport(outData.arrival_airport || '', currentLang).split('(')[0].trim();
+        let outDepCity = formatAirport(outData.departure_airport || '', currentLang).split('(')[0].trim();
+        
+        // Set modal cho chiều đi
+        setText(modal, '[data-to-city]', outArrCity || '—');
+        const locale = currentLang === 'en' ? 'en-US' : 'vi-VN';
+        const dateOptions = currentLang === 'en' ? { year: 'numeric', month: 'short', day: 'numeric' } : {};
+        setText(modal, '[data-out-date]', outData.departure_time ? new Date(outData.departure_time).toLocaleDateString(locale, dateOptions) : '—');
+        setText(modal, '[data-out-dep-time]', outData.departure_time ? new Date(outData.departure_time).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '—');
+        setText(modal, '[data-out-dep-airport]', formatAirport(outData.departure_airport, currentLang) || '—');
+        setText(modal, '[data-out-arr-time]', outData.arrival_time ? new Date(outData.arrival_time).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '—');
+        setText(modal, '[data-out-arr-airport]', formatAirport(outData.arrival_airport, currentLang) || '—');
+        
+        // Xử lý chuyến về (nếu có)
+        if (inData && inData.departure_time) {
+            let inArrCity = formatAirport(inData.arrival_airport || '', currentLang).split('(')[0].trim();
+            
+            // Show inbound section
+            const inboundSection = modal.querySelector('.sp-leg:last-child');
+            if (inboundSection) {
+                inboundSection.style.display = 'block';
+            }
+            
+            setText(modal, '[data-from-city]', inArrCity || outDepCity || '—');
+            setText(modal, '[data-in-date]', new Date(inData.departure_time).toLocaleDateString(locale, dateOptions));
+            setText(modal, '[data-in-dep-time]', new Date(inData.departure_time).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}));
+            setText(modal, '[data-in-dep-airport]', formatAirport(inData.departure_airport, currentLang) || '—');
+            setText(modal, '[data-in-arr-time]', inData.arrival_time ? new Date(inData.arrival_time).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '—');
+            setText(modal, '[data-in-arr-airport]', formatAirport(inData.arrival_airport, currentLang) || '—');
+            
+            // Giá tổng cho khứ hồi
+            const totalPrice = (Number(outData.price)||0) + (Number(inData.price)||0);
+            const bookText = currentLang === 'en' ? 'Book now for' : 'Đặt ngay với giá';
+            if (totalPrice > 0) {
+                const priceText = totalPrice.toLocaleString('vi-VN') + ' VND';
+                bookBtn.textContent = `${bookText} ${priceText}`;
+                bookBtn.dataset.price = priceText; // Store for translation
+            } else {
+                bookBtn.textContent = currentLang === 'en' ? 'Book now' : 'Đặt ngay';
+            }
+        } else {
+            // Hide inbound section for one-way
+            const inboundSection = modal.querySelector('.sp-leg:last-child');
+            if (inboundSection) {
+                inboundSection.style.display = 'none';
+            }
+            
+            setText(modal, '[data-from-city]', outDepCity || '—');
+            
+            // Giá cho một chiều
+            const price = Number(outData.price) || 0;
+            const bookText = currentLang === 'en' ? 'Book now for' : 'Đặt ngay với giá';
+            if (price > 0) {
+                const priceText = price.toLocaleString('vi-VN') + ' VND';
+                bookBtn.textContent = `${bookText} ${priceText}`;
+                bookBtn.dataset.price = priceText; // Store for translation
+            } else {
+                bookBtn.textContent = currentLang === 'en' ? 'Book now' : 'Đặt ngay';
+            }
+        }
+    }
+
+    // Make updateModalContent globally available
+    window.updateModalContent = updateModalContent;
     function initSlider() {
         var slider = document.getElementById('priceRange');
         var out = document.getElementById('priceOut');
         if (!slider || !out) return;
         function fmt(v) {
-            return Number(v).toLocaleString('vi-VN') + ' VND';
+            return v > 0 ? Number(v).toLocaleString('vi-VN') + ' VND' : 'Liên hệ';
         }
         function paintRange() {
             var min = Number(slider.min || 0);
@@ -636,8 +794,8 @@ document.addEventListener('DOMContentLoaded', fetchFlights);
         var modal = document.getElementById('spModal');
         var bookBtn = document.getElementById('spBookBtn');
         
-        console.log('Initializing modal:', modal);
-        console.log('Book button:', bookBtn);
+
+
         
         if (!modal || !bookBtn) {
             console.error('Modal or book button not found in DOM');
@@ -650,51 +808,17 @@ document.addEventListener('DOMContentLoaded', fetchFlights);
             openModal();
         };
         
-        function updateModalContent(outData, inData) {
-            console.log('Updating modal content with:', outData, inData);
-            
-            // Lấy tên thành phố từ sân bay
-            let outArrCity = formatAirport(outData.arrival_airport || '').split('(')[0].trim();
-            let inArrCity = formatAirport(inData.arrival_airport || '').split('(')[0].trim();
-            
-            // Set modal cho chiều đi và về
-            setText(modal, '[data-to-city]', outArrCity || '—');
-            setText(modal, '[data-from-city]', inArrCity || '—');
-            
-            // Outbound
-            setText(modal, '[data-out-date]', outData.departure_time ? new Date(outData.departure_time).toLocaleDateString('vi-VN') : '—');
-            setText(modal, '[data-out-dep-time]', outData.departure_time ? new Date(outData.departure_time).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '—');
-            setText(modal, '[data-out-dep-airport]', formatAirport(outData.departure_airport) || '—');
-            setText(modal, '[data-out-arr-time]', outData.arrival_time ? new Date(outData.arrival_time).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '—');
-            setText(modal, '[data-out-arr-airport]', formatAirport(outData.arrival_airport) || '—');
-            
-            // Inbound
-            setText(modal, '[data-in-date]', inData.departure_time ? new Date(inData.departure_time).toLocaleDateString('vi-VN') : '—');
-            setText(modal, '[data-in-dep-time]', inData.departure_time ? new Date(inData.departure_time).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '—');
-            setText(modal, '[data-in-dep-airport]', formatAirport(inData.departure_airport) || '—');
-            setText(modal, '[data-in-arr-time]', inData.arrival_time ? new Date(inData.arrival_time).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : '—');
-            setText(modal, '[data-in-arr-airport]', formatAirport(inData.arrival_airport) || '—');
-            
-            // Giá tổng
-            const totalPrice = (Number(outData.price)||0) + (Number(inData.price)||0);
-            if (totalPrice > 0) {
-                bookBtn.textContent = 'Đặt ngay với giá ' + totalPrice.toLocaleString('vi-VN') + ' VND';
-            } else {
-                bookBtn.textContent = 'Đặt ngay';
-            }
-        }
+
         
         function openModal() {
-            console.log('Opening modal...');
+
             document.body.classList.add('modal-open');
             modal.classList.add('is-open');
             modal.setAttribute('aria-hidden', 'false');
             document.addEventListener('keydown', onEsc);
-            console.log('Modal open status:', modal.classList.contains('is-open'));
         }
         
         function closeModal() {
-            console.log('Closing modal...');
             document.body.classList.remove('modal-open');
             modal.classList.remove('is-open');
             modal.setAttribute('aria-hidden', 'true');
@@ -705,12 +829,49 @@ document.addEventListener('DOMContentLoaded', fetchFlights);
             if (e.key === 'Escape') closeModal();
         }
         
+        // Book button handler
+        bookBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (!window.currentFlightSelection) {
+                console.error('No flight selection found');
+                return;
+            }
+            
+            const selection = window.currentFlightSelection;
+            const params = new URLSearchParams();
+            
+            // Add trip type
+            params.set('trip_type', selection.tripType);
+            
+            // Add outbound flight data
+            if (selection.outbound) {
+                params.set('outbound_flight_number', selection.outbound.flight_number || '');
+                params.set('outbound_departure_airport', selection.outbound.departure_airport || '');
+                params.set('outbound_arrival_airport', selection.outbound.arrival_airport || '');
+                params.set('outbound_departure_time', selection.outbound.departure_time || '');
+                params.set('outbound_arrival_time', selection.outbound.arrival_time || '');
+                params.set('outbound_price', selection.outbound.price || '');
+            }
+            
+            // Add inbound flight data for round-trip
+            if (selection.inbound) {
+                params.set('inbound_flight_number', selection.inbound.flight_number || '');
+                params.set('inbound_departure_airport', selection.inbound.departure_airport || '');
+                params.set('inbound_arrival_airport', selection.inbound.arrival_airport || '');
+                params.set('inbound_departure_time', selection.inbound.departure_time || '');
+                params.set('inbound_arrival_time', selection.inbound.arrival_time || '');
+                params.set('inbound_price', selection.inbound.price || '');
+            }
+            
+            // Navigate to fare page
+            window.location.href = `/fare.html?${params.toString()}`;
+        });
+        
         // Close button handler
         const closeButtons = modal.querySelectorAll('[data-close]');
-        console.log('Found close buttons:', closeButtons.length);
         closeButtons.forEach(button => {
             button.addEventListener('click', function(e) {
-                console.log('Close button clicked');
                 closeModal();
                 e.preventDefault();
             });
@@ -719,16 +880,13 @@ document.addEventListener('DOMContentLoaded', fetchFlights);
         // Backdrop click handler
         modal.addEventListener('click', function(e) {
             if (e.target === modal || e.target.classList.contains('sp-modal__backdrop')) {
-                console.log('Backdrop clicked');
                 closeModal();
             }
         });
         
         // Bind click events to all card buttons
         function setupCardButtons() {
-            console.log('Setting up modal buttons...');
             const cardButtons = document.querySelectorAll('.sp-card .sp-btn.sp-btn-block');
-            console.log('Found card buttons:', cardButtons.length);
             
             cardButtons.forEach(function(btn) {
                 // Remove existing event listeners
@@ -737,7 +895,6 @@ document.addEventListener('DOMContentLoaded', fetchFlights);
                 
                 // Add new event listener
                 newBtn.addEventListener('click', function(e) {
-                    console.log('Flight card button clicked!');
                     e.preventDefault();
                     
                     // Lấy dữ liệu 2 chiều từ data attribute
@@ -746,7 +903,7 @@ document.addEventListener('DOMContentLoaded', fetchFlights);
                     try {
                         out = JSON.parse(newBtn.getAttribute('data-out') || '{}');
                         inn = JSON.parse(newBtn.getAttribute('data-in') || '{}');
-                        console.log('Parsed flight data:', out, inn);
+
                         updateModalContent(out, inn);
                         openModal();
                     } catch(e) {
@@ -779,14 +936,14 @@ document.addEventListener('DOMContentLoaded', fetchFlights);
         const debugBtn = document.getElementById('debugModalBtn');
         if (debugBtn) {
             debugBtn.addEventListener('click', function() {
-                console.log('Debug button clicked!');
+
                 const modal = document.getElementById('spModal');
                 if (modal) {
-                    console.log('Modal found, opening...');
+
                     document.body.classList.add('modal-open');
                     modal.classList.add('is-open');
                     modal.setAttribute('aria-hidden', 'false');
-                    console.log('Modal open status:', modal.classList.contains('is-open'));
+
                 } else {
                     console.error('Modal element not found!');
                 }

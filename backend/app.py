@@ -67,7 +67,7 @@ def create_app():
     app.register_blueprint(payment_bp, url_prefix='/api/payment')
     app.register_blueprint(flights_bp)  # Đăng ký API chuyến bay
     app.register_blueprint(auth_bp, url_prefix='/api/auth')  # Đăng ký API xác thực
-    app.register_blueprint(bookings_bp)  # API bookings (đã có prefix trong blueprint)
+    app.register_blueprint(bookings_bp, url_prefix='/api/bookings')  # API bookings
     
     # Frontend routes
     @app.route('/')

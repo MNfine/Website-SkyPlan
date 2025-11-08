@@ -18,8 +18,7 @@
   <link rel="stylesheet" href="assets/styles/flags.css">
   <link rel="stylesheet" href="assets/styles/header.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
-  <link rel="stylesheet" href="assets/styles/auth.css">
-  <link rel="stylesheet" href="assets/styles/user-menu.css">
+  <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
 <body>
   <!-- Header -->
@@ -43,54 +42,22 @@
           <div class="search-field">
             <label for="from" data-i18n="search.from">Từ</label>
             <select id="from" name="from" class="search-value">
-              <option value="HaNoi" data-i18n="search.from_value">Hà Nội</option>
-              <option value="HoChiMinh">Hồ Chí Minh</option>
-              <option value="DaNang">Đà Nẵng</option>
-              <option value="CanTho">Cần Thơ</option>
-              <option value="LamDong">Lâm Đồng</option>
-              <option value="QuangTri">Quảng Trị</option>
-              <option value="DakLak">Đắk Lắk</option>
-              <option value="KhanhHoa">Khánh Hòa</option>
-              <option value="HaiPhong">Hải Phòng</option>
-              <option value="Hue">Huế</option>
-              <option value="DienBien">Điện Biên</option>
-              <option value="GiaLai">Gia Lai</option>
-              <option value="AnGiang">An Giang</option>
-              <option value="ThanhHoa">Thanh Hóa</option>
-              <option value="NgheAn">Nghệ An</option>
-              <option value="QuangNinh">Quảng Ninh</option>
-              <option value="SonLa">Sơn La</option>
+              <!-- Options will be populated dynamically based on language -->
             </select>
           </div>
           <div class="search-field">
             <label for="to" data-i18n="search.to">Đến</label>
             <select id="to" name="to" class="search-value">
-              <option value="HoChiMinh" data-i18n="search.to_value">Hồ Chí Minh</option>
-              <option value="HaNoi">Hà Nội</option>
-              <option value="DaNang">Đà Nẵng</option>
-              <option value="CanTho">Cần Thơ</option>
-              <option value="LamDong">Lâm Đồng</option>
-              <option value="QuangTri">Quảng Trị</option>
-              <option value="DakLak">Đắk Lắk</option>
-              <option value="KhanhHoa">Khánh Hòa</option>
-              <option value="HaiPhong">Hải Phòng</option>
-              <option value="Hue">Huế</option>
-              <option value="DienBien">Điện Biên</option>
-              <option value="GiaLai">Gia Lai</option>
-              <option value="AnGiang">An Giang</option>
-              <option value="ThanhHoa">Thanh Hóa</option>
-              <option value="NgheAn">Nghệ An</option>
-              <option value="QuangNinh">Quảng Ninh</option>
-              <option value="SonLa">Sơn La</option>
+              <!-- Options will be populated dynamically based on language -->
             </select>
           </div>
           <div class="search-field">
             <label for="departure" data-i18n="search.departure">Ngày đi</label>
-            <input type="date" id="departure" name="departure" class="search-value-date" placeholder="Ngày đi">
+            <input type="date" id="departure" name="departure" class="search-value-date">
           </div>
           <div class="search-field">
             <label for="return" data-i18n="search.return">Ngày về</label>
-            <input type="date" id="return" name="return" class="search-value-date" placeholder="Ngày về">
+            <input type="date" id="return" name="return" class="search-value-date">
           </div>
         </div>
         <button type="submit" class="search-btn">
@@ -110,32 +77,32 @@
         <div class="route-card" data-lang="en" style="display: none;">
           <img src="assets/images/Ho_Chi_Minh.avif" alt="Ho Chi Minh" class="route-img">
           <div class="route-info">
-            <h3 class="route-name">Hồ Chí Minh</h3>
-            <p class="route-price">From 799,000 ₫</p>
+            <h3 class="route-name">Ho Chi Minh</h3>
+            <p class="route-price">From 799,000 VND</p>
           </div>
         </div>
         
         <div class="route-card" data-lang="en" style="display: none;">
           <img src="assets/images/Da_Nang.avif" alt="Da Nang" class="route-img">
           <div class="route-info">
-            <h3 class="route-name">Đà Nẵng</h3>
-            <p class="route-price">From 899,000 ₫</p>
+            <h3 class="route-name">Da Nang</h3>
+            <p class="route-price">From 899,000 VND</p>
           </div>
         </div>
         
         <div class="route-card" data-lang="en" style="display: none;">
           <img src="assets/images/Phu_Quoc.jpg" alt="Phu Quoc" class="route-img">
           <div class="route-info">
-            <h3 class="route-name">Phú Quốc</h3>
-            <p class="route-price">From 1,399,000 ₫</p>
+            <h3 class="route-name">Phu Quoc</h3>
+            <p class="route-price">From 1,399,000 VND</p>
           </div>
         </div>
         
         <div class="route-card" data-lang="en" style="display: none;">
           <img src="assets/images/Da_Lat.jpg" alt="Da Lat" class="route-img">
           <div class="route-info">
-            <h3 class="route-name">Đà Lạt</h3>
-            <p class="route-price">From 999,000 ₫</p>
+            <h3 class="route-name">Da Lat</h3>
+            <p class="route-price">From 999,000 VND</p>
           </div>
         </div>
         
@@ -144,7 +111,7 @@
           <img src="assets/images/Ho_Chi_Minh.avif" alt="Hồ Chí Minh" class="route-img">
           <div class="route-info">
             <h3 class="route-name">Hồ Chí Minh</h3>
-            <p class="route-price">Từ 799.000 ₫</p>
+            <p class="route-price">Từ 799.000 VND</p>
           </div>
         </div>
         
@@ -152,7 +119,7 @@
           <img src="assets/images/Da_Nang.avif" alt="Đà Nẵng" class="route-img">
           <div class="route-info">
             <h3 class="route-name">Đà Nẵng</h3>
-            <p class="route-price">Từ 899.000 ₫</p>
+            <p class="route-price">Từ 899.000 VND</p>
           </div>
         </div>
         
@@ -160,7 +127,7 @@
           <img src="assets/images/Phu_Quoc.jpg" alt="Phú Quốc" class="route-img">
           <div class="route-info">
             <h3 class="route-name">Phú Quốc</h3>
-            <p class="route-price">Từ 1.399.000 ₫</p>
+            <p class="route-price">Từ 1.399.000 VND</p>
           </div>
         </div>
         
@@ -168,7 +135,7 @@
           <img src="assets/images/Da_Lat.jpg" alt="Đà Lạt" class="route-img">
           <div class="route-info">
             <h3 class="route-name">Đà Lạt</h3>
-            <p class="route-price">Từ 999.000 ₫</p>
+            <p class="route-price">Từ 999.000 VND</p>
           </div>
         </div>
       </div>
@@ -225,7 +192,9 @@
 
   <!-- JavaScript -->
   <script src="assets/scripts/index_translations.js"></script>
+  <script src="assets/scripts/toast.js"></script>
   <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/date_format_handler.js"></script>
   <script src="assets/scripts/index.js"></script>
 
   <!-- Load Components -->
@@ -274,6 +243,10 @@
           
           // After header loads, initialize language functionality
           initializeLanguage();
+          // Initialize mobile menu AFTER header is in DOM
+          if (typeof initializeMobileMenu === 'function') {
+            initializeMobileMenu();
+          }
         })
         .catch(error => {
           console.error("Header loading error:", error);
@@ -297,7 +270,13 @@
         })
         .then(data => {
           document.getElementById('footer-container').innerHTML = data;
-          console.log("Footer loaded successfully");
+          // Re-apply translations to include freshly injected footer
+          try {
+            const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+            if (typeof applyTranslations === 'function') {
+              applyTranslations(lang);
+            }
+          } catch (e) {}
         })
         .catch(error => {
           console.error("Footer loading error:", error);
@@ -319,7 +298,8 @@
       // Apply translations when page loads (check if function exists)
       if (typeof applyTranslations === 'function') {
         applyTranslations(currentLang);
-        console.log('Applied translations for:', currentLang);
+        // emit a custom event so page parts can react
+        try { document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang: currentLang } })); } catch (e) {}
       } else {
         console.error('applyTranslations function not found');
       }
@@ -328,11 +308,51 @@
       if (typeof initializeLanguageSelector === 'function') {
         initializeLanguageSelector();
       }
+      // Keep the selected language UI in sync with current setting
+      if (typeof updateSelectedLanguage === 'function') {
+        updateSelectedLanguage(currentLang);
+      }
     }
     
     // Language initialization
     document.addEventListener('DOMContentLoaded', function() {
       initializeApp();
+    });
+  </script>
+  <!-- Loader component (JS) và logic show loader khi submit form -->
+  <script src="assets/scripts/loader.js"></script>
+  <script>
+    // Import loader HTML vào DOM càng sớm càng tốt
+    fetch('components/loader.html').then(r => r.text()).then(html => {
+      document.body.insertAdjacentHTML('afterbegin', html);
+      // THÊM: Show loader ngay khi vừa insert vào DOM (cho F5/reload)
+      if (window.Loader) {
+        window.Loader.show();
+        document.body.style.overflow = 'hidden';
+      }
+    });
+    // Luôn gắn sự kiện submit form và logic Loader khi DOM ready
+    document.addEventListener('DOMContentLoaded', function() {
+      var form = document.querySelector('.search-box');
+      if (form && window.Loader) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          window.Loader.show();
+          setTimeout(function() {
+            form.submit();
+          }, 1500);
+        });
+      }
+    });
+    
+    // THÊM: Ẩn loader khi tất cả resources đã load xong (window.load)
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        if (window.Loader) {
+          window.Loader.hide();
+          document.body.style.overflow = '';
+        }
+      }, 500); // Delay 500ms để smooth
     });
   </script>
 </body>

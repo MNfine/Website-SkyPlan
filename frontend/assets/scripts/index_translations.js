@@ -8,22 +8,23 @@ const translations = {
     // Header
     helpText: "Help",
     myTripsText: "My Trips",
+    signUpText: "Sign Up",
     signInText: "Sign In",
-    logInText: "Log In",
     
     // Hero section
     heroTitle: "Best deals are waiting for you",
     
     // Search box
     "search.from": "From",
-    "search.from_value": "Hanoi",
+  "search.from_value": "Ha Noi",
     "search.to": "To",
     "search.to_value": "Ho Chi Minh City",
     "search.departure": "Departure",
     "search.return": "Return",
     
     // Popular routes
-    popularRoutesTitle: "Popular Routes",
+  popularRoutesTitle: "Popular Routes",
+  appComingSoon: "Coming soon",
     
     // Features
     feature1Title: "Guarantee of the best price",
@@ -47,7 +48,7 @@ const translations = {
     termsOfService: "Terms of Service",
     supportTitle: "Support",
     helpCenter: "Help Center",
-    customerService: "Customer Service",
+    blogLink: "Blog",
     bookingHelp: "Booking Help",
     faq: "FAQ",
     paymentMethodsTitle: "Payment Methods",
@@ -65,22 +66,23 @@ const translations = {
     // Header
     helpText: "Trợ giúp",
     myTripsText: "Chuyến đi của tôi",
+    signUpText: "Đăng ký",
     signInText: "Đăng nhập",
-    logInText: "Đăng ký",
     
     // Hero section
     heroTitle: "Ưu đãi tốt nhất đang chờ đón bạn",
     
     // Search box
     "search.from": "Từ",
-    "search.from_value": "Hà Nội",
+  "search.from_value": "Hà Nội",
     "search.to": "Đến",
     "search.to_value": "Hồ Chí Minh",
     "search.departure": "Ngày đi",
     "search.return": "Ngày về",
     
     // Popular routes
-    popularRoutesTitle: "Điểm đến phổ biến",
+  popularRoutesTitle: "Điểm đến phổ biến",
+  appComingSoon: "Sắp ra mắt",
     
     // Features
     feature1Title: "Đảm bảo giá tốt nhất",
@@ -104,7 +106,7 @@ const translations = {
     termsOfService: "Điều khoản dịch vụ",
     supportTitle: "Hỗ trợ",
     helpCenter: "Trung tâm trợ giúp",
-    customerService: "Dịch vụ khách hàng",
+    blogLink: "Blog",
     bookingHelp: "Hỗ trợ đặt vé",
     faq: "Câu hỏi thường gặp",
     paymentMethodsTitle: "Phương thức thanh toán",
@@ -115,9 +117,59 @@ const translations = {
   }
 };
 
-// Export for usage in index.js
+// City translations centralized here (codes and labels per language)
+const cityTranslations = {
+  vi: {
+    HaNoi: 'Hà Nội',
+    HoChiMinh: 'Hồ Chí Minh',
+    DaNang: 'Đà Nẵng',
+    CanTho: 'Cần Thơ',
+    LamDong: 'Lâm Đồng',
+    QuangTri: 'Quảng Trị',
+    DakLak: 'Đắk Lắk',
+    KhanhHoa: 'Khánh Hòa',
+    HaiPhong: 'Hải Phòng',
+    Hue: 'Huế',
+    DienBien: 'Điện Biên',
+    GiaLai: 'Gia Lai',
+    AnGiang: 'An Giang',
+    ThanhHoa: 'Thanh Hóa',
+    NgheAn: 'Nghệ An',
+    QuangNinh: 'Quảng Ninh',
+    SonLa: 'Sơn La',
+    DaLat: 'Đà Lạt'
+  },
+  en: {
+    HaNoi: 'Ha Noi',
+    HoChiMinh: 'Ho Chi Minh',
+    DaNang: 'Da Nang',
+    CanTho: 'Can Tho',
+    LamDong: 'Lam Dong',
+    QuangTri: 'Quang Tri',
+    DakLak: 'Dak Lak',
+    KhanhHoa: 'Khanh Hoa',
+    HaiPhong: 'Hai Phong',
+    Hue: 'Hue',
+    DienBien: 'Dien Bien',
+    GiaLai: 'Gia Lai',
+    AnGiang: 'An Giang',
+    ThanhHoa: 'Thanh Hoa',
+    NgheAn: 'Nghe An',
+    QuangNinh: 'Quang Ninh',
+    SonLa: 'Son La',
+    DaLat: 'Da Lat'
+  }
+};
+
+// Export for usage
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = translations;
+  module.exports.cityTranslations = cityTranslations;
+}
+if (typeof window !== 'undefined') {
+  window.SKYPLAN_CITY_TRANSLATIONS = cityTranslations;
+  // expose all translations for runtime lookups (e.g., toasts)
+  window.translations = translations;
 }
 
 // Function to apply translations
@@ -143,8 +195,6 @@ function applyTranslations(lang) {
   if (metaDesc && translations[lang]['metaDescription']) {
     metaDesc.setAttribute('content', translations[lang]['metaDescription']);
   }
-  
-  console.log('Applied translations for:', lang);
 }
 
 // Function to update route cards based on language
@@ -168,7 +218,10 @@ function changeLanguage(lang) {
   document.documentElement.lang = lang;
   applyTranslations(lang);
   
-  console.log('Language changed to:', lang); // Debug log
+  // Notify listeners (dropdowns, date inputs) about language change
+  try {
+    document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
+  } catch (e) {}
 }
 
 // Ensure Vietnamese is set as default on first visit
