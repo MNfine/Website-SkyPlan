@@ -31,9 +31,36 @@
         </div>
       </div>
       
+      <!-- Auth buttons (shown when not logged in) -->
       <div class="auth-buttons">
-        <a href="login.html" class="btn btn-outline" data-i18n="signInText">Đăng nhập</a>
-        <a href="register.html" class="btn btn-primary" data-i18n="signUpText">Đăng ký</a>
+        <a href="login.html" class="btn btn-outline login-btn" data-i18n="signInText">Đăng nhập</a>
+        <a href="register.html" class="btn btn-primary login-btn" data-i18n="signUpText">Đăng ký</a>
+      </div>
+      
+      <!-- User menu (shown when logged in) -->
+      <div class="user-menu" style="display: none;">
+        <div class="user-dropdown">
+          <button class="user-button">
+            <i class="fas fa-user-circle"></i>
+            <span class="user-name">User</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="user-dropdown-menu">
+            <a href="profile.html" class="dropdown-item">
+              <i class="fas fa-user"></i>
+              <span data-i18n="profileText">Hồ sơ cá nhân</span>
+            </a>
+            <a href="my_trips.html" class="dropdown-item">
+              <i class="fas fa-suitcase"></i>
+              <span data-i18n="myTripsText">Chuyến đi của tôi</span>
+            </a>
+            <hr class="dropdown-divider">
+            <button class="dropdown-item logout-btn">
+              <i class="fas fa-sign-out-alt"></i>
+              <span data-i18n="logoutText">Đăng xuất</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     

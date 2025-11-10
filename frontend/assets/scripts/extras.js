@@ -90,8 +90,14 @@ document.addEventListener("DOMContentLoaded", () => {
 function setupContinueButton() {
   // Wait a bit for DOM to be fully ready
   setTimeout(() => {
-    const continueBtn = document.querySelector('.continue-btn, .btn-continue, button[onclick*="overview"], button[onclick*="passenger"]');
+    const continueBtn = document.querySelector('#toPaymentBtn, .continue-btn, .btn-continue, a[href*="overview"], button[onclick*="overview"]');
     if (continueBtn) {
+      // Update the href to include current URL parameters
+      const currentParams = new URLSearchParams(window.location.search);
+      if (continueBtn.href && continueBtn.href.includes('overview.html')) {
+        continueBtn.href = 'overview.html?' + currentParams.toString();
+      }
+      
       // Override the onclick to ensure data is saved before navigation
       const originalOnclick = continueBtn.onclick;
       continueBtn.onclick = function(e) {

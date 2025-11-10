@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="assets/styles/loader.css" />
 
     <!-- Shared translations (header/footer), then page translations, then page logic -->
+    <script src="./assets/scripts/auth-utils.js" defer></script>
     <script src="./assets/scripts/common.js" defer></script>
     <script src="./assets/scripts/toast.js" defer></script>
     <script src="./assets/scripts/index_translations.js" defer></script>
@@ -428,11 +429,10 @@
           }
         }
         function initializeApp() {
-          // Get current language from localStorage
+          // Get current language from localStorage without overriding
           let lang = "vi";
           try {
             lang = localStorage.getItem("preferredLanguage") || "vi";
-            localStorage.setItem("preferredLanguage", lang);
           } catch (e) {
             console.warn("LocalStorage not available:", e);
           }
@@ -452,6 +452,13 @@
 
               // Initialize mobile language selector toggle
               initMobileLangSelector();
+              
+              // Ensure language flag is updated after header loads
+              setTimeout(() => {
+                if (typeof window.applyPassengerLang === "function") {
+                  window.applyPassengerLang(lang);
+                }
+              }, 50);
             })
             .catch((err) => {
               console.error("Failed to load header:", err);
@@ -517,7 +524,8 @@
             if (typeof validateForm === 'function' && validateForm()) {
               if (window.Loader) window.Loader.show();
               setTimeout(function() {
-                window.location.href = 'extras.html';
+                const currentParams = new URLSearchParams(window.location.search);
+                window.location.href = 'extras.html?' + currentParams.toString();
               }, 1200);
             }
             // Nếu không hợp lệ, chỉ hiện lỗi, không show loader, không chuyển trang

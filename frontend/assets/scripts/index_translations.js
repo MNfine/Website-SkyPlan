@@ -11,6 +11,10 @@ const translations = {
     signUpText: "Sign Up",
     signInText: "Sign In",
     
+    // User dropdown
+    profileText: "Profile",
+    logoutText: "Logout",
+    
     // Hero section
     heroTitle: "Best deals are waiting for you",
     
@@ -68,6 +72,10 @@ const translations = {
     myTripsText: "Chuyến đi của tôi",
     signUpText: "Đăng ký",
     signInText: "Đăng nhập",
+    
+    // User dropdown
+    profileText: "Hồ sơ cá nhân",
+    logoutText: "Đăng xuất",
     
     // Hero section
     heroTitle: "Ưu đãi tốt nhất đang chờ đón bạn",

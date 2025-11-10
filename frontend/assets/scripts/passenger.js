@@ -348,17 +348,44 @@ function convertDateForBackend(ddmmyyyy) {
   return `${parts[1]}/${parts[0]}/${parts[2]}`;
 }
 
-// Submit passenger data to backend API
+// Submit passenger data to backend API or localStorage for guest checkout
 async function submitPassengerData() {
   const token = getAuthToken();
+  
+  // If no token, save to localStorage for guest checkout
   if (!token) {
-    const errorMsg = t('err.unauthorized') || 'You must be logged in to save passenger information.';
-    if (typeof window.showToast === 'function') {
-      window.showToast(errorMsg, { type: 'error', duration: 3000 });
-    } else {
-      alert(errorMsg);
+    console.log('No auth token - saving passenger data to localStorage for guest checkout');
+    try {
+      const guestPassengerData = {
+        lastname: formData.lastname,
+        firstname: formData.firstname,
+        cccd: formData.cccd,
+        dob: convertDateForBackend(formData.dob),
+        gender: formData.gender,
+        phoneNumber: formData.phoneNumber,
+        email: formData.email,
+        address: formData.address,
+        city: formData.city === 'other' ? (cityCustomInput.value || '') : formData.city,
+        nationality: formData.nationality === 'other' ? (nationalityCustomInput.value || '') : formData.nationality,
+        notes: formData.notes || undefined
+      };
+      
+      localStorage.setItem('skyplan_passenger_data', JSON.stringify(guestPassengerData));
+      
+      if (typeof window.showToast === 'function') {
+        window.showToast('Passenger information saved successfully!', { type: 'success', duration: 2000 });
+      }
+      
+      return true; // Success for guest checkout
+    } catch (error) {
+      console.error('Error saving passenger data to localStorage:', error);
+      if (typeof window.showToast === 'function') {
+        window.showToast('Failed to save passenger information', { type: 'error', duration: 3000 });
+      } else {
+        alert('Failed to save passenger information');
+      }
+      return false;
     }
-    return false;
   }
 
   // Prepare data for backend API
@@ -384,13 +411,20 @@ async function submitPassengerData() {
     payload.customNationality = nationalityCustomInput.value || '';
   }
 
+  // Prepare headers - only include Authorization if token exists
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   try {
+    console.log('Submitting passenger data to API:', { headers, payload });
     const response = await fetch('/api/bookings/passenger', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
+      headers: headers,
       body: JSON.stringify(payload)
     });
 
@@ -398,9 +432,41 @@ async function submitPassengerData() {
     try {
       result = await response.json();
     } catch {}
+    
+    console.log('API Response:', { status: response.status, result });
 
     if (!response.ok || result.success === false) {
-      const errorMsg = result.message || (response.status === 401 ? 'Unauthorized' : 'Request failed');
+      // If unauthorized but we have token, try guest fallback
+      if (response.status === 401) {
+        console.log('API returned 401 - falling back to localStorage guest checkout');
+        try {
+          const guestPassengerData = {
+            lastname: formData.lastname,
+            firstname: formData.firstname,
+            cccd: formData.cccd,
+            dob: convertDateForBackend(formData.dob),
+            gender: formData.gender,
+            phoneNumber: formData.phoneNumber,
+            email: formData.email,
+            address: formData.address,
+            city: formData.city === 'other' ? (cityCustomInput.value || '') : formData.city,
+            nationality: formData.nationality === 'other' ? (nationalityCustomInput.value || '') : formData.nationality,
+            notes: formData.notes || undefined
+          };
+          
+          localStorage.setItem('skyplan_passenger_data', JSON.stringify(guestPassengerData));
+          
+          if (typeof window.showToast === 'function') {
+            window.showToast('Passenger information saved for guest checkout!', { type: 'success', duration: 2000 });
+          }
+          
+          return true; // Success with fallback
+        } catch (fallbackError) {
+          console.error('Fallback localStorage save failed:', fallbackError);
+        }
+      }
+      
+      const errorMsg = result.message || 'Request failed';
       if (typeof window.showToast === 'function') {
         window.showToast(errorMsg, { type: 'error', duration: 3000 });
       } else {
@@ -449,20 +515,21 @@ form.addEventListener("submit", async function (e) {
     if (success) {
       // Redirect to extras page after successful submission
       setTimeout(() => {
-        window.location.href = "extras.html";
-      }, 2000);
+        const currentParams = new URLSearchParams(window.location.search);
+        window.location.href = "extras.html?" + currentParams.toString();
+      }, 1500);
     }
   }
 });
 
 // Check authentication and initialize page
 document.addEventListener("DOMContentLoaded", function () {
-  // Require authentication for passenger page
-  if (typeof window.AuthState !== 'undefined') {
-    if (!window.AuthState.requireAuth()) {
-      return; // Will redirect to login if not authenticated
-    }
-  }
+  // Guest checkout is supported - no authentication required
+  // if (typeof window.AuthState !== 'undefined') {
+  //   if (!window.AuthState.requireAuth()) {
+  //     return; // Will redirect to login if not authenticated
+  //   }
+  // }
   // Set default nationality to Vietnam after a small delay to ensure datalist is ready
   setTimeout(() => {
     if (nationalityInput && !nationalityInput.value) {

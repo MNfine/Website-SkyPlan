@@ -281,6 +281,11 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(data.message || 'Registration failed');
       }
 
+      // Set authentication state if token is provided
+      if (data.token && data.user && window.AuthState) {
+        window.AuthState.setAuth(data.token, data.user, false);
+      }
+
       // Show success message
       showToast(getTranslation('register.successToast'), {
         type: 'success',
@@ -288,9 +293,9 @@ document.addEventListener('DOMContentLoaded', () => {
         dismissible: true
       });
 
-      // Redirect to login page after successful registration
+      // Redirect to homepage after successful registration (user is now logged in)
       setTimeout(() => {
-        window.location.href = 'login.html?message=registration-success';
+        window.location.href = 'index.html?message=registration-success';
       }, 2000);
 
     } catch (error) {

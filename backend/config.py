@@ -6,8 +6,10 @@ VNPay payment gateway settings
 import os
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
+# Load environment variables from .env file in root directory
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+env_path = os.path.join(root_dir, '.env')
+load_dotenv(env_path)
 
 class Config:
     """Base configuration class"""

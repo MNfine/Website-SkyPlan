@@ -12,7 +12,7 @@ class Passenger(Base):
     __tablename__ = "passengers"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=True, index=True)  # Allow NULL for guest bookings
 
     lastname = Column(String(100), nullable=False)
     firstname = Column(String(100), nullable=False)

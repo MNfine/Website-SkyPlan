@@ -406,17 +406,33 @@
 
     // Update page title
     document.title = L.title;
+    
+    // Update selected language flag in header
+    updateSelectedFlag(lang);
+    
+    // Also call common.js updateSelectedLanguage if available
+    if (typeof updateSelectedLanguage === 'function') {
+      updateSelectedLanguage(lang);
+    }
   }
 
   // Initialize on page load
   function init() {
-    // Set Vietnamese as default language
+    // Get current language from localStorage or default to Vietnamese
+    let currentLang = "vi";
     try {
-      localStorage.setItem("preferredLanguage", "vi");
+      currentLang = localStorage.getItem("preferredLanguage") || "vi";
     } catch {}
 
-    const currentLang = "vi";
     applyAll(currentLang);
+    
+    // Ensure header flag is updated after header loads
+    setTimeout(() => {
+      updateSelectedFlag(currentLang);
+    }, 100);
+    setTimeout(() => {
+      updateSelectedFlag(currentLang);
+    }, 500);
 
     // Re-apply translations when header/footer components load
     const debounce = (fn, ms = 70) => {
@@ -426,9 +442,11 @@
         t = setTimeout(() => fn(...a), ms);
       };
     };
-    const rerender = debounce(() =>
-      applyAll(localStorage.getItem("preferredLanguage") || "vi")
-    );
+    const rerender = debounce(() => {
+      const lang = localStorage.getItem("preferredLanguage") || "vi";
+      applyAll(lang);
+      updateSelectedFlag(lang);
+    });
 
     const head = document.getElementById("header-container");
     const foot = document.getElementById("footer-container");
@@ -459,29 +477,52 @@
 
     applyAll(lang);
     updateSelectedFlag(lang, opt);
+    
+    // Broadcast language change event
+    try {
+      window.dispatchEvent(new CustomEvent('languageChanged', { 
+        detail: { language: lang, lang: lang } 
+      }));
+      document.dispatchEvent(new CustomEvent('languageChanged', { 
+        detail: { language: lang, lang: lang } 
+      }));
+    } catch(e) {
+      console.warn('Language change event dispatch failed:', e);
+    }
   });
 
   // Update selected language flag and text in header dropdown
   function updateSelectedFlag(lang, srcOpt) {
     const selected = document.querySelector(".selected-lang");
-    if (!selected) return;
+    if (!selected) {
+      // Retry after a delay if header not loaded yet
+      setTimeout(() => updateSelectedFlag(lang, srcOpt), 100);
+      return;
+    }
 
     const src =
       srcOpt || document.querySelector(`.lang-option[data-lang="${lang}"]`);
-    if (!src) return;
-
+    
     // Update language code text (VI/EN)
     const langText = selected.querySelector("span:not([class*='flag'])");
     if (langText) {
       langText.textContent = lang.toUpperCase();
     }
 
-    // Copy flag icon
-    const srcFlag = src.querySelector('.flag, .lang-flag, [class*="flag"]');
+    // Update flag icon - try to find source flag or use fallback
     let dstIcon = selected.querySelector('.flag, .lang-flag, [class*="flag"]');
-
-    if (srcFlag && dstIcon) {
-      dstIcon.className = srcFlag.className;
+    if (dstIcon) {
+      // Set appropriate flag class based on language
+      const flagClass = lang === 'vi' ? 'flag-vi' : 'flag-en';
+      dstIcon.className = `lang-flag ${flagClass}`;
+      
+      // If we have source element, copy its flag class
+      if (src) {
+        const srcFlag = src.querySelector('.flag, .lang-flag, [class*="flag"]');
+        if (srcFlag) {
+          dstIcon.className = srcFlag.className;
+        }
+      }
     }
 
     // Highlight active language in dropdown
@@ -491,6 +532,23 @@
         el.classList.toggle("active", el.getAttribute("data-lang") === lang)
       );
   }
+
+  // Listen for language changes from other modules
+  window.addEventListener('languageChanged', function(event) {
+    const newLang = event.detail.language || event.detail.lang;
+    if (newLang) {
+      applyAll(newLang);
+      updateSelectedFlag(newLang);
+    }
+  });
+
+  document.addEventListener('languageChanged', function(event) {
+    const newLang = event.detail.language || event.detail.lang;
+    if (newLang) {
+      applyAll(newLang);
+      updateSelectedFlag(newLang);
+    }
+  });
 
   // Export global functions
   window.applyPassengerLang = applyAll;

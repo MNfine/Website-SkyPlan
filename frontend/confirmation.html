@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="assets/styles/confirmation.css">
   <link rel="stylesheet" href="assets/styles/loader.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="assets/scripts/auth-utils.js"></script>
   <script src="assets/scripts/common.js"></script>
   <script src="assets/scripts/confirmation_translations.js"></script>
 </head>
@@ -33,12 +34,14 @@
       <div><strong data-i18n="amountLabel">Số tiền:</strong> <span id="amount" data-i18n="amountValue">Đang cập nhật...</span></div>
     </div>
     <div class="confirmation-actions">
+      <button id="downloadTicketBtn" class="download-btn"><i class="fas fa-download"></i> <span data-i18n="downloadTicket">Tải vé</span></button>
       <a href="index.html"><i class="fas fa-home"></i> <span data-i18n="backHome">Về trang chủ</span></a>
       <a href="overview.html"><i class="fas fa-ticket-alt"></i> <span data-i18n="viewMyTicket">Xem vé của tôi</span></a>
     </div>
   </div>
   <div id="footer-container"></div>
   <script src="assets/scripts/config.js"></script>
+  <script src="assets/scripts/confirmation.js"></script>
   <script>
     // Load header/footer
     fetch('components/header.html').then(r=>r.text()).then(html=>{

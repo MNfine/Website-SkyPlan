@@ -149,34 +149,47 @@ const AuthState = {
 // Header user info update
 function updateHeaderUserInfo() {
   const user = AuthState.getUser();
-  const userNameElements = document.querySelectorAll('.user-name, .header-user-name');
-  const loginButtons = document.querySelectorAll('.login-btn, .header-login');
-  const logoutButtons = document.querySelectorAll('.logout-btn, .header-logout');
-  const userMenus = document.querySelectorAll('.user-menu, .header-user-menu');
+  
+  // Updated selectors to match new HTML structure
+  const userNameElements = document.querySelectorAll('.user-name');
+  const authButtons = document.querySelector('.auth-buttons');
+  const userMenu = document.querySelector('.user-menu');
   
   if (user && AuthState.isAuthenticated()) {
+    console.log('User authenticated:', user); // Debug log
+    
     // Show user info
     userNameElements.forEach(el => {
       el.textContent = user.fullname || user.email || 'User';
     });
     
-    // Hide login buttons, show logout and user menus
-    loginButtons.forEach(el => el.style.display = 'none');
-    logoutButtons.forEach(el => el.style.display = 'block');
-    userMenus.forEach(el => el.style.display = 'block');
+    // Hide auth buttons, show user menu
+    if (authButtons) authButtons.style.display = 'none';
+    if (userMenu) userMenu.style.display = 'block';
+    
+    // Apply translations to user dropdown after showing it
+    setTimeout(() => {
+      if (typeof applyIndexTranslations === 'function') {
+        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        applyIndexTranslations(lang);
+      }
+    }, 100);
+    
   } else {
-    // Show login buttons, hide user info
-    loginButtons.forEach(el => el.style.display = 'block');
-    logoutButtons.forEach(el => el.style.display = 'none');
-    userMenus.forEach(el => el.style.display = 'none');
+    console.log('User not authenticated'); // Debug log
+    
+    // Show auth buttons, hide user menu  
+    if (authButtons) authButtons.style.display = 'flex';
+    if (userMenu) userMenu.style.display = 'none';
   }
 }
 
 // Setup logout buttons
 function setupLogoutButtons() {
   document.addEventListener('click', function(e) {
-    if (e.target.matches('.logout-btn, .header-logout') || e.target.closest('.logout-btn, .header-logout')) {
+    if (e.target.matches('.logout-btn') || e.target.closest('.logout-btn')) {
       e.preventDefault();
+      console.log('Logout button clicked'); // Debug log
       AuthState.logout();
     }
   });
@@ -184,8 +197,11 @@ function setupLogoutButtons() {
 
 // Auto-update header on page load and auth changes
 document.addEventListener('DOMContentLoaded', function() {
-  updateHeaderUserInfo();
-  setupLogoutButtons();
+  // Delay to ensure header is loaded
+  setTimeout(() => {
+    updateHeaderUserInfo();
+    setupLogoutButtons();
+  }, 500);
 });
 
 // Listen for storage changes (cross-tab auth sync)

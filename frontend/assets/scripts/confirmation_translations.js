@@ -10,6 +10,7 @@ const confirmationTranslations = {
     amountLabel: 'Amount:',
     backHome: 'Back to Home',
     viewMyTicket: 'View my ticket',
+    downloadTicket: 'Download Ticket',
     // Header
     helpText: 'Help',
     myTripsText: 'My Trips',
@@ -43,6 +44,7 @@ const confirmationTranslations = {
     amountLabel: 'Số tiền:',
     backHome: 'Về trang chủ',
     viewMyTicket: 'Xem vé của tôi',
+    downloadTicket: 'Tải vé',
     // Header
     helpText: 'Trợ giúp',
     myTripsText: 'Chuyến đi của tôi',

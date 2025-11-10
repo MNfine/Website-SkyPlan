@@ -1,15 +1,31 @@
 // Payment page functionality
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
   initializePaymentMethods();
   initializeCardFormatting();
   initializePaymentValidation();
-  updatePaymentAmountDisplay();
+  await updatePaymentAmountDisplay();
 });
 
 // Update payment amount display on page load
-function updatePaymentAmountDisplay() {
+async function updatePaymentAmountDisplay() {
   const bookingData = getBookingDataForPayment();
+  
+  // If we have a booking code, try to fetch fresh booking details from backend
+  if (bookingData.bookingCode && (!bookingData.amount || bookingData.amount <= 0)) {
+    try {
+      const freshBooking = await fetchBookingDetails(bookingData.bookingCode);
+      if (freshBooking && freshBooking.total_amount) {
+        bookingData.amount = freshBooking.total_amount;
+        bookingData.orderInfo = `SkyPlan Flight Booking - ${bookingData.bookingCode}`;
+        
+        // Update localStorage for future use
+        localStorage.setItem('bookingTotal', freshBooking.total_amount.toString());
+      }
+    } catch (error) {
+      console.warn('Could not fetch booking details:', error);
+    }
+  }
   
   // Update total amount display
   const totalElements = document.querySelectorAll('.payment-total, .total-amount, .amount-to-pay');
@@ -24,6 +40,39 @@ function updatePaymentAmountDisplay() {
   orderInfoElements.forEach(el => {
     el.textContent = bookingData.orderInfo;
   });
+}
+
+// Fetch booking details from backend
+async function fetchBookingDetails(bookingCode) {
+  const token = localStorage.getItem('authToken');
+  
+  try {
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    
+    // Add auth header if available (for authenticated users)
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`/api/bookings/status/${bookingCode}`, {
+      method: 'GET',
+      headers: headers
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      if (result.success && result.booking) {
+        return result.booking;
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error fetching booking details:', error);
+    return null;
+  }
 }
 
 // Small notification helper: prefer showToast; if it's not loaded, try to load toast.js dynamically once,
@@ -303,15 +352,8 @@ function processCardPayment() {
 
 // Process bank transfer
 function processBankTransfer() {
-  // Giả lập đã nhận được tiền, chuyển đến trang xác nhận
-  if (window.Loader) {
-    window.Loader.show();
-    setTimeout(function() {
-      window.location.href = 'confirmation.html';
-    }, 1500);
-  } else {
-    window.location.href = 'confirmation.html';
-  }
+  // Save payment data before redirecting (same as card payment success)
+  showPaymentSuccess();
 }
 
 // Process e-wallet payment
@@ -336,16 +378,28 @@ document.addEventListener('DOMContentLoaded', function () {
   ewalletBtns.forEach(btn => {
     btn.addEventListener('click', function () {
       const walletName = this.querySelector('span').textContent;
-
-      // Select e-wallet radio button
-      const ewalletRadio = document.getElementById('ewallet');
-      ewalletRadio.checked = true;
-      ewalletRadio.dispatchEvent(new Event('change'));
-
-      // Show selected wallet using toast
+      const walletType = this.getAttribute('data-wallet');
       const lang = localStorage.getItem('preferredLanguage') || 'vi';
-      const msg = (lang === 'vi') ? `Đã chọn ${walletName}. Nhấn "Thanh toán với ${walletName}" để tiếp tục.` : `Selected ${walletName}. Click "Pay with ${walletName}" to continue.`;
-      notify(msg, 'info', 5000);
+
+      // Check if wallet is available
+      if (walletType === 'vnpay') {
+        // VNPAY is available - select e-wallet radio button
+        const ewalletRadio = document.getElementById('ewallet');
+        ewalletRadio.checked = true;
+        ewalletRadio.dispatchEvent(new Event('change'));
+
+        // Show selected wallet message
+        const msg = (lang === 'vi') ? 
+          `Đã chọn ${walletName}. Nhấn "Thanh toán với ${walletName}" để tiếp tục.` : 
+          `Selected ${walletName}. Click "Pay with ${walletName}" to continue.`;
+        notify(msg, 'info', 5000);
+      } else {
+        // Other wallets are not available
+        const notAvailableText = (typeof getPaymentTranslation === 'function') ? 
+          getPaymentTranslation('walletNotAvailable', lang) : (lang === 'vi' ? 'chưa khả dụng' : 'is not available');
+        const msg = `${walletName} ${notAvailableText}`;
+        notify(msg, 'warning', 4000);
+      }
     });
   });
 });
@@ -378,7 +432,21 @@ function showPaymentSuccess() {
   // Lưu trạng thái thanh toán thành công theo từng mã vé
   // Lấy mã vé (bookingCode) và số tiền
   const bookingCode = document.getElementById('bookingCode')?.textContent || window.lastTxnRef || '';
-  const amount = window.lastAmount || 1598000;
+  
+  // Get total amount from DOM (more reliable than window.lastAmount)
+  let amount = window.lastAmount;
+  const totalAmountEl = document.querySelector('.price-breakdown .price-item.total span:last-child');
+  if (totalAmountEl) {
+    const totalText = totalAmountEl.textContent.replace(/[^\d]/g, ''); // Remove non-digits
+    const totalFromDOM = parseInt(totalText, 10);
+    if (totalFromDOM > 0) amount = totalFromDOM;
+  }
+  
+  // Fallback amount
+  if (!amount) amount = 1598000;
+  
+  // Debug logs disabled
+  // console.log('Payment success amounts:', amount);
   if (bookingCode) {
     localStorage.setItem('paid_' + bookingCode, 'true');
     localStorage.setItem('amount_' + bookingCode, amount);
@@ -386,14 +454,23 @@ function showPaymentSuccess() {
   localStorage.setItem('lastTxnRef', bookingCode);
   localStorage.setItem('lastAmount', amount);
   
+  // Debug logs disabled
+  // console.log('Saved to localStorage:', amount, bookingCode);
+  
   // Show loader trước khi redirect
   if (window.Loader) {
     window.Loader.show();
     setTimeout(function() {
-      window.location.href = 'confirmation.html';
+      // Pass current parameters to confirmation page, including flight_id
+      const currentParams = new URLSearchParams(window.location.search);
+      currentParams.set('booking_code', bookingCode);
+      window.location.href = `confirmation.html?${currentParams.toString()}`;
     }, 1500);
   } else {
-    window.location.href = 'confirmation.html';
+    // Pass current parameters to confirmation page, including flight_id  
+    const currentParams = new URLSearchParams(window.location.search);
+    currentParams.set('booking_code', bookingCode);
+    window.location.href = `confirmation.html?${currentParams.toString()}`;
   }
 }
 
@@ -425,6 +502,11 @@ document.addEventListener('DOMContentLoaded', function () {
 function getBookingDataForPayment() {
   let amount = 0;
   let orderInfo = 'SkyPlan Flight Booking';
+  let bookingCode = null;
+  
+  // Get booking code from URL parameters (set by overview page)
+  const urlParams = new URLSearchParams(window.location.search);
+  bookingCode = urlParams.get('booking_code') || localStorage.getItem('currentBookingCode');
   
   // Try to get amount from localStorage (set by overview page)
   try {
@@ -434,81 +516,145 @@ function getBookingDataForPayment() {
     }
   } catch {}
   
-  // If no saved total, calculate from available data
+  // If no saved total, try to get from OverviewState or currentBooking
   if (!amount || amount <= 0) {
     if (typeof window.OverviewState !== 'undefined') {
       const bookingData = window.OverviewState.getBookingData();
       amount = bookingData.totalCost || 0;
+    } else {
+      // Fallback: try to get from localStorage booking data
+      try {
+        const currentBooking = localStorage.getItem('currentBooking');
+        if (currentBooking) {
+          const booking = JSON.parse(currentBooking);
+          amount = booking.totalCost || booking.total_amount || 0;
+        }
+      } catch {}
     }
   }
   
-  // Generate booking reference
+  // Generate booking reference if no booking code
   const timestamp = Date.now();
-  let bookingCode = 'SP';
-  try {
-    bookingCode = document.getElementById('bookingCode')?.textContent || 'SP';
-  } catch {}
+  if (!bookingCode) {
+    bookingCode = `SP_${timestamp}`;
+  }
   
   // Try to build descriptive order info
   try {
     const flightData = JSON.parse(localStorage.getItem('skyplan_trip_selection') || '{}');
     if (flightData.fromCode && flightData.toCode) {
-      orderInfo = `Ve may bay ${flightData.fromCode}-${flightData.toCode}`;
+      orderInfo = `Ve may bay ${flightData.fromCode}-${flightData.toCode} - ${bookingCode}`;
+    } else {
+      orderInfo = `SkyPlan Flight Booking - ${bookingCode}`;
     }
   } catch {}
   
   return {
     amount: amount,
     orderInfo: orderInfo,
-    txnRef: `${bookingCode}_${timestamp}`
+    txnRef: `${bookingCode}_${timestamp}`,
+    bookingCode: bookingCode
   };
 }
 
+// Create payment record before VNPay - supports both authenticated and guest users
+async function createPaymentRecord(bookingCode, amount) {
+  const token = localStorage.getItem('authToken'); // Optional for guest users
+
+  try {
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    
+    // Add auth header only if token exists
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch('/api/payments/create', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({
+        booking_code: bookingCode,
+        amount: amount,
+        provider: 'vnpay'
+      })
+    });
+
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'Failed to create payment record');
+    }
+
+    return result.payment;
+  } catch (error) {
+    console.error('Error creating payment record:', error);
+    throw error;
+  }
+}
+
 // VNPay Integration with Python Backend
-function processVNPayPayment() {
+async function processVNPayPayment() {
   // Get booking data for payment
   const bookingData = getBookingDataForPayment();
+  console.log('🔍 VNPay payment data:', bookingData);
+  
   if (!bookingData.amount || bookingData.amount <= 0) {
     notify('Không thể xác định tổng tiền cần thanh toán', 'error', 4000);
     return;
   }
 
+  if (!bookingData.bookingCode) {
+    notify('Không tìm thấy mã booking', 'error', 4000);
+    return;
+  }
+
   const btnElement = event.target.closest('.vnpay-checkout-btn');
   const originalContent = btnElement.innerHTML;
-  btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Đang kết nối VNPay...</span>';
+  btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Đang tạo thanh toán...</span>';
   btnElement.disabled = true;
 
-  const paymentData = {
-    orderInfo: bookingData.orderInfo,
-    amount: bookingData.amount,
-    txnRef: bookingData.txnRef
-  };
+  try {
+    // Step 1: Create payment record in database
+    const payment = await createPaymentRecord(bookingData.bookingCode, bookingData.amount);
+    localStorage.setItem('currentPaymentId', payment.id.toString());
 
-  const apiEndpoint = '/api/payment/vnpay/create';
+    // Step 2: Create VNPay payment URL
+    const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+    const connectingText = (typeof getPaymentTranslation === 'function') ? 
+      getPaymentTranslation('vnpayConnecting', currentLang) : 'Đang kết nối VNPay...';
+    btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>${connectingText}</span>`;
+    
+    const vnpayData = {
+      orderInfo: bookingData.orderInfo,
+      amount: bookingData.amount,
+      txnRef: payment.id.toString() // Use payment ID as transaction reference
+    };
 
-  fetch(apiEndpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(paymentData)
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        window.location.href = data.paymentUrl;
-      } else {
-        throw new Error(data.error || 'Không thể tạo thanh toán VNPay');
-      }
-    })
-    .catch(error => {
-      if (window.SkyPlanDebug) console.error('VNPay Error:', error);
-      const lang = localStorage.getItem('preferredLanguage') || 'vi';
-      const prefix = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('errorPrefix', lang) : 'Lỗi: ';
-      notify(prefix + error.message, 'error', 6000);
-      btnElement.innerHTML = originalContent;
-      btnElement.disabled = false;
+    const vnpayResponse = await fetch('/api/payment/vnpay/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(vnpayData)
     });
+
+    const vnpayResult = await vnpayResponse.json();
+    if (vnpayResult.success) {
+      // Redirect to VNPay
+      window.location.href = vnpayResult.paymentUrl;
+    } else {
+      throw new Error(vnpayResult.error || 'Không thể tạo thanh toán VNPay');
+    }
+
+  } catch (error) {
+    if (window.SkyPlanDebug) console.error('Payment Error:', error);
+    const lang = localStorage.getItem('preferredLanguage') || 'vi';
+    const prefix = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('errorPrefix', lang) : 'Lỗi: ';
+    notify(prefix + error.message, 'error', 6000);
+    btnElement.innerHTML = originalContent;
+    btnElement.disabled = false;
+  }
 }
 
 // Simulate VNPay for testing (when backend is not available)

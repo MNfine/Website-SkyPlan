@@ -269,6 +269,9 @@
       // details
       displayFlightDetails(params);
 
+      // Update seat links with current parameters
+      updateSeatLinks(params);
+
       // pricing - Giá hạng Phổ thông chính xác từ trang search
       let economyPrice = 0;
       if (params.outbound_price) economyPrice = parseInt(params.outbound_price, 10) || 0;
@@ -320,6 +323,24 @@
       }
     }
     displayFlightDetails(params); // will use current locale
+    updateSeatLinks(params); // Update seat links with current parameters
+  }
+
+  function updateSeatLinks(params) {
+    // Update all seat.html links to include current parameters
+    const seatLinks = document.querySelectorAll('a[href*="seat.html"]');
+    seatLinks.forEach(link => {
+      const url = new URL(link.href, window.location.origin);
+      
+      // Add all current parameters except class (which is already in the link)
+      Object.entries(params).forEach(([key, value]) => {
+        if (key !== 'class' && value) {
+          url.searchParams.set(key, value);
+        }
+      });
+      
+      link.href = url.toString();
+    });
   }
 
   // ===== Export to global for HTML / translations to call =====

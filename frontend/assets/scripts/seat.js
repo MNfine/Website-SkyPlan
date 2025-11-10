@@ -1,5 +1,81 @@
 // Seat Page Notifications and Interactions
-// This file handles toast notifications and seat-specific interactions
+// This file handles toast notifications, seat-specific interactions, and API data loading
+
+// Simplified Seat Manager for API data loading
+const SeatManager = {
+    flightId: null,
+    availableSeats: [],
+    seatMap: new Map(),
+    
+    // Initialize seat management - load data and update existing HTML
+    init: async function(flightId) {
+        this.flightId = flightId;
+        await this.loadSeats();
+        this.updateExistingSeats();
+    },
+    
+    // Load seats from API
+    loadSeats: async function() {
+        try {
+            console.log(`Loading seats for flight ID: ${this.flightId}`);
+            const response = await fetch(`/api/seats/flight/${this.flightId}/seats`);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to load seats: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.availableSeats = data.seats;
+                this.seatMap.clear();
+                
+                data.seats.forEach(seat => {
+                    this.seatMap.set(seat.seat_number, seat); // Use seat_number as key
+                });
+                
+                console.log(`Loaded ${data.seats.length} seats for flight ${this.flightId}`);
+            } else {
+                throw new Error(data.message || 'API returned success: false');
+            }
+        } catch (error) {
+            console.error('Error loading seats:', error);
+            if (typeof showToast === 'function') {
+                showToast('Failed to load seat information', 'error');
+            }
+        }
+    },
+    
+    // Update existing seat elements with API data - không thay đổi HTML structure
+    updateExistingSeats: function() {
+        const existingSeats = document.querySelectorAll('.seat[data-seat]');
+        
+        existingSeats.forEach(seatElement => {
+            const seatNumber = seatElement.getAttribute('data-seat');
+            const apiSeat = this.seatMap.get(seatNumber);
+            
+            if (apiSeat) {
+                // Remove existing status classes
+                seatElement.classList.remove('available', 'occupied', 'selected');
+                
+                // Update seat status based on API data
+                if (apiSeat.status === 'CONFIRMED') {
+                    seatElement.classList.add('occupied');
+                    seatElement.style.cursor = 'not-allowed';
+                } else {
+                    seatElement.classList.add('available');
+                    seatElement.style.cursor = 'pointer';
+                }
+                
+                // Add seat data attributes for future use
+                seatElement.setAttribute('data-seat-id', apiSeat.id);
+                seatElement.setAttribute('data-seat-status', apiSeat.status);
+                seatElement.setAttribute('data-seat-class', apiSeat.seat_class);
+                seatElement.setAttribute('data-price-modifier', apiSeat.price_modifier || 0);
+            }
+        });
+    }
+};
 
 // Toast notification functions for seat page
 const SeatNotifications = {
@@ -115,12 +191,29 @@ function enhanceCountdownNotifications() {
 // Note: Continue button click handler is now in seat.html inline script
 // to avoid duplicate event listeners and duplicate toast notifications
 
+// Initialize seat data loading
+function initializeSeatData() {
+  // Get flight ID from URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  let flightId = urlParams.get('flight_id') || urlParams.get('outbound_flight_id');
+  
+  // Fallback to a known flight ID if not provided
+  if (!flightId) {
+    flightId = 1; // Use actual flight ID from database (VJ516)
+    console.log('Using fallback flight ID:', flightId);
+  }
+  
+  // Initialize seat manager to load API data
+  SeatManager.init(flightId);
+}
+
 // Initialize all seat page enhancements
 function initializeSeatEnhancements() {
   // Wait for DOM and other scripts to load
   setTimeout(() => {
     showWelcomeMessage();
     enhanceCountdownNotifications();
+    initializeSeatData(); // Load API data và update existing HTML
     // Note: enhanceContinueButton() removed - handler is in seat.html to avoid duplicate listeners
   }, 500);
 }

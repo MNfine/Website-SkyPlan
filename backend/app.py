@@ -17,14 +17,27 @@ from backend.routes.payments import payment_bp
 from backend.routes.flights import flights_bp
 from backend.routes.auth import auth_bp
 from backend.routes.bookings import bookings_bp
+from backend.routes.seats import seats_bp
+from backend.routes.tickets import tickets_bp
 from backend.models.db import init_db
+
+# Import all models to ensure they are registered
+from backend.models.user import User
+from backend.models.flights import Flight
+from backend.models.passenger import Passenger
+from backend.models.payments import Payment
+from backend.models.booking import Booking, BookingPassenger
+from backend.models.seats import Seat
+from backend.models.tickets import Ticket
 
 from os import getenv
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
+# Load environment variables from .env file in root directory
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+env_path = os.path.join(root_dir, '.env')
+load_dotenv(env_path)
 
 # Get the DATABASE_URL from environment variables
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -68,6 +81,8 @@ def create_app():
     app.register_blueprint(flights_bp)  # Đăng ký API chuyến bay
     app.register_blueprint(auth_bp, url_prefix='/api/auth')  # Đăng ký API xác thực
     app.register_blueprint(bookings_bp, url_prefix='/api/bookings')  # API bookings
+    app.register_blueprint(seats_bp, url_prefix='/api/seats')  # API seat management
+    app.register_blueprint(tickets_bp, url_prefix='/api/tickets')  # API ticket management
     
     # Frontend routes
     @app.route('/')

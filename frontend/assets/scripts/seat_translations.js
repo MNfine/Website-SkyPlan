@@ -143,7 +143,20 @@ function changeSeatLanguage(lang) {
     localStorage.setItem('preferredLanguage', lang);
     document.documentElement.lang = lang;
     applySeatTranslations(lang);
+    
+    // Use global broadcaster if available, otherwise dispatch directly
+    if (typeof window.broadcastLanguageChange === 'function') {
+        window.broadcastLanguageChange(lang);
+    } else {
+        window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: lang } }));
+    }
 }
+
+// Listen for language changes from header
+window.addEventListener('languageChanged', function(event) {
+    const newLang = event.detail.language;
+    applySeatTranslations(newLang);
+});
 
 // Ensure Vietnamese is set as default on first visit
 if (!localStorage.getItem('preferredLanguage')) {

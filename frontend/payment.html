@@ -256,6 +256,7 @@
   <div id="footer-container"></div>
 
   <!-- JavaScript -->
+  <script src="assets/scripts/auth-utils.js"></script>
   <script src="assets/scripts/common.js"></script>
   <script src="assets/scripts/payment_translations.js"></script>
   <script src="assets/scripts/payment_order.js"></script>
@@ -263,8 +264,19 @@
     // Tự động dịch khi trang load
     document.addEventListener('DOMContentLoaded', function() {
       const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      // Set document language
+      document.documentElement.lang = lang;
+      
       if (typeof applyPaymentTranslations === 'function') {
         applyPaymentTranslations(lang);
+        // Force retranslate after a short delay to ensure all dynamic content is loaded
+        setTimeout(() => {
+          applyPaymentTranslations(lang);
+        }, 100);
+        // Force retranslate after longer delay for dynamic content
+        setTimeout(() => {
+          applyPaymentTranslations(lang);
+        }, 500);
       }
     });
   </script>

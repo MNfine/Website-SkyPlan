@@ -844,8 +844,15 @@ function initializeTripTypeHandlers() {
             // Add trip type
             params.set('trip_type', selection.tripType);
             
+            // Add dates from search form
+            const depDate = document.getElementById('dep')?.value;
+            const retDate = document.getElementById('ret')?.value;
+            if (depDate) params.set('depart_date', depDate);
+            if (retDate && selection.tripType === 'round-trip') params.set('return_date', retDate);
+            
             // Add outbound flight data
             if (selection.outbound) {
+                params.set('outbound_flight_id', selection.outbound.id || '');
                 params.set('outbound_flight_number', selection.outbound.flight_number || '');
                 params.set('outbound_departure_airport', selection.outbound.departure_airport || '');
                 params.set('outbound_arrival_airport', selection.outbound.arrival_airport || '');
@@ -856,6 +863,7 @@ function initializeTripTypeHandlers() {
             
             // Add inbound flight data for round-trip
             if (selection.inbound) {
+                params.set('inbound_flight_id', selection.inbound.id || '');
                 params.set('inbound_flight_number', selection.inbound.flight_number || '');
                 params.set('inbound_departure_airport', selection.inbound.departure_airport || '');
                 params.set('inbound_arrival_airport', selection.inbound.arrival_airport || '');

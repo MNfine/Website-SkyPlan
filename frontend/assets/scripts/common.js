@@ -70,7 +70,17 @@ function initializeLanguageSelector() {
                     changeBlogLanguage(selectedLangValue);
                 } else if (typeof changeLanguage === 'function') {
                     changeLanguage(selectedLangValue);
+                } else if (typeof applyIndexTranslations === 'function') {
+                    applyIndexTranslations(selectedLangValue);
                 }
+                
+                // Always update header translations when language changes
+                setTimeout(() => {
+                    if (typeof applyIndexTranslations === 'function') {
+                        applyIndexTranslations(selectedLangValue);
+                    }
+                }, 100);
+                
                 updateSelectedLanguage(selectedLangValue);
             });
             option.dataset.bound = '1';
@@ -221,3 +231,60 @@ function enableSmoothScrolling() {
 
     window.resolveCityLabel = resolveCityLabel;
 })();
+
+// User dropdown functionality
+function initializeUserDropdown() {
+    setTimeout(() => {
+        const userButton = document.querySelector('.user-button');
+        const userDropdown = document.querySelector('.user-dropdown');
+        
+        if (userButton && userDropdown) {
+            // Toggle dropdown on button click
+            userButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                userDropdown.classList.toggle('active');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!userDropdown.contains(e.target)) {
+                    userDropdown.classList.remove('active');
+                }
+            });
+        }
+    }, 200);
+}
+
+// Initialize all common functionality
+document.addEventListener('DOMContentLoaded', function() {
+    initializeUserDropdown();
+    
+    // Update header auth state when page loads (with delay)
+    setTimeout(() => {
+        if (typeof updateHeaderUserInfo === 'function') {
+            updateHeaderUserInfo();
+        }
+    }, 600);
+});
+
+// Global language change broadcaster
+window.broadcastLanguageChange = function(lang) {
+    // Store in localStorage
+    localStorage.setItem('preferredLanguage', lang);
+    
+    // Update document lang
+    document.documentElement.lang = lang;
+    
+    // Dispatch event for all pages to listen
+    try {
+        window.dispatchEvent(new CustomEvent('languageChanged', { 
+            detail: { language: lang, lang: lang } 
+        }));
+        document.dispatchEvent(new CustomEvent('languageChanged', { 
+            detail: { language: lang, lang: lang } 
+        }));
+    } catch(e) {
+        console.warn('Language change event dispatch failed:', e);
+    }
+};
