@@ -147,7 +147,7 @@ body {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
 }
 .profile-header {
   margin-bottom: 20px;
