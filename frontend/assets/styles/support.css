@@ -65,7 +65,7 @@ header .container, footer .container {
 
 /* Main Content Grid */
 .support-content {
-  margin-bottom: 80px;
+  margin-bottom: 40px; /* Reduced from 80px */
 }
 
 .support-grid {
@@ -82,7 +82,7 @@ header .container, footer .container {
   box-shadow: var(--box-shadow);
   border: 1px solid var(--border-color);
   overflow: hidden;
-  height: 650px; /* Increased height */
+  height: 640px; /* Increased height to match all 5 cards */
   display: flex;
   flex-direction: column;
   transition: all var(--transition-speed) ease;
@@ -386,9 +386,24 @@ header .container, footer .container {
   font-size: 22px;
   z-index: 1000;
   transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  animation: chatPulse 2s infinite;
 }
+
+@keyframes chatPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(10, 150, 157, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(10, 150, 157, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(10, 150, 157, 0);
+  }
+}
+
 .chat-launcher:hover {
   transform: translateY(-2px) scale(1.03);
+  animation-play-state: paused; /* Pause animation on hover */
 }
 .chat-launcher.hidden { display: none; }
 
@@ -628,7 +643,7 @@ header .container, footer .container {
   }
   
   .chat-container {
-    height: 550px;
+    height: 600px; /* Increased for mobile to accommodate 5 cards */
   }
 }
 
