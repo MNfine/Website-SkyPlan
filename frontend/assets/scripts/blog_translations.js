@@ -253,11 +253,11 @@ const blogTranslations = {
 const blogPostsData = [
     { id: 1, image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=800&q=80", date: "2025-10-28", readTime: 8 },
     { id: 2, image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80", date: "2025-10-25", readTime: 6 },
-    { id: 3, image: "https://images.unsplash.com/photo-1559628376-f3fe5f782a2e?w=800&q=80", date: "2025-10-22", readTime: 10 },
+    { id: 3, image: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=800&q=80", date: "2025-10-22", readTime: 10 },
     { id: 4, image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800&q=80", date: "2025-10-20", readTime: 7 },
     { id: 5, image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=800&q=80", date: "2025-10-18", readTime: 5 },
     { id: 6, image: "https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?w=800&q=80", date: "2025-10-15", readTime: 9 },
-    { id: 7, image: "assets/images/Da_Nang.avif", date: "2025-10-12", readTime: 6 },
+    { id: 7, image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80", date: "2025-10-12", readTime: 6 },
     { id: 8, image: "https://images.unsplash.com/photo-1540611025311-01df3cef54b5?w=800&q=80", date: "2025-10-10", readTime: 12 },
     { id: 9, image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&q=80", date: "2025-10-08", readTime: 7 }
 ];
