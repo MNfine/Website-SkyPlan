@@ -329,7 +329,7 @@ function renderDrawerContent(type) {
       const name = window.extrasI18n?.[lang]?.meals?.[m.id] || m.name;
       const desc =
         window.extrasI18n?.[lang]?.mealItemDescs?.[m.id] || m.desc || "";
-      const img = m.img || "assets/images/meal.png"; // fallback
+      const img = m.img || "assets/images/meal.png";
       return `
         <div class="meal-row" data-id="${m.id}">
           <img class="meal-thumb" src="${img}" alt="${name}" />
