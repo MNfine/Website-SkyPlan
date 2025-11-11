@@ -98,8 +98,8 @@
   background: var(--primary-color);
   color: #fff;
   font-weight: 700;
-  padding: 14px 22px;
-  border-radius: 10px;
+  padding: 12px 24px;
+  border-radius: 12px;
   text-decoration: none;
   transition: background-color var(--transition-speed, 0.3s) ease,
     transform 0.2s ease;
@@ -193,7 +193,7 @@
 .meal-thumb {
   width: 72px;
   height: 72px;
-  object-fit: cover; /* nếu là ảnh món ăn thực tế */
+  object-fit: cover;
   border-radius: 10px;
   border: 1px solid #eee;
   background: #fff;
@@ -252,7 +252,7 @@
 }
 .baggage-card {
   display: grid;
-  grid-template-columns: auto 1fr max-content max-content; /* thumb | info | price | btn */
+  grid-template-columns: auto 1fr max-content max-content;
   align-items: center;
   gap: 12px;
   padding: 12px 0;
@@ -342,7 +342,7 @@
 }
 .service-card {
   display: grid;
-  grid-template-columns: auto 1fr auto auto; /* thumb | info | price | button */
+  grid-template-columns: auto 1fr auto auto;
   align-items: center;
   gap: 12px;
   padding: 12px 0;
