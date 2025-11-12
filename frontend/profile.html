@@ -130,16 +130,23 @@
     document.addEventListener('DOMContentLoaded', function () {
       function handleComponentError(name) { console.error('Failed to load ' + name); }
 
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      document.documentElement.lang = lang;
+
       fetch('components/header.html')
         .then(r => { if (!r.ok) throw new Error('header'); return r.text(); })
         .then(html => {
           document.getElementById('header-container').innerHTML = html;
           if (typeof initializeMobileMenu === 'function') initializeMobileMenu();
           if (typeof initializeLanguageSelector === 'function') initializeLanguageSelector();
-          const lang = localStorage.getItem('preferredLanguage') || 'vi';
           if (typeof updateSelectedLanguage === 'function') {
             updateSelectedLanguage(lang);
           }
+          // Apply translations to header using common.js
+          if (typeof applyTranslations === 'function') {
+            applyTranslations(lang);
+          }
+          // Apply profile-specific translations
           if (typeof applyProfileTranslations === 'function') {
             applyProfileTranslations(lang);
           }
@@ -150,7 +157,11 @@
         .then(r => { if (!r.ok) throw new Error('footer'); return r.text(); })
         .then(html => { 
           document.getElementById('footer-container').innerHTML = html;
-          const lang = localStorage.getItem('preferredLanguage') || 'vi';
+          // Apply translations to footer using common.js
+          if (typeof applyTranslations === 'function') {
+            applyTranslations(lang);
+          }
+          // Apply profile-specific translations
           if (typeof applyProfileTranslations === 'function') {
             applyProfileTranslations(lang);
           }
