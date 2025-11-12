@@ -644,27 +644,68 @@
     function formatDobMMDDYYYY(dob) {
       if (!dob) return '';
       // If already MM/DD/YYYY, return as is
-      if (/^\d{2}\/\d{2}\/\d{4}$/.test(dob)) return dob;
+      // If format looks like DD/MM/YYYY or MM/DD/YYYY (both are \d{2}/\d{2}/\d{4}),
+      // assume user-entered is DD/MM/YYYY (common for our locale) and convert to MM/DD/YYYY.
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(dob)) {
+        const parts = dob.split('/');
+        // parts[0] = day, parts[1] = month, parts[2] = year (user locale assumed)
+        const day = parts[0].padStart(2, '0');
+        const month = parts[1].padStart(2, '0');
+        const year = parts[2];
+        return `${month}/${day}/${year}`;
+      }
       // If YYYY-MM-DD
       if (/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
         const [y, m, d] = dob.split('-');
         return `${m}/${d}/${y}`;
       }
-      // If DD/MM/YYYY
-      if (/^\d{2}\/\d{2}\/\d{4}$/.test(dob)) {
-        const [d, m, y] = dob.split('/');
-        return `${m}/${d}/${y}`;
-      }
-      // If D/M/YYYY or M/D/YYYY
-      const parts = dob.split(/[\/-]/);
+      // If other common separators like D-M-YYYY or D.M.YYYY
+      const parts = dob.split(/[\/\-.]/);
       if (parts.length === 3) {
         let [a, b, c] = parts;
-        if (c.length === 4) {
-          // Try to guess: if a > 12, treat as D/M/YYYY
-          if (parseInt(a, 10) > 12) return `${b.padStart(2, '0')}/${a.padStart(2, '0')}/${c}`;
-          // If b > 12, treat as M/D/YYYY
-          if (parseInt(b, 10) > 12) return `${a.padStart(2, '0')}/${b.padStart(2, '0')}/${c}`;
+        if (c && c.length === 4) {
+          // If a looks like YYYY (start with 4 digits), it's YYYY-MM-DD
+          if (/^\d{4}$/.test(a)) {
+            return `${b.padStart(2,'0')}/${(a.length===4? a.split('-')[2]: a)}/${c}`; // fallback
+          }
+          // Otherwise assume a=day, b=month
+          return `${b.padStart(2, '0')}/${a.padStart(2, '0')}/${c}`;
         }
+      }
+      // For any remaining 3-part formats (separated by /, -, .), we already attempted
+      // the YYYY-MM-DD and D-M-YYYY/D.M.YYYY cases above. If still ambiguous, leave as-is.
+      return dob; // fallback
+    }
+
+    // Helper to format dob to YYYY-MM-DD (ISO) for guest booking endpoint
+    function formatDobISO(dob) {
+      if (!dob) return '';
+      // If already ISO
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dob)) return dob;
+      // If common dd/mm/yyyy or mm/dd/yyyy -> try to parse and normalize as YYYY-MM-DD
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(dob)) {
+        const parts = dob.split('/');
+        // Assume user-entered is DD/MM/YYYY (locale)
+        const day = parts[0].padStart(2, '0');
+        const month = parts[1].padStart(2, '0');
+        const year = parts[2];
+        return `${year}-${month}-${day}`;
+      }
+      // If YYYY/MM/DD or other separators
+      const parts = dob.split(/[\/\-.]/);
+      if (parts.length === 3) {
+        // If first part is year
+        if (/^\d{4}$/.test(parts[0])) return `${parts[0]}-${parts[1].padStart(2,'0')}-${parts[2].padStart(2,'0')}`;
+        // Otherwise assume D M Y
+        return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+      }
+      // Last resort: try Date parsing
+      const dt = new Date(dob);
+      if (!isNaN(dt.getTime())) {
+        const y = dt.getFullYear();
+        const m = String(dt.getMonth() + 1).padStart(2, '0');
+        const d = String(dt.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
       }
       return dob; // fallback
     }
@@ -691,7 +732,7 @@
           lastname: passenger.lastname,
           firstname: passenger.firstname,
           cccd: passenger.cccd,
-          dob: formatDobMMDDYYYY(passenger.dob),
+          dob: formatDobISO(passenger.dob),
           gender: passenger.gender,
           phone_number: passenger.phone_number,
           email: passenger.email,

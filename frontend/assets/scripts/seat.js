@@ -196,11 +196,24 @@ function initializeSeatData() {
   // Get flight ID from URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   let flightId = urlParams.get('flight_id') || urlParams.get('outbound_flight_id');
-  
-  // Fallback to a known flight ID if not provided
+
+  // If not provided in URL, try reading from localStorage `skyplan_trip_selection`
   if (!flightId) {
-    flightId = 1; // Use actual flight ID from database (VJ516)
-    console.log('Using fallback flight ID:', flightId);
+    try {
+      const trip = JSON.parse(localStorage.getItem('skyplan_trip_selection') || 'null');
+      if (trip && (trip.outbound_flight_id || trip.flightId || trip.flight_id)) {
+        flightId = String(trip.outbound_flight_id || trip.flightId || trip.flight_id);
+        console.log('Seat page: resolved flightId from skyplan_trip_selection:', flightId);
+      }
+    } catch (e) {
+      console.warn('Seat page: error reading skyplan_trip_selection', e);
+    }
+  }
+
+  if (!flightId) {
+    console.error('Seat page: no flight_id found in URL or localStorage; cannot load seats');
+    if (typeof showToast === 'function') showToast('Flight ID not found. Vui lòng quay lại trang chọn chuyến.', {type: 'error'});
+    return;
   }
   
   // Initialize seat manager to load API data

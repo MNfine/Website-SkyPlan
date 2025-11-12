@@ -87,7 +87,8 @@
     }
     
     if (txnRefEl) {
-      txnRefEl.textContent = payment.transaction_id || 'N/A';
+      // Nếu backend không trả về transaction_id, giữ nguyên giá trị đã có (từ query string)
+      txnRefEl.textContent = payment.transaction_id && payment.transaction_id !== 'N/A' ? payment.transaction_id : txnRefEl.textContent || 'N/A';
     }
     
     if (amountEl) {
@@ -390,6 +391,12 @@ mã vé tại quầy check-in sân bay.
 
   // Initialize confirmation page
   document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const txnRef = urlParams.get('txn_ref');
+    const transactionNo = urlParams.get('transaction_no');
+    if (txnRef) document.getElementById('bookingCode').textContent = txnRef;
+    if (transactionNo) document.getElementById('txnRef').textContent = transactionNo;
+    
     confirmPaymentStatus();
     
     // Add download button event listener

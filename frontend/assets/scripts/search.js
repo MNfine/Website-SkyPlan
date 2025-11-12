@@ -832,46 +832,90 @@ function initializeTripTypeHandlers() {
         // Book button handler
         bookBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            
+
             if (!window.currentFlightSelection) {
                 console.error('No flight selection found');
                 return;
             }
-            
+
             const selection = window.currentFlightSelection;
             const params = new URLSearchParams();
-            
+
             // Add trip type
             params.set('trip_type', selection.tripType);
-            
+
             // Add dates from search form
             const depDate = document.getElementById('dep')?.value;
             const retDate = document.getElementById('ret')?.value;
             if (depDate) params.set('depart_date', depDate);
             if (retDate && selection.tripType === 'round-trip') params.set('return_date', retDate);
-            
+
+            // Helper to read common id/property names from API objects
+            function readField(obj, ...keys) {
+                if (!obj) return '';
+                for (let k of keys) {
+                    if (obj[k] !== undefined && obj[k] !== null) return obj[k];
+                }
+                return '';
+            }
+
             // Add outbound flight data
             if (selection.outbound) {
-                params.set('outbound_flight_id', selection.outbound.id || '');
-                params.set('outbound_flight_number', selection.outbound.flight_number || '');
-                params.set('outbound_departure_airport', selection.outbound.departure_airport || '');
-                params.set('outbound_arrival_airport', selection.outbound.arrival_airport || '');
-                params.set('outbound_departure_time', selection.outbound.departure_time || '');
-                params.set('outbound_arrival_time', selection.outbound.arrival_time || '');
-                params.set('outbound_price', selection.outbound.price || '');
+                const out = selection.outbound;
+                const outId = readField(out, 'id', 'flight_id', 'flightId', '_id');
+                params.set('outbound_flight_id', outId || '');
+                params.set('outbound_flight_number', readField(out, 'flight_number', 'flightNumber') || '');
+                params.set('outbound_departure_airport', readField(out, 'departure_airport') || '');
+                params.set('outbound_arrival_airport', readField(out, 'arrival_airport') || '');
+                params.set('outbound_departure_time', readField(out, 'departure_time') || '');
+                params.set('outbound_arrival_time', readField(out, 'arrival_time') || '');
+                params.set('outbound_price', readField(out, 'price') || '');
             }
-            
+
             // Add inbound flight data for round-trip
             if (selection.inbound) {
-                params.set('inbound_flight_id', selection.inbound.id || '');
-                params.set('inbound_flight_number', selection.inbound.flight_number || '');
-                params.set('inbound_departure_airport', selection.inbound.departure_airport || '');
-                params.set('inbound_arrival_airport', selection.inbound.arrival_airport || '');
-                params.set('inbound_departure_time', selection.inbound.departure_time || '');
-                params.set('inbound_arrival_time', selection.inbound.arrival_time || '');
-                params.set('inbound_price', selection.inbound.price || '');
+                const inn = selection.inbound;
+                const inId = readField(inn, 'id', 'flight_id', 'flightId', '_id');
+                params.set('inbound_flight_id', inId || '');
+                params.set('inbound_flight_number', readField(inn, 'flight_number', 'flightNumber') || '');
+                params.set('inbound_departure_airport', readField(inn, 'departure_airport') || '');
+                params.set('inbound_arrival_airport', readField(inn, 'arrival_airport') || '');
+                params.set('inbound_departure_time', readField(inn, 'departure_time') || '');
+                params.set('inbound_arrival_time', readField(inn, 'arrival_time') || '');
+                params.set('inbound_price', readField(inn, 'price') || '');
             }
-            
+
+            // Persist a compact trip object into localStorage so later pages (overview/payment) have flight IDs
+            try {
+                const tripObj = {
+                    trip_type: selection.tripType,
+                    departDateISO: depDate || '',
+                    returnDateISO: selection.tripType === 'round-trip' ? (retDate || '') : '',
+                    outbound_flight_id: params.get('outbound_flight_id') || '',
+                    outbound_flight_number: params.get('outbound_flight_number') || '',
+                    outbound_departure_airport: params.get('outbound_departure_airport') || '',
+                    outbound_arrival_airport: params.get('outbound_arrival_airport') || '',
+                    outbound_departure_time: params.get('outbound_departure_time') || '',
+                    outbound_arrival_time: params.get('outbound_arrival_time') || '',
+                    outbound_price: params.get('outbound_price') ? Number(params.get('outbound_price')) : 0
+                };
+
+                if (selection.inbound) {
+                    tripObj.inbound_flight_id = params.get('inbound_flight_id') || '';
+                    tripObj.inbound_flight_number = params.get('inbound_flight_number') || '';
+                    tripObj.inbound_departure_airport = params.get('inbound_departure_airport') || '';
+                    tripObj.inbound_arrival_airport = params.get('inbound_arrival_airport') || '';
+                    tripObj.inbound_departure_time = params.get('inbound_departure_time') || '';
+                    tripObj.inbound_arrival_time = params.get('inbound_arrival_time') || '';
+                    tripObj.inbound_price = params.get('inbound_price') ? Number(params.get('inbound_price')) : 0;
+                }
+
+                localStorage.setItem('skyplan_trip_selection', JSON.stringify(tripObj));
+                console.log('[search] Saved skyplan_trip_selection to localStorage:', tripObj);
+            } catch (err) {
+                console.warn('[search] Failed to persist skyplan_trip_selection:', err);
+            }
+
             // Navigate to fare page
             window.location.href = `/fare.html?${params.toString()}`;
         });

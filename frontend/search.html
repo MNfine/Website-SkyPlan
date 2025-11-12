@@ -867,6 +867,32 @@
                                     { direction: 'inbound', departTime: inDep, arriveTime: inArr, departIATA: toIATA, arriveIATA: fromIATA, durationMin: diffMin(inDep,inArr) }
                                 ]
                             };
+                            // If modal selection stored a more complete flight object, merge flight ids and numbers
+                            try {
+                                const sel = window.currentFlightSelection;
+                                if (sel && sel.outbound) {
+                                    const out = sel.outbound;
+                                    trip.outbound_flight_id = out.id || out.flight_id || out.flightId || out._id || '';
+                                    trip.outbound_flight_number = out.flight_number || out.flightNumber || '';
+                                    trip.outbound_departure_time = out.departure_time || '';
+                                    trip.outbound_arrival_time = out.arrival_time || '';
+                                    trip.outbound_departure_airport = out.departure_airport || '';
+                                    trip.outbound_arrival_airport = out.arrival_airport || '';
+                                    trip.outbound_price = Number(out.price) || trip.priceVND || 0;
+                                }
+                                if (sel && sel.inbound) {
+                                    const inn = sel.inbound;
+                                    trip.inbound_flight_id = inn.id || inn.flight_id || inn.flightId || inn._id || '';
+                                    trip.inbound_flight_number = inn.flight_number || inn.flightNumber || '';
+                                    trip.inbound_departure_time = inn.departure_time || '';
+                                    trip.inbound_arrival_time = inn.arrival_time || '';
+                                    trip.inbound_departure_airport = inn.departure_airport || '';
+                                    trip.inbound_arrival_airport = inn.arrival_airport || '';
+                                    trip.inbound_price = Number(inn.price) || 0;
+                                }
+                            } catch (e) {
+                                // ignore merge errors
+                            }
                             try { localStorage.setItem('skyplan_trip_selection', JSON.stringify(trip)); } catch(_) {}
                             // Provide simple route hints for other pages
                             try {

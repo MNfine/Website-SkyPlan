@@ -62,7 +62,13 @@ def create_app():
                 template_folder=frontend_abs_path)
     
     # Enable CORS for API requests
-    CORS(app)
+    CORS(app, origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8080",
+        "http://127.0.0.1:8080",
+        "https://c9883fb4dce6.ngrok-free.app"
+    ], supports_credentials=True)
     
     # App configuration
     app.config['SECRET_KEY'] = 'skyplan-secret-key-2025'

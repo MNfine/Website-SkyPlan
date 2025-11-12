@@ -198,15 +198,26 @@ function updatePaymentAmounts() {
       taxAmountEl.textContent = formatCurrency(taxAmount);
     }
     
-    // Update final amount (initially same as total, before voucher)
+    // Update final amount (prefer any saved finalPaymentAmount after voucher)
+    let finalPayment = totalCost;
+    try {
+      const storedFinal = localStorage.getItem('finalPaymentAmount');
+      const parsedStored = storedFinal ? Number(storedFinal) : NaN;
+      if (!isNaN(parsedStored) && parsedStored > 0) {
+        finalPayment = parsedStored;
+      }
+    } catch (e) {
+      // ignore and keep totalCost
+    }
+
     const finalAmountEl = document.getElementById('finalAmount');
     if (finalAmountEl) {
-      finalAmountEl.textContent = formatCurrency(totalCost);
+      finalAmountEl.textContent = formatCurrency(finalPayment);
     }
-    
-    // Update VNPay payment details
+
+    // Update VNPay payment details to reflect final payment (after voucher if any)
     if (vnpayAmountElements.length > 0) {
-      vnpayAmountElements[0].textContent = formatCurrency(totalCost);
+      vnpayAmountElements[0].textContent = formatCurrency(finalPayment);
     }
     
     console.log('💰 Payment amounts breakdown:', {
@@ -215,7 +226,7 @@ function updatePaymentAmounts() {
       taxAmount: formatCurrency(taxAmount),
       baseAmount: formatCurrency(baseAmount),
       totalAmount: formatCurrency(totalCost),
-      finalAmount: formatCurrency(totalCost),
+  finalAmount: formatCurrency(finalPayment),
       rawBookingData: bookingData,
       seatsPriceDetails: bookingData.seats,
       calculationSteps: {
@@ -954,14 +965,28 @@ function initializeVoucher() {
     
     if (totalAmountEl && finalAmountEl) {
       const currentTotal = totalAmountEl.textContent;
-      finalAmountEl.textContent = currentTotal;
-      console.log('🎫 Initialized finalAmount with:', currentTotal);
+      // Prefer any existing saved finalPaymentAmount
+      let initAmount = currentTotal;
+      try {
+        const stored = localStorage.getItem('finalPaymentAmount');
+        const parsed = stored ? Number(stored) : NaN;
+        if (!isNaN(parsed) && parsed > 0) initAmount = formatCurrency(parsed);
+      } catch (e) {}
+
+      finalAmountEl.textContent = initAmount;
+      console.log('🎫 Initialized finalAmount with:', initAmount);
       
-      // Also save to localStorage
-      const parsedTotal = parseFloat(currentTotal.replace(/[^\d]/g, ''));
+      // Also save numeric value to localStorage
+      const parsedTotal = parseFloat((initAmount + '').replace(/[^\d]/g, ''));
       if (!isNaN(parsedTotal) && parsedTotal > 0) {
         localStorage.setItem('finalPaymentAmount', parsedTotal.toString());
         console.log('💾 Initialized finalPaymentAmount in localStorage:', parsedTotal);
+      }
+
+      // Also update VNPay display (if present)
+      const vnpayEls = document.querySelectorAll('.payment-details strong');
+      if (vnpayEls.length > 0) {
+        vnpayEls[0].textContent = initAmount;
       }
     }
   }
@@ -1027,6 +1052,10 @@ function initializeVoucher() {
     // Save final payment amount to localStorage (after voucher)
     localStorage.setItem('finalPaymentAmount', finalAmount.toString());
     console.log('💾 Saved finalPaymentAmount after voucher:', finalAmount);
+
+  // Also update VNPay displayed amount immediately
+  const vnpayEls = document.querySelectorAll('.payment-details strong');
+  if (vnpayEls.length > 0) vnpayEls[0].textContent = formatCurrency(finalAmount);
 
     const discountText = formatCurrency(discount);
     const message = (getTranslation('voucherApplied') || '✓ Áp dụng thành công: Giảm {1}').replace('{1}', discountText);
@@ -1112,6 +1141,11 @@ function initializeVoucher() {
           localStorage.setItem('finalPaymentAmount', parsedTotal.toString());
           console.log('💾 Reset finalPaymentAmount to original total:', parsedTotal);
         }
+      }
+      // Also update VNPay displayed amount immediately
+      const vnpayEls = document.querySelectorAll('.payment-details strong');
+      if (vnpayEls.length > 0) {
+        vnpayEls[0].textContent = originalAmount;
       }
     });
 

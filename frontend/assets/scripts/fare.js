@@ -246,6 +246,28 @@
     setTimeout(function() {
 
     const params = getUrlParams();
+    // Merge trip info from URL into localStorage so subsequent pages (seat/overview) have flight ids
+    try {
+      const usp = new URLSearchParams(window.location.search || '');
+      const outboundId = usp.get('outbound_flight_id') || usp.get('flight_id') || '';
+      if (outboundId) {
+        let trip = null;
+        try { trip = JSON.parse(localStorage.getItem('skyplan_trip_selection') || 'null'); } catch(_) { trip = null; }
+        trip = trip || {};
+        // Overwrite or set outbound-related fields from URL params
+        trip.outbound_flight_id = outboundId || trip.outbound_flight_id || '';
+        trip.outbound_flight_number = usp.get('outbound_flight_number') || trip.outbound_flight_number || '';
+        trip.outbound_departure_airport = usp.get('outbound_departure_airport') || trip.outbound_departure_airport || '';
+        trip.outbound_arrival_airport = usp.get('outbound_arrival_airport') || trip.outbound_arrival_airport || '';
+        trip.outbound_departure_time = usp.get('outbound_departure_time') || trip.outbound_departure_time || '';
+        trip.outbound_arrival_time = usp.get('outbound_arrival_time') || trip.outbound_arrival_time || '';
+        trip.outbound_price = usp.get('outbound_price') ? Number(usp.get('outbound_price')) : (trip.outbound_price || 0);
+        // Dates
+        trip.departDateISO = usp.get('depart_date') || trip.departDateISO || '';
+        if (usp.get('return_date')) trip.returnDateISO = usp.get('return_date');
+        try { localStorage.setItem('skyplan_trip_selection', JSON.stringify(trip)); console.log('[fare] Merged trip data into skyplan_trip_selection', trip); } catch(e) { console.warn('[fare] Failed saving trip merge', e); }
+      }
+    } catch (e) { /* ignore */ }
     const routeTitle = document.querySelector('.route-title');
 
     const hasFlightData = params.outbound_departure_airport && params.outbound_arrival_airport;
