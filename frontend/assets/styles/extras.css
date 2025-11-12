@@ -57,32 +57,13 @@
     transform 0.2s ease;
 }
 .extra-card__btn:hover {
-  background: #097f85; /*xem lại có đồng bộ team chưa*/
+  background: #097f85; 
   transform: translateY(-1px);
 }
 .extra-card__btn:active {
   transform: translateY(1px);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
 }
-.extra-card__btn.added {
-  background: var(--primary-color);
-  color: #fff;
-  border-color: var(--primary-color);
-}
-.extra-card.selected {
-  outline: 3px solid rgba(31, 182, 160, 0.2);
-}
-.extra-card__badge.chosen {
-  background: #e8f5f4;
-  color: var(--primary-color);
-  border: 1px solid var(--primary-color);
-  border-radius: 8px;
-  padding: 6px 10px;
-  display: inline-block;
-  margin-top: 6px;
-  font-weight: 600;
-}
-
 .extras-actions {
   margin-top: 28px;
   margin-bottom: 60px;

@@ -143,6 +143,17 @@ function applyExtrasTranslations(lang) {
         applyExtrasTranslations(lang);
       if (typeof initRouteTitle === "function") initRouteTitle(lang);
     } catch (e) {}
+    try {
+      const panel = document.getElementById("extras-panel");
+      if (
+        panel &&
+        panel.getAttribute("aria-hidden") === "false" &&
+        typeof renderDrawerContent === "function"
+      ) {
+        const type = panel.dataset.type;
+        if (type) renderDrawerContent(type);
+      }
+    } catch (e) {}
   };
 })();
 
