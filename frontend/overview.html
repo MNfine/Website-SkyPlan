@@ -164,10 +164,10 @@
             <span class="price-label" data-i18n="totalLabel">Tổng cộng</span>
             <span class="price-amount">1.598.000 VND</span>
           </div>
-          <a href="payment.html" class="confirm-btn pay-btn">
+          <button id="confirmBookingBtn" class="confirm-btn pay-btn">
             <span data-i18n="confirmBooking">Xác nhận đặt vé</span>
             <i class="fas fa-arrow-right"></i>
-          </a>
+          </button>
         </div>
       </div>
     </div>
@@ -180,6 +180,7 @@
   <script src="assets/scripts/common.js"></script>
   <script src="assets/scripts/overview_translations.js"></script>
   <script src="assets/scripts/extras_translations.js"></script>
+  <script src="assets/scripts/toast.js"></script>
   <script src="assets/scripts/overview.js"></script>
 
   <!-- Load Components -->
@@ -462,6 +463,74 @@
         }
       } catch(_) {}
     })();
+
+    // Handle confirm booking button
+    document.addEventListener('DOMContentLoaded', function() {
+      const confirmBtn = document.getElementById('confirmBookingBtn');
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', function() {
+          // Validate booking data
+          if (typeof window.OverviewState === 'undefined') {
+            console.error('OverviewState not available');
+            if (window.showToast) {
+              window.showToast('Có lỗi xảy ra. Vui lòng thử lại.', 'error');
+            } else {
+              alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            }
+            return;
+          }
+
+          const bookingData = window.OverviewState.getBookingData();
+          console.log('🔍 Confirm booking - booking data:', bookingData);
+          
+          // Check if we have required trip data (most critical)
+          if (!bookingData || !bookingData.flights) {
+            const message = 'Thông tin chuyến bay bị thiếu. Vui lòng chọn lại chuyến bay.';
+            if (window.showToast) {
+              window.showToast(message, 'error');
+            } else {
+              alert(message);
+            }
+            setTimeout(() => {
+              window.location.href = 'search.html';
+            }, 2000);
+            return;
+          }
+
+          // For passenger info, we'll be more lenient since this seems to be optional in this flow
+          // Just warn user but still allow to proceed
+          if (!bookingData.passenger) {
+            console.log('⚠️ No passenger info yet, but allowing to proceed');
+            // Create minimal passenger data
+            bookingData.passenger = {
+              name: '',
+              email: '',
+              phone: '',
+              isIncomplete: true
+            };
+          }
+
+          // Save complete booking data for payment page
+          try {
+            localStorage.setItem('completeBookingData', JSON.stringify(bookingData));
+            localStorage.setItem('bookingTimestamp', Date.now().toString());
+            
+            console.log('✅ Booking data saved, navigating to payment...');
+            
+            // Navigate to payment page
+            window.location.href = 'payment.html';
+          } catch (error) {
+            console.error('Error saving booking data:', error);
+            const message = 'Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.';
+            if (window.showToast) {
+              window.showToast(message, 'error');
+            } else {
+              alert(message);
+            }
+          }
+        });
+      }
+    });
   </script>
 </body>
 

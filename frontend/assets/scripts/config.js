@@ -48,6 +48,7 @@ class Config {
   // API endpoints
   getApiEndpoints() {
     return {
+      bookings: `${this.apiBaseUrl}/api/bookings`,
       vnpayCreate: `${this.apiBaseUrl}/api/payment/vnpay/create`,
       vnpayReturn: `${this.apiBaseUrl}/api/payment/vnpay/return`,
       vnpayConfig: `${this.apiBaseUrl}/api/payment/config`,

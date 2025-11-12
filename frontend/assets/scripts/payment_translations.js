@@ -61,7 +61,6 @@ const paymentTranslations = {
         errorPrefix: "Error: ",
         vnpayConnecting: "Connecting to VNPay...",
         vnpayCreateFail: "Unable to create VNPay payment",
-        walletNotAvailable: "is not available",
         selectPaymentMethod: "Please choose a payment method",
         invalidCardNumber: "Please enter a valid card number",
         invalidExpiryDate: "Please enter a valid expiry date (MM/YY)",
@@ -78,6 +77,24 @@ const paymentTranslations = {
         totalAmount: "Total Amount",
         confirmPayment: "Confirm Payment",
         backToOverview: "Back to Overview",
+        // Voucher
+        voucherTitle: "Discount Code",
+        voucherPlaceholder: "Enter voucher code",
+        applyVoucher: "Apply",
+        availableVouchers: "Available codes: XMAS10, NOEL200, EARLY200",
+        discountLabel: "Discount",
+        finalTotalLabel: "Total Payment",
+        voucherSuccess: "✓ Applied successfully: Save {1}",
+        voucherInvalid: "Invalid voucher code",
+        voucherMinOrder: "Minimum order {0} required",
+        voucherAlreadyUsed: "Voucher already applied",
+        voucherApplied: "✓ Applied successfully: Save {1}",
+        voucherMinAmount: "Minimum order {0} required",
+        removeVoucher: "Remove",
+        voucherAppliedText: "Applied", 
+        voucherRemoveText: "Remove",
+        voucherCodeApplied: "Code applied successfully",
+        voucherDiscountApplied: "Discount applied",
         vnpay: "VNPay",
         momo: "MoMo",
         cash: "Cash at counter",
@@ -126,8 +143,27 @@ const paymentTranslations = {
         route2Class: "Phổ thông • 1 hành khách",
         ticketLabel: "Vé máy bay (2 chiều)",
         taxLabel: "Thuế và phí",
+        discountLabel: "Giảm giá",
         totalLabel: "Tổng cộng",
         secure: "Giao dịch được bảo mật bằng SSL 256-bit",
+        // Voucher  
+        voucherTitle: "Mã giảm giá",
+        voucherPlaceholder: "Nhập mã voucher",
+        applyVoucher: "Áp dụng",
+        availableVouchers: "Mã khả dụng: XMAS10, NOEL200, EARLY200",
+        discountLabel: "Giảm giá",
+        finalTotalLabel: "Tổng thanh toán",
+        voucherSuccess: "✓ Áp dụng thành công: Giảm {1}",
+        voucherInvalid: "Mã voucher không hợp lệ",
+        voucherMinOrder: "Đơn hàng phải từ {0}",
+        voucherAlreadyUsed: "Mã voucher đã được sử dụng",
+        voucherApplied: "✓ Áp dụng thành công: Giảm {1}",
+        voucherMinAmount: "Đơn hàng phải từ {0} để áp dụng mã này",
+        removeVoucher: "Hủy bỏ",
+        voucherAppliedText: "Đã áp dụng",
+        voucherRemoveText: "Hủy bỏ",
+        voucherCodeApplied: "Mã đã được áp dụng thành công",
+        voucherDiscountApplied: "Đã áp dụng giảm giá",
         // Header 
         helpText: "Trợ giúp",
         myTripsText: "Chuyến đi của tôi",
@@ -157,7 +193,6 @@ const paymentTranslations = {
         errorPrefix: "Lỗi: ",
         vnpayConnecting: "Đang kết nối VNPay...",
         vnpayCreateFail: "Không thể tạo thanh toán VNPay",
-        walletNotAvailable: "chưa khả dụng",
         selectPaymentMethod: "Vui lòng chọn phương thức thanh toán",
         invalidCardNumber: "Vui lòng nhập số thẻ hợp lệ",
         invalidExpiryDate: "Vui lòng nhập ngày hết hạn hợp lệ (MM/YY)",
@@ -205,6 +240,11 @@ function applyPaymentTranslations(lang) {
     if (__SKYPLAN_DEBUG__) console.debug('[i18n] applyPaymentTranslations', lang);
     const elements = document.querySelectorAll('[data-i18n]');
     elements.forEach(element => {
+        // Skip elements that have been updated by payment order script
+        if (element.classList.contains('payment-order-updated')) {
+            return;
+        }
+        
         const key = element.getAttribute('data-i18n');
         if (paymentTranslations[lang] && paymentTranslations[lang][key]) {
             element.textContent = paymentTranslations[lang][key];

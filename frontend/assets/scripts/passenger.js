@@ -371,6 +371,7 @@ async function submitPassengerData() {
       };
       
       localStorage.setItem('skyplan_passenger_data', JSON.stringify(guestPassengerData));
+      localStorage.setItem('currentPassenger', JSON.stringify(guestPassengerData));
       
       if (typeof window.showToast === 'function') {
         window.showToast('Passenger information saved successfully!', { type: 'success', duration: 2000 });
@@ -455,9 +456,10 @@ async function submitPassengerData() {
           };
           
           localStorage.setItem('skyplan_passenger_data', JSON.stringify(guestPassengerData));
+          localStorage.setItem('currentPassenger', JSON.stringify(guestPassengerData));
           
           if (typeof window.showToast === 'function') {
-            window.showToast('Passenger information saved for guest checkout!', { type: 'success', duration: 2000 });
+            window.showToast('Passenger information saved successfully!', { type: 'success', duration: 2000 });
           }
           
           return true; // Success with fallback
@@ -478,6 +480,7 @@ async function submitPassengerData() {
     // Success - save passenger data to localStorage for next steps
     try {
       localStorage.setItem('currentPassenger', JSON.stringify(result.passenger || payload));
+      localStorage.setItem('skyplan_passenger_data', JSON.stringify(result.passenger || payload));
     } catch {}
 
     // Show success message

@@ -52,7 +52,7 @@ const seatTranslations = {
         seatReserved: "Seat reserved for:",
         pleaseComplete: "Please complete your selection quickly!",
         timeExpired: "Time expired! Please select your seats again.",
-        selectAtLeastOne: "Please select at least one seat before continuing.",
+        selectAtLeastOne: "Please select a seat before continuing.",
         seatReservedNotification: "Seat {seat} reserved for 30 seconds"
     },
     vi: {
@@ -106,7 +106,7 @@ const seatTranslations = {
         seatReserved: "Ghế được giữ trong:",
         pleaseComplete: "Vui lòng hoàn thành việc chọn ghế!",
         timeExpired: "Hết thời gian! Vui lòng chọn ghế lại.",
-        selectAtLeastOne: "Vui lòng chọn ít nhất một ghế trước khi tiếp tục.",
+        selectAtLeastOne: "Vui lòng chọn một ghế trước khi tiếp tục.",
         seatReservedNotification: "Ghế {seat} được giữ trong 30 giây"
     }
 };

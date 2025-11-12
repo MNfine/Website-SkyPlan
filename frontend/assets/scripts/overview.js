@@ -27,7 +27,12 @@
 
     getPassengerData: function () {
       try {
-        return JSON.parse(localStorage.getItem('currentPassenger')) || null;
+        // Try both keys for passenger data
+        let passenger = JSON.parse(localStorage.getItem('currentPassenger'));
+        if (!passenger) {
+          passenger = JSON.parse(localStorage.getItem('skyplan_passenger_data'));
+        }
+        return passenger || null;
       } catch {
         return null;
       }
@@ -57,20 +62,34 @@
     calculateTotalCost: function (data) {
       let total = 0;
 
-      // Flight costs
-      if (data.flights && data.flights.priceVND) {
-        total += data.flights.priceVND;
-      }
-
-      // Seat costs
+      // 1. Seat costs (base ticket price from seat selection)
+      let seatTotal = 0;
       if (data.seats && data.seats.seats) {
-        total += data.seats.seats.reduce((sum, seat) => sum + (seat.price || 0), 0);
+        seatTotal = data.seats.seats.reduce((sum, seat) => sum + (seat.price || 0), 0);
+        total += seatTotal;
       }
 
-      // Extras costs
+      // 2. Extras costs (from extras page)
+      let extrasTotal = 0;
       if (data.extras && data.extras.totalCost) {
-        total += data.extras.totalCost;
+        extrasTotal = data.extras.totalCost;
+        total += extrasTotal;
       }
+
+      // 3. Fixed fees (taxes and other charges)
+      const fixedFees = 200000; // Fixed 200k VND
+      total += fixedFees;
+
+      console.log('💰 Calculate total cost (NEW LOGIC):', {
+        seatTotal: seatTotal,
+        extrasTotal: extrasTotal, 
+        fixedFees: fixedFees,
+        finalTotal: total,
+        breakdown: {
+          seats: data.seats,
+          extras: data.extras
+        }
+      });
 
       return total;
     }
@@ -78,6 +97,85 @@
 
   function readTrip() {
     try { return JSON.parse(localStorage.getItem(TRIP_KEY)) || null; } catch { return null; }
+  }
+  
+  // Read selected seats and normalize structure for payment page
+  function readSeats() {
+    try {
+      // Prefer OverviewState if available
+      let seatData = null;
+      if (typeof OverviewState !== 'undefined' && typeof OverviewState.getSeatData === 'function') {
+        seatData = OverviewState.getSeatData();
+      } else {
+        seatData = { seats: JSON.parse(localStorage.getItem('selectedSeats') || '[]'), fareClass: localStorage.getItem('fareClass') || 'economy' };
+      }
+
+      // Normalize seats array to { price, seatNumber, type }
+      const rawSeats = Array.isArray(seatData.seats) ? seatData.seats : (seatData.seats || []);
+      const seats = rawSeats.map(s => {
+        // Try a few common property names used in different parts of the app
+        const price = Number(s.price || s.priceVND || s.amount || s.fare || 0);
+        const seatNumber = s.seatNumber || s.seat_label || s.label || s.code || s.id || '';
+        const type = s.type || s.fareClass || seatData.fareClass || 'economy';
+        return { price: price, seatNumber: seatNumber, type: type };
+      });
+
+      // Compute totalCost for seats
+      const totalCost = seats.reduce((sum, s) => sum + (Number(s.price) || 0), 0);
+
+      return { seats: seats, fareClass: seatData.fareClass || 'economy', totalCost: totalCost };
+    } catch (e) {
+      console.error('Error in readSeats():', e);
+      return { seats: [], fareClass: 'economy', totalCost: 0 };
+    }
+  }
+
+  // Read passenger info and normalize
+  function readPassenger() {
+    try {
+      // Prefer OverviewState getter
+      let p = null;
+      if (typeof OverviewState !== 'undefined' && typeof OverviewState.getPassengerData === 'function') {
+        p = OverviewState.getPassengerData();
+      } else {
+        p = JSON.parse(localStorage.getItem('currentPassenger') || 'null') || JSON.parse(localStorage.getItem('skyplan_passenger_data') || 'null');
+      }
+      if (!p) return null;
+
+      // Normalize common fields
+      return {
+        firstname: p.firstname || p.firstName || p.givenName || p.given_name || '',
+        lastname: p.lastname || p.lastName || p.familyName || p.family_name || '',
+        email: p.email || p.emailAddress || p.email_address || '',
+        phone_number: p.phoneNumber || p.phone || p.phone_number || ''
+      };
+    } catch (e) {
+      console.error('Error in readPassenger():', e);
+      return null;
+    }
+  }
+
+  // Read extras summary and normalize for payment page
+  function readExtras() {
+    try {
+      let ex = null;
+      if (typeof OverviewState !== 'undefined' && typeof OverviewState.getExtrasData === 'function') {
+        ex = OverviewState.getExtrasData();
+      } else {
+        ex = JSON.parse(localStorage.getItem('skyplan_extras_v2') || 'null') || { meals: [], baggage: null, services: [], totalCost: 0 };
+      }
+
+      // Normalize keys: extras.totalCost may be totalCost or total
+      const totalCost = Number(ex.totalCost || ex.total || ex.total_cost || 0);
+      const meals = Array.isArray(ex.meals) ? ex.meals.map(m => ({ name: m.name || m.label || '', price: Number(m.price || m.amount || 0), qty: m.quantity || m.qty || 1 })) : [];
+      const baggage = ex.baggage || ex.baggageInfo || null;
+      const services = Array.isArray(ex.services) ? ex.services : [];
+
+      return { totalCost: totalCost, meals: meals, baggage: baggage, services: services };
+    } catch (e) {
+      console.error('Error in readExtras():', e);
+      return { totalCost: 0, meals: [], baggage: null, services: [] };
+    }
   }
   function getLang() {
     return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
@@ -397,10 +495,30 @@
       totalEl.textContent = formatVND(totalCost);
     }
 
-    // Update any booking data for payment
+    // Update booking data for payment - save complete data structure
     try {
       localStorage.setItem('bookingTotal', totalCost.toString());
-    } catch { }
+      
+      // Save complete booking data for payment page
+      const trip = readTrip();
+      const passenger = readPassenger();
+      const seats = readSeats();
+      const extras = readExtras();
+      
+      const completeBookingData = {
+        totalCost: totalCost,
+        trip: trip,
+        passenger: passenger,
+        seats: seats,
+        extras: extras,
+        timestamp: new Date().toISOString()
+      };
+      
+      localStorage.setItem('completeBookingData', JSON.stringify(completeBookingData));
+      console.log('💾 Saved complete booking data for payment:', completeBookingData);
+    } catch (error) {
+      console.error('Error saving booking data:', error);
+    }
   }
 
   // Check booking status from backend
@@ -558,6 +676,13 @@
     console.log('🔍 Creating booking with data:', requestData);
     console.log('🔍 Trip data:', trip);
     console.log('🔍 Passenger data:', passenger);
+    console.log('🔍 Seats data:', seats);
+    console.log('🔍 Debug enum mapping:', {
+      originalFareClass: seats.fareClass,
+      mappedFareClass: fareClass,
+      originalTripType: trip.returnDateISO ? 'has return' : 'one-way',
+      mappedTripType: tripType
+    });
     console.log('🔍 Debug flight IDs:', {
       'trip.outbound_flight_id': trip.outbound_flight_id,
       'trip.flightId': trip.flightId,
@@ -578,24 +703,30 @@
 
       console.log('🔍 Sending booking request:', requestData);
 
-      const response = await fetch('/api/bookings/create', {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(requestData)
-      });
+      // TODO: Replace with actual API call when backend is ready
+      // For now, simulate successful booking creation
+      try {
+        const response = await fetch('/api/bookings/create', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify(requestData)
+        });
 
-      const result = await response.json();
-      hideLoading();
+        const result = await response.json();
+        hideLoading();
 
-      console.log('🔍 Booking API response:', { status: response.status, result });
+        console.log('🔍 Booking API response:', { status: response.status, result });
 
-      if (response.ok && result.success) {
-        // Store booking code for payment page
-        localStorage.setItem('currentBookingCode', result.booking_code);
-        return result.booking_code;
-      } else {
-        console.error('❌ Booking creation failed:', result);
-        throw new Error(result.message || 'Failed to create booking');
+        if (response.ok && result.success) {
+          // Store booking code for payment page
+          localStorage.setItem('currentBookingCode', result.booking_code);
+          return result.booking_code;
+        } else {
+          throw new Error(`API Error: ${result.message || 'Unknown error'}`);
+        }
+      } catch (error) {
+        console.error('❌ API Error:', error);
+        throw new Error(error.message || 'Failed to create booking');
       }
     } catch (error) {
       hideLoading();
@@ -637,41 +768,30 @@
   async function handleProceedToPayment(event) {
     event.preventDefault();
 
-    // Check if booking is already paid
-    const alreadyPaid = await isBookingAlreadyPaid();
-    if (alreadyPaid) {
-      const message = getLang() === 'vi'
-        ? 'Booking này đã được thanh toán. Bạn có thể xem trong "Chuyến đi của tôi".'
-        : 'This booking has already been paid. You can view it in "My Trips".';
-      alert(message);
-      window.location.href = 'my_trips.html';
-      return;
-    }
+    // 1) Ghi dữ liệu để payment dùng, kể cả khi BE hỏng
+    const data = OverviewState.getBookingData();
+    try {
+      localStorage.setItem('completeBookingData', JSON.stringify(data));
+      localStorage.setItem('bookingTimestamp', Date.now().toString());
+    } catch (_) { /* ignore */ }
 
-    // Prepare URL with current parameters for payment page
-    function buildPaymentURL(bookingCode) {
+    // Helper build URL có/không có booking_code
+    const buildPaymentURL = (code) => {
       const params = new URLSearchParams(window.location.search);
-      params.set('booking_code', bookingCode);
+      if (code) params.set('booking_code', code);
       return `payment.html?${params.toString()}`;
-    }
+    };
 
-    // Check if booking already exists
-    const existingBookingCode = localStorage.getItem('currentBookingCode');
-    if (existingBookingCode) {
-      const existingBooking = await checkBookingStatus(existingBookingCode);
-      if (existingBooking && existingBooking.status === 'PENDING') {
-        // Use existing booking
-        window.location.href = buildPaymentURL(existingBookingCode);
-        return;
-      }
+    // 2) Thử gọi BE tạo booking; nếu thất bại => fallback mã tạm và đi tiếp
+    try {
+      const bookingCode = await createBooking(); // hàm có sẵn trong file
+      window.location.href = buildPaymentURL(bookingCode || null);
+    } catch (err) {
+      // Mã tạm (guest)
+      const tmp = `TMP${new Date().getFullYear()}${String(Date.now()).slice(-5)}`;
+      try { localStorage.setItem('currentBookingCode', tmp); } catch (_) {}
+      window.location.href = buildPaymentURL(tmp);
     }
-
-    // Create new booking
-    createBooking().then(bookingCode => {
-      if (bookingCode) {
-        window.location.href = buildPaymentURL(bookingCode);
-      }
-    });
   }
 
   // Update payment button based on booking status

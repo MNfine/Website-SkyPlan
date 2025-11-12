@@ -6,15 +6,44 @@
 document.addEventListener('DOMContentLoaded', function() {
   // VNPay Integration
   function processVNPayPayment() {
-    const amount = 1598000; // Amount in VND
+    // Get final amount from DOM - check if voucher was applied
+    let amount = 1598000; // Default fallback
+    
+    // Try to get finalAmount first (after voucher discount)
+    const finalAmountEl = document.getElementById('finalAmount');
+    const totalAmountEl = document.getElementById('totalAmount');
+    
+    if (finalAmountEl && finalAmountEl.textContent) {
+      // Parse amount from finalAmount (after voucher)
+      const parsedFinal = parseFloat(finalAmountEl.textContent.replace(/[^\d]/g, ''));
+      if (!isNaN(parsedFinal) && parsedFinal > 0) {
+        amount = parsedFinal;
+        console.log('💰 VNPay using finalAmount (after voucher):', amount);
+      }
+    } else if (totalAmountEl && totalAmountEl.textContent) {
+      // Fallback to totalAmount (before voucher)
+      const parsedTotal = parseFloat(totalAmountEl.textContent.replace(/[^\d]/g, ''));
+      if (!isNaN(parsedTotal) && parsedTotal > 0) {
+        amount = parsedTotal;
+        console.log('💰 VNPay using totalAmount (no voucher):', amount);
+      }
+    }
+    
+    // Save final payment amount to localStorage for confirmation page
+    localStorage.setItem('finalPaymentAmount', amount.toString());
+    console.log('💾 Saved finalPaymentAmount to localStorage:', amount);
+    
     const orderInfo = 'Ve may bay HAN-SGN';
 
-    let bookingCode = 'SP';
-    try {
-      bookingCode = document.getElementById('bookingCode').textContent || 'SP';
-    } catch (e) {
-      if (window.SkyPlanDebug) console.error('Booking code element not found, using default');
-    }
+    // Get booking code consistently with other payment methods
+    const bookingCodeFromStorage = localStorage.getItem('currentBookingCode') || localStorage.getItem('lastBookingCode');
+    const bookingCodeFromDOM = document.querySelector('.booking-code-text')?.textContent;
+    let bookingCode = bookingCodeFromDOM || bookingCodeFromStorage || `SP${new Date().getFullYear()}${String(Date.now()).slice(-5)}`;
+    
+    // Save booking code for confirmation page
+    localStorage.setItem('currentBookingCode', bookingCode);
+    localStorage.setItem('lastBookingCode', bookingCode);
+    console.log('📋 VNPay using booking code:', bookingCode);
 
     const btnElement = event.target.closest('.vnpay-checkout-btn');
     const originalContent = btnElement.innerHTML;

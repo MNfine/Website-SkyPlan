@@ -183,26 +183,42 @@
     const txnRef = localStorage.getItem('lastTxnRef') || 'N/A';
     
     // Debug: check all possible amount sources
+    const finalPaymentAmount = localStorage.getItem('finalPaymentAmount'); // After voucher discount
     const lastAmount = localStorage.getItem('lastAmount');
-    const bookingTotal = localStorage.getItem('bookingTotal');
+    const bookingTotal = localStorage.getItem('bookingTotal'); // Before voucher discount
     const windowLastAmount = window.lastAmount;
     
-    // Debug logs disabled
-    // console.log('Confirmation amount debug:', bookingTotal || lastAmount);
+    console.log('💰 Confirmation amount sources:', {
+      finalPaymentAmount,
+      bookingTotal,
+      lastAmount,
+      windowLastAmount
+    });
     
-    // Use the most reliable source - prioritize bookingTotal (set by overview/payment_order)
-    let amount = bookingTotal || lastAmount || '0';
+    // Use the most reliable source - prioritize finalPaymentAmount (after voucher)
+    let amount = finalPaymentAmount || bookingTotal || lastAmount || '0';
+    
+    // Parse amount correctly - it might be a string with commas or already a number
+    let parsedAmount = 0;
+    if (typeof amount === 'string') {
+      // Remove all non-digit characters except decimal point
+      parsedAmount = parseFloat(amount.replace(/[^\d.]/g, '')) || 0;
+    } else {
+      parsedAmount = Number(amount) || 0;
+    }
+    
+    console.log('💰 Parsed amount:', { original: amount, parsed: parsedAmount });
     
     // If still 0 or invalid, try to get from current booking
-    if (!amount || amount === '0') {
+    if (parsedAmount === 0) {
       try {
         const currentBooking = localStorage.getItem('currentBooking');
         if (currentBooking) {
           const booking = JSON.parse(currentBooking);
-          amount = booking.totalCost || booking.total_amount || amount;
+          parsedAmount = Number(booking.totalCost || booking.total_amount) || 0;
         }
       } catch (e) {
-        // Silent error handling
+        console.warn('Error parsing booking data:', e);
       }
     }
     
@@ -212,6 +228,7 @@
     
     if (bookingCodeEl) {
       bookingCodeEl.textContent = bookingCode;
+      console.log('📋 Display booking code:', bookingCode);
     }
     
     if (txnRefEl) {
@@ -219,7 +236,9 @@
     }
     
     if (amountEl) {
-      amountEl.textContent = Number(amount).toLocaleString('vi-VN') + ' VND';
+      const formattedAmount = parsedAmount.toLocaleString('vi-VN') + ' VND';
+      amountEl.textContent = formattedAmount;
+      console.log('💰 Display amount:', formattedAmount);
     }
   }
 

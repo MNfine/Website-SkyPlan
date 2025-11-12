@@ -160,7 +160,7 @@ const SeatNotifications = {
   showNoSeatsSelected: function() {
     const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
     const selectAtLeastOneMsg = seatTranslations[currentLang]['selectAtLeastOne'] || 
-      (currentLang === 'vi' ? 'Vui lòng chọn ít nhất một ghế trước khi tiếp tục.' : 'Please select at least one seat before continuing.');
+      (currentLang === 'vi' ? 'Vui lòng chọn một ghế trước khi tiếp tục.' : 'Please select a seat before continuing.');
     
     if (typeof showToast === 'function') {
       showToast(selectAtLeastOneMsg, {type: 'error', duration: 3000});

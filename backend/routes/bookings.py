@@ -98,55 +98,57 @@ def create_booking():
 	print("🔍 Booking create endpoint hit!")
 	import sys
 	sys.stdout.flush()
+	
 	user_id = _get_user_id_from_bearer()  # Optional for guest booking
 	print(f"🔍 User ID from token: {user_id}")
 	sys.stdout.flush()
 
-	data = request.get_json(silent=True) or {}
-
-	# Validate required fields - different for guest vs authenticated booking
-	if user_id:
-		# Authenticated booking - require passenger IDs
-		required = ['outbound_flight_id', 'trip_type', 'fare_class', 'passengers', 'total_amount']
-		missing = [f for f in required if f not in data]
-		if missing:
-			return jsonify({'success': False, 'message': f'Missing fields: {", ".join(missing)}'}), 400
-		passenger_ids = [int(pid) for pid in data['passengers']]
-	else:
-		# Guest booking - require passenger data
-		required = ['outbound_flight_id', 'trip_type', 'fare_class', 'guest_passenger', 'total_amount']
-		missing = [f for f in required if f not in data]
-		if missing:
-			return jsonify({'success': False, 'message': f'Missing fields for guest booking: {", ".join(missing)}'}), 400
-		guest_passenger_data = data['guest_passenger']
-		passenger_ids = None
-
 	try:
+		data = request.get_json(silent=True) or {}
+
+		# Validate required fields - different for guest vs authenticated booking
+		if user_id:
+			# Authenticated booking - require passenger IDs
+			required = ['outbound_flight_id', 'trip_type', 'fare_class', 'passengers', 'total_amount']
+			missing = [f for f in required if f not in data]
+			if missing:
+				return jsonify({'success': False, 'message': f'Missing fields: {", ".join(missing)}'}), 400
+			passenger_ids = [int(pid) for pid in data['passengers']]
+		else:
+			# Guest booking - require passenger data
+			required = ['outbound_flight_id', 'trip_type', 'fare_class', 'guest_passenger', 'total_amount']
+			missing = [f for f in required if f not in data]
+			if missing:
+				return jsonify({'success': False, 'message': f'Missing fields for guest booking: {", ".join(missing)}'}), 400
+			guest_passenger_data = data['guest_passenger']
+			passenger_ids = None
 		outbound_flight_id = int(data['outbound_flight_id'])
 		inbound_flight_id = int(data['inbound_flight_id']) if data.get('inbound_flight_id') else None
 		trip_type = TripType(data['trip_type'])
 		fare_class = FareClass(data['fare_class'])
 		total_amount = Decimal(str(data['total_amount']))
-	except (ValueError, TypeError) as e:
-		return jsonify({'success': False, 'message': f'Invalid data format: {str(e)}'}), 400
 
-	# Validate trip type consistency
-	if trip_type == TripType.ROUND_TRIP and not inbound_flight_id:
-		return jsonify({'success': False, 'message': 'Return flight required for round trip'}), 400
-	if trip_type == TripType.ONE_WAY and inbound_flight_id:
-		return jsonify({'success': False, 'message': 'Return flight not allowed for one-way trip'}), 400
+		# Validate trip type consistency
+		if trip_type == TripType.ROUND_TRIP and not inbound_flight_id:
+			return jsonify({'success': False, 'message': 'Return flight required for round trip'}), 400
+		if trip_type == TripType.ONE_WAY and inbound_flight_id:
+			return jsonify({'success': False, 'message': 'Return flight not allowed for one-way trip'}), 400
 
-	with session_scope() as session:
-		# Validate flights exist
-		outbound_flight = session.query(Flight).get(outbound_flight_id)
-		if not outbound_flight:
-			return jsonify({'success': False, 'message': 'Outbound flight not found'}), 404
+		with session_scope() as session:
+			# Validate flights exist
+			outbound_flight = session.query(Flight).get(outbound_flight_id)
+			if not outbound_flight:
+				print(f"❌ Outbound flight {outbound_flight_id} not found")
+				sys.stdout.flush()
+				return jsonify({'success': False, 'message': 'Outbound flight not found'}), 404
 
-		inbound_flight = None
-		if inbound_flight_id:
-			inbound_flight = session.query(Flight).get(inbound_flight_id)
-			if not inbound_flight:
-				return jsonify({'success': False, 'message': 'Return flight not found'}), 404
+			inbound_flight = None
+			if inbound_flight_id:
+				inbound_flight = session.query(Flight).get(inbound_flight_id)
+				if not inbound_flight:
+					print(f"❌ Return flight {inbound_flight_id} not found")
+					sys.stdout.flush()
+					return jsonify({'success': False, 'message': 'Return flight not found'}), 404
 
 		# Handle passengers - different for authenticated vs guest
 		passengers = []
@@ -195,6 +197,7 @@ def create_booking():
 				print(f"❌ Error creating guest passenger: {str(e)}")
 				import traceback
 				traceback.print_exc()
+				sys.stdout.flush()
 				return jsonify({'success': False, 'message': f'Failed to create guest passenger: {str(e)}'}), 400
 
 		# Create booking
@@ -225,6 +228,13 @@ def create_booking():
 			'booking': booking.as_dict(),
 			'booking_code': booking.booking_code
 		}), 201
+	except Exception as e:
+		print(f"❌ Unexpected error in create_booking: {str(e)}")
+		import traceback
+		traceback.print_exc()
+		import sys
+		sys.stdout.flush()
+		return jsonify({'success': False, 'message': f'Internal server error: {str(e)}'}), 500
 
 
 @bookings_bp.route('/<booking_code>', methods=['GET'])

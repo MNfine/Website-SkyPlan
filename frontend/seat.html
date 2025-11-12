@@ -705,9 +705,9 @@
           const seatCode = this.dataset.seat;
           
           if (this.classList.contains('selected')) {
-            // Deselect seat
+            // Deselect seat (clicking same seat to unselect)
             this.classList.remove('selected');
-            selectedSeats = selectedSeats.filter(s => s !== seatCode);
+            selectedSeats = [];
             
             // Show deselection notification
             if (typeof SeatNotifications !== 'undefined') {
@@ -715,20 +715,25 @@
             }
             
             // Hide countdown if no seats selected
-            if (selectedSeats.length === 0) {
-              hideCountdown();
-            }
+            hideCountdown();
           } else {
-            // Select seat
+            // Only allow selecting 1 seat at a time
+            // First, deselect any previously selected seat
+            const previouslySelected = document.querySelector('.seat.selected');
+            if (previouslySelected) {
+              previouslySelected.classList.remove('selected');
+            }
+            
+            // Select the new seat
             this.classList.add('selected');
-            selectedSeats.push(seatCode);
+            selectedSeats = [seatCode]; // Replace array with single seat
             
             // Show selection notification
             if (typeof SeatNotifications !== 'undefined') {
               SeatNotifications.showSeatSelected(seatCode);
             }
             
-            // Start countdown when first seat is selected or restart it
+            // Start countdown when seat is selected or restart it
             startCountdown();
           }
           

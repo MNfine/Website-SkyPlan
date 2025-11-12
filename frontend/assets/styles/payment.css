@@ -552,6 +552,111 @@ body {
   margin: 4px 0;
 }
 
+/* Voucher Section */
+.voucher-section {
+  margin-bottom: 24px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e1e5e9;
+}
+
+.voucher-section h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.voucher-input-group {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.voucher-section input {
+  flex: 1;
+  min-width: 0; /* Allow input to shrink */
+  padding: 12px 16px;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.voucher-btn,
+.remove-voucher-btn {
+  flex-shrink: 0; /* Don't shrink buttons */
+  white-space: nowrap;
+}
+
+.voucher-section input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(10, 150, 157, 0.1);
+}
+
+.voucher-btn {
+  padding: 12px 20px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.voucher-btn:hover {
+  background: var(--primary-darker, #087d84);
+  transform: translateY(-1px);
+}
+
+.voucher-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.voucher-result,
+.voucher-message {
+  margin: 12px 0 8px 0;
+  padding: 0;
+  font-size: 14px;
+  min-height: 20px;
+}
+
+.voucher-result.success,
+.voucher-message.success {
+  color: #16a34a;
+  background: #f0f9f4;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-left: 4px solid #16a34a;
+}
+
+.voucher-result.error,
+.voucher-message.error {
+  color: #dc2626;
+  background: #fef2f2;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-left: 4px solid #dc2626;
+}
+
+.available-vouchers small {
+  color: #666;
+  font-size: 12px;
+  font-style: italic;
+}
+
 .price-breakdown {
   margin-bottom: 28px;
   background: white;
@@ -571,6 +676,11 @@ body {
 
 .price-item:not(:last-child) {
   border-bottom: 1px solid #f1f3f4;
+}
+
+.price-item.discount-item {
+  color: #16a34a;
+  font-weight: 600;
 }
 
 .price-item.total {
@@ -987,10 +1097,18 @@ body {
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    justify-content: flex-start;
+    min-width: max-content;
   }
   
   .steps::-webkit-scrollbar {
     display: none;
+  }
+  
+  .step {
+    flex: 0 0 auto;
+    min-width: 60px;
+    margin: 0 5px;
   }
   
   .step .dot {
@@ -1001,11 +1119,12 @@ body {
   }
   
   .step .label {
-    font-size: 10px;
+    font-size: 9px;
     max-width: 45px;
     word-wrap: break-word;
     hyphens: auto;
     line-height: 1.1;
+    text-align: center;
   }
   
   .steps .progress {
@@ -1080,6 +1199,7 @@ body {
 }
 
 /* Extra small screens (under 400px) */
+/* Extra small mobile improvements */
 @media (max-width: 400px) {
   .payment-flow {
     padding: 10px 0 20px;
@@ -1087,8 +1207,32 @@ body {
   }
   
   .payment-container {
-    padding: 0 8px;
-    gap: 12px;
+    padding: 0 6px;
+    gap: 10px;
+  }
+  
+  /* Improve steps on very small screens */
+  .steps {
+    padding: 6px 0 10px;
+    margin: 0 -3px;
+  }
+  
+  .step {
+    min-width: 50px;
+    margin: 0 1px;
+  }
+  
+  .step .dot {
+    width: 16px;
+    height: 16px;
+    font-size: 8px;
+    margin-bottom: 2px;
+  }
+  
+  .step .label {
+    font-size: 7px;
+    max-width: 35px;
+    line-height: 0.9;
   }
   
   .section-header {
@@ -1213,5 +1357,155 @@ body {
     padding: 12px 16px;
     font-size: 14px;
     gap: 6px;
+  }
+  
+  /* Voucher section responsive */
+  .voucher-section {
+    padding: 12px;
+    margin: 12px 0;
+  }
+  
+  .voucher-section h3 {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  
+  .voucher-input-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .voucher-input-group input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  
+  .voucher-input-group button {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  .voucher-hints {
+    font-size: 11px;
+    margin-top: 6px;
+  }
+  
+  .voucher-message {
+    padding: 8px 10px;
+    font-size: 12px;
+    margin-top: 6px;
+  }
+  
+  .remove-voucher-btn {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+    margin-left: 4px !important;
+  }
+}
+
+/* Tablet responsive improvements */
+@media (max-width: 768px) {
+  .voucher-input-group {
+    flex-direction: row;
+    gap: 8px;
+  }
+  
+  .voucher-input-group input {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .voucher-input-group button {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
+
+/* Mobile responsive improvements */
+@media (max-width: 480px) {
+  .voucher-input-group {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+  
+  .voucher-input-group input,
+  .voucher-input-group button {
+    width: 100%;
+  }
+  
+  /* When voucher is applied on mobile, keep proper layout */
+  .voucher-input-group {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  .voucher-input-group input {
+    flex: 1;
+    min-width: 120px;
+  }
+  
+  .voucher-input-group button {
+    flex: 0 0 auto;
+    font-size: 11px;
+    padding: 8px 10px;
+    min-width: 60px;
+  }
+  
+  .remove-voucher-btn {
+    background: #ef4444 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    font-size: 10px !important;
+    padding: 6px 8px !important;
+    margin-left: 4px !important;
+  }
+  
+  /* Better spacing for mobile payment section */
+  .payment-container {
+    padding: 0 8px;
+    gap: 12px;
+  }
+  
+  .section-header {
+    padding: 10px 12px;
+  }
+  
+  .section-content {
+    padding: 12px;
+  }
+  
+  /* Improve order summary mobile layout */
+  .order-summary .price-breakdown {
+    margin-bottom: 12px;
+  }
+  
+  .price-item {
+    padding: 6px 0;
+    font-size: 13px;
+  }
+  
+  .price-item.total {
+    padding: 10px 0;
+    margin-top: 8px;
+    border-top: 2px solid #e6e6e6;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  /* Better pay button spacing on mobile */
+  .pay-btn {
+    margin-top: 16px;
+    padding: 14px 20px;
+    font-size: 15px;
+    min-height: 48px; /* Better touch target */
+  }
+  
+  .security-info {
+    margin-top: 12px;
+    padding: 8px 12px;
+    font-size: 12px;
   }
 }
