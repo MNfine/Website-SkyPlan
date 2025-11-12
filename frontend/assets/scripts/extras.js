@@ -6,7 +6,7 @@ const DEFAULT_EXTRAS = {
   services: [],
   total: 0,
 };
-
+//Initialization
 document.addEventListener("DOMContentLoaded", () => {
   loadHeaderFooter().then(initializeLanguage);
   bindDetailsButtons();
@@ -44,30 +44,24 @@ function initializeLanguage() {
       applyTranslations(currentLang);
     } catch (e) {}
   }
-  if (typeof applyExtrasTranslations === "function")
-    applyExtrasTranslations(currentLang);
-  if (typeof initRouteTitle === "function") initRouteTitle(currentLang);
+  if (typeof applyExtrasTranslations === "function") {
+    try {
+      applyExtrasTranslations(currentLang);
+    } catch (e) {}
+  }
+  if (typeof initRouteTitle === "function") {
+    try {
+      initRouteTitle(currentLang);
+    } catch (e) {}
+  }
   document.addEventListener("languageChanged", (ev) => {
     const lang = ev?.detail?.lang || currentLang;
+    applyTranslations?.(lang);
     applyExtrasTranslations?.(lang);
     initRouteTitle(lang);
   });
-
   if (typeof initializeLanguageSelector === "function")
     initializeLanguageSelector();
-  document.addEventListener("languageChanged", (ev) => {
-    const lang = (ev && ev.detail && ev.detail.lang) || currentLang;
-    try {
-      if (typeof applyTranslations === "function") applyTranslations(lang);
-      if (typeof applyExtrasTranslations === "function")
-        applyExtrasTranslations(lang);
-      if (typeof initRouteTitle === "function") initRouteTitle(lang);
-    } catch (e) {}
-  });
-}
-
-function formatVND(val) {
-  return new Intl.NumberFormat("vi-VN").format(val || 0) + " VND";
 }
 
 function resolveCityLabel(raw, lang) {
@@ -145,16 +139,16 @@ function initRouteTitle(langOverride) {
 
 function getState() {
   try {
-    return (
-      JSON.parse(localStorage.getItem(STORAGE_KEY)) || { ...DEFAULT_EXTRAS }
-    );
+    const storedState = localStorage.getItem(STORAGE_KEY);
+    return storedState ? JSON.parse(storedState) : { ...DEFAULT_EXTRAS };
   } catch {
     return { ...DEFAULT_EXTRAS };
   }
 }
 function setState(next) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  updateTotalsUI(next);
+  nextState.total = calcTotal(nextState);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
+  updateTotalsUI(nextState);
 }
 function calcTotal(state) {
   const mealCatalog = MEALS.reduce((m, x) => ((m[x.id] = x), m), {});
@@ -171,14 +165,19 @@ function calcTotal(state) {
   return mealTotal + bagTotal + servicesTotal;
 }
 function updateTotalsUI(state) {
-  const total = calcTotal(state);
-  state.total = total;
-  const a = document.getElementById("extrasTotal");
-  const b = document.getElementById("drawerTotal");
-  if (a) a.textContent = formatVND(total);
-  if (b) b.textContent = formatVND(total);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const total = state.total || 0;
+  const formattedTotal = formatVND(total);
+  const mainTotalEl = document.getElementById("extrasTotal");
+  const drawerTotalEl = document.getElementById("drawerTotal");
+
+  if (mainTotalEl) mainTotalEl.textContent = formattedTotal;
+  if (drawerTotalEl) drawerTotalEl.textContent = formattedTotal;
 }
+function formatVND(val) {
+  return new Intl.NumberFormat("vi-VN").format(val || 0) + " VND";
+}
+
+//Catalog
 // Meal
 const MEALS = [
   {
@@ -267,17 +266,11 @@ function bindDetailsButtons() {
     .forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const card = e.currentTarget.closest(".extra-card");
-        const type = card?.dataset.type; // meal | baggage | services
+        const type = card?.dataset.type;
         if (type) openDrawer(type);
       });
     });
 }
-
-function updateTotalUI(total) {
-  const el = document.getElementById("extrasTotal");
-  if (el) el.textContent = formatVND(total || 0);
-}
-
 /* --- Drawer Panel Logic --*/
 function initDrawer() {
   const panel = document.getElementById("extras-panel");
@@ -288,6 +281,7 @@ function initDrawer() {
 
   window.openDrawer = function (type) {
     renderDrawerContent(type);
+    panel.dataset.type = type;
     backdrop.hidden = false;
     panel.hidden = false;
     panel.setAttribute("aria-hidden", "false");
@@ -475,5 +469,5 @@ function renderDrawerContent(type) {
       });
     });
   }
-  updateTotalUI(state.total);
+  updateTotalsUI(state);
 }
