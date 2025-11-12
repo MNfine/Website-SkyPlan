@@ -114,6 +114,15 @@
 
                         <div class="support-card">
                             <div class="card-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h3 data-i18n="locationSupport">Văn phòng</h3>
+                            <p class="contact-detail">UIT, TP.HCM</p>
+                            <small data-i18n="locationSupportTime">T2-T7: 8:00-17:30</small>
+                        </div>
+
+                        <div class="support-card">
+                            <div class="card-icon">
                                 <i class="fas fa-phone"></i>
                             </div>
                             <h3 data-i18n="phoneSupport">Hotline</h3>
@@ -156,10 +165,10 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <form id="ticketForm" class="ticket-form">
+            <form id="ticketForm" class="ticket-form" novalidate>
                 <div class="form-row">
                     <label for="ticketCategory" data-i18n="categoryLabel">Danh mục</label>
-                    <select id="ticketCategory" required>
+                    <select id="ticketCategory">
                         <option value="booking" data-i18n="catBooking">Đặt vé</option>
                         <option value="payment" data-i18n="catPayment">Thanh toán</option>
                         <option value="cancellation" data-i18n="catCancellation">Hủy/Đổi</option>
@@ -174,15 +183,15 @@
                 </div>
                 <div class="form-row">
                     <label for="email" data-i18n="emailLabel">Email</label>
-                    <input type="email" id="email" placeholder="you@example.com" required />
+                    <input type="email" id="email" placeholder="you@example.com" />
                 </div>
                 <div class="form-row">
                     <label for="subject" data-i18n="subjectLabel">Tiêu đề</label>
-                    <input type="text" id="subject" placeholder="Mô tả ngắn gọn vấn đề" data-i18n="subjectPlaceholder" required />
+                    <input type="text" id="subject" placeholder="Mô tả ngắn gọn vấn đề" data-i18n="subjectPlaceholder" />
                 </div>
                 <div class="form-row">
                     <label for="message" data-i18n="messageLabel">Nội dung</label>
-                    <textarea id="message" rows="5" placeholder="Mô tả chi tiết vấn đề bạn gặp phải" data-i18n="messagePlaceholder" required></textarea>
+                    <textarea id="message" rows="5" placeholder="Mô tả chi tiết vấn đề bạn gặp phải" data-i18n="messagePlaceholder"></textarea>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn-outline" id="cancelTicketBtn" data-i18n="cancelBtn">Hủy</button>

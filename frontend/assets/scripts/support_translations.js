@@ -27,11 +27,13 @@
       
       phoneSupport: "Hotline",
       emailSupport: "Email",
+      locationSupport: "Office",
       ticketSupport: "Submit Request",
       ticketDescription: "Create ticket for complex issues",
       createTicket: "Create Request",
       chatSupportTime: "24/7 - Response within 2 minutes",
       ticketSupportTime: "Response within 24h",
+      locationSupportTime: "Mon-Sat: 8:00-17:30",
       
       // Chat
       chatWithSupport: "Chat with Support",
@@ -64,6 +66,13 @@
       subjectPlaceholder: "Short description of the issue",
       messagePlaceholder: "Describe your issue in detail",
       ticketSubmitSuccess: "Your request has been submitted. We'll get back to you soon!",
+      
+      // Validation errors
+      emailRequiredError: "Please enter your email",
+      subjectRequiredError: "Please enter a subject",
+      messageRequiredError: "Please enter a message",
+      emailFormatError: "Please enter a valid email address",
+      chatMessageRequiredError: "Please enter a message",
 
       // Footer (shared)
       footerDesc: "Your trusted travel companion for the best flight deals and unforgettable journeys.",
@@ -108,11 +117,13 @@
       
       phoneSupport: "Hotline",
       emailSupport: "Email",
+      locationSupport: "Văn phòng",
       ticketSupport: "Gửi yêu cầu",
       ticketDescription: "Tạo ticket cho vấn đề phức tạp",
       createTicket: "Tạo yêu cầu",
       chatSupportTime: "24/7 - Phản hồi trong 2 phút",
       ticketSupportTime: "Phản hồi trong 24h",
+      locationSupportTime: "T2-T7: 8:00-17:30",
       
       // Chat
       chatWithSupport: "Chat với hỗ trợ",
@@ -145,6 +156,13 @@
       subjectPlaceholder: "Mô tả ngắn gọn vấn đề",
       messagePlaceholder: "Mô tả chi tiết vấn đề bạn gặp phải",
       ticketSubmitSuccess: "Đã gửi yêu cầu hỗ trợ. Chúng tôi sẽ liên hệ sớm!",
+      
+      // Validation errors
+      emailRequiredError: "Vui lòng nhập email",
+      subjectRequiredError: "Vui lòng nhập tiêu đề",
+      messageRequiredError: "Vui lòng nhập nội dung",
+      emailFormatError: "Email không hợp lệ",
+      chatMessageRequiredError: "Vui lòng nhập tin nhắn",
 
       // Footer (shared)
       footerDesc: "Đối tác du lịch đáng tin cậy của bạn cho các ưu đãi vé máy bay tốt nhất và những hành trình khó quên.",

@@ -154,7 +154,53 @@ function setupEventListeners() {
             const email = document.getElementById('email').value.trim();
             const subject = document.getElementById('subject').value.trim();
             const message = document.getElementById('message').value.trim();
-            if (!email || !subject || !message) return;
+            
+            // Get current language and translations
+            const currentLang = getCurrentLanguage();
+            const t = (window.supportTranslations && window.supportTranslations[currentLang]) || {};
+            
+            // Validation with toast notifications
+            if (!email) {
+                const errorText = t.emailRequiredError || 'Vui lòng nhập email';
+                if (window.showToast) {
+                    window.showToast(errorText, 'error');
+                } else {
+                    alert(errorText);
+                }
+                return;
+            }
+            
+            if (!subject) {
+                const errorText = t.subjectRequiredError || 'Vui lòng nhập tiêu đề';
+                if (window.showToast) {
+                    window.showToast(errorText, 'error');
+                } else {
+                    alert(errorText);
+                }
+                return;
+            }
+            
+            if (!message) {
+                const errorText = t.messageRequiredError || 'Vui lòng nhập nội dung';
+                if (window.showToast) {
+                    window.showToast(errorText, 'error');
+                } else {
+                    alert(errorText);
+                }
+                return;
+            }
+            
+            // Email format validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                const errorText = t.emailFormatError || 'Email không hợp lệ';
+                if (window.showToast) {
+                    window.showToast(errorText, 'error');
+                } else {
+                    alert(errorText);
+                }
+                return;
+            }
             // Simulate submit
             try {
                 const payload = {
@@ -168,9 +214,9 @@ function setupEventListeners() {
                 localStorage.setItem('lastSupportTicket', JSON.stringify(payload));
             } catch (_) {}
             // Toast success
-            const currentLang = getCurrentLanguage();
-            const t = (window.supportTranslations && window.supportTranslations[currentLang]) || {};
-            const successText = t.ticketSubmitSuccess || 'Đã gửi yêu cầu hỗ trợ. Chúng tôi sẽ liên hệ sớm!';
+            const lang = getCurrentLanguage();
+            const translations = (window.supportTranslations && window.supportTranslations[lang]) || {};
+            const successText = translations.ticketSubmitSuccess || 'Đã gửi yêu cầu hỗ trợ. Chúng tôi sẽ liên hệ sớm!';
             if (window.showToast) {
                 window.showToast(successText, 'success');
             } else {
@@ -188,7 +234,19 @@ function handleSendMessage() {
     const chatInput = document.getElementById('chatInput');
     const message = chatInput.value.trim();
     
-    if (message === '') return;
+    if (message === '') {
+        // Get current language and translations
+        const currentLang = getCurrentLanguage();
+        const t = (window.supportTranslations && window.supportTranslations[currentLang]) || {};
+        const errorText = t.chatMessageRequiredError || 'Vui lòng nhập tin nhắn';
+        
+        if (window.showToast) {
+            window.showToast(errorText, 'error');
+        } else {
+            alert(errorText);
+        }
+        return;
+    }
     
     // Add user message
     addMessage(message, 'user');
