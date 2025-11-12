@@ -285,4 +285,4 @@ function clearSearch() {
     .forEach((item) => (item.hidden = false));
   showOnlySection(getActiveCategory());
 }
-qa;
+

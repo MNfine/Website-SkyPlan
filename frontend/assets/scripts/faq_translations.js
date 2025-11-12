@@ -6,7 +6,7 @@ const faqI18n = {
     // Heading
     faqTitle: "Câu hỏi thường gặp",
     searchLabel: "Tìm kiếm",
-    searchPlaceholder: "Tìm kiếm",
+    searchPlaceholder: "Nhập từ khóa cần tìm...",
     searchBtn: "Tìm kiếm",
     clearSearch: "Xóa tìm kiếm",
     searchResults: "kết quả",
@@ -26,7 +26,7 @@ const faqI18n = {
     // Headings
     faqTitle: "Frequently Asked Questions",
     searchLabel: "Search",
-    searchPlaceholder: "Search",
+    searchPlaceholder: "Enter Keywords to Search...",
     searchBtn: "Search",
     clearSearch: "Clear search",
     searchResults: "results",
