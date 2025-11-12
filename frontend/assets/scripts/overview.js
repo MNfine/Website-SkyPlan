@@ -627,8 +627,10 @@
       'premium-economy': 'premium-economy',
       'business': 'business'
     };
-    const fareClass = fareClassMap[seats.fareClass] || 'economy';    // Get flight IDs - use fallback if not available
-    const outboundFlightId = trip.outbound_flight_id || trip.flightId || 3803; // Fallback to known flight
+    const fareClass = fareClassMap[seats.fareClass] || 'economy';
+    // Get flight IDs - DO NOT use stale hardcoded fallbacks (was 3803)
+    // Prefer explicit outbound_flight_id, then flightId; otherwise null so validation fails early
+    const outboundFlightId = trip.outbound_flight_id || trip.flightId || null;
     const inboundFlightId = trip.returnDateISO && tripType === 'round-trip' ?
       (trip.inbound_flight_id || trip.returnFlightId) : null;
 
@@ -636,6 +638,35 @@
     if (!outboundFlightId) {
       alert(getLang() === 'vi' ? 'Không tìm thấy thông tin chuyến bay' : 'Flight information not found');
       return null;
+    }
+
+    // Helper to format dob to MM/DD/YYYY
+    function formatDobMMDDYYYY(dob) {
+      if (!dob) return '';
+      // If already MM/DD/YYYY, return as is
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(dob)) return dob;
+      // If YYYY-MM-DD
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
+        const [y, m, d] = dob.split('-');
+        return `${m}/${d}/${y}`;
+      }
+      // If DD/MM/YYYY
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(dob)) {
+        const [d, m, y] = dob.split('/');
+        return `${m}/${d}/${y}`;
+      }
+      // If D/M/YYYY or M/D/YYYY
+      const parts = dob.split(/[\/-]/);
+      if (parts.length === 3) {
+        let [a, b, c] = parts;
+        if (c.length === 4) {
+          // Try to guess: if a > 12, treat as D/M/YYYY
+          if (parseInt(a, 10) > 12) return `${b.padStart(2, '0')}/${a.padStart(2, '0')}/${c}`;
+          // If b > 12, treat as M/D/YYYY
+          if (parseInt(b, 10) > 12) return `${a.padStart(2, '0')}/${b.padStart(2, '0')}/${c}`;
+        }
+      }
+      return dob; // fallback
     }
 
     let requestData;
@@ -660,7 +691,7 @@
           lastname: passenger.lastname,
           firstname: passenger.firstname,
           cccd: passenger.cccd,
-          dob: passenger.dob,
+          dob: formatDobMMDDYYYY(passenger.dob),
           gender: passenger.gender,
           phone_number: passenger.phone_number,
           email: passenger.email,
@@ -687,7 +718,8 @@
       'trip.outbound_flight_id': trip.outbound_flight_id,
       'trip.flightId': trip.flightId,
       'trip.inbound_flight_id': trip.inbound_flight_id,
-      'trip.returnFlightId': trip.returnFlightId
+      'trip.returnFlightId': trip.returnFlightId,
+      'outboundFlightIdResolved': outboundFlightId
     });
 
     try {
