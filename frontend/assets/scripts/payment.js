@@ -627,4 +627,130 @@ document.addEventListener('DOMContentLoaded', function () {
   listenCardFormChange();
   listenPaymentMethodChange();
   updatePayBtnUI();
+  initializeVoucher();
 });
+
+// Voucher functionality
+function initializeVoucher() {
+  const voucherInput = document.getElementById('voucherInput');
+  const applyBtn = document.getElementById('applyVoucherBtn');
+  const voucherMessage = document.getElementById('voucherMessage');
+  const voucherDiscount = document.getElementById('voucherDiscount');
+  
+  if (!voucherInput || !applyBtn) return;
+  
+  // Voucher codes and their conditions
+  const vouchers = {
+    'XMAS10': {
+      type: 'percentage',
+      value: 10,
+      minAmount: 0,
+      description: 'Giảm 10% tổng đơn hàng'
+    },
+    'NOEL200': {
+      type: 'fixed',
+      value: 200000,
+      minAmount: 1500000,
+      description: 'Giảm 200.000 VND cho đơn từ 1.500.000 VND'
+    },
+    'EARLY200': {
+      type: 'fixed',
+      value: 200000,
+      minAmount: 2000000,
+      description: 'Giảm 200.000 VND cho đơn từ 2.000.000 VND'
+    }
+  };
+  
+  let appliedVoucher = null;
+  const originalAmount = parseFloat(document.getElementById('totalAmount').textContent.replace(/[^\d]/g, ''));
+  
+  applyBtn.addEventListener('click', function() {
+    const code = voucherInput.value.trim().toUpperCase();
+    
+    if (!code) {
+      showVoucherMessage('Vui lòng nhập mã voucher', 'error');
+      return;
+    }
+    
+    const voucher = vouchers[code];
+    if (!voucher) {
+      showVoucherMessage('Mã voucher không hợp lệ', 'error');
+      return;
+    }
+    
+    if (originalAmount < voucher.minAmount) {
+      const minAmountText = formatCurrency(voucher.minAmount);
+      showVoucherMessage(`Đơn hàng phải từ ${minAmountText} để áp dụng mã này`, 'error');
+      return;
+    }
+    
+    // Apply voucher
+    appliedVoucher = { code, ...voucher };
+    const discount = calculateDiscount(originalAmount, voucher);
+    const finalAmount = originalAmount - discount;
+    
+    // Update UI
+    document.getElementById('discountAmount').textContent = `-${formatCurrency(discount)}`;
+    document.getElementById('finalAmount').textContent = formatCurrency(finalAmount);
+    voucherDiscount.classList.remove('hidden');
+    
+    showVoucherMessage(`✓ Áp dụng thành công: ${voucher.description}`, 'success');
+    voucherInput.disabled = true;
+    applyBtn.textContent = 'Đã áp dụng';
+    applyBtn.disabled = true;
+    
+    // Add remove button
+    addRemoveVoucherButton();
+  });
+  
+  function calculateDiscount(amount, voucher) {
+    if (voucher.type === 'percentage') {
+      return Math.round(amount * voucher.value / 100);
+    } else {
+      return voucher.value;
+    }
+  }
+  
+  function showVoucherMessage(message, type) {
+    voucherMessage.textContent = message;
+    voucherMessage.className = `voucher-message ${type}`;
+  }
+  
+  function formatCurrency(amount) {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      minimumFractionDigits: 0
+    }).format(amount).replace('₫', 'VND');
+  }
+  
+  function addRemoveVoucherButton() {
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = 'Hủy mã';
+    removeBtn.className = 'remove-voucher-btn';
+    removeBtn.style.cssText = `
+      margin-left: 8px;
+      padding: 8px 12px;
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    `;
+    
+    removeBtn.addEventListener('click', function() {
+      // Reset voucher
+      appliedVoucher = null;
+      voucherDiscount.classList.add('hidden');
+      voucherInput.value = '';
+      voucherInput.disabled = false;
+      applyBtn.textContent = 'Áp dụng';
+      applyBtn.disabled = false;
+      showVoucherMessage('', '');
+      removeBtn.remove();
+    });
+    
+    applyBtn.parentNode.appendChild(removeBtn);
+  }
+}
