@@ -229,7 +229,26 @@
               </div>
               <div class="price-item total">
                 <span data-i18n="totalLabel">Tổng cộng</span>
-                <span>1.598.000 VND</span>
+                <span id="totalAmount">1.598.000 VND</span>
+              </div>
+            </div>
+
+            <!-- Voucher Section -->
+            <div class="voucher-section">
+              <div class="voucher-input">
+                <input type="text" id="voucherInput" placeholder="Nhập mã giảm giá" data-i18n="voucherPlaceholder">
+                <button type="button" id="applyVoucherBtn" data-i18n="applyVoucher">Áp dụng</button>
+              </div>
+              <div class="voucher-message" id="voucherMessage"></div>
+              <div class="voucher-discount hidden" id="voucherDiscount">
+                <div class="price-item discount">
+                  <span data-i18n="discountLabel">Giảm giá</span>
+                  <span id="discountAmount">-0 VND</span>
+                </div>
+                <div class="price-item final-total">
+                  <span data-i18n="finalTotalLabel">Tổng thanh toán</span>
+                  <span id="finalAmount">1.598.000 VND</span>
+                </div>
               </div>
             </div>
 

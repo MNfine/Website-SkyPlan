@@ -31,6 +31,10 @@ const paymentTranslations = {
         ticketLabel: "Flight ticket (round trip)",
         taxLabel: "Taxes and fees",
         totalLabel: "Total",
+        voucherPlaceholder: "Enter voucher code",
+        applyVoucher: "Apply",
+        discountLabel: "Discount",
+        finalTotalLabel: "Final Total",
         secure: "Transaction secured by 256-bit SSL",
         // Header 
         helpText: "Help",
@@ -126,6 +130,10 @@ const paymentTranslations = {
         ticketLabel: "Vé máy bay (2 chiều)",
         taxLabel: "Thuế và phí",
         totalLabel: "Tổng cộng",
+        voucherPlaceholder: "Nhập mã giảm giá",
+        applyVoucher: "Áp dụng",
+        discountLabel: "Giảm giá",
+        finalTotalLabel: "Tổng thanh toán",
         secure: "Giao dịch được bảo mật bằng SSL 256-bit",
         // Header 
         helpText: "Trợ giúp",

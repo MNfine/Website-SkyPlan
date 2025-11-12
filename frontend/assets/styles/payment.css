@@ -586,6 +586,122 @@ body {
   border-radius: 0 0 12px 12px;
 }
 
+/* Voucher Section */
+.voucher-section {
+  margin-bottom: 28px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e1e5e9;
+}
+
+.voucher-input {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.voucher-input input {
+  flex: 1;
+  min-width: 0; /* Prevents overflow */
+  padding: 12px 16px;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.voucher-input input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(10, 150, 157, 0.1);
+}
+
+.voucher-input button {
+  padding: 12px 20px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0; /* Prevents button shrinking */
+  min-width: 80px;
+  box-sizing: border-box;
+}
+
+.voucher-input button:hover {
+  background: #088a91;
+  transform: translateY(-1px);
+}
+
+.voucher-input button:active {
+  transform: translateY(0);
+}
+
+.voucher-message {
+  font-size: 14px;
+  margin-top: 8px;
+  padding: 8px 0;
+  min-height: 20px;
+}
+
+.voucher-message.success {
+  color: #10b981;
+}
+
+.voucher-message.error {
+  color: #ef4444;
+}
+
+.voucher-discount {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e1e5e9;
+}
+
+.voucher-discount.hidden {
+  display: none;
+}
+
+.price-item.discount {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.price-item.final-total {
+  border-top: 2px solid var(--primary-color);
+  margin-top: 12px;
+  padding-top: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary-color);
+  background: linear-gradient(135deg, #f0f9f8 0%, #e8f5f4 100%);
+  margin-left: -20px;
+  margin-right: -20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-radius: 8px;
+}
+
+.remove-voucher-btn {
+  transition: all 0.3s ease;
+}
+
+.remove-voucher-btn:hover {
+  background: #dc2626 !important;
+  transform: translateY(-1px);
+}
+
+.remove-voucher-btn:active {
+  transform: translateY(0) !important;
+}
+
 .pay-btn {
   width: 100%;
   background: linear-gradient(135deg, var(--secondary-color) 0%, #ff7700 100%);
@@ -973,6 +1089,19 @@ body {
   .steps .progress::before {
     height: 3px;
   }
+  
+  /* Voucher responsive for tablet */
+  .voucher-input {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .voucher-input button {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+    font-size: 15px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1076,6 +1205,35 @@ body {
   .pay-btn {
     font-size: 16px;
     padding: 16px 20px;
+  }
+  
+  /* Voucher responsive for mobile */
+  .voucher-section {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .voucher-input input {
+    padding: 14px 16px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  .voucher-input button {
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+  
+  .voucher-message {
+    font-size: 14px;
+    padding: 6px 0;
+  }
+  
+  .price-item.final-total {
+    font-size: 16px;
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }
 
@@ -1213,5 +1371,41 @@ body {
     padding: 12px 16px;
     font-size: 14px;
     gap: 6px;
+  }
+  
+  /* Voucher responsive for extra small */
+  .voucher-section {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .voucher-input {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .voucher-input input {
+    padding: 12px 14px;
+    font-size: 16px;
+    margin-bottom: 0;
+  }
+  
+  .voucher-input button {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  .voucher-message {
+    font-size: 13px;
+    padding: 4px 0;
+  }
+  
+  .price-item.final-total {
+    font-size: 15px;
+    margin-left: -12px;
+    margin-right: -12px;
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
