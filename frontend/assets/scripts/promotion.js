@@ -15,8 +15,7 @@ const PROMO_ITEMS = [{
                 { icon: "💳", text: "Thanh toán online để nhận thêm giảm giá 5%" }
             ],
             coupons: [
-                { title: "Giảm 200K", desc: "Đơn từ 1.500.000đ", code: "NOEL200" },
-                { title: "Giảm 10%", desc: "Áp dụng cho chặng bay quốc tế", code: "XMAS10" }
+                { title: "Giảm 200K", desc: "Đơn từ 1 triệu", code: "NOEL200" }
             ]
         }
     },
@@ -55,8 +54,7 @@ const PROMO_ITEMS = [{
                 { icon: "🧳", text: "Miễn phí 10kg hành lý ký gửi" }
             ],
             coupons: [
-                { title: "Summer Deal", desc: "Giảm 10% tất cả vé mùa hè", code: "SUMMER10" },
-                { title: "Đặt Sớm", desc: "Giảm thêm 150K khi đặt trước 1 tháng", code: "SOM150" }
+                { title: "Summer Deal", desc: "Giảm 10% tất cả vé mùa hè", code: "SUMMER10" }
             ]
         }
     },
@@ -112,7 +110,7 @@ const PROMO_ITEMS = [{
                 { icon: "⚡", text: "Số lượng ưu đãi có hạn mỗi ngày" }
             ],
             coupons: [
-                { title: "MoMo Giảm 100K", desc: "Giảm 100K cho đơn từ 1.000.000đ", code: "MOMO10" }
+                { title: "MoMo Giảm 100K", desc: "Giảm 100K cho đơn từ 1 triệu", code: "MOMO10" }
             ]
         }
     }
@@ -141,68 +139,72 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;'
 
 /* ========= RENDER GRID ========= */
 function card(p) {
+    if (window.getLocalizedItem) p = window.getLocalizedItem(p);
     return `
-    <article class="card">
-      <div class="media">
-        <img loading="lazy" referrerpolicy="no-referrer" src="${p.img}" alt="${esc(p.title)}">
-        ${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ""}
-      </div>
-      <div class="body">
-        <h3 class="title">${esc(p.title)}</h3>
-        <div class="meta">
-          <div class="row"><span class="label">Thời gian khuyến mãi</span><span>${esc(p.period)}</span></div>
-          <div class="row"><span class="label">Giao dịch tối thiểu</span><span>${esc(p.condition)}</span></div>
-        </div>
-        <div class="cta"><button class="btn" data-id="${p.id}">Xem khuyến mãi</button></div>
-      </div>
-    </article>`;
+<article class="card">
+  <div class="media">
+    <img loading="lazy" referrerpolicy="no-referrer" src="${p.img}" alt="${esc(p.title)}">
+    ${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ""}
+  </div>
+  <div class="body">
+    <h3 class="title">${esc(p.title)}</h3>
+    <div class="meta">
+      <div class="row"><span class="label">Thời gian khuyến mãi</span><span>${esc(p.period)}</span></div>
+      <div class="row"><span class="label">Giao dịch tối thiểu</span><span>${esc(p.condition)}</span></div>
+    </div>
+    <div class="cta"><button class="btn" data-id="${p.id}">Xem khuyến mãi</button></div>
+  </div>
+</article>`;
+}
+
+function attachImgFallback(scope){
+scope.querySelectorAll('.media img, .promo-hero img').forEach(img=>{
+  img.addEventListener('error', ()=>{
+    img.src = 'assets/images/placeholder-16x9.jpg'; 
+  });
+});
+}
+
+function renderGrid(){
+const start = (page-1)*PAGE_SIZE;
+const slice = PROMO_ITEMS.slice(start, start+PAGE_SIZE);
+gridEl.innerHTML = slice.map(card).join("");
+attachImgFallback(gridEl);
+}
+
+/* ========= PAGINATION ========= */
+function renderPagination(){
+const total = PROMO_ITEMS.length;
+const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+prevEl.disabled = page<=1;
+nextEl.disabled = page>=totalPages;
+
+numbersEl.innerHTML = "";
+for(let i=1;i<=totalPages;i++){
+  const btn = document.createElement("button");
+  btn.className = "pg-btn";
+  btn.textContent = i;
+  if(i===page) btn.setAttribute("aria-current","page");
+  btn.onclick = ()=>{ page=i; renderAll(); };
+  numbersEl.appendChild(btn);
+}
+}
+
+function renderAll(){
+    renderGrid();
+    renderPagination();
+    if (typeof applyPromotionI18n === "function") applyPromotionI18n(getLang());
   }
   
-  function attachImgFallback(scope){
-    scope.querySelectorAll('.media img, .promo-hero img').forEach(img=>{
-      img.addEventListener('error', ()=>{
-        img.src = 'assets/images/placeholder-16x9.jpg'; 
-      });
-    });
-  }
+
+/* ========= DETAIL ========= */
+function openDetail(id){
+    window._promoCurrentId = id;
+    const base = PROMO_ITEMS.find(x=>x.id===id); if(!base) return;
+    // LẤY BẢN DỊCH (EN) NẾU CÓ
+    const p = (window.getLocalizedItem ? window.getLocalizedItem(base) : base);
   
-  function renderGrid(){
-    const start = (page-1)*PAGE_SIZE;
-    const slice = PROMO_ITEMS.slice(start, start+PAGE_SIZE);
-    gridEl.innerHTML = slice.map(card).join("");
-  
-    // click xem chi tiết
-    gridEl.querySelectorAll(".btn[data-id]").forEach(b=>{
-      b.onclick = ()=> openDetail(+b.dataset.id);
-    });
-  
-    attachImgFallback(gridEl);
-  }
-  
-  /* ========= PAGINATION ========= */
-  function renderPagination(){
-    const total = PROMO_ITEMS.length;
-    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  
-    prevEl.disabled = page<=1;
-    nextEl.disabled = page>=totalPages;
-  
-    numbersEl.innerHTML = "";
-    for(let i=1;i<=totalPages;i++){
-      const btn = document.createElement("button");
-      btn.className = "pg-btn";
-      btn.textContent = i;
-      if(i===page) btn.setAttribute("aria-current","page");
-      btn.onclick = ()=>{ page=i; renderAll(); };
-      numbersEl.appendChild(btn);
-    }
-  }
-  
-  function renderAll(){ renderGrid(); renderPagination(); }
-  
-  /* ========= DETAIL ========= */
-  function openDetail(id){
-    const p = PROMO_ITEMS.find(x=>x.id===id); if(!p) return;
     dHero.src = p.img; dHero.alt = p.title;
     dTitle.innerHTML = esc(p.detail?.heroTitle || p.title).replace(/\n/g,"<br/>");
     dSubtitle.textContent = p.detail?.subtitle || p.condition || "";
@@ -239,9 +241,17 @@ function card(p) {
             ta.value = code; ta.readOnly = true; ta.style.position="absolute"; ta.style.left="-9999px";
             document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta);
           }
-          btn.textContent = "Đã copy";
-        }catch{ btn.textContent = "Lỗi"; }
-        finally{ setTimeout(()=>btn.textContent="Copy",1100); }
+          // === i18n cho trạng thái nút ===
+          const lang = (typeof getLang === "function") ? getLang() : "vi";
+          const copiedText = (window.ui?.[lang]?.copied) || (lang==="en"?"Copied!":"Đã sao chép!");
+          btn.textContent = copiedText;
+        }catch{
+          btn.textContent = "Error";
+        }finally{
+          const lang = (typeof getLang === "function") ? getLang() : "vi";
+          const copyText = (window.ui?.[lang]?.copy) || (lang==="en"?"Copy":"Sao chép");
+          setTimeout(()=>btn.textContent = copyText, 1100);
+        }
       };
     });
   
@@ -251,28 +261,45 @@ function card(p) {
   
     attachImgFallback(detailEl);
     window.scrollTo({top:detailEl.offsetTop-24, behavior:"smooth"});
-  }
-  
-  function closeDetail(){
-    detailEl.hidden = true;
-    gridEl.hidden = false;
-    document.querySelector(".promo-pagination").hidden = false;
-    window.scrollTo({top:gridEl.offsetTop-16, behavior:"smooth"});
-  }
+  }  
 
-  /* ========= INIT ========= */
-  document.addEventListener("DOMContentLoaded", ()=>{
-    renderAll();
-    prevEl.onclick = ()=>{ if(page>1){ page--; renderAll(); } };
-    nextEl.onclick = ()=>{
-      const max = Math.ceil(PROMO_ITEMS.length / PAGE_SIZE);
-      if(page < max){ page++; renderAll(); }
-    };
-    dBack.onclick = closeDetail;
-  
-    // 2 CTA demo
-    if (dBook) dBook.onclick = () => {
-        window.location.href = "index.html";
-      };
-      
+function closeDetail(){
+detailEl.hidden = true;
+gridEl.hidden = false;
+document.querySelector(".promo-pagination").hidden = false;
+window.scrollTo({top:gridEl.offsetTop-16, behavior:"smooth"});
+}
+
+/* ========= INIT ========= */
+document.addEventListener("DOMContentLoaded", ()=>{
+renderAll();
+prevEl.onclick = ()=>{ if(page>1){ page--; renderAll(); } };
+nextEl.onclick = ()=>{
+  const max = Math.ceil(PROMO_ITEMS.length / PAGE_SIZE);
+  if(page < max){ page++; renderAll(); }
+};
+dBack.onclick = closeDetail;
+
+// 2 CTA demo
+if (dBook) dBook.onclick = () => {
+    window.location.href = "index.html";
+  };
+if (typeof applyPromotionI18n === "function") applyPromotionI18n(getLang());
+});
+
+document.addEventListener('click', function (e) {
+    const btn = e.target.closest('.promo .card .btn[data-id]');
+    if (!btn) return;
+    e.preventDefault();
+    const id = +btn.dataset.id;
+    if (!Number.isNaN(id)) openDetail(id);
   });
+
+window.skyplanPromo = {
+    rerender() {
+      renderAll();
+      if (!detailEl.hidden && typeof window._promoCurrentId === 'number') {
+        openDetail(window._promoCurrentId); // mở lại detail theo lang mới
+      }
+    }
+  };

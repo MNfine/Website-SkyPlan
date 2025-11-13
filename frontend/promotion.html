@@ -2,15 +2,15 @@
 <html lang="vi">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkyPlan - Khuyến mãi</title>
 
     <!-- Favicon -->
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 
     <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <!-- CSS của dự án -->
     <link rel="stylesheet" href="assets/styles/reset.css">
@@ -21,44 +21,43 @@
 
     <!-- Trang này -->
     <link rel="stylesheet" href="assets/styles/promotion.css">
+
+
 </head>
 
 <body>
     <!-- Header -->
     <div id="header-container"></div>
 
-    <!-- MAIN -->
     <main class="promo">
         <div class="promo-wrap">
-            <!-- HERO Banner có ô tìm kiếm đè -->
-            <section class="promo-banner">
+            <section class="promo-banner" aria-labelledby="promo-banner-title">
+                <h2 id="promo-banner-title" class="sr-only">Khuyến mãi nổi bật</h2>
                 <img src="assets/images/banner.jpg" alt="SkyPlan Promotion Banner">
                 <form class="promo-search" onsubmit="event.preventDefault();">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="Nhập khuyến mãi mà bạn muốn (ví dụ giảm giá chuyến bay)" />
+                    <input type="text" placeholder="Nhập khuyến mãi mà bạn muốn (ví dụ giảm giá chuyến bay)">
                     <button type="submit" aria-label="Tìm">
-        <i class="fa-solid fa-arrow-right"></i>
-      </button>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
                 </form>
             </section>
 
-
-            <!-- List heading + (fake) Lọc/Sắp xếp -->
             <div class="promo-list-head">
                 <div class="head-left">
                     <h2>Các chương trình khuyến mãi</h2>
                 </div>
             </div>
 
-            <!-- GRID danh sách -->
-            <section id="promo-grid" class="promo-grid"></section>
+            <section id="promo-grid" class="promo-grid" aria-labelledby="promo-grid-title">
+                <h2 id="promo-grid-title" class="sr-only">Danh sách khuyến mãi</h2>
+            </section>
 
-            <!-- DETAIL (ẩn mặc định) -->
-            <section id="promo-detail" class="promo-detail" hidden>
+            <section id="promo-detail" class="promo-detail" hidden aria-labelledby="d-title">
                 <div class="promo-hero">
-                    <img id="d-hero" alt="">
+                    <img id="d-hero" src="assets/images/placeholder-16x9.jpg" alt="" loading="lazy" decoding="async">
                     <div class="promo-hero-text">
-                        <h2 id="d-title"></h2>
+                        <div id="d-title" class="promo-title" role="heading" aria-level="2" aria-live="polite"></div>
                         <p id="d-subtitle"></p>
                         <div class="promo-hero-ctas">
                             <button id="d-book" class="btn btn-ghost">Đặt vé ngay!</button>
@@ -90,10 +89,10 @@
     <!-- Footer -->
     <div id="footer-container"></div>
 
-    <script src="assets/scripts/common.js" defer></script>
-    <script src="assets/scripts/promotion.js" defer></script>
+    <script src="assets/scripts/common.js"></script>
+    <script src="assets/scripts/promotion_translations.js"></script>
+    <script src="assets/scripts/promotion.js"></script>
 
-    <!-- Load components -->
     <script>
         // Header
         fetch('components/header.html')
@@ -102,6 +101,9 @@
                 document.getElementById('header-container').innerHTML = html;
                 if (typeof initializeLanguageSelector === 'function') initializeLanguageSelector();
                 if (typeof initializeMobileMenu === 'function') initializeMobileMenu();
+                if (typeof applyHeaderFooterI18n === 'function') applyHeaderFooterI18n(getLang());
+                if (typeof applyPromotionI18n === 'function') applyPromotionI18n(getLang());
+                document.dispatchEvent(new CustomEvent('componentsLoaded'));
             });
 
         // Footer
@@ -109,6 +111,9 @@
             .then(res => res.ok ? res.text() : Promise.reject())
             .then(html => {
                 document.getElementById('footer-container').innerHTML = html;
+                if (typeof applyHeaderFooterI18n === 'function') applyHeaderFooterI18n(getLang());
+                if (typeof applyPromotionI18n === 'function') applyPromotionI18n(getLang());
+                document.dispatchEvent(new CustomEvent('componentsLoaded'));
             });
     </script>
 </body>
