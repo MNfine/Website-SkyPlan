@@ -66,6 +66,8 @@ function initializeLanguageSelector() {
                     applyMyTripsTranslations(selectedLangValue);
                 } else if (typeof changeBlogLanguage === 'function' && (path.includes('blog.html') || path.endsWith('/blog'))) {
                     changeBlogLanguage(selectedLangValue);
+                } else if (typeof changeBlogLanguage === 'function' && (path.includes('promotion.html') || path.endsWith('/promotion'))) {
+                    changeBlogLanguage(selectedLangValue);
                 } else if (typeof changeLanguage === 'function') {
                     changeLanguage(selectedLangValue);
                 }
@@ -130,7 +132,7 @@ function enableSmoothScrolling() {
 
 // Global city label resolver: ensures diacritics from SKYPLAN_CITY_TRANSLATIONS for all pages
 // Usage: window.resolveCityLabel(raw, lang?) -> localized label or original string
-(function(){
+(function() {
     if (typeof window === 'undefined') return;
     // Ensure global city translations exist for all pages
     if (!window.SKYPLAN_CITY_TRANSLATIONS) {
@@ -180,14 +182,28 @@ function enableSmoothScrolling() {
     if (window.resolveCityLabel) return; // do not override if already defined
 
     const IATA_TO_CODE = {
-        HAN: 'HaNoi', SGN: 'HoChiMinh', DAD: 'DaNang', PQC: 'PhuQuoc', HPH: 'HaiPhong', HUI: 'Hue',
-        DLI: 'DaLat', VCA: 'CanTho', CXR: 'KhanhHoa', VII: 'NgheAn', VDO: 'QuangNinh', VDH: 'QuangTri',
-        VKG: 'AnGiang', DIN: 'DienBien', PXU: 'GiaLai', SQH: 'SonLa', THD: 'ThanhHoa'
+        HAN: 'HaNoi',
+        SGN: 'HoChiMinh',
+        DAD: 'DaNang',
+        PQC: 'PhuQuoc',
+        HPH: 'HaiPhong',
+        HUI: 'Hue',
+        DLI: 'DaLat',
+        VCA: 'CanTho',
+        CXR: 'KhanhHoa',
+        VII: 'NgheAn',
+        VDO: 'QuangNinh',
+        VDH: 'QuangTri',
+        VKG: 'AnGiang',
+        DIN: 'DienBien',
+        PXU: 'GiaLai',
+        SQH: 'SonLa',
+        THD: 'ThanhHoa'
     };
 
-    function getLang(){ return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi'; }
+    function getLang() { return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi'; }
 
-    function resolveCityLabel(raw, langOverride){
+    function resolveCityLabel(raw, langOverride) {
         if (!raw) return '';
         const lang = langOverride || getLang();
         const MAP = (typeof window !== 'undefined' && window.SKYPLAN_CITY_TRANSLATIONS) || {};
@@ -204,7 +220,7 @@ function enableSmoothScrolling() {
         if (Object.prototype.hasOwnProperty.call(viMap, val) || Object.prototype.hasOwnProperty.call(enMap, val))
             return dict[val] || viMap[val] || enMap[val] || val;
         // Try reverse-lookup by comparing labels (case-insensitive)
-        const lowers = (s) => (s||'').toString().toLowerCase();
+        const lowers = (s) => (s || '').toString().toLowerCase();
         const sought = lowers(val);
         const mapsToCheck = [viMap, enMap];
         for (const m of mapsToCheck) {
