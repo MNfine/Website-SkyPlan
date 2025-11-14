@@ -261,7 +261,14 @@
   background: var(--faq-tint-06);
   border-top: 1px solid #eef2f5;
 }
-
+.faq-answer a {
+  color: var(--faq-primary);
+  text-decoration: underline;
+  font-weight: 600;
+}
+.faq-answer a:hover {
+  color: #097f85;
+}
 /* Empty*/
 .faq-empty {
   display: grid;
