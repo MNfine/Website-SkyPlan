@@ -125,6 +125,7 @@
   <script src="assets/scripts/profile_translations.js"></script>
   <script src="assets/scripts/common.js"></script>
   <script src="assets/scripts/profile.js"></script>
+  <script src="assets/scripts/auth-utils.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -142,6 +143,16 @@
           if (typeof updateSelectedLanguage === 'function') {
             updateSelectedLanguage(lang);
           }
+
+          // Ensure user dropdown and header user info are initialized after header injection
+          if (typeof initializeUserDropdown === 'function') {
+            initializeUserDropdown();
+          }
+          if (typeof updateHeaderUserInfo === 'function') {
+            // slight delay to let any header scripts settle
+            setTimeout(() => updateHeaderUserInfo(), 50);
+          }
+
           // Apply translations to header using common.js
           if (typeof applyTranslations === 'function') {
             applyTranslations(lang);

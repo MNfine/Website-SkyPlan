@@ -6,17 +6,22 @@ const AuthState = {
   getToken: function() {
     // Check localStorage first (for "remember me")
     let token = localStorage.getItem('authToken');
+    console.debug('[AuthState.getToken] Retrieved from localStorage:', token); // Debug log
     if (token) return token;
     
     // Check sessionStorage (for current session)
     token = sessionStorage.getItem('authToken');
+    console.debug('[AuthState.getToken] Retrieved from sessionStorage:', token); // Debug log
     if (token) return token;
     
     // Try other token keys
     const keys = ['accessToken', 'token', 'jwt'];
     for (const key of keys) {
       token = localStorage.getItem(key) || sessionStorage.getItem(key);
-      if (token) return token;
+      if (token) {
+        console.debug(`[AuthState.getToken] Retrieved from key ${key}:`, token); // Debug log
+        return token;
+      }
     }
     
     return null;
@@ -40,11 +45,12 @@ const AuthState = {
   // Check if user is authenticated
   isAuthenticated: function() {
     const token = this.getToken();
+    console.debug('[AuthState.getToken]', token); // Debug log for token retrieval
     return !!token;
   },
   
   // Set authentication data
-  setAuth: function(token, user, remember = false) {
+  setAuth: function(token, user, remember = true) { // Default to `localStorage`
     const storage = remember ? localStorage : sessionStorage;
     
     storage.setItem('authToken', token);
@@ -155,6 +161,12 @@ function updateHeaderUserInfo() {
   const authButtons = document.querySelector('.auth-buttons');
   const userMenu = document.querySelector('.user-menu');
   
+  console.debug('[AuthState.getUser]', AuthState.getUser());
+  console.debug('[AuthState.isAuthenticated]', AuthState.isAuthenticated());
+  console.debug('[userNameElements]', userNameElements);
+  console.debug('[authButtons]', authButtons);
+  console.debug('[userMenu]', userMenu);
+  
   if (user && AuthState.isAuthenticated()) {
     console.log('User authenticated:', user); // Debug log
     
@@ -168,12 +180,10 @@ function updateHeaderUserInfo() {
     if (userMenu) userMenu.style.display = 'block';
     
     // Apply translations to user dropdown after showing it
-    setTimeout(() => {
-      if (typeof applyIndexTranslations === 'function') {
-        const lang = localStorage.getItem('preferredLanguage') || 'vi';
-        applyIndexTranslations(lang);
-      }
-    }, 100);
+    if (typeof applyTranslations === 'function') {
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      applyTranslations(lang);
+    }
     
   } else {
     console.log('User not authenticated'); // Debug log

@@ -6,10 +6,17 @@ let currentTripToCancel = null;
 
 // Helper function to get translated text
 function getTranslation(key) {
-  const currentLang = localStorage.getItem('selectedLanguage') || 'vi';
-  return window.myTripsTranslations && window.myTripsTranslations[currentLang] && window.myTripsTranslations[currentLang][key] 
-    ? window.myTripsTranslations[currentLang][key] 
-    : key;
+  // Prefer the global preferredLanguage used across the app (fallbacks for compatibility)
+  const currentLang = localStorage.getItem('preferredLanguage') || localStorage.getItem('selectedLanguage') || document.documentElement.lang || 'vi';
+  return window.myTripsTranslations && window.myTripsTranslations[currentLang] && window.myTripsTranslations[currentLang][key]
+    ? window.myTripsTranslations[currentLang][key]
+    : // try fallback to global translations object if available
+      (window.translations && window.translations[currentLang] && window.translations[currentLang][key]) || key;
+}
+
+// Centralized helper to determine the current UI language for this page.
+function getCurrentLang() {
+  return localStorage.getItem('preferredLanguage') || localStorage.getItem('selectedLanguage') || document.documentElement.lang || 'vi';
 }
 
 // Helper function to format date based on language
@@ -55,12 +62,12 @@ document.addEventListener('DOMContentLoaded', function() {
   loadTripsData();
   
   // Apply translations based on current language
-  const currentLang = localStorage.getItem('selectedLanguage') || 'vi';
+  const currentLang = getCurrentLang();
   
   // Function to apply translations when ready
   function tryApplyTranslations() {
     if (typeof window.myTripsTranslations !== 'undefined') {
-      applyMyTripsTranslations(currentLang);
+      applyMyTripsTranslations(getCurrentLang());
     } else {
       // If translations not loaded yet, try again after a short delay
       setTimeout(tryApplyTranslations, 100);
@@ -105,32 +112,46 @@ function checkEmptyState() {
   const activeContent = document.querySelector('.tab-content.active');
   const tripsList = activeContent.querySelector('.trips-list');
   const emptyState = document.getElementById('empty-state');
-  
+  const lang = getCurrentLang();
+
   if (tripsList && tripsList.children.length === 0) {
     tripsList.style.display = 'none';
     emptyState.style.display = 'block';
-    
-    // Update empty state message based on current tab
+
+    // Update empty state message based on current tab and auth state
     const title = emptyState.querySelector('h3');
     const message = emptyState.querySelector('p');
-    
-    switch(currentTab) {
-      case 'all':
-        title.textContent = getTranslation('noAllTripsTitle');
-        message.textContent = getTranslation('noAllTripsMessage');
-        break;
-      case 'upcoming':
-        title.textContent = getTranslation('noUpcomingTripsTitle');
-        message.textContent = getTranslation('noUpcomingTripsMessage');
-        break;
-      case 'completed':
-        title.textContent = getTranslation('noCompletedTripsTitle');
-        message.textContent = getTranslation('noCompletedTripsMessage');
-        break;
-      case 'cancelled':
-        title.textContent = getTranslation('noCancelledTripsTitle');
-        message.textContent = getTranslation('noCancelledTripsMessage');
-        break;
+
+    // Detect if user is authenticated
+    const isAuthenticated = (typeof AuthState !== 'undefined' && AuthState.getToken && AuthState.getToken());
+
+    if (isAuthenticated && currentTab === 'all') {
+      // Show logged-in empty state if no trips and user is logged in
+      title.textContent = window.myTripsTranslations && window.myTripsTranslations[lang] && window.myTripsTranslations[lang]['noTripsLoggedInTitle']
+        ? window.myTripsTranslations[lang]['noTripsLoggedInTitle']
+        : getTranslation('noTripsTitle');
+      message.textContent = window.myTripsTranslations && window.myTripsTranslations[lang] && window.myTripsTranslations[lang]['noTripsLoggedInMessage']
+        ? window.myTripsTranslations[lang]['noTripsLoggedInMessage']
+        : getTranslation('noTripsMessage');
+    } else {
+      switch(currentTab) {
+        case 'all':
+          title.textContent = getTranslation('noAllTripsTitle');
+          message.textContent = getTranslation('noAllTripsMessage');
+          break;
+        case 'upcoming':
+          title.textContent = getTranslation('noUpcomingTripsTitle');
+          message.textContent = getTranslation('noUpcomingTripsMessage');
+          break;
+        case 'completed':
+          title.textContent = getTranslation('noCompletedTripsTitle');
+          message.textContent = getTranslation('noCompletedTripsMessage');
+          break;
+        case 'cancelled':
+          title.textContent = getTranslation('noCancelledTripsTitle');
+          message.textContent = getTranslation('noCancelledTripsMessage');
+          break;
+      }
     }
   } else {
     if (tripsList) tripsList.style.display = 'flex';
@@ -140,7 +161,8 @@ function checkEmptyState() {
 
 // Load trips data from API
 async function loadTripsData() {
-  const token = localStorage.getItem('authToken');
+  // Use centralized AuthState helper to detect token (checks localStorage/sessionStorage and aliases)
+  const token = (typeof AuthState !== 'undefined' && AuthState.getToken) ? AuthState.getToken() : (localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
   if (!token) {
     showLoginRequired();
     return;
@@ -232,7 +254,7 @@ function renderTripsData(bookings) {
     return;
   }
 
-  const lang = localStorage.getItem('selectedLanguage') || 'vi';
+  const lang = getCurrentLang();
   
   let html = '';
   bookings.forEach(booking => {
@@ -399,21 +421,26 @@ function getAirportName(code, lang) {
 function showEmptyState() {
   const container = document.querySelector('.trips-container, .main-content');
   if (container) {
-    const lang = localStorage.getItem('selectedLanguage') || 'vi';
+    const lang = getCurrentLang(); // dùng hàm chung
+
     container.innerHTML = `
       <div class="empty-state" style="text-align: center; padding: 60px 20px;">
         <i class="fas fa-plane-departure" style="font-size: 4rem; color: #ccc; margin-bottom: 20px;"></i>
-        <h3>${lang === 'vi' ? 'Chưa có chuyến đi nào' : 'No trips yet'}</h3>
-        <p style="color: #666; margin-bottom: 30px;">
-          ${lang === 'vi' ? 'Bạn chưa đặt chuyến đi nào. Hãy bắt đầu tìm kiếm chuyến bay đầu tiên!' : 'You haven\'t booked any trips yet. Start by searching for your first flight!'}
+        <h3 data-i18n="noTripsTitle">${getTranslation('noTripsTitle')}</h3>
+        <p style="color: #666; margin-bottom: 30px;" data-i18n="noTripsMessage">
+          ${getTranslation('noTripsMessage')}
         </p>
         <a href="index.html" class="btn btn-primary">
-          ${lang === 'vi' ? 'Tìm kiếm chuyến bay' : 'Search Flights'}
+          <span data-i18n="searchFlights">${getTranslation('searchFlights')}</span>
         </a>
       </div>
     `;
+
+    // Cho chắc ăn, apply lại translation sau khi inject
+    applyMyTripsTranslations(lang);
   }
 }
+
 
 // Update tab counts (if tabs exist)
 function updateTabCounts(bookings) {
@@ -1234,5 +1261,14 @@ window.applyMyTripsTranslations = applyMyTripsTranslations;
 
 // Listen for language change events
 document.addEventListener('languageChanged', function(e) {
-  applyMyTripsTranslations(e.detail.language);
+  // Support both e.detail.language and e.detail.lang for compatibility
+  const lang = (e.detail && (e.detail.language || e.detail.lang)) || getCurrentLang();
+  applyMyTripsTranslations(lang);
+  // Also update the empty-state message if visible
+  checkEmptyState();
+
+  // Debugging language change event
+  console.debug('[Language Change Event]', e.detail);
+  console.debug('[Current Language]', lang);
+  console.debug('[Empty State Updated]');
 });
