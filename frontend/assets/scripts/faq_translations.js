@@ -6,7 +6,7 @@ const faqI18n = {
     // Heading
     faqTitle: "Câu hỏi thường gặp",
     searchLabel: "Tìm kiếm",
-    searchPlaceholder: "Tìm kiếm",
+    searchPlaceholder: "Nhập từ khóa cần tìm...",
     searchBtn: "Tìm kiếm",
     clearSearch: "Xóa tìm kiếm",
     searchResults: "kết quả",
@@ -26,7 +26,7 @@ const faqI18n = {
     // Headings
     faqTitle: "Frequently Asked Questions",
     searchLabel: "Search",
-    searchPlaceholder: "Search",
+    searchPlaceholder: "Enter Keywords to Search...",
     searchBtn: "Search",
     clearSearch: "Clear search",
     searchResults: "results",
@@ -47,23 +47,23 @@ const faqContent = {
     popular: [
       {
         q: "Tôi có thể đổi chuyến bay như thế nào?",
-        a: "Liên hệ hỗ trợ",
+        a: 'Vui lòng <a href="support.html" class="faq-link"  target="_blank" rel="noopener">liên hệ hỗ trợ</a>.',
       },
       {
         q: "SkyPlan chấp nhận phương thức thanh toán nào?",
-        a: "Hỗ trợ thanh toán VNPay, Visa, MasterCard,...",
+        a: "SkyPlan hỗ trợ nhiều phương thức thanh toán như thẻ tín dụng, VNPay, MoMo, chuyển khoản.",
       },
     ],
     schedule: [
       {
         q: "Tôi có thể xem các chuyến bay ở đâu?",
-        a: "Tra cứu chuyến bay ở Trang chủ theo ngày và chặng.",
+        a: 'Tra cứu chuyến bay ở <a href="index.html" class="faq-link" target="_blank" rel="noopener">trang chủ</a> theo ngày và chặng.',
       },
     ],
     booking: [
       {
         q: "Làm sao đặt vé trên SkyPlan?",
-        a: "Chọn hành trình, nhập thông tin, chọn hạng vé, dịch vụ thêm(nếu cần) và hoàn tất thanh toán.",
+        a: 'Chọn hành trình tại <a href="index.html" class="faq-link"  target="_blank" rel="noopener">trang chủ</a>, nhập thông tin, chọn hạng vé, dịch vụ thêm (nếu cần) và hoàn tất thanh toán.',
       },
       {
         q: "Tôi có thể đặt vé đi nước ngoài không?",
@@ -73,11 +73,11 @@ const faqContent = {
     payment: [
       {
         q: "Thanh toán thất bại phải làm gì?",
-        a: "Kiểm tra số dư hoặc kết nối, thử phương thức khác hoặc liên hệ hỗ trợ.",
+        a: 'Kiểm tra số dư hoặc kết nối, thử phương thức khác hoặc <a href="support.html" class="faq-link"  target="_blank" rel="noopener">liên hệ hỗ trợ</a>.',
       },
       {
         q: "SkyPlan chấp nhận phương thức thanh toán nào?",
-        a: "Hỗ trợ thanh toán VNPay, Visa, MasterCard,...",
+        a: "SkyPlan hỗ trợ nhiều phương thức thanh toán như thẻ tín dụng, VNPay, MoMo, chuyển khoản.",
       },
     ],
     baggage: [
@@ -93,11 +93,11 @@ const faqContent = {
     changes: [
       {
         q: "Làm sao đổi ngày hoặc giờ bay?",
-        a: "Liên hệ hỗ trợ",
+        a: 'Vui lòng <a href="support.html" class="faq-link"  target="_blank" rel="noopener">liên hệ hỗ trợ</a>.',
       },
       {
         q: "Chính sách hoàn tiền?",
-        a: "Phụ thuộc điều kiện hạng vé. Xem chi tiết trong đặt chỗ hoặc liên hệ hỗ trợ để được tư vấn.",
+        a: 'Phụ thuộc điều kiện hạng vé. Xem chi tiết trong đặt chỗ hoặc <a href="support.html" class="faq-link"  target="_blank" rel="noopener">liên hệ hỗ trợ</a> để được tư vấn.',
       },
     ],
   },
@@ -105,23 +105,23 @@ const faqContent = {
     popular: [
       {
         q: "How can I change my flight?",
-        a: "Please contact support.",
+        a: 'Please <a href="support.html" class="faq-link"  target="_blank" rel="noopener">contact support</a>.',
       },
       {
         q: "What payment methods does SkyPlan accept?",
-        a: "We support payment via VNPay, Visa, MasterCard, and more",
+        a: "SkyPlan supports payment via credit cards, VNPay, MoMo, and bank transfer",
       },
     ],
     schedule: [
       {
         q: "Where can I see the flight schedule?",
-        a: "You can search for flights on the Homepage by date and route.",
+        a: 'You can search for flights on the <a href="index.html" class="faq-link"  target="_blank" rel="noopener">Homepage</a> by date and route.',
       },
     ],
     booking: [
       {
         q: "How do I book a ticket on SkyPlan?",
-        a: "Select your itinerary, enter your information, choose a fare class, add extra services (if needed), and complete the payment.",
+        a: 'Select your itinerary on the <a href="index.html" class="faq-link"  target="_blank" rel="noopener">Homepage</a>, enter your information, choose a fare class, add extra services (if needed), and complete the payment.',
       },
       {
         q: "Can I book international flights?",
@@ -131,11 +131,11 @@ const faqContent = {
     payment: [
       {
         q: "What should I do if payment fails?",
-        a: "Check your balance or connection, try another payment method, or contact support.",
+        a: 'Check your balance or connection, try another payment method, or <a href="support.html" class="faq-link"  target="_blank" rel="noopener">contact support</a>.',
       },
       {
         q: "What payment methods does SkyPlan accept?",
-        a: "We support payment via VNPay, Visa, MasterCard, and more",
+        a: "SkyPlan supports payment via credit cards, VNPay, MoMo, and bank transfer",
       },
     ],
     baggage: [
@@ -151,11 +151,11 @@ const faqContent = {
     changes: [
       {
         q: "How do I change my flight date or time?",
-        a: "Please contact support.",
+        a: 'Please <a href="support.html" class="faq-link"  target="_blank" rel="noopener">contact support</a>.',
       },
       {
         q: "What is the refund policy?",
-        a: "Depends on fare conditions. See your booking details or contact support.",
+        a: 'Depends on fare conditions. See your booking details or <a href="support.html" class="faq-link"  target="_blank" rel="noopener">contact support</a>.',
       },
     ],
   },
