@@ -89,7 +89,7 @@
       const fixedFees = 200000; // Fixed 200k VND
       total += fixedFees;
 
-      console.log('💰 Calculate total cost (NEW LOGIC):', {
+      console.log('Calculate total cost (NEW LOGIC):', {
         seatTotal: seatTotal,
         extrasTotal: extrasTotal, 
         fixedFees: fixedFees,
@@ -264,12 +264,12 @@
       if (departDate) searchData.depart_date = departDate;
       if (returnDate) searchData.return_date = returnDate;
       localStorage.setItem('searchData', JSON.stringify(searchData));
-      console.log('💾 Synced dates to localStorage:', searchData);
+      console.log('Synced dates to localStorage:', searchData);
     }
   }
 
   function renderFlightDetails(trip, lang, fromName, toName) {
-    console.log('🔍 renderFlightDetails debug:');
+    console.log('renderFlightDetails debug:');
     console.log('trip:', trip);
     console.log('trip.departDateISO:', trip.departDateISO);
     console.log('trip.returnDateISO:', trip.returnDateISO);

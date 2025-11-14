@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Listen for direct language selector changes (not just storage)
   document.addEventListener('languageChanged', function(e) {
     const newLang = e.detail.language || e.detail.lang || 'vi';
-    console.log('🌐 Language changed event received:', newLang);
+    console.log('Language changed event received:', newLang);
     if (typeof applyPaymentTranslations === 'function') {
       applyPaymentTranslations(newLang);
     }
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Also listen on window for broader coverage
   window.addEventListener('languageChanged', function(e) {
     const newLang = e.detail.language || e.detail.lang || 'vi';
-    console.log('🌐 Window language changed event received:', newLang);
+    console.log('Window language changed event received:', newLang);
     if (typeof applyPaymentTranslations === 'function') {
       applyPaymentTranslations(newLang);
     }
@@ -63,11 +63,11 @@ document.addEventListener('DOMContentLoaded', function () {
 // Update payment amounts from booking data
 function updatePaymentAmounts() {
   try {
-    console.log('🔄 Starting updatePaymentAmounts function');
+    console.log('Starting updatePaymentAmounts function');
     
   const bookingDataStr = localStorage.getItem('completeBookingData');
     if (!bookingDataStr) {
-      console.log('⚠️ No booking data found, creating mock data for testing...');
+      console.log('No booking data found, creating mock data for testing...');
       // Create mock booking data matching the structure from overview.js
       const mockBookingData = {
         totalCost: 2500000,
@@ -92,7 +92,7 @@ function updatePaymentAmounts() {
     }
     
     const bookingData = JSON.parse(localStorage.getItem('completeBookingData'));
-    console.log('🔍 Raw completeBookingData from storage:', bookingData);
+    console.log('Raw completeBookingData from storage:', bookingData);
 
     // Defensive normalization: if seats or extras are missing or empty, try to reconstruct from other localStorage keys
     try {
@@ -107,7 +107,7 @@ function updatePaymentAmounts() {
             type: s.type || s.fareClass || fareClass
           }));
           bookingData.seats = { seats: normalizedSeats, fareClass: fareClass, totalCost: normalizedSeats.reduce((a, b) => a + (Number(b.price) || 0), 0) };
-          console.log('🔁 Normalized seats reconstructed from selectedSeats:', bookingData.seats);
+          console.log('Normalized seats reconstructed from selectedSeats:', bookingData.seats);
         }
       }
 
@@ -120,7 +120,7 @@ function updatePaymentAmounts() {
           bookingData.extras.meals = Array.isArray(rawExtras.meals) ? rawExtras.meals : (rawExtras.meals || []);
           bookingData.extras.baggage = rawExtras.baggage || rawExtras.baggageInfo || null;
           bookingData.extras.services = Array.isArray(rawExtras.services) ? rawExtras.services : (rawExtras.services || []);
-          console.log('🔁 Normalized extras reconstructed from skyplan_extras_v2:', bookingData.extras);
+          console.log('Normalized extras reconstructed from skyplan_extras_v2:', bookingData.extras);
         }
       }
 
@@ -131,17 +131,17 @@ function updatePaymentAmounts() {
         const fixedFees = 200000;
         const recomputed = Math.max(0, seatsTotal + extrasTotal + fixedFees);
         bookingData.totalCost = recomputed;
-        console.log('🔁 Recomputed totalCost for bookingData:', bookingData.totalCost);
+        console.log('Recomputed totalCost for bookingData:', bookingData.totalCost);
       }
 
       // Persist normalized bookingData back to storage for future reads
       localStorage.setItem('completeBookingData', JSON.stringify(bookingData));
     } catch (e) {
-      console.warn('⚠️ Failed to normalize completeBookingData:', e);
+      console.warn('Failed to normalize completeBookingData:', e);
     }
     const totalCost = bookingData.totalCost || 1598000; // Fallback to default
     
-    console.log('💰 Updating payment amounts:', {
+    console.log('Updating payment amounts:', {
       bookingData: bookingData,
       totalCost: totalCost
     });
@@ -151,7 +151,7 @@ function updatePaymentAmounts() {
     const baseAmountElements = document.querySelectorAll('#baseAmount');
     const vnpayAmountElements = document.querySelectorAll('.payment-details strong');
     
-    console.log('🔍 Found elements:', {
+    console.log('Found elements:', {
       totalElements: totalAmountElements.length,
       baseElements: baseAmountElements.length,
       vnpayElements: vnpayAmountElements.length
@@ -193,14 +193,14 @@ function updatePaymentAmounts() {
     const baseAmount = seatsTotal + extrasTotal;
     
     // Update base amount (flight ticket price)
-    console.log('🔍 Updating base amount elements:', { 
+    console.log('Updating base amount elements:', { 
       elementsFound: baseAmountElements.length, 
       baseAmount: baseAmount,
       formattedAmount: formatCurrency(baseAmount)
     });
     baseAmountElements.forEach((el, index) => {
       if (el) {
-        console.log(`🔍 Updating element ${index}:`, el);
+        console.log(`Updating element ${index}:`, el);
         el.textContent = formatCurrency(baseAmount);
       }
     });
@@ -242,7 +242,7 @@ function updatePaymentAmounts() {
       vnpayAmountElements[0].textContent = formatCurrency(amountForVnPay);
     }
     
-    console.log('💰 Payment amounts breakdown:', {
+    console.log('Payment amounts breakdown:', {
       seatsTotal: formatCurrency(seatsTotal),
       extrasTotal: formatCurrency(extrasTotal),
       taxAmount: formatCurrency(taxAmount),
@@ -294,7 +294,7 @@ function validateBookingData() {
 
     // Ensure we have passenger data for booking creation
     if (!data.passenger) {
-      console.log('⚠️ Payment page: No passenger info found, trying to get from alternative sources...');
+      console.log('Payment page: No passenger info found, trying to get from alternative sources...');
       
       // Try to get passenger from different localStorage keys
       const passengerKeys = ['currentPassenger', 'skyplan_passenger_data', 'passengerInfo'];
@@ -306,7 +306,7 @@ function validateBookingData() {
           if (passengerData && (passengerData.firstName || passengerData.fullName)) {
             data.passenger = passengerData;
             passengerFound = true;
-            console.log('✅ Found passenger data in:', key);
+            console.log('Found passenger data in:', key);
             break;
           }
         } catch (e) {
@@ -315,7 +315,7 @@ function validateBookingData() {
       }
       
       if (!passengerFound) {
-        console.warn('⚠️ No passenger data found in any storage key');
+        console.warn('No passenger data found in any storage key');
         // Don't throw error, let booking proceed with minimal data
       }
     }

@@ -1,3 +1,14 @@
+// Quiet mode: suppress non-essential console output unless debugging flag is enabled.
+// Set window.SKYPLAN_DEBUG = true in the console to re-enable logs.
+(function(){
+    try {
+        if (!window.SKYPLAN_DEBUG) {
+            console._orig = console._orig || {};
+            ['log','info','debug'].forEach(function(m){ if (!console._orig[m]) console._orig[m]=console[m]; console[m]=function(){}; });
+        }
+    } catch(e){}
+})();
+
 // search.js: Xử lý trang search.html, lấy dữ liệu chuyến bay thực tế từ backend
 
 // Global function to open the modal directly - available from anywhere

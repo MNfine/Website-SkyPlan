@@ -23,7 +23,7 @@
         // Check if we already have a booking code
         const existingCode = localStorage.getItem('currentBookingCode') || localStorage.getItem('lastBookingCode');
         if (existingCode && existingCode.startsWith('SP')) {
-            console.log('📋 Using existing booking code:', existingCode);
+            console.log('Using existing booking code:', existingCode);
             return existingCode;
         }
 
@@ -65,7 +65,7 @@
                 guest_passenger: guestPassenger
             };
 
-            console.log('🌐 Attempting to create booking via API...', bookingData);
+            console.log('Attempting to create booking via API...', bookingData);
 
             const response = await fetch(`${apiBaseUrl}/api/bookings`, {
                 method: 'POST',
@@ -81,7 +81,7 @@
             if (response.ok) {
                 const result = await response.json();
                 if (result.success && result.booking_code) {
-                    console.log('✅ Backend booking created:', result.booking_code);
+                    console.log('Backend booking created:', result.booking_code);
                     localStorage.setItem('currentBookingCode', result.booking_code);
                     localStorage.setItem('lastBookingCode', result.booking_code);
                     localStorage.setItem('backendBookingId', result.booking?.id || '');
@@ -93,14 +93,14 @@
             throw new Error(`API responded with status ${response.status}`);
 
         } catch (error) {
-            console.warn('⚠️ Backend API unavailable, using client-side generation:', error.message);
+            console.warn('Backend API unavailable, using client-side generation:', error.message);
             
             // Fallback: Generate booking code client-side
             const year = new Date().getFullYear();
             const timestamp = Date.now();
             const clientCode = `SP${year}${String(timestamp).slice(-5)}`;
             
-            console.log('🔧 Generated client-side booking code:', clientCode);
+            console.log('Generated client-side booking code:', clientCode);
             localStorage.setItem('currentBookingCode', clientCode);
             localStorage.setItem('lastBookingCode', clientCode);
             localStorage.setItem('bookingSource', 'client');
@@ -110,13 +110,13 @@
     }
     function resolveCity(val, lang) {
         // Debug city resolution
-        console.log('🔍 Resolving city:', { val, lang, hasResolveCityLabel: typeof window.resolveCityLabel === 'function', hasCityTranslations: !!window.SKYPLAN_CITY_TRANSLATIONS });
+        console.log('Resolving city:', { val, lang, hasResolveCityLabel: typeof window.resolveCityLabel === 'function', hasCityTranslations: !!window.SKYPLAN_CITY_TRANSLATIONS });
         
         if (typeof window !== 'undefined' && typeof window.resolveCityLabel === 'function') return window.resolveCityLabel(val, lang);
         const MAP = (typeof window !== 'undefined' && window.SKYPLAN_CITY_TRANSLATIONS) || {};
         const dict = MAP[lang] || MAP.vi || {};
         const result = dict[val] || val || '';
-        console.log('🔍 Resolution result:', result);
+        console.log('Resolution result:', result);
         return result;
     }
     // Format a value as VND with thousands separators. Round to nearest integer and
@@ -161,13 +161,13 @@
     }
 
     function render() {
-        console.log('🔄 Payment order rendering...');
+        console.log('Payment order rendering...');
         const lang = getLang();
         const trip = readJSON(TRIP_KEY, null);
         const fare = readJSON(FARE_KEY, null);
         const extras = readJSON(EXTRAS_KEY, { total: 0 });
 
-        console.log('📊 Data loaded:', { trip, fare, extras });
+        console.log('Data loaded:', { trip, fare, extras });
 
         // Get dates from multiple sources
         const searchData = readJSON('searchData', {});
@@ -176,11 +176,11 @@
         // Derive names
         const fromCode = (trip && (trip.fromCode || trip.from)) || 'HoChiMinh';
         const toCode = (trip && (trip.toCode || trip.to)) || 'HaNoi';
-        console.log('🏙️ City codes:', { fromCode, toCode });
+        console.log('City codes:', { fromCode, toCode });
         
         const fromName = resolveCity(fromCode, lang);
         const toName = resolveCity(toCode, lang);
-        console.log('🏙️ Resolved city names:', { fromName, toName });
+        console.log('Resolved city names:', { fromName, toName });
 
         // Get dates with fallback chain
         const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
@@ -227,12 +227,12 @@
             }
         }
 
-        console.log('🛫 Flight info:', { fromName, toName, departDate, returnDate, segOut, segIn });
+        console.log('Flight info:', { fromName, toName, departDate, returnDate, segOut, segIn });
 
         // Update booking details (route titles and times)
         const route1 = document.querySelector('.booking-details .flight-summary:nth-of-type(1)');
         const route2 = document.querySelector('.booking-details .flight-summary:nth-of-type(2)');
-        console.log('📍 DOM elements:', { route1, route2 });
+        console.log('DOM elements:', { route1, route2 });
         
         if (route1) {
             const h4 = route1.querySelector('h4');
@@ -254,7 +254,7 @@
                 pClass.removeAttribute('data-i18n');
                 pClass.classList.add('payment-order-updated'); // Mark as updated
             }
-            console.log('✅ Updated route1:', h4?.textContent, pTime?.textContent, pClass?.textContent);
+            console.log('Updated route1:', h4?.textContent, pTime?.textContent, pClass?.textContent);
         }
 
         // Determine trip type for ticket label based on multiple factors - MOVE THIS UP
@@ -324,7 +324,7 @@
         
         // Generate or fetch booking code (async operation with backend fallback)
         generateOrFetchBookingCode().then(bookingCode => {
-            console.log('📋 Using booking code:', bookingCode);
+            console.log('Using booking code:', bookingCode);
             
             // Update booking code in price breakdown
             if (breakdownEl) {
@@ -361,7 +361,7 @@
                 if (codeEl) codeEl.textContent = bookingCode;
             }
         }).catch(error => {
-            console.error('❌ Error generating booking code:', error);
+            console.error('Error generating booking code:', error);
         });
 
         // Update selectors after booking code is inserted
@@ -418,7 +418,7 @@
         if (taxAmountEl) taxAmountEl.textContent = fmtVND(tax);
         if (totalAmountEl) {
             totalAmountEl.textContent = fmtVND(total);
-            console.log('💰 Updated totalAmount:', fmtVND(total));
+            console.log('Updated totalAmount:', fmtVND(total));
         }
 
         // Save total amount and breakdown to localStorage for confirmation page and other scripts
@@ -428,7 +428,7 @@
             localStorage.setItem('bookingBase', (fareVND + extrasTotal).toString());
             localStorage.setItem('bookingExtras', (extrasTotal).toString());
         } catch (_) {}
-        console.log('💾 Saved bookingTotal to localStorage:', total);
+        console.log('Saved bookingTotal to localStorage:', total);
 
         // Prepare VNPay block (booking code will be set asynchronously above)
         const vnpay = document.getElementById('vnpayForm');

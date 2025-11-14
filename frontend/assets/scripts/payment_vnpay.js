@@ -18,20 +18,20 @@ document.addEventListener('DOMContentLoaded', function() {
       const parsedFinal = parseFloat(finalAmountEl.textContent.replace(/[^\d]/g, ''));
       if (!isNaN(parsedFinal) && parsedFinal > 0) {
         amount = parsedFinal;
-        console.log('💰 VNPay using finalAmount (after voucher):', amount);
+        console.log('VNPay using finalAmount (after voucher):', amount);
       }
     } else if (totalAmountEl && totalAmountEl.textContent) {
       // Fallback to totalAmount (before voucher)
       const parsedTotal = parseFloat(totalAmountEl.textContent.replace(/[^\d]/g, ''));
       if (!isNaN(parsedTotal) && parsedTotal > 0) {
         amount = parsedTotal;
-        console.log('💰 VNPay using totalAmount (no voucher):', amount);
+        console.log('VNPay using totalAmount (no voucher):', amount);
       }
     }
     
     // Save final payment amount to localStorage for confirmation page
     localStorage.setItem('finalPaymentAmount', amount.toString());
-    console.log('💾 Saved finalPaymentAmount to localStorage:', amount);
+    console.log('Saved finalPaymentAmount to localStorage:', amount);
     
     const orderInfo = 'Ve may bay HAN-SGN';
 
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Save booking code for confirmation page
     localStorage.setItem('currentBookingCode', bookingCode);
     localStorage.setItem('lastBookingCode', bookingCode);
-    console.log('📋 VNPay using booking code:', bookingCode);
+    console.log('VNPay using booking code:', bookingCode);
 
     const btnElement = event.target.closest('.vnpay-checkout-btn');
     const originalContent = btnElement.innerHTML;
