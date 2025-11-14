@@ -146,9 +146,9 @@ function getState() {
   }
 }
 function setState(next) {
-  nextState.total = calcTotal(nextState);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
-  updateTotalsUI(nextState);
+  next.total = calcTotal(next);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  updateTotalsUI(next);
 }
 function calcTotal(state) {
   const mealCatalog = MEALS.reduce((m, x) => ((m[x.id] = x), m), {});
@@ -335,7 +335,7 @@ function renderDrawerContent(type) {
           <div class="meal-qty">
             <button class="qty-minus" aria-label="minus">-</button>
             <span class="qty-val">${
-              state.meals.find((x) => x.id === m.id)?.qty || 0
+              (state.meals || []).find((x) => x.id === m.id)?.qty || 0
             }</span>
             <button class="qty-plus" aria-label="plus">+</button>
           </div>
