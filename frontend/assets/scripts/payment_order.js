@@ -1,4 +1,14 @@
+// Quiet mode: suppress non-essential console output unless debugging flag is enabled.
+// Set window.SKYPLAN_DEBUG = true in the console to re-enable logs.
 (function () {
+    try {
+        if (!window.SKYPLAN_DEBUG) {
+            console._orig = console._orig || {};
+            ['log','info','debug'].forEach(function(m){ if (!console._orig[m]) console._orig[m]=console[m]; console[m]=function(){}; });
+        }
+    } catch(e){}
+  
+  
     const TRIP_KEY = 'skyplan_trip_selection';
     const FARE_KEY = 'skyplan_fare_selection';
     const EXTRAS_KEY = 'skyplan_extras_v2';
@@ -109,7 +119,14 @@
         console.log('🔍 Resolution result:', result);
         return result;
     }
-    function fmtVND(v) { return new Intl.NumberFormat('vi-VN').format(Number(v) || 0) + ' VND'; }
+    // Format a value as VND with thousands separators. Round to nearest integer and
+    // guard against non-numeric inputs. Use toLocaleString to respect Vietnamese format.
+    function fmtVND(v) {
+        const n = Number(v);
+        const safe = (typeof n === 'number' && Number.isFinite(n)) ? Math.round(n) : 0;
+        // Ensure we return a string like "11.065.609 VND"
+        return safe.toLocaleString('vi-VN') + ' VND';
+    }
     function readJSON(key, fb) { try { return JSON.parse(localStorage.getItem(key)) || fb; } catch { return fb; } }
     function parseDigits(text) { const n = String(text || '').replace(/[^0-9]/g, ''); return Number(n) || 0; }
 
@@ -404,8 +421,13 @@
             console.log('💰 Updated totalAmount:', fmtVND(total));
         }
 
-        // Save total amount to localStorage for confirmation page
+        // Save total amount and breakdown to localStorage for confirmation page and other scripts
         localStorage.setItem('bookingTotal', total.toString());
+        // store base (ticket + extras) and extras separately so other scripts don't need to recalc
+        try {
+            localStorage.setItem('bookingBase', (fareVND + extrasTotal).toString());
+            localStorage.setItem('bookingExtras', (extrasTotal).toString());
+        } catch (_) {}
         console.log('💾 Saved bookingTotal to localStorage:', total);
 
         // Prepare VNPay block (booking code will be set asynchronously above)

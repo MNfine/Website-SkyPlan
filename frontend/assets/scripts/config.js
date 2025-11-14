@@ -23,7 +23,7 @@ class Config {
       case 'development':
         return 'http://localhost:5000';
       case 'production':
-        return 'https://c9883fb4dce6.ngrok-free.app'; // Đúng domain ngrok backend
+        return 'https://5bf16ac80aac.ngrok-free.app'; // Đúng domain ngrok backend
       default:
         return 'http://localhost:5000';
     }
@@ -34,7 +34,7 @@ class Config {
       case 'development':
         return 'http://localhost:5000';
       case 'production':
-        return 'https://c9883fb4dce6.ngrok-free.app'; // Đúng domain ngrok backend
+        return 'https://5bf16ac80aac.ngrok-free.app'; // Đúng domain ngrok backend
       default:
         return window.location.origin;
     }

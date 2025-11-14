@@ -1,5 +1,16 @@
 // Payment page functionality
 
+// Quiet mode: suppress non-essential console output unless debugging flag is enabled.
+// Set window.SKYPLAN_DEBUG = true in the console to re-enable logs.
+(function(){
+  try {
+    if (!window.SKYPLAN_DEBUG) {
+      console._orig = console._orig || {};
+      ['log','info','debug'].forEach(function(m){ if (!console._orig[m]) console._orig[m]=console[m]; console[m]=function(){}; });
+    }
+  } catch(e){}
+})();
+
 document.addEventListener('DOMContentLoaded', function () {
   validateBookingData();
   
@@ -153,12 +164,19 @@ function updatePaymentAmounts() {
     // Calculate breakdown: total already includes seats + extras + fees
     const taxAmount = 200000; // Fixed tax amount (fees)
     
-    // Get extras and seats from booking data
-    const extrasTotal = (bookingData.extras && bookingData.extras.totalCost) || 0;
+    // Get extras and seats from booking data. Prefer values stored by payment_order for consistency.
+    const storedBookingBase = parseFloat(localStorage.getItem('bookingBase'));
+    const storedBookingExtras = parseFloat(localStorage.getItem('bookingExtras'));
+    const extrasTotal = (!isNaN(storedBookingExtras) && storedBookingExtras > 0)
+      ? storedBookingExtras
+      : (bookingData.extras && (bookingData.extras.totalCost || bookingData.extras.total)) || 0;
     
     // Calculate seats total - handle multiple seat data formats
+    // seatsTotal ideally comes from stored bookingBase minus extras
     let seatsTotal = 0;
-    if (bookingData.seats && bookingData.seats.seats) {
+    if (!isNaN(storedBookingBase) && storedBookingBase > 0) {
+      seatsTotal = storedBookingBase - extrasTotal;
+    } else if (bookingData.seats && bookingData.seats.seats) {
       seatsTotal = bookingData.seats.seats.reduce((sum, seat) => sum + (seat.price || 0), 0);
     }
     
@@ -215,9 +233,13 @@ function updatePaymentAmounts() {
       finalAmountEl.textContent = formatCurrency(finalPayment);
     }
 
-    // Update VNPay payment details to reflect final payment (after voucher if any)
+    // Update VNPay payment details. Prefer the canonical booking total stored by payment_order
+    // so the VNPay card matches the right-hand order summary. If bookingTotal isn't available,
+    // fall back to the finalPayment (after voucher).
+    const storedBookingTotal = Number(localStorage.getItem('bookingTotal'));
+    const amountForVnPay = (!isNaN(storedBookingTotal) && storedBookingTotal > 0) ? storedBookingTotal : finalPayment;
     if (vnpayAmountElements.length > 0) {
-      vnpayAmountElements[0].textContent = formatCurrency(finalPayment);
+      vnpayAmountElements[0].textContent = formatCurrency(amountForVnPay);
     }
     
     console.log('💰 Payment amounts breakdown:', {
@@ -1133,6 +1155,20 @@ function initializeVoucher() {
       if (finalAmountEl) {
         finalAmountEl.textContent = originalAmount;
       }
+
+      // Reset discount display to zero (remove minus sign and value)
+      const discountEl = document.getElementById('discountAmount');
+      if (discountEl) {
+        try {
+          // Keep the minus sign even for zero to match UX expectation: "-0 VND"
+          discountEl.textContent = '-' + formatCurrency(0);
+        } catch (e) {
+          discountEl.textContent = '-0 VND';
+        }
+      }
+
+      // Clear any stored applied voucher key (if used elsewhere)
+      try { localStorage.removeItem('appliedVoucher'); } catch (_) {}
       
       // Reset finalPaymentAmount in localStorage to original total
       if (totalAmountEl) {

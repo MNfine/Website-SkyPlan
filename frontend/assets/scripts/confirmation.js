@@ -1,24 +1,50 @@
 // Confirmation page functionality for handling VNPay callbacks and payment confirmation
 
+// Quiet mode: suppress non-essential console output unless debugging flag is enabled.
+// Set window.SKYPLAN_DEBUG = true in the console to re-enable logs.
 (function() {
+  try {
+    if (!window.SKYPLAN_DEBUG) {
+      console._orig = console._orig || {};
+      ['log','info','debug'].forEach(function(m){ if (!console._orig[m]) console._orig[m]=console[m]; console[m]=function(){}; });
+    }
+  } catch(e){}
+
   // Payment confirmation handler
   async function confirmPaymentStatus() {
     const urlParams = new URLSearchParams(window.location.search);
-    
-    // VNPay response parameters
+
+    // VNPay response parameters (accept multiple name variants)
     const vnpResponseCode = urlParams.get('vnp_ResponseCode');
-    const vnpTransactionId = urlParams.get('vnp_TransactionNo');
-    const vnpTxnRef = urlParams.get('vnp_TxnRef'); // This is our payment ID
+    const vnpTransactionId = urlParams.get('vnp_TransactionNo') || urlParams.get('transaction_no');
+    const vnpTxnRef = urlParams.get('vnp_TxnRef') || urlParams.get('txn_ref'); // booking code
     const vnpAmount = urlParams.get('vnp_Amount');
     const vnpOrderInfo = urlParams.get('vnp_OrderInfo');
-    
-    // Check if this is a VNPay callback
+
+    // If VNPay redirected back with parameters, display immediately and avoid requiring auth
     if (vnpResponseCode && vnpTxnRef) {
-      await handleVNPayCallback(vnpResponseCode, vnpTransactionId, vnpTxnRef, vnpAmount, vnpOrderInfo);
-    } else {
-      // Load existing confirmation data from localStorage
-      loadConfirmationData();
+      // Build a lightweight payment object from URL params
+      const paymentFromUrl = {
+        booking_code: vnpTxnRef,
+        transaction_id: vnpTransactionId || 'N/A',
+        amount: vnpAmount ? (parseInt(vnpAmount) / 100) : undefined
+      };
+
+      if (vnpResponseCode === '00') {
+        showSuccessConfirmation(paymentFromUrl, vnpAmount);
+        // persist for fallback
+        localStorage.setItem('lastBookingCode', paymentFromUrl.booking_code);
+        if (vnpTransactionId) localStorage.setItem('lastTxnRef', vnpTransactionId);
+        if (vnpAmount) localStorage.setItem('lastAmount', (parseInt(vnpAmount) / 100).toString());
+      } else {
+        showPaymentFailure(vnpTransactionId || 'N/A', vnpAmount);
+      }
+
+      return;
     }
+
+    // Load existing confirmation data from localStorage if no VNPay params
+    loadConfirmationData();
   }
 
   // Handle VNPay payment callback
