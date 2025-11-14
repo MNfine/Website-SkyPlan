@@ -823,7 +823,7 @@
 /* Floating AI Button */
 .floating-ai-btn {
   position: fixed !important;
-  bottom: 7rem !important;
+  bottom: 2rem !important;
   right: 2rem !important;
   left: auto !important;
   width: 64px;
