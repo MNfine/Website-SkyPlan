@@ -28,7 +28,7 @@ const extrasI18n = {
     mealItemDescs: {
       meal_basic: "Basic meal",
       meal_standard: "Standard meal",
-      meal_premium: "Preminum meal",
+      meal_premium: "Premium meal",
     },
 
     baggagePkgs: {

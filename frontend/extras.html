@@ -58,7 +58,6 @@
         <!-- Meal -->
         <article class="extra-card" data-key="meal" data-type="meal">
           <div class="extra-card__img">
-            <!-- Đổi ảnh -->
             <img src="assets/images/meal.svg" alt="Meal" />
           </div>
           <h3 class="extra-card__title" data-i18n="mealTitle">Suất ăn</h3>
@@ -73,7 +72,6 @@
         <!-- Baggage -->
         <article class="extra-card" data-key="baggage" data-type="baggage">
           <div class="extra-card__img">
-            <!-- Đổi ảnh -->
             <img src="assets/images/baggage.svg" alt="Baggage" />
           </div>
           <h3 class="extra-card__title" data-i18n="baggageTitle">
@@ -87,30 +85,16 @@
           </button>
         </article>
 
-        <!-- Taxi -->
-        <!-- <article class="extra-card" data-key="taxi" data-type="taxi" >
-          <div class="extra-card__img">
-            <img src="assets/images/taxi.png" alt="Airport Taxi" />
-          </div>
-          <h3 class="extra-card__title" data-i18n="taxiTitle">Taxi sân bay</h3>
-          <p class="extra-card__desc" data-i18n="taxiDesc">
-            Đặt xe đưa đón sân bay trước.
-          </p>
-          <button class="extra-card__btn" data-action="details">
-            <span class="btn-text" data-i18n="viewDetails">Xem chi tiết</span>
-          </button>
-        </article> -->
         <!-- Services -->
         <article class="extra-card" data-key="services" data-type="services">
           <div class="extra-card__img">
-            <!-- Đổi ảnh -->
             <img src="assets/images/service.svg" alt="Services" />
           </div>
           <h3 class="extra-card__title" data-i18n="servicesTitle">
             Dịch vụ theo hành khách
           </h3>
           <p class="extra-card__desc" data-i18n="servicesDesc">
-            Hỗ trợ xe lăn, thú cưng, người cao tuổi, .
+            Hỗ trợ xe lăn, thú cưng, người cao tuổi.
           </p>
           <button class="extra-card__btn" data-action="details">
             <span class="btn-text" data-i18n="viewDetails">Xem chi tiết</span>
@@ -132,7 +116,7 @@
         <!-- Liên kết sang Overview -->
         <a id="toPaymentBtn" class="next-btn" href="overview.html">
           <i class="fas fa-arrow-right"></i>
-          <span data-i18n="continuePayment">Tiếp tục thanh toán</span>
+          <span data-i18n="continuePayment">Tiếp tục</span>
         </a>
       </section>
     </main>
@@ -169,7 +153,7 @@
         </div>
         <button id="drawerConfirm" class="next-btn" type="button">
           <i class="fas fa-check"></i>
-          <span data-i18n="confirmSelection">Xacs nhận</span>
+          <span data-i18n="confirmSelection">Xác nhận</span>
         </button>
       </div>
     </aside>
@@ -182,18 +166,20 @@
     <script src="assets/scripts/loader.js"></script>
     <script>
       // Import loader HTML vào DOM càng sớm càng tốt
-      fetch('components/loader.html').then(r => r.text()).then(html => {
-        document.body.insertAdjacentHTML('beforeend', html);
-      });
+      fetch("components/loader.html")
+        .then((r) => r.text())
+        .then((html) => {
+          document.body.insertAdjacentHTML("beforeend", html);
+        });
       // Gắn sự kiện click cho nút tiếp tục thanh toán để show loader và chuyển trang
-      document.addEventListener('DOMContentLoaded', function() {
-        var btn = document.getElementById('toPaymentBtn');
+      document.addEventListener("DOMContentLoaded", function () {
+        var btn = document.getElementById("toPaymentBtn");
         if (btn) {
-          btn.addEventListener('click', function(e) {
+          btn.addEventListener("click", function (e) {
             e.preventDefault();
-            var href = btn.getAttribute('href');
+            var href = btn.getAttribute("href");
             if (window.Loader) window.Loader.show();
-            setTimeout(function() {
+            setTimeout(function () {
               window.location.href = href;
             }, 1200);
           });
