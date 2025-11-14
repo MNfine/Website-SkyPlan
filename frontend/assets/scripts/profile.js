@@ -247,18 +247,8 @@ function changeProfileLanguage(lang) {
     updateSelectedLanguage(lang);
   }
   
-  // Apply translations to header and footer (but not title)
-  if (window.translations) {
-    document.querySelectorAll('#header-container [data-i18n], #footer-container [data-i18n]').forEach(function(el) {
-      var key = el.getAttribute('data-i18n');
-      var translation = window.translations[lang] && window.translations[lang][key];
-      if (translation) {
-        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-          el.placeholder = translation;
-        } else {
-          el.textContent = translation;
-        }
-      }
-    });
+  // Apply translations to header and footer using common.js function
+  if (typeof applyTranslations === 'function') {
+    applyTranslations(lang);
   }
 }
