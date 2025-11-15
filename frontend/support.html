@@ -208,8 +208,11 @@
     <script src="assets/scripts/config.js"></script>
     <script src="assets/scripts/common.js"></script>
     <script src="assets/scripts/support_translations.js"></script>
+    <!-- Auth utilities must load before support.js so we can pass token to socket auth -->
+    <script src="assets/scripts/auth-utils.js"></script>
+    <!-- Always load Socket.IO client from server to guarantee compatibility and availability -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="assets/scripts/support.js"></script>
     <script src="assets/scripts/toast.js"></script>
-    <script src="assets/scripts/auth-utils.js"></script>
 </body>
 </html>

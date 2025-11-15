@@ -5,6 +5,10 @@ Integrated application serving both frontend and backend
 
 from flask import Flask, jsonify, request, send_from_directory, render_template
 from flask_cors import CORS
+from flask_socketio import SocketIO, emit
+
+# Module-level SocketIO instance (set in create_app)
+socketio = None
 import os
 from datetime import datetime
 import sys
@@ -19,6 +23,7 @@ from backend.routes.auth import auth_bp
 from backend.routes.bookings import bookings_bp
 from backend.routes.seats import seats_bp
 from backend.routes.tickets import tickets_bp
+from backend.routes.support import support_bp
 from backend.models.db import init_db
 
 # Import all models to ensure they are registered
@@ -89,6 +94,53 @@ def create_app():
     app.register_blueprint(bookings_bp, url_prefix='/api/bookings')  # API bookings
     app.register_blueprint(seats_bp, url_prefix='/api/seats')  # API seat management
     app.register_blueprint(tickets_bp, url_prefix='/api/tickets')  # API ticket management
+    app.register_blueprint(support_bp, url_prefix='/api/support')  # Support chat API
+    # Initialize SocketIO (exposed at module level)
+    global socketio
+    socketio = SocketIO(app, cors_allowed_origins="*")
+
+    # Socket.IO event handlers for support chat
+    @socketio.on('connect')
+    def _on_connect():
+        from flask import request
+        print(f'[socketio] client connected: sid={request.sid}')
+
+    @socketio.on('disconnect')
+    def _on_disconnect():
+        from flask import request
+        print(f'[socketio] client disconnected: sid={request.sid}')
+
+    @socketio.on('chat.message')
+    def _on_chat_message(data):
+        from flask import request
+        try:
+            # Broadcast message to all clients
+            # Persist into in-memory store defined in support blueprint if available
+            print('[socketio] received chat.message payload:', data)
+            try:
+                from backend.routes import support as support_mod
+                with support_mod._lock:
+                    global_id = getattr(support_mod, '_next_id', None)
+                    if global_id is not None:
+                        msg = {
+                            'id': support_mod._next_id,
+                            'sender': data.get('sender', 'user'),
+                            'text': data.get('text'),
+                            'ts': data.get('ts') or int(datetime.utcnow().timestamp() * 1000)
+                        }
+                        support_mod._messages.append(msg)
+                        support_mod._next_id += 1
+                    else:
+                        msg = data
+            except Exception as e:
+                print('[socketio] error persisting message to support store:', e)
+                msg = data
+
+            print('[socketio] emitting chat.message to clients:', msg)
+            # Broadcast to all clients except sender (skip_sid=request.sid)
+            socketio.emit('chat.message', msg, skip_sid=request.sid)
+        except Exception as e:
+            print('[socketio] chat.message handler error', e)
     
     # Frontend routes
     @app.route('/')
@@ -247,13 +299,22 @@ def create_app():
 app = create_app()
 
 if __name__ == '__main__':
-    print("🚀 Starting SkyPlan Integrated Server...")
+    print("🚀 Starting SkyPlan Integrated Server with Socket.IO...")
     print("📍 Frontend URL: http://localhost:5000")
     print("📍 API Base URL: http://localhost:5000/api")
     print("-" * 50)
-    
-    app.run(
-        host='0.0.0.0',
-        port=5000,
-        debug=True
-    )
+    # Use eventlet if installed; SocketIO will select best async mode
+    try:
+        import eventlet  # noqa: F401
+        print("Eventlet imported OK")  # <--- THÊM DÒNG NÀY
+        use_eventlet = True
+    except Exception as e:
+        print("Eventlet import failed:", e)
+        use_eventlet = False
+
+    if use_eventlet:
+        # Use the socketio instance defined in this module to avoid importing backend.app
+        # which may create a separate module instance when running as a script (.__main__).
+        socketio.run(app, host='0.0.0.0', port=5000, debug=False)
+    else:
+        app.run(host='0.0.0.0', port=5000, debug=True)
