@@ -8,6 +8,65 @@ header {
   right: 0;
   z-index: 1000;
 }
+
+/* Logo Styles */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+}
+
+.logo-circle {
+  width: 45px;
+  height: 45px;
+  background: #0a969d;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-circle i {
+  font-size: 20px;
+  color: white;
+  transform: rotate(-45deg);
+}
+
+.logo-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  justify-content: center;
+}
+
+.logo-text {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.logo-subtitle {
+    font-size: 8px;
+    color: #000000;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    line-height: 1;
+    margin-top: 2px;
+    margin-left: 12px;
+}
+
+.logo-sky {
+  color: #0a969d;
+}
+
+.logo-plan {
+  color: #212529;
+}
+
 .link {
   text-decoration: none;
   color: var(--dark-color);
@@ -41,6 +100,24 @@ header {
   .header {
     height: var(--header-height);
     padding: 10px 0;
+  }
+  
+  /* Logo responsive on mobile */
+  .logo-circle {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .logo-circle i {
+    font-size: 16px;
+  }
+  
+  .logo-text {
+    font-size: 20px;
+  }
+  
+  .logo-subtitle {
+    font-size: 9px;
   }
   
   .menu-toggle {
