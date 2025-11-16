@@ -216,16 +216,24 @@ function updatePaymentAmounts() {
       taxAmountEl.textContent = formatCurrency(taxAmount);
     }
     
-    // Update final amount (prefer any saved finalPaymentAmount after voucher)
+    // Update final amount. Use saved finalPaymentAmount ONLY if a voucher is active.
     let finalPayment = totalCost;
     try {
+      const voucherBlock = document.getElementById('voucherDiscount');
+      const voucherActive = voucherBlock && !voucherBlock.classList.contains('hidden');
+
       const storedFinal = localStorage.getItem('finalPaymentAmount');
       const parsedStored = storedFinal ? Number(storedFinal) : NaN;
-      if (!isNaN(parsedStored) && parsedStored > 0) {
+
+      // Chỉ dùng finalPaymentAmount nếu thực sự đang có voucher active
+      if (voucherActive && !isNaN(parsedStored) && parsedStored > 0) {
         finalPayment = parsedStored;
+      } else if (!voucherActive) {
+        // Dọn giá trị cũ để không rò sang booking mới
+        try { localStorage.removeItem('finalPaymentAmount'); } catch (_) {}
       }
     } catch (e) {
-      // ignore and keep totalCost
+      // giữ nguyên totalCost
     }
 
     const finalAmountEl = document.getElementById('finalAmount');
@@ -987,19 +995,27 @@ function initializeVoucher() {
     
     if (totalAmountEl && finalAmountEl) {
       const currentTotal = totalAmountEl.textContent;
-      // Prefer any existing saved finalPaymentAmount
+      // Prefer any existing saved finalPaymentAmount BUT only if voucher is active.
       let initAmount = currentTotal;
       try {
+        const voucherBlock = document.getElementById('voucherDiscount');
+        const voucherActive = voucherBlock && !voucherBlock.classList.contains('hidden');
+
         const stored = localStorage.getItem('finalPaymentAmount');
         const parsed = stored ? Number(stored) : NaN;
-        if (!isNaN(parsed) && parsed > 0) initAmount = formatCurrency(parsed);
+
+        if (voucherActive && !isNaN(parsed) && parsed > 0) {
+          initAmount = formatCurrency(parsed);
+        } else if (!voucherActive) {
+          try { localStorage.removeItem('finalPaymentAmount'); } catch (_) {}
+        }
       } catch (e) {}
 
       finalAmountEl.textContent = initAmount;
       console.log('🎫 Initialized finalAmount with:', initAmount);
-      
-      // Also save numeric value to localStorage
-      const parsedTotal = parseFloat((initAmount + '').replace(/[^\d]/g, ''));
+
+      // Also save numeric value to localStorage (keep in sync when voucher active)
+  const parsedTotal = parseFloat((initAmount + '').replace(/[^\d]/g, ''));
       if (!isNaN(parsedTotal) && parsedTotal > 0) {
         localStorage.setItem('finalPaymentAmount', parsedTotal.toString());
         console.log('💾 Initialized finalPaymentAmount in localStorage:', parsedTotal);
@@ -1175,7 +1191,7 @@ function initializeVoucher() {
         const parsedTotal = parseFloat(totalAmountEl.textContent.replace(/[^\d]/g, ''));
         if (!isNaN(parsedTotal) && parsedTotal > 0) {
           localStorage.setItem('finalPaymentAmount', parsedTotal.toString());
-          console.log('💾 Reset finalPaymentAmount to original total:', parsedTotal);
+          console.log('Reset finalPaymentAmount to original total:', parsedTotal);
         }
       }
       // Also update VNPay displayed amount immediately
