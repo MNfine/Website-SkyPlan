@@ -124,11 +124,3 @@ Tài liệu chi tiết về kiến trúc và các luồng nghiệp vụ nằm �
 3. Tạo PR vào `main`
 
 Vui lòng follow coding style và thêm test khi thay đổi logic quan trọng.
-
-## Gợi ý bước tiếp theo (mình có thể làm ngay)
-
-- Thêm ví dụ curl/Postman cho các endpoint: `/api/bookings/create`, `/api/bookings/<code>/claim`, `/api/payment/vnpay/create`.
-- Tạo `backend/.env.example` nếu hiện chưa có.
-- Viết smoke test tự động (pytest) chạy local với SQLite để kiểm tra luồng booking-auth-claim.
-
-Bạn muốn mình thực hiện task nào tiếp theo? Vui lòng chọn một trong các mục trên.
