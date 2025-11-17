@@ -364,25 +364,64 @@
       submitBtn.disabled = true;
       form.classList.add('form-loading');
       
-      // Simulate API call
-      setTimeout(() => {
-        // Show success toast
-        const successMessage = contactTranslations[currentLang]?.successMessage || 
-                               'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.';
+      // Call API
+      fetch('/api/contact/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          fullName: data.fullName,
+          email: data.email,
+          subject: data.subject,
+          message: data.message
+        })
+      })
+      .then(response => response.json())
+      .then(json => {
+        if (json && json.success) {
+          // Show success toast
+          const successMessage = contactTranslations[currentLang]?.successMessage || 
+                                 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.';
+          
+          if (typeof showToast === 'function') {
+            showToast(successMessage, { type: 'success', duration: 5000 });
+          } else {
+            alert(successMessage);
+          }
+          
+          // Reset form
+          form.reset();
+        } else {
+          // Show error
+          const errorMessage = json?.message || contactTranslations[currentLang]?.errorMessage || 
+                              'Có lỗi xảy ra. Vui lòng thử lại sau.';
+          
+          if (typeof showToast === 'function') {
+            showToast(errorMessage, { type: 'error', duration: 5000 });
+          } else {
+            alert(errorMessage);
+          }
+        }
+      })
+      .catch(error => {
+        console.error('[Contact] Submit error:', error);
+        const errorMessage = contactTranslations[currentLang]?.networkError || 
+                            'Có lỗi mạng xảy ra. Vui lòng thử lại sau.';
         
         if (typeof showToast === 'function') {
-          showToast(successMessage, { type: 'success', duration: 5000 });
+          showToast(errorMessage, { type: 'error', duration: 5000 });
+        } else {
+          alert(errorMessage);
         }
-        
-        // Reset form
-        form.reset();
-        
+      })
+      .finally(() => {
         // Restore button state
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
         form.classList.remove('form-loading');
-        
-      }, 2000);
+      });
     }
   </script>
 

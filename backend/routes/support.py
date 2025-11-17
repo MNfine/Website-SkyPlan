@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
 from threading import Lock
 import time
-import sys  
+import sys
+from backend.utils.email_service import send_support_ticket_email
 
 support_bp = Blueprint('support', __name__)
 
@@ -82,3 +83,63 @@ def get_messages():
         results = [m for m in _messages if m['ts'] > after]
 
     return jsonify({'success': True, 'messages': results}), 200
+
+
+@support_bp.route('/ticket', methods=['POST'])
+def create_ticket():
+    """Create a support ticket and send email notifications"""
+    try:
+        data = request.get_json() or {}
+        email = data.get('email', '').strip()
+        subject = data.get('subject', '').strip()
+        message = data.get('message', '').strip()
+        
+        # Validate required fields
+        if not email:
+            return jsonify({
+                'success': False,
+                'message': 'Email is required'
+            }), 400
+        
+        if not subject:
+            return jsonify({
+                'success': False,
+                'message': 'Subject is required'
+            }), 400
+        
+        if not message:
+            return jsonify({
+                'success': False,
+                'message': 'Message is required'
+            }), 400
+        
+        # Validate email format
+        import re
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_pattern, email):
+            return jsonify({
+                'success': False,
+                'message': 'Invalid email format'
+            }), 400
+        
+        # Send email notifications
+        email_sent = send_support_ticket_email(email, subject, message)
+        
+        if email_sent:
+            return jsonify({
+                'success': True,
+                'message': 'Ticket created successfully. We will respond soon.'
+            }), 201
+        else:
+            # Still return success but log warning
+            return jsonify({
+                'success': True,
+                'message': 'Ticket created, but email notification failed. Please contact us directly.'
+            }), 201
+            
+    except Exception as e:
+        print(f"[Support] Error creating ticket: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'Error creating ticket: {str(e)}'
+        }), 500
