@@ -59,7 +59,7 @@ const blogTranslations = {
         suggestBudget: "Budget travel",
         suggestFood: "Local food",
         chatPlaceholder: "Type your question...",
-        aiNote: "Demo AI - Responses are simulated",
+        aiNote: "AI Assistant powered by Google Gemini",
         
         // Blog Posts Data
         posts: {
@@ -183,7 +183,7 @@ const blogTranslations = {
         suggestBudget: "Du lịch rẻ",
         suggestFood: "Ẩm thực",
         chatPlaceholder: "Nhập câu hỏi...",
-        aiNote: "Demo AI - Phản hồi được mô phỏng",
+        aiNote: "Trợ lý AI được hỗ trợ bởi Google Gemini",
         
         // Blog Posts Data
         posts: {

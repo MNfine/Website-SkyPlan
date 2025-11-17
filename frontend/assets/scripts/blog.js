@@ -295,21 +295,64 @@ function initChatModal() {
 }
 
 // Handle User Message
-function handleUserMessage(message) {
+async function handleUserMessage(message) {
     addMessage('user', message);
     showTypingIndicator();
 
-    setTimeout(() => {
+    try {
+        const lang = getCurrentLang();
+        const response = await fetch('/api/ai/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: message,
+                language: lang
+            })
+        });
+
+        const result = await response.json();
         hideTypingIndicator();
-        const response = generateAIResponse(message);
-        addMessage('bot', response);
-    }, 1500);
+
+        console.log('[AI Chat] API response:', result);
+
+        if (result.success && result.response) {
+            addMessage('bot', result.response);
+        } else {
+            console.error('[AI Chat] API error:', result.message || 'Unknown error');
+            // Fallback to mock response if API fails
+            const fallbackResponse = generateAIResponse(message);
+            addMessage('bot', fallbackResponse);
+            
+            // Show error notification if available
+            if (typeof showToast === 'function') {
+                const errorMsg = lang === 'vi' 
+                    ? `Không thể kết nối AI: ${result.message || 'Lỗi không xác định'}. Đang sử dụng phản hồi mẫu.` 
+                    : `Cannot connect to AI: ${result.message || 'Unknown error'}. Using sample response.`;
+                showToast(errorMsg, { type: 'warning', duration: 4000 });
+            }
+        }
+    } catch (error) {
+        console.error('[AI Chat] Network/Parse error:', error);
+        hideTypingIndicator();
+        // Fallback to mock response
+        const fallbackResponse = generateAIResponse(message);
+        addMessage('bot', fallbackResponse);
+        
+        const lang = getCurrentLang();
+        if (typeof showToast === 'function') {
+            const errorMsg = lang === 'vi' 
+                ? `Lỗi kết nối: ${error.message || 'Không thể kết nối đến server'}. Đang sử dụng phản hồi mẫu.` 
+                : `Connection error: ${error.message || 'Cannot connect to server'}. Using sample response.`;
+            showToast(errorMsg, { type: 'warning', duration: 4000 });
+        }
+    }
 }
 
 // Handle Suggestion
-function handleSuggestion(suggestion) {
+async function handleSuggestion(suggestion) {
     const translations = getTranslations();
-    const responses = translations.aiResponses || {};
     
     // Get suggestion text from button
     const suggestionTexts = {
@@ -325,11 +368,38 @@ function handleSuggestion(suggestion) {
     
     showTypingIndicator();
     
-    setTimeout(() => {
+    try {
+        const lang = getCurrentLang();
+        const response = await fetch('/api/ai/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: userMessage,
+                language: lang
+            })
+        });
+
+        const result = await response.json();
         hideTypingIndicator();
-        const response = responses[suggestion] || responses.default;
-        addMessage('bot', response);
-    }, 1200);
+
+        if (result.success && result.response) {
+            addMessage('bot', result.response);
+        } else {
+            // Fallback to mock response if API fails
+            const responses = translations.aiResponses || {};
+            const fallbackResponse = responses[suggestion] || responses.default || 'Xin lỗi, tôi không thể trả lời câu hỏi này.';
+            addMessage('bot', fallbackResponse);
+        }
+    } catch (error) {
+        console.error('AI chat error:', error);
+        hideTypingIndicator();
+        // Fallback to mock response
+        const responses = translations.aiResponses || {};
+        const fallbackResponse = responses[suggestion] || responses.default || 'Xin lỗi, tôi không thể trả lời câu hỏi này.';
+        addMessage('bot', fallbackResponse);
+    }
 }
 
 // Add Message

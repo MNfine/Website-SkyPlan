@@ -7,6 +7,9 @@ flask-cors==4.0.0
 # HTTP Requests
 requests==2.31.0
 
+# Google Gemini AI
+google-generativeai==0.3.2
+
 # Date/Time handling
 python-dateutil==2.8.2
 

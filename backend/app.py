@@ -24,6 +24,7 @@ from backend.routes.bookings import bookings_bp
 from backend.routes.seats import seats_bp
 from backend.routes.tickets import tickets_bp
 from backend.routes.support import support_bp
+from backend.routes.ai_chat import ai_chat_bp
 from backend.models.db import init_db
 
 # Import all models to ensure they are registered
@@ -95,6 +96,7 @@ def create_app():
     app.register_blueprint(seats_bp, url_prefix='/api/seats')  # API seat management
     app.register_blueprint(tickets_bp, url_prefix='/api/tickets')  # API ticket management
     app.register_blueprint(support_bp, url_prefix='/api/support')  # Support chat API
+    app.register_blueprint(ai_chat_bp, url_prefix='/api/ai')  # AI Chat API (Gemini)
     # Initialize SocketIO (exposed at module level)
     global socketio
     socketio = SocketIO(app, cors_allowed_origins="*")
