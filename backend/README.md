@@ -23,235 +23,137 @@ Backend của SkyPlan xây dựng bằng Flask và SQLAlchemy. Cung cấp:
 ```
 backend/
   app.py                # Tạo app Flask và wire routes
-  config.py             # Config (VNPay/Email demo)
-  requirements.txt      # Dependencies
-  models/
-    db.py               # Engine/session; fallback SQLite nếu thiếu env var
-    flights.py          # Model Flight
-    passenger.py        # Model Passenger
-    booking.py          # Model Booking, BookingPassenger
-    payments.py         # Model Payment
-    user.py             # Model User
-    seats.py            # Model Seat
-    tickets.py          # Model Ticket
-  routes/
-    flights.py          # /api/flights, /api/flights/roundtrip
-    bookings.py         # Booking endpoints
-    payments.py         # VNPay endpoints (demo)
-    auth.py             # Auth endpoints
-    seats.py            # Seat management
-    tickets.py          # Ticket management
-  db/
-    create_tables.py    # Tạo bảng (nếu cần)
-    import_flights.py   # Import flights demo từ CSV
-    create_all_seats.py # Tạo ghế cho flights
-    demo_flights_vn_airport_names.csv # Dataset demo
-```
+  # SkyPlan Backend (Flask + SQLAlchemy)
 
-## Cài đặt dependencies
+  Backend của SkyPlan được viết bằng Flask và SQLAlchemy. README này tóm tắt cách cài đặt, cấu hình, các endpoint API chính và một số lưu ý vận hành khi làm việc cùng frontend.
 
-### Windows PowerShell
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate
-pip install --upgrade pip
-pip install -r backend/requirements.txt
-```
+  Phiên bản hiện tại hỗ trợ các tính năng chính:
+  - REST API cho flights, bookings, auth, payments (VNPay demo)
+  - Hỗ trợ guest bookings và authenticated bookings (bao gồm trường hợp authenticated user gửi guest_passenger)
+  - Claim flow: gán booking guest cho user khi cần
+  - Seat selection và cập nhật trạng thái ghế
+  - Scripts import dữ liệu demo và tạo ghế
 
-**Lưu ý**: dự án dùng `psycopg2-binary` cho tester/CI để khớp DSN `postgresql+psycopg2`. Khi production có thể cân nhắc `psycopg2` (build từ source) hoặc `psycopg` (v3) và đổi DSN.
+  ## Công nghệ & yêu cầu
+  - Python 3.10+
+  - Flask
+  - SQLAlchemy (ORM)
+  - PostgreSQL (khuyến nghị) hoặc SQLite (fallback cho local/dev)
 
-## Cấu hình (.env)
+  ## Cấu trúc thư mục (chung)
+  ```
+  backend/
+    app.py                # App factory + wiring routes
+    config.py             # Cấu hình (VNPay, email, env)
+    requirements.txt      # Dependencies
+    models/               # SQLAlchemy models (Booking, Passenger, Flight, Payment, Seat, ...)
+    routes/               # Flask blueprints (bookings, payments, auth, flights, seats, tickets, ...)
+    db/                   # DB helper scripts (create tables, import demo data, create seats)
+  ```
 
-Tạo file `.env` ở thư mục gốc (ngang hàng với `backend/`) với nội dung cơ bản:
+  ## Cài đặt (local, PowerShell)
+  ```powershell
+  # Tạo ảo môi trường
+  python -m venv .venv
+  .\.venv\Scripts\Activate
+  pip install --upgrade pip
+  pip install -r backend/requirements.txt
+  ```
 
-```env
-# Flask
-SECRET_KEY=skyplan-secret-key-2025
+  ## Cấu hình (.env)
+  Tạo file `.env` ở root repo hoặc thiết lập biến môi trường phù hợp.
 
-# Database (PostgreSQL qua psycopg2)
-DATABASE_URL=postgresql+psycopg2://postgres:password@localhost:5432/skyplan
+  Ví dụ tối thiểu:
+  ```env
+  SECRET_KEY=your-secret
+  DATABASE_URL=postgresql+psycopg2://user:pass@localhost:5432/skyplan
+  # VNPay (nếu dùng)
+  VNPAY_TMN_CODE=...
+  VNPAY_HASH_SECRET=...
+  VNPAY_RETURN_URL=http://localhost:5000/api/payment/vnpay/return
+  ```
 
-# Tuỳ chọn: VNPay (sandbox)
-VNPAY_TMN_CODE=YOUR_TMN_CODE
-VNPAY_HASH_SECRET=YOUR_HASH_SECRET
-VNPAY_ENV=sandbox
-VNPAY_RETURN_URL=http://localhost:5000/api/payment/vnpay/return
+  Ghi chú:
+  - `backend/models/db.py` có fallback sang SQLite nếu `DATABASE_URL` không được đặt. Để nhanh, bạn có thể dùng `sqlite:///skyplan.db`.
+  - Không commit `.env` lên git.
 
-# Tuỳ chọn: Email
-MAIL_SERVER=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USE_TLS=true
-MAIL_USERNAME=your_email
-MAIL_PASSWORD=your_app_password
-MAIL_DEFAULT_SENDER=noreply@skyplan.com
-```
+  ## Tạo & import dữ liệu
+  - Tạo bảng: khi chạy `backend/app.py` trong nhiều cấu hình sẽ tự tạo bảng nếu cần.
+  - Import flight demo (CSV):
+    - `python backend/db/import_flights.py`
+    - `python backend/db/create_all_seats.py` để sinh ghế cho các chuyến bay
 
-**Ghi chú**:
-- `backend/models/db.py` fallback sang SQLite nếu thiếu `DATABASE_URL`. Tuy nhiên `backend/app.py` hiện yêu cầu biến này, nếu thiếu sẽ báo lỗi.
-- Để chạy nhanh với SQLite, hãy đặt `DATABASE_URL=sqlite:///skylan.db` trong `.env` hoặc chỉnh `app.py` để không raise.
+  ## Chạy server (dev)
+  ```powershell
+  python backend/app.py
+  ```
 
-## Database
+  Mặc định server sẽ lắng nghe trên `http://localhost:5000` và API base là `http://localhost:5000/api`.
 
-### Tạo database trong PostgreSQL (nếu chưa có):
-```sql
-CREATE DATABASE skyplan;
-```
+  ## API chính (tóm tắt)
 
-### Tạo bảng bằng init_db khi khởi động app hoặc chạy script:
-```powershell
-# Cách A: chạy app (init_db sẽ tự tạo bảng)
-python backend/app.py
+  Authentication
+  - `POST /api/auth/register` - Đăng ký
+  - `POST /api/auth/login` - Đăng nhập (trả token)
+  - `GET /api/auth/profile` - Thông tin user (Bearer token)
 
-# Cách B: chạy script tạo bảng (nếu có)  
-python backend/db/create_tables.py
-```
+  Flights
+  - `GET /api/flights` - Tìm chuyến
+  - `GET /api/flights/roundtrip` - Tìm khứ hồi
 
-### Import flights demo (khuyến nghị để có dữ liệu hiển thị UI):
-```powershell
-# Mặc định: xoá dữ liệu cũ và import từ CSV
-python backend/db/import_flights.py
+  Bookings
+  - `POST /api/bookings/create` - Tạo booking
+    - Hỗ trợ cả hai dạng payload:
+      - `passengers`: danh sách passenger IDs (được lưu trước) hoặc
+      - `guest_passenger`: object hành khách (backend sẽ tạo Passenger và gán user nếu user đã đăng nhập)
+    - `total_amount` được kiểm toán (server recompute) trước khi commit.
+  - `POST /api/bookings/passenger` - Tạo/update passenger profile cho user
+  - `GET /api/bookings/` - Liệt kê bookings của user (Bearer token required)
+  - `GET /api/bookings/<booking_code>` - Lấy chi tiết booking (user must own booking)
+  - `GET /api/bookings/status/<booking_code>` - Lấy trạng thái booking (hỗ trợ guest lookup khi booking.user_id is None)
+  - `POST /api/bookings/<booking_code>/claim` - Gán booking guest cho user (claim)
+  - `PATCH /api/bookings/<booking_code>/cancel` - Hủy booking
 
-# Giữ dữ liệu cũ, chỉ thêm mới
-python backend/db/import_flights.py --keep-existing
+  Payments (VNPay demo)
+  - `POST /api/payment/vnpay/create` - Tạo URL thanh toán VNPay
+  - `GET /api/payment/vnpay/return` - VNPay return callback
+  - `POST /api/payment/vnpay/ipn` - VNPay server-to-server notification (IPN)
+  - `POST /api/payments/confirm` - Xác nhận payment (internal flow)
 
-# Tạo ghế cho các chuyến bay
-python backend/db/create_all_seats.py
-```
+  Seats & Tickets
+  - `/api/seats/*` - Đặt ghế / đánh dấu ghế đã booking
+  - `/api/tickets/*` - Phát hành vé và quản lý ticket
 
-## Chạy server
+  Debug & utilities
+  - `GET /api/bookings/debug/inspect` - debug endpoint (trả booking count cho token hiện tại)
 
-Khởi động server tích hợp (phục vụ frontend + API):
+  ## Behaviour & important notes
+  - Create booking for authenticated users: backend chấp nhận cả `passengers` và `guest_passenger`. Nếu user đã đăng nhập nhưng frontend gửi `guest_passenger` (ví dụ user nhập thông tin hành khách mới thay vì chọn passenger được lưu), backend sẽ tạo Passenger gắn với user và tiếp tục tạo booking. Điều này tránh lỗi 400 khi payload thiếu `passengers`.
+  - Server recomputes `total_amount` trước khi chấp nhận booking để tránh client tampering; sai lệch lớn sẽ bị từ chối.
+  - VNPay flow: confirmation page cố gắng verify txnRef bằng `/api/bookings/status/:code`. Nếu thành công, UI dùng dữ liệu server làm nguồn đúng.
 
-```powershell
-python backend/app.py
-```
+  ## Frontend integration hints (thực tế hay gặp)
+  - LocalStorage keys frontend dùng:
+    - `storedPassengerId` / `activePassengerId`: id passenger để gửi `passengers: [id]` khi tạo booking
+    - `currentBookingCode` / `lastBookingCode`: để hiển thị confirmation fallback khi server chưa trả dữ liệu
+    - `selectedSeats`: danh sách ghế đã chọn trước khi thanh toán
+  - Nếu bạn thấy confirmation page hiển thị booking code mà `/api/bookings/` không tăng, thường là vì `POST /api/bookings/create` không commit (ví dụ 400). Kiểm tra Network tab và response body để debug.
 
-**Ứng dụng sẽ chạy trên:**
-- **Frontend**: `http://localhost:5000`
-- **API base**: `http://localhost:5000/api`
+  ## Troubleshooting nhanh
+  - 400 khi tạo booking: kiểm tra payload - cần `outbound_flight_id`, `trip_type`, `fare_class`, `total_amount` và (`passengers` hoặc `guest_passenger`).
+  - 401 khi gọi API bảo mật: đảm bảo `Authorization: Bearer <token>` header đúng.
+  - Không thấy flights: chắc bạn chưa import CSV hoặc query date mismatch.
 
-## API chính
+  ## Testing
+  - Manual: dùng curl/Postman hoặc frontend flows.
+  - Unit/integration: thêm pytest trong `backend/tests/` (chưa có sẵn trong repo mặc định). Một test quan trọng cần có: tạo booking (auth & guest), mark payment, kiểm tra trạng thái và rằng booking được gán cho user khi phù hợp.
 
-### Health & Info
-- `GET /api/health` 
-- `GET /api` - API index
+  ## Deployment notes
+  - Trong production, dùng PostgreSQL và cấu hình `DATABASE_URL` tương ứng.
+  - Quản lý secrets (VNPay, mail) bằng secret manager; không commit `.env`.
 
-### Flights
-- `GET /api/flights?from=HAN&to=SGN&date=2025-10-10`
-- `GET /api/flights/roundtrip?from=HAN&to=SGN&date=2025-10-10&return_date=2025-10-12`
+  ## Contributing
+  - Xem `backend/routes/` để biết chi tiết endpoint.
+  - Khi thay đổi model, cập nhật/migrate DB tương ứng (hiện repo không kèm Alembic; nếu cần hãy thêm hoặc dùng script `db/create_tables.py`).
 
-### Auth
-- `POST /api/auth/register` - Đăng ký user mới
-- `POST /api/auth/login` - Đăng nhập  
-- `GET /api/auth/profile` - Lấy thông tin profile (requires token)
-
-### Bookings
-- `POST /api/bookings/create` - Tạo booking mới (hỗ trợ guest + authenticated)
-- `POST /api/bookings/passenger` - Tạo/cập nhật passenger profile
-- `GET /api/bookings/` - Liệt kê bookings của user
-- `GET /api/bookings/<booking_code>` - Lấy chi tiết booking  
-- `GET /api/bookings/status/<booking_code>` - Kiểm tra trạng thái booking
-- `PATCH /api/bookings/<booking_code>/cancel` - Hủy booking
-
-### Payments (VNPay demo)
-- `POST /api/payment/vnpay/create` - Tạo VNPay payment URL
-- `GET /api/payment/vnpay/return` - VNPay return handler
-- `POST /api/payment/vnpay/ipn` - VNPay IPN notification
-
-### Seats & Tickets  
-- `/api/seats/*` - Quản lý ghế ngồi
-- `/api/tickets/*` - Quản lý vé máy bay
-
-**Ghi chú tìm chuyến bay**:
-- Tham số `from`/`to` nhận IATA (VD: HAN, SGN) hoặc tên tỉnh/thành tiếng Việt (có/không dấu). Backend map tên → mã sân bay dựa trên CSV và alias.
-
-## Ghi chú cho Tester/CI
-
-- Cố định `psycopg2-binary==2.9.9` để khớp DSN `postgresql+psycopg2://` và tránh xung đột.
-- Nếu chuyển sang psycopg3: cập nhật cả hai nơi:
-  - `backend/requirements.txt`: thêm `psycopg[binary]` hoặc `psycopg[c]`
-  - `.env`: `DATABASE_URL=postgresql+psycopg://...`
-
-## Troubleshooting
-
-### Common Issues
-- **ImportError psycopg2**: kích hoạt venv và cài lại requirements.
-- **DATABASE_URL chưa đặt**: thêm vào `.env` hoặc export trong môi trường.
-- **Không thấy chuyến bay**: đảm bảo đã import CSV hoặc ngày tìm trùng với dữ liệu trong DB.
-
-### Database Connection
-```powershell
-# Kiểm tra PostgreSQL đang chạy  
-pg_isready -h localhost -p 5432
-
-# Test connection string
-python -c "from backend.models.db import engine; print(engine.execute('SELECT 1').scalar())"
-```
-
-## Testing
-
-### Manual Testing
-```powershell
-# Test API health
-curl http://localhost:5000/api/health
-
-# Test database connection
-python -c "from backend.models.db import engine; print(engine.execute('SELECT 1').scalar())"
-```
-
-### Unit Tests (if implemented)
-```powershell
-pytest backend/tests/
-```
-
-## Database Schema
-
-### Core Models
-- **User** - Người dùng đăng ký
-- **Flight** - Thông tin chuyến bay
-- **Booking** - Đơn đặt vé (hỗ trợ guest booking)
-- **BookingPassenger** - Liên kết booking với hành khách
-- **Passenger** - Thông tin hành khách
-- **Seat** - Ghế ngồi trên máy bay
-- **Payment** - Thông tin thanh toán VNPay
-- **Ticket** - Vé điện tử được phát hành
-
-### Key Features
-- **Guest Booking**: Cho phép đặt vé không cần đăng ký
-- **Multi-passenger**: Một booking có thể chứa nhiều hành khách
-- **Round-trip Support**: Hỗ trợ vé một chiều và khứ hồi
-- **Seat Selection**: Chọn ghế với pricing khác nhau
-- **Payment Integration**: Tích hợp VNPay gateway
-
-## Security Notes
-
-### Environment Variables
-- Không commit file `.env` vào git
-- Sử dụng strong passwords cho database
-- Rotate VNPay secrets định kỳ
-
-### API Security
-- JWT tokens cho authentication
-- CORS được cấu hình cho specific origins
-- Input validation ở tất cả endpoints
-
-## Performance Considerations
-
-### Database
-- Connection pooling được cấu hình trong `db.py`
-- Indexes trên các cột thường query (user_id, booking_code, etc.)
-- Use `session_scope()` context manager để tránh memory leaks
-
-### Caching
-- Có thể thêm Redis cho session caching
-- Static assets được serve với appropriate headers
-
-## License
-Dự án mang tính học thuật/demo. Xem license chính ở root repo nếu có.
-
----
-
-**Need help?**
-- Kiểm tra logs trong terminal khi chạy `python backend/app.py`  
-- Review mã nguồn trong `backend/routes/` cho API details
-- Tham khảo `backend/models/` cho database schema
+  ---
