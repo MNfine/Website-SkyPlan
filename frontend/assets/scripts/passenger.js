@@ -492,6 +492,14 @@ async function submitPassengerData() {
     try {
       localStorage.setItem('currentPassenger', JSON.stringify(result.passenger || payload));
       localStorage.setItem('skyplan_passenger_data', JSON.stringify(result.passenger || payload));
+      // Save passenger ID for booking creation
+      if (result.passenger && result.passenger.id) {
+        localStorage.setItem('storedPassengerId', String(result.passenger.id));
+        localStorage.setItem('activePassengerId', String(result.passenger.id));
+        console.log('🔍 Passenger Debug: Saved passenger ID to localStorage:', result.passenger.id);
+      } else {
+        console.warn('🔍 Passenger Debug: No passenger ID in response:', result);
+      }
     } catch {}
 
     // Show success message

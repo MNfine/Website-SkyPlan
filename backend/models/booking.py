@@ -59,16 +59,79 @@ class Booking(Base):
     tickets = relationship("Ticket", back_populates="booking", cascade="all, delete-orphan")
 
     def as_dict(self):
+        # Provide a richer representation expected by the frontend
+        outbound = None
+        inbound = None
+        try:
+            if self.outbound_flight:
+                # include both the flight's keys and aliases some front-end code expects
+                outbound = self.outbound_flight.as_dict()
+                outbound.setdefault('origin_code', outbound.get('departure_airport'))
+                outbound.setdefault('destination_code', outbound.get('arrival_airport'))
+            if self.inbound_flight:
+                inbound = self.inbound_flight.as_dict()
+                inbound.setdefault('origin_code', inbound.get('departure_airport'))
+                inbound.setdefault('destination_code', inbound.get('arrival_airport'))
+        except Exception:
+            # If lazy relationships are not loaded or something fails, fall back to ids
+            outbound = outbound or { 'id': self.outbound_flight_id }
+            inbound = inbound or ( { 'id': self.inbound_flight_id } if self.inbound_flight_id else None )
+
+        # Build passenger list (include passenger details and seat info when available)
+        passenger_list = []
+        try:
+            for bp in getattr(self, 'passengers') or []:
+                p = None
+                try:
+                    p = bp.passenger.as_dict() if bp.passenger else None
+                except Exception:
+                    p = { 'id': bp.passenger_id }
+                # ensure we always have a dict and include seat/name aliases
+                if p is None:
+                    p = { 'id': bp.passenger_id }
+
+                # normalize passenger fields for frontend expectations
+                if getattr(bp, 'seat_number', None):
+                    p['seat_number'] = bp.seat_number
+                    p['seatNumber'] = bp.seat_number
+
+                # provide full name aliases used across frontend
+                try:
+                    firstname = p.get('firstname') or p.get('firstName') or ''
+                    lastname = p.get('lastname') or p.get('lastName') or ''
+                    full = (firstname + ' ' + lastname).strip() if (firstname or lastname) else p.get('full_name') or p.get('fullName') or ''
+                    if full:
+                        p['full_name'] = full
+                        p['fullName'] = full
+                except Exception:
+                    pass
+
+                # phone alias
+                if 'phone_number' in p and 'phone' not in p:
+                    p['phone'] = p.get('phone_number')
+
+                passenger_list.append(p)
+        except Exception:
+            passenger_list = []
+
         return {
             "id": self.id,
             "booking_code": self.booking_code,
             "user_id": self.user_id,
-            "status": self.status.value if self.status else None,
-            "trip_type": self.trip_type.value if self.trip_type else None,
-            "fare_class": self.fare_class.value if self.fare_class else None,
+            # Use enum names so frontend that expects UPPER_CASE tokens works consistently
+            "status": (self.status.name if self.status else None),
+            # provide passenger counts in several alias forms for frontend compatibility
+            "passenger_count": len(passenger_list),
+            "total_passengers": len(passenger_list),
+            "num_passengers": len(passenger_list),
+            "trip_type": (self.trip_type.name if self.trip_type else None),
+            "fare_class": (self.fare_class.name if self.fare_class else None),
+            "outbound_flight": outbound,
+            "inbound_flight": inbound,
             "outbound_flight_id": self.outbound_flight_id,
             "inbound_flight_id": self.inbound_flight_id,
-            "total_amount": float(self.total_amount) if self.total_amount else 0,
+            "total_amount": float(self.total_amount) if self.total_amount is not None else 0,
+            "passengers": passenger_list,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "confirmed_at": self.confirmed_at.isoformat() if self.confirmed_at else None,
         }

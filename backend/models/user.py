@@ -17,11 +17,18 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     fullname = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, nullable=False, index=True)
-    phone = Column(String(20), unique=True, nullable=False, index=True)
+    # Phone should be stored but not necessarily unique across users
+    phone = Column(String(20), nullable=False, index=True)
     password_hash = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    def __init__(self, **kwargs):
+        # Normalize email to lowercase and trim whitespace before storing
+        if 'email' in kwargs and isinstance(kwargs.get('email'), str):
+            kwargs['email'] = kwargs['email'].strip().lower()
+        super().__init__(**kwargs)
 
     def set_password(self, password):
         """Hash the password and store it in the database."""

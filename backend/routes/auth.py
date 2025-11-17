@@ -54,7 +54,7 @@ def register():
         # Create a new user
         session = get_session()
         new_user = User(
-            email=data['email'],
+            email=data['email'].strip().lower(),
             fullname=data['fullname'],
             phone=data['phone']
         )

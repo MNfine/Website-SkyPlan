@@ -27,15 +27,14 @@
             return existingCode;
         }
 
-        // Try to create booking via backend API
+        // Build a pending booking payload and persist it to localStorage instead of creating booking now.
         try {
-            const apiBaseUrl = window.SkyPlanConfig?.apiBaseUrl || 'http://localhost:5000';
             const trip = readJSON(TRIP_KEY, null);
             const fare = readJSON(FARE_KEY, null);
             const passengerInfo = readJSON('passengerInfo', null);
             const extras = readJSON(EXTRAS_KEY, { total: 0 });
-            
-            // Calculate total amount
+
+            // Calculate total amount locally (will be validated/recomputed on server)
             const ticketAmount = parseDigits((fare && fare.price) || '0');
             const extrasTotal = Number(extras.total) || 0;
             const tax = Math.round(ticketAmount * 0.1);
@@ -55,69 +54,68 @@
                 notes: passengerInfo?.notes || ''
             };
 
-            // Prepare booking data for guest booking
-            const bookingData = {
+            // Normalize trip_type & fare_class to the values backend expects
+            const rawTripType = (trip?.tripType || 'one-way').toLowerCase();
+            const tripTypeEnum = rawTripType === 'round-trip' ? 'round-trip' : 'one-way';
+            let rawFareClass = (fare?.fareClass || 'economy').toLowerCase();
+            let fareClassEnum = 'economy';
+            if (rawFareClass.includes('business')) {
+                fareClassEnum = 'business';
+            } else if (rawFareClass.includes('premium')) {
+                fareClassEnum = 'premium-economy';
+            }
+
+            const pendingPayload = {
                 outbound_flight_id: trip?.outboundFlightId || trip?.selectedFlight?.id || 1,
                 inbound_flight_id: trip?.inboundFlightId || null,
-                trip_type: trip?.tripType || 'one-way',
-                fare_class: fare?.fareClass || 'economy',
+                trip_type: tripTypeEnum,
+                fare_class: fareClassEnum,
                 total_amount: total,
-                guest_passenger: guestPassenger
+                extras_total: extrasTotal,
+                guest_passenger: {
+                    lastname: passengerInfo?.lastname || passengerInfo?.lastName || passengerInfo?.fullName || '',
+                    firstname: passengerInfo?.firstname || passengerInfo?.firstName || '',
+                    cccd: passengerInfo?.cccd || '',
+                    dob: passengerInfo?.dob || '',
+                    gender: passengerInfo?.gender || '',
+                    phone_number: passengerInfo?.phone || passengerInfo?.phoneNumber || '',
+                    email: passengerInfo?.email || '',
+                    address: passengerInfo?.address || '',
+                    city: passengerInfo?.city || '',
+                    nationality: passengerInfo?.nationality || '',
+                    notes: passengerInfo?.notes || ''
+                }
             };
 
-            console.log('Attempting to create booking via API...', bookingData);
-
-            const response = await fetch(`${apiBaseUrl}/api/bookings`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(bookingData),
-                // Add timeout
-                signal: AbortSignal.timeout(5000) // 5 seconds timeout
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                if (result.success && result.booking_code) {
-                    console.log('Backend booking created:', result.booking_code);
-                    localStorage.setItem('currentBookingCode', result.booking_code);
-                    localStorage.setItem('lastBookingCode', result.booking_code);
-                    localStorage.setItem('backendBookingId', result.booking?.id || '');
-                    localStorage.setItem('bookingSource', 'backend');
-                    return result.booking_code;
-                }
+            // If user is logged in and we have a passenger id, use it instead of guest_passenger
+            const storedPassengerId = localStorage.getItem('storedPassengerId') || localStorage.getItem('activePassengerId');
+            if (storedPassengerId) {
+                pendingPayload.passengers = [Number(storedPassengerId)];
+                delete pendingPayload.guest_passenger;
             }
-            
-            throw new Error(`API responded with status ${response.status}`);
 
-        } catch (error) {
-            console.warn('Backend API unavailable, using client-side generation:', error.message);
-            
-            // Fallback: Generate booking code client-side
+            // Persist pending payload for later (confirmation step will create booking)
+            localStorage.setItem('pendingBookingPayload', JSON.stringify(pendingPayload));
+
+            // Generate client-side booking code and persist (will be replaced if server creates booking earlier)
             const year = new Date().getFullYear();
             const timestamp = Date.now();
             const clientCode = `SP${year}${String(timestamp).slice(-5)}`;
-            
-            console.log('Generated client-side booking code:', clientCode);
             localStorage.setItem('currentBookingCode', clientCode);
             localStorage.setItem('lastBookingCode', clientCode);
             localStorage.setItem('bookingSource', 'client');
-            
+
+            return clientCode;
+        } catch (error) {
+            console.warn('Failed to build pending booking payload, falling back to client code:', error);
+            const year = new Date().getFullYear();
+            const timestamp = Date.now();
+            const clientCode = `SP${year}${String(timestamp).slice(-5)}`;
+            localStorage.setItem('currentBookingCode', clientCode);
+            localStorage.setItem('lastBookingCode', clientCode);
+            localStorage.setItem('bookingSource', 'client');
             return clientCode;
         }
-    }
-    function resolveCity(val, lang) {
-        // Debug city resolution
-        console.log('Resolving city:', { val, lang, hasResolveCityLabel: typeof window.resolveCityLabel === 'function', hasCityTranslations: !!window.SKYPLAN_CITY_TRANSLATIONS });
-        
-        if (typeof window !== 'undefined' && typeof window.resolveCityLabel === 'function') return window.resolveCityLabel(val, lang);
-        const MAP = (typeof window !== 'undefined' && window.SKYPLAN_CITY_TRANSLATIONS) || {};
-        const dict = MAP[lang] || MAP.vi || {};
-        const result = dict[val] || val || '';
-        console.log('Resolution result:', result);
-        return result;
     }
     // Format a value as VND with thousands separators. Round to nearest integer and
     // guard against non-numeric inputs. Use toLocaleString to respect Vietnamese format.
@@ -310,11 +308,21 @@
         }
 
         // Price breakdown
-        const fareVND = (fare && (Number(fare.priceVND) || parseDigits(fare.priceLabel))) || 0;
-        const extrasTotal = Number(extras.total) || 0;
-        const tax = 200000; // demo flat tax/fees
-        const ticketAmount = fareVND; // chỉ hiển thị giá vé thuần không cộng dịch vụ thêm
-        const total = fareVND + extrasTotal + tax;
+    const fareVND = (fare && (Number(fare.priceVND) || parseDigits(fare.priceLabel))) || 0;
+    const extrasTotal = Number(extras.total) || 0;
+        // Derive base fare from multiple sources (selected fare, trip.selectedFlight.price or previously persisted values)
+        const persistedBase = Number(localStorage.getItem('bookingBase')) || 0;
+        const persistedTotal = Number(localStorage.getItem('bookingTotal')) || 0;
+        const baseFare = fareVND || (trip && trip.selectedFlight && Number(trip.selectedFlight.price)) || persistedBase || 0;
+        // Compute a fee/tax as 10% of base fare when available; fallback to 0 to avoid hard-coded demo fee
+        const tax = baseFare ? Math.round(baseFare * 0.1) : 0;
+        const ticketAmount = baseFare; // display base fare
+        let total = baseFare + extrasTotal + tax;
+        // If total computed is zero but we have a persisted total from earlier steps (e.g., saved by another script), use it
+        if ((!total || total === 0) && persistedTotal > 0) {
+            console.warn('[payment_order] computed total is 0, falling back to persisted bookingTotal:', persistedTotal);
+            total = persistedTotal;
+        }
         
         const tripTypeLabel = isRoundTrip ? 
             (lang === 'vi' ? 'Vé máy bay (2 chiều)' : 'Round-trip Flight Ticket') : 
@@ -323,7 +331,7 @@
         const breakdownEl = document.querySelector('.price-breakdown');
         
         // Generate or fetch booking code (async operation with backend fallback)
-        generateOrFetchBookingCode().then(bookingCode => {
+            generateOrFetchBookingCode().then(bookingCode => {
             console.log('Using booking code:', bookingCode);
             
             // Update booking code in price breakdown
@@ -363,6 +371,80 @@
         }).catch(error => {
             console.error('Error generating booking code:', error);
         });
+
+    // Expose a helper to build/persist a pending booking payload so other pages (overview/payment)
+    // can produce an identical payload shape. Returns the client booking code.
+    window.buildPendingBookingPayload = function buildPendingBookingPayload() {
+        try {
+            const trip = readJSON(TRIP_KEY, null);
+            const fare = readJSON(FARE_KEY, null);
+            const passengerInfo = readJSON('passengerInfo', null);
+            const extras = readJSON(EXTRAS_KEY, { total: 0 });
+
+            const ticketAmount = parseDigits((fare && fare.price) || '0');
+            const extrasTotal = Number(extras.total) || 0;
+            const tax = Math.round(ticketAmount * 0.1);
+            const total = ticketAmount + extrasTotal + tax;
+
+            const guestPassenger = {
+                lastname: passengerInfo?.lastname || passengerInfo?.lastName || '',
+                firstname: passengerInfo?.firstname || passengerInfo?.firstName || passengerInfo?.fullName || '',
+                cccd: passengerInfo?.cccd || '',
+                dob: passengerInfo?.dob || '',
+                gender: passengerInfo?.gender || '',
+                phone_number: passengerInfo?.phone || passengerInfo?.phoneNumber || '',
+                email: passengerInfo?.email || '',
+                address: passengerInfo?.address || '',
+                city: passengerInfo?.city || '',
+                nationality: passengerInfo?.nationality || '',
+                notes: passengerInfo?.notes || ''
+            };
+
+            const rawTripType = (trip?.tripType || 'one-way').toLowerCase();
+            const tripTypeEnum = rawTripType === 'round-trip' ? 'ROUND_TRIP' : 'ONE_WAY';
+
+            let rawFareClass = (fare?.fareClass || 'economy').toLowerCase();
+            let fareClassEnum = 'ECONOMY';
+            if (rawFareClass.includes('business')) {
+                fareClassEnum = 'BUSINESS';
+            } else if (rawFareClass.includes('premium')) {
+                fareClassEnum = 'PREMIUM';
+            }
+
+            const pendingPayload = {
+                outbound_flight_id: trip?.outboundFlightId || trip?.selectedFlight?.id || 1,
+                inbound_flight_id: trip?.inboundFlightId || null,
+                trip_type: tripTypeEnum,
+                fare_class: fareClassEnum,
+                total_amount: total,
+                extras_total: extrasTotal,
+                guest_passenger: guestPassenger
+            };
+
+            const storedPassengerId = localStorage.getItem('storedPassengerId') || localStorage.getItem('activePassengerId');
+            if (storedPassengerId) {
+                pendingPayload.passengers = [Number(storedPassengerId)];
+                delete pendingPayload.guest_passenger;
+            }
+
+            localStorage.setItem('pendingBookingPayload', JSON.stringify(pendingPayload));
+
+            // Ensure we have a display booking code
+            const year = new Date().getFullYear();
+            const timestamp = Date.now();
+            const clientCode = `SP${year}${String(timestamp).slice(-5)}`;
+            localStorage.setItem('currentBookingCode', clientCode);
+            localStorage.setItem('lastBookingCode', clientCode);
+            localStorage.setItem('bookingSource', 'client');
+
+            return clientCode;
+        } catch (e) {
+            console.warn('buildPendingBookingPayload failed:', e);
+            const clientCode = `SP${new Date().getFullYear()}${String(Date.now()).slice(-5)}`;
+            try { localStorage.setItem('currentBookingCode', clientCode); localStorage.setItem('lastBookingCode', clientCode); } catch(_){}
+            return clientCode;
+        }
+    };
 
         // Update selectors after booking code is inserted
         // Find ticket row: first .price-item that has data-i18n="ticketLabel" or doesn't have special classes

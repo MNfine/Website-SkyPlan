@@ -18,6 +18,10 @@ load_dotenv()
 
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///skylan.db")
+
+if not DATABASE_URL.startswith("postgresql"):  # Chỉ cho phép PostgreSQL
+    raise ValueError("Only PostgreSQL is allowed. Please set DATABASE_URL to a valid PostgreSQL connection string.")
+
 print("DATABASE_URL:", DATABASE_URL)
 
 
@@ -36,7 +40,9 @@ if not DATABASE_URL.startswith("sqlite"):
 		"max_overflow": 10,
 	})
 
-engine = create_engine(DATABASE_URL, **engine_kwargs)
+# Allow enabling SQL echo via environment variable for debug
+SQL_ECHO = os.getenv('SQL_ECHO', 'false').lower() in ('1', 'true', 'yes')
+engine = create_engine(DATABASE_URL, echo=SQL_ECHO, **engine_kwargs)
 
 SessionLocal = scoped_session(sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False, future=True))
 

@@ -3,6 +3,7 @@
 // State management
 let currentTab = 'all';
 let currentTripToCancel = null;
+let bookingsCache = {}; // Cache bookings by booking_code to avoid refetching
 
 // Helper function to get translated text
 function getTranslation(key) {
@@ -183,7 +184,21 @@ async function loadTripsData() {
     hideLoadingState();
 
     if (response.ok && result.success) {
-      renderTripsData(result.bookings);
+        try {
+          // Cache bookings for download ticket feature
+          if (Array.isArray(result.bookings)) {
+            result.bookings.forEach(booking => {
+              if (booking.booking_code) {
+                bookingsCache[booking.booking_code] = booking;
+              }
+            });
+          }
+          renderTripsData(result.bookings);
+        } catch (err) {
+          console.error('🔍 MyTrips Render Error:', err);
+          // Show a visible error so user sees something instead of empty state
+          showErrorState('Lỗi khi hiển thị chuyến đi. Xem console để biết thêm chi tiết.');
+        }
     } else {
       throw new Error(result.message || 'Failed to load bookings');
     }
@@ -211,14 +226,29 @@ function showLoginRequired() {
 
 // Show loading state
 function showLoadingState() {
+  // Prefer injecting loading state into existing .trips-list containers so we don't
+  // destroy the page structure (which would prevent renderTripsData from finding
+  // its target container). If no .trips-list exists yet, fall back to replacing
+  // .main-content for compatibility.
+  const lists = document.querySelectorAll('.trips-list');
+  const loadingHtml = `
+    <div class="loading-state" style="text-align: center; padding: 40px;">
+      <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #1976d2; margin-bottom: 20px;"></i>
+      <p>${getTranslation('loadingTrips') || 'Đang tải chuyến đi...'}</p>
+    </div>
+  `;
+
+  if (lists && lists.length > 0) {
+    // Insert loading into each tab's list area so UX stays consistent
+    lists.forEach(list => {
+      list.innerHTML = loadingHtml;
+    });
+    return;
+  }
+
   const container = document.querySelector('.trips-container, .main-content');
   if (container) {
-    container.innerHTML = `
-      <div class="loading-state" style="text-align: center; padding: 40px;">
-        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #1976d2; margin-bottom: 20px;"></i>
-        <p>${getTranslation('loadingTrips') || 'Đang tải chuyến đi...'}</p>
-      </div>
-    `;
+    container.innerHTML = loadingHtml;
   }
 }
 
@@ -247,8 +277,6 @@ function showErrorState(message) {
 
 // Render trips data
 function renderTripsData(bookings) {
-  const container = document.querySelector('.trips-list, .trips-container');
-  
   if (!bookings || bookings.length === 0) {
     showEmptyState();
     return;
@@ -256,90 +284,266 @@ function renderTripsData(bookings) {
 
   const lang = getCurrentLang();
   
-  let html = '';
-  bookings.forEach(booking => {
-    html += generateBookingHTML(booking, lang);
-  });
+  // Filter bookings by status
+  const allBookings = bookings;
+  const upcomingBookings = bookings.filter(b => 
+    b.status === 'CONFIRMED' || b.status === 'PENDING'
+  );
+  const completedBookings = bookings.filter(b => 
+    b.status === 'COMPLETED'
+  );
+  const cancelledBookings = bookings.filter(b => 
+    b.status === 'CANCELLED'
+  );
   
-  if (container) {
-    container.innerHTML = html;
+  // Render into each tab's container
+  const containers = {
+    'all': document.querySelector('#all-content .trips-list'),
+    'upcoming': document.querySelector('#upcoming-content .trips-list'),
+    'completed': document.querySelector('#completed-content .trips-list'),
+    'cancelled': document.querySelector('#cancelled-content .trips-list')
+  };
+  
+  // Render all bookings
+  if (containers.all) {
+    let html = '';
+    allBookings.forEach(booking => {
+      html += generateBookingHTML(booking, lang);
+    });
+    containers.all.innerHTML = html;
+  }
+  
+  // Render upcoming bookings
+  if (containers.upcoming) {
+    let html = '';
+    upcomingBookings.forEach(booking => {
+      html += generateBookingHTML(booking, lang);
+    });
+    containers.upcoming.innerHTML = html;
+  }
+  
+  // Render completed bookings
+  if (containers.completed) {
+    let html = '';
+    completedBookings.forEach(booking => {
+      html += generateBookingHTML(booking, lang);
+    });
+    containers.completed.innerHTML = html;
+  }
+  
+  // Render cancelled bookings
+  if (containers.cancelled) {
+    let html = '';
+    cancelledBookings.forEach(booking => {
+      html += generateBookingHTML(booking, lang);
+    });
+    containers.cancelled.innerHTML = html;
   }
   
   // Update tabs if they exist
   updateTabCounts(bookings);
+  
+  // Check empty state for current tab
+  checkEmptyState();
 }
 
 // Generate HTML for a single booking
+function formatTimeForDisplay(dateString, lang) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (isNaN(date)) return '';
+  // HH:MM 24h
+  return date.toLocaleTimeString(lang === 'en' ? 'en-US' : 'vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+}
+
 function generateBookingHTML(booking, lang) {
   const statusClass = getStatusClass(booking.status);
   const statusText = getStatusText(booking.status, lang);
-  const tripTypeText = booking.trip_type === 'ROUND_TRIP' ? 
-    (lang === 'vi' ? 'Khứ hồi' : 'Round Trip') : 
-    (lang === 'vi' ? 'Một chiều' : 'One Way');
-  
-  // Format dates
+  const tripTypeText = booking.trip_type === 'ROUND_TRIP'
+    ? (lang === 'vi' ? 'Khứ hồi' : 'Round Trip')
+    : (lang === 'vi' ? 'Một chiều' : 'One Way');
+
+  // Dates
   const createdDate = formatDate(booking.created_at, lang);
-  const departDate = booking.outbound_flight ? formatDate(booking.outbound_flight.departure_time, lang) : '';
-  
+  const outbound = booking.outbound_flight || {};
+  const departDate = outbound.departure_time ? formatDate(outbound.departure_time, lang) : '';
+
+  // City names from airport codes
+  const originCode = outbound.origin_code || outbound.departure_airport || '';
+  const destCode = outbound.destination_code || outbound.arrival_airport || '';
+  const originName = originCode ? getCityName(originCode, lang) : '';
+  const destName = destCode ? getCityName(destCode, lang) : '';
+  // Format: "Sân bay Nội Bài (HAN)"
+  const originNameFull = originName && originCode ? `${originName} (${originCode})` : originName || originCode || '';
+  const destNameFull = destName && destCode ? `${destName} (${destCode})` : destName || destCode || '';
+
+  // Times
+  const departTime  = outbound.departure_time ? formatTimeForDisplay(outbound.departure_time, lang) : '';
+  const arrivalTime = outbound.arrival_time ? formatTimeForDisplay(outbound.arrival_time, lang) : '';
+
+  // Airline text
+  let airlineText = '';
+  if (outbound) {
+    const parts = [];
+    if (outbound.airline_name || outbound.airline) parts.push(outbound.airline_name || outbound.airline);
+    if (outbound.flight_number) parts.push(outbound.flight_number);
+    airlineText = parts.join(' - ');
+  }
+
+  // Duration (nếu đủ dữ liệu thì tính, không thì để trống)
+  let durationText = '';
+  if (outbound && outbound.departure_time && outbound.arrival_time) {
+    const dep = new Date(outbound.departure_time);
+    const arr = new Date(outbound.arrival_time);
+    const diffMs = arr - dep;
+    if (!isNaN(diffMs) && diffMs > 0) {
+      const totalMin = Math.round(diffMs / 60000);
+      const hours = Math.floor(totalMin / 60);
+      const mins  = totalMin % 60;
+      durationText = `${hours}h ${mins.toString().padStart(2, '0')}m`;
+    }
+  }
+
+  // Số hành khách (fallback đủ kiểu, thiếu thì cho 1)
+  const passengerCount =
+    booking.passenger_count ||
+    booking.total_passengers ||
+    booking.num_passengers ||
+    1;
+
+  const passengerWord = lang === 'vi'
+    ? 'hành khách'
+    : (passengerCount === 1 ? 'passenger' : 'passengers');
+
   return `
-    <div class="trip-card" data-status="${booking.status.toLowerCase()}" data-booking-id="${booking.id}">
+    <div class="trip-card"
+         data-trip-id="${booking.booking_code}"
+         data-status="${booking.status.toLowerCase()}"
+         onclick="goToOverview('${booking.booking_code}')">
+
+      <!-- PILL TRẠNG THÁI, GIỐNG SƯỜN HTML -->
+      <div class="trip-status ${statusClass}">
+        <span>${statusText}</span>
+      </div>
+      
+      <!-- HEADER: ROUTE + GIÁ + HÀNH KHÁCH -->
       <div class="trip-header">
-        <div class="trip-code">
-          <span class="code-label">${lang === 'vi' ? 'Mã booking:' : 'Booking Code:'}</span>
-          <span class="code-value">${booking.booking_code}</span>
+        <div class="route-info">
+          <div class="route-title">
+            <h3>
+              <span class="route-text">
+                ${originName || ''} → ${destName || ''}
+              </span>
+            </h3>
+          </div>
+          <p class="booking-ref">
+            ${lang === 'vi' ? 'Mã đặt chỗ:' : 'Booking code:'}
+            <strong>${booking.booking_code}</strong>
+          </p>
         </div>
-        <div class="trip-status ${statusClass}">
-          <span class="status-dot"></span>
-          ${statusText}
+
+        <div class="trip-price">
+          <span class="price">
+            ${Number(booking.total_amount || 0).toLocaleString('vi-VN')} VND
+          </span>
+          <span class="passengers">
+            ${passengerCount} ${passengerWord}
+          </span>
         </div>
       </div>
-      
+
+      <!-- BODY: THÔNG TIN CHUYẾN BAY + BOOKING DETAILS -->
       <div class="trip-details">
-        <div class="flight-info">
-          <div class="route-info">
-            <h4>${booking.outbound_flight ? getAirportName(booking.outbound_flight.origin_code, lang) : ''} → 
-                ${booking.outbound_flight ? getAirportName(booking.outbound_flight.destination_code, lang) : ''}</h4>
-            <p class="trip-type">${tripTypeText} • ${booking.fare_class}</p>
-          </div>
-          
-          <div class="date-info">
-            <div class="departure-date">
-              <span class="date-label">${lang === 'vi' ? 'Ngày đi:' : 'Departure:'}</span>
-              <span class="date-value">${departDate}</span>
+        <div class="flight-segment">
+          <div class="flight-info">
+            <div class="airline">
+              <i class="fas fa-plane"></i>
+              <span>${airlineText || (lang === 'vi' ? 'Chuyến bay' : 'Flight')}</span>
             </div>
-            ${booking.inbound_flight ? `
-              <div class="return-date">
-                <span class="date-label">${lang === 'vi' ? 'Ngày về:' : 'Return:'}</span>
-                <span class="date-value">${formatDate(booking.inbound_flight.departure_time, lang)}</span>
+            <div class="flight-time">
+              <span class="departure">
+                <strong>${departTime || '--:--'}</strong>
+                <small>${originNameFull}</small>
+              </span>
+              <div class="duration">
+                <div class="line"></div>
+                <span>${durationText}</span>
               </div>
-            ` : ''}
+              <span class="arrival">
+                <strong>${arrivalTime || '--:--'}</strong>
+                <small>${destNameFull}</small>
+              </span>
+            </div>
           </div>
         </div>
-        
-        <div class="booking-info">
-          <div class="amount">
-            <span class="amount-label">${lang === 'vi' ? 'Tổng tiền:' : 'Total Amount:'}</span>
-            <span class="amount-value">${Number(booking.total_amount).toLocaleString('vi-VN')} VND</span>
+
+        <div class="booking-details">
+          <div class="detail-item">
+            <i class="fas fa-calendar"></i>
+            <span>
+              ${lang === 'vi' ? 'Ngày bay:' : 'Flight date:'}
+              <strong>${departDate || '--'}</strong>
+            </span>
           </div>
-          <div class="booking-date">
-            <span class="date-label">${lang === 'vi' ? 'Ngày đặt:' : 'Booked:'}</span>
-            <span class="date-value">${createdDate}</span>
-          </div>
+          ${(() => {
+            if (booking.passengers && booking.passengers.length > 0) {
+              return booking.passengers.map(p => {
+                const passengerName = p.full_name || p.fullName || 
+                  ((p.firstname || p.firstName || '') + ' ' + (p.lastname || p.lastName || '')).trim() || 'N/A';
+                // Get seat number - try multiple possible field names
+                const seatNumber = p.seat_number || p.seatNumber || p.seat || '';
+                let html = `
+                  <div class="detail-item">
+                    <i class="fas fa-users"></i>
+                    <span>
+                      ${lang === 'vi' ? 'Hành khách:' : 'Passenger:'}
+                      <strong>${passengerName}</strong>
+                    </span>
+                  </div>`;
+                // Always show seat field, even if empty (to match HTML template structure)
+                html += `
+                  <div class="detail-item">
+                    <i class="fas fa-chair"></i>
+                    <span>
+                      ${lang === 'vi' ? 'Ghế:' : 'Seat:'}
+                      <strong>${seatNumber || '--'}</strong>
+                    </span>
+                  </div>`;
+                return html;
+              }).join('');
+            } else {
+              return `
+              <div class="detail-item">
+                <i class="fas fa-users"></i>
+                <span>
+                  ${lang === 'vi' ? 'Hành khách:' : 'Passengers:'}
+                  <strong>${passengerCount} ${passengerWord}</strong>
+                </span>
+              </div>`;
+            }
+          })()}
         </div>
       </div>
-      
+
+      <!-- ACTION BUTTONS: BỌC TRONG .trip-buttons GIỐNG MẪU -->
       <div class="trip-actions">
-        ${generateActionButtons(booking, lang)}
+        <div class="trip-buttons">
+          ${generateActionButtons(booking, lang)}
+        </div>
       </div>
     </div>
   `;
 }
 
-// Get status class for styling
+// Get status class for styling - map CONFIRMED to 'upcoming' for display
 function getStatusClass(status) {
   const statusMap = {
     'PENDING': 'pending',
-    'CONFIRMED': 'confirmed',
+    'CONFIRMED': 'upcoming',  // Map CONFIRMED to 'upcoming' to match HTML template
     'PAYMENT_FAILED': 'payment-failed',
     'CANCELLED': 'cancelled',
     'EXPIRED': 'expired',
@@ -348,11 +552,11 @@ function getStatusClass(status) {
   return statusMap[status] || 'pending';
 }
 
-// Get status text
+// Get status text - map CONFIRMED to 'Sắp tới' for display
 function getStatusText(status, lang) {
   const statusTexts = {
     'PENDING': lang === 'vi' ? 'Chờ thanh toán' : 'Pending Payment',
-    'CONFIRMED': lang === 'vi' ? 'Đã xác nhận' : 'Confirmed',
+    'CONFIRMED': lang === 'vi' ? 'Sắp tới' : 'Upcoming',  // Map to 'Sắp tới' to match HTML template
     'PAYMENT_FAILED': lang === 'vi' ? 'Thanh toán thất bại' : 'Payment Failed',
     'CANCELLED': lang === 'vi' ? 'Đã hủy' : 'Cancelled',
     'EXPIRED': lang === 'vi' ? 'Hết hạn' : 'Expired',
@@ -361,51 +565,82 @@ function getStatusText(status, lang) {
   return statusTexts[status] || status;
 }
 
-// Generate action buttons based on booking status
+// Generate action buttons based on booking status - match HTML template with 3 buttons
 function generateActionButtons(booking, lang) {
   let buttons = '';
   
   switch (booking.status) {
     case 'PENDING':
-    case 'PAYMENT_FAILED':  // ✅ Thêm case để support retry
+    case 'PAYMENT_FAILED':
       const buttonText = booking.status === 'PAYMENT_FAILED' ? 
         (lang === 'vi' ? 'Thử lại thanh toán' : 'Retry Payment') :
         (lang === 'vi' ? 'Tiếp tục thanh toán' : 'Continue Payment');
         
-      buttons += `<button class="btn btn-primary" onclick="continuePayment('${booking.booking_code}')">
+      buttons += `<button class="btn btn-primary" onclick="event.stopPropagation(); continuePayment('${booking.booking_code}'); return false;">
         ${buttonText}
       </button>`;
-      buttons += `<button class="btn btn-outline" onclick="cancelBooking('${booking.booking_code}')">
+      buttons += `<button class="btn btn-outline" onclick="event.stopPropagation(); cancelBooking('${booking.booking_code}'); return false;">
         ${lang === 'vi' ? 'Hủy booking' : 'Cancel Booking'}
       </button>`;
       break;
       
     case 'CONFIRMED':
-      buttons += `<button class="btn btn-primary" onclick="viewTicket('${booking.booking_code}')">
-        ${lang === 'vi' ? 'Xem vé' : 'View Ticket'}
+      // Match HTML template: 3 buttons - Tải vé (view ticket), Thay đổi, Hủy chuyến
+      buttons += `<button class="btn btn-outline" onclick="event.stopPropagation(); viewTicket('${booking.booking_code}'); return false;">
+        <i class="fas fa-download"></i>
+        <span>${lang === 'vi' ? 'Tải vé' : 'Download Ticket'}</span>
       </button>`;
-      buttons += `<button class="btn btn-outline" onclick="downloadTicket('${booking.booking_code}')">
-        ${lang === 'vi' ? 'Tải vé' : 'Download Ticket'}
+      buttons += `<button class="btn btn-outline" onclick="event.stopPropagation(); modifyTrip('${booking.booking_code}'); return false;">
+        <i class="fas fa-edit"></i>
+        <span>${lang === 'vi' ? 'Thay đổi' : 'Modify'}</span>
+      </button>`;
+      buttons += `<button class="btn btn-danger" onclick="event.stopPropagation(); cancelTrip('${booking.booking_code}'); return false;">
+        <i class="fas fa-times"></i>
+        <span>${lang === 'vi' ? 'Hủy chuyến' : 'Cancel Trip'}</span>
       </button>`;
       break;
       
     case 'CANCELLED':
-      buttons += `<button class="btn btn-outline" onclick="rebookSimilarTrip('${booking.booking_code}')">
+      buttons += `<button class="btn btn-outline" onclick="event.stopPropagation(); rebookSimilarTrip('${booking.booking_code}'); return false;">
         ${lang === 'vi' ? 'Đặt lại' : 'Rebook'}
       </button>`;
       break;
       
     case 'COMPLETED':
-      buttons += `<button class="btn btn-primary" onclick="downloadInvoice('${booking.booking_code}')">
-        ${lang === 'vi' ? 'Tải hóa đơn' : 'Download Invoice'}
+      buttons += `<button class="btn btn-outline" onclick="event.stopPropagation(); viewTicket('${booking.booking_code}'); return false;">
+        <i class="fas fa-download"></i>
+        <span>${lang === 'vi' ? 'Tải vé' : 'Download Ticket'}</span>
       </button>`;
-      buttons += `<button class="btn btn-outline" onclick="rebookSimilarTrip('${booking.booking_code}')">
-        ${lang === 'vi' ? 'Đặt chuyến tương tự' : 'Book Similar'}
+      buttons += `<button class="btn btn-outline" onclick="event.stopPropagation(); rebookSimilarTrip('${booking.booking_code}'); return false;">
+        <i class="fas fa-edit"></i>
+        <span>${lang === 'vi' ? 'Đặt chuyến tương tự' : 'Book Similar'}</span>
       </button>`;
       break;
   }
   
   return buttons;
+}
+
+// Get city name from airport code
+function getCityName(code, lang = 'vi') {
+  const cityData = {
+    'HAN': { vi: 'Hà Nội', en: 'Ha Noi' },
+    'SGN': { vi: 'Hồ Chí Minh', en: 'Ho Chi Minh' },
+    'DAD': { vi: 'Đà Nẵng', en: 'Da Nang' },
+    'CXR': { vi: 'Nha Trang', en: 'Nha Trang' },
+    'PQC': { vi: 'Phú Quốc', en: 'Phu Quoc' },
+    'VCA': { vi: 'Cần Thơ', en: 'Can Tho' },
+    'HUI': { vi: 'Huế', en: 'Hue' },
+    'VII': { vi: 'Vinh', en: 'Vinh' },
+    'HPH': { vi: 'Hải Phòng', en: 'Hai Phong' },
+    'DLI': { vi: 'Đà Lạt', en: 'Da Lat' }
+  };
+  
+  const data = cityData[code];
+  if (data) {
+    return data[lang] || data.vi;
+  }
+  return code; // Fallback to code if not found
 }
 
 // Get airport name (placeholder - should use translation data)
@@ -480,7 +715,8 @@ async function cancelBooking(bookingCode) {
     return;
   }
 
-  const token = localStorage.getItem('authToken');
+  // Use same token detection as loadTripsData
+  const token = (typeof AuthState !== 'undefined' && AuthState.getToken) ? AuthState.getToken() : (localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
   if (!token) {
     showNotification(
       lang === 'vi' ? 'Vui lòng đăng nhập để tiếp tục' : 'Please login to continue',
@@ -534,34 +770,159 @@ async function cancelBooking(bookingCode) {
 // Trip actions
 function goToOverview(tripId) {
   showNotification(getTranslation('goingToOverview'), 'info', 2000);
+  try {
+    // Ensure overview page knows which booking to check for status
+    localStorage.setItem('currentBookingCode', tripId);
+    localStorage.setItem('overviewMode', 'existing-trip');
+  } catch (e) {
+    console.warn('Could not persist currentBookingCode to localStorage', e);
+  }
+
   setTimeout(() => {
     window.location.href = `overview.html?tripId=${tripId}`;
   }, 1000);
 }
 
-function downloadTicket(bookingCode) {
-  showNotification(getTranslation('downloadingTicket'), 'info', 2000);
+async function downloadTicket(bookingCode) {
+  const lang = localStorage.getItem('selectedLanguage') || 'vi';
+
+  showNotification(
+    lang === 'vi' ? 'Đang tải vé điện tử...' : 'Downloading e-ticket...',
+    'info',
+    2000
+  );
   
-  // In real app, this would download the ticket file for the booking
-  setTimeout(() => {
-    showNotification(getTranslation('ticketDownloaded'), 'success', 3000);
-    // Create a download link for demo purposes
+  try {
+    let booking;
+    
+    // Try to get booking from cache first
+    if (bookingsCache[bookingCode]) {
+      booking = bookingsCache[bookingCode];
+    } else {
+      // Fallback: fetch from API if not in cache
+      // Use same token detection as loadTripsData
+      const token = (typeof AuthState !== 'undefined' && AuthState.getToken) ? AuthState.getToken() : (localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
+      
+      const response = await fetch(`/api/bookings/${bookingCode}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Fetch booking error:', response.status, errorData);
+        
+        // Show localized error
+        if (response.status === 401) {
+          throw new Error(lang === 'vi' ? 'Phiên đăng nhập hết hạn' : 'Session expired');
+        }
+        throw new Error(errorData.message || (lang === 'vi' ? 'Không thể tải thông tin vé' : 'Failed to fetch booking'));
+      }
+      
+      const result = await response.json();
+      
+      if (!result.success || !result.booking) {
+        console.error('Invalid booking response:', result);
+        throw new Error(lang === 'vi' ? 'Dữ liệu vé không hợp lệ' : 'Invalid booking data');
+      }
+      
+      booking = result.booking;
+      // Cache for future use
+      bookingsCache[bookingCode] = booking;
+    }
+    
+    // Get flight info
+    const outboundFlight = booking.outbound_flight;
+    const returnFlight = booking.inbound_flight;
+    const passengers = booking.passengers || [];
+    
+    // Create ticket content (similar to confirmation page)
+    let ticketContent = `
+SkyPlan - Vé máy bay điện tử
+=====================================
+Mã đặt chỗ: ${booking.booking_code}
+Trạng thái: ${booking.status}
+Tổng tiền: ${Number(booking.total_amount || 0).toLocaleString('vi-VN')} VND
+Ngày đặt: ${new Date(booking.created_at).toLocaleDateString('vi-VN')}
+=====================================
+
+CHUYẾN BAY ĐI:
+${outboundFlight ? `
+  Chuyến bay: ${outboundFlight.flight_code || 'N/A'}
+  Hãng: ${outboundFlight.airline_name || outboundFlight.airline_code || 'N/A'}
+  Từ: ${outboundFlight.origin_name || outboundFlight.origin_code} (${outboundFlight.origin_code})
+  Đến: ${outboundFlight.destination_name || outboundFlight.destination_code} (${outboundFlight.destination_code})
+  Khởi hành: ${new Date(outboundFlight.departure_time).toLocaleString('vi-VN')}
+  Hạ cánh: ${new Date(outboundFlight.arrival_time).toLocaleString('vi-VN')}
+` : '  Không có thông tin'}
+`;
+
+    if (returnFlight) {
+      ticketContent += `
+CHUYẾN BAY VỀ:
+  Chuyến bay: ${returnFlight.flight_code || 'N/A'}
+  Hãng: ${returnFlight.airline_name || returnFlight.airline_code || 'N/A'}
+  Từ: ${returnFlight.origin_name || returnFlight.origin_code} (${returnFlight.origin_code})
+  Đến: ${returnFlight.destination_name || returnFlight.destination_code} (${returnFlight.destination_code})
+  Khởi hành: ${new Date(returnFlight.departure_time).toLocaleString('vi-VN')}
+  Hạ cánh: ${new Date(returnFlight.arrival_time).toLocaleString('vi-VN')}
+`;
+    }
+
+    ticketContent += `
+=====================================
+HÀNH KHÁCH:
+`;
+    
+    passengers.forEach((bp, idx) => {
+      const passenger = bp.passenger || {};
+      ticketContent += `  ${idx + 1}. ${passenger.full_name || 'N/A'}`;
+      if (bp.seat_number) {
+        ticketContent += ` - Ghế: ${bp.seat_number}`;
+      }
+      ticketContent += '\n';
+    });
+
+    ticketContent += `
+=====================================
+Cảm ơn bạn đã sử dụng dịch vụ SkyPlan!
+
+Lưu ý: Đây là vé điện tử, vui lòng xuất trình
+mã đặt chỗ tại quầy check-in sân bay.
+`;
+
+    // Create and download file
+    const blob = new Blob([ticketContent], { type: 'text/plain;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.href = '#'; // Would be actual ticket PDF URL
-    link.download = `ticket_${bookingCode}.pdf`;
-    // link.click(); // Uncomment for actual download
-  }, 2000);
+    link.href = url;
+    link.download = `SkyPlan_Ve_${booking.booking_code}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    
+    showNotification(
+      lang === 'vi' ? 'Đã tải vé thành công!' : 'Ticket downloaded successfully!',
+      'success',
+      3000
+    );
+  } catch (error) {
+    console.error('Download ticket error:', error);
+    showNotification(
+      error.message || (lang === 'vi' ? 'Không thể tải vé' : 'Failed to download ticket'),
+      'error',
+      4000
+    );
+  }
 }
 
+// viewTicket now calls downloadTicket
 function viewTicket(bookingCode) {
-  // Show notification
-  showNotification(getTranslation('openingTicket'), 'info', 2000);
-  
-  // In real app, this would navigate to ticket view with booking code
-  setTimeout(() => {
-    // For now, redirect to a ticket view page or show ticket details
-    window.location.href = `ticket.html?booking_code=${bookingCode}`;
-  }, 1000);
+  downloadTicket(bookingCode);
 }
 
 function modifyTrip(tripId) {
@@ -864,18 +1225,18 @@ function populateCancelModal(trip) {
   const price = trip.querySelector('.trip-price .price').textContent;
   
   summary.innerHTML = `
-    <h4>Thông tin chuyến đi</h4>
+    <h4>${getTranslation('tripInformation')}</h4>
     <div class="detail-item">
       <i class="fas fa-route"></i>
-      <span>Tuyến bay: <strong>${route}</strong></span>
+      <span>${getTranslation('routeLabel')} <strong>${route}</strong></span>
     </div>
     <div class="detail-item">
       <i class="fas fa-ticket-alt"></i>
-      <span>Mã đặt chỗ: <strong>${bookingRef}</strong></span>
+      <span>${getTranslation('bookingCodeLabel')} <strong>${bookingRef}</strong></span>
     </div>
     <div class="detail-item">
       <i class="fas fa-money-bill-wave"></i>
-      <span>Giá vé: <strong>${price}</strong></span>
+      <span>${getTranslation('priceLabel')} <strong>${price}</strong></span>
     </div>
   `;
 }
@@ -890,31 +1251,65 @@ function closeCancelModal() {
   document.getElementById('cancelNote').value = '';
 }
 
-function confirmCancelTrip() {
+async function confirmCancelTrip() {
   if (!currentTripToCancel) return;
+  
+  const lang = localStorage.getItem('selectedLanguage') || 'vi';
+  // Use same token detection as loadTripsData
+  const token = (typeof AuthState !== 'undefined' && AuthState.getToken) ? AuthState.getToken() : (localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
+  
+  if (!token) {
+    showNotification(
+      getTranslation('pleaseLoginToContinue'),
+      'error', 
+      3000
+    );
+    return;
+  }
   
   const reason = document.getElementById('cancelReason').value;
   const note = document.getElementById('cancelNote').value;
   
-  // Show loading
-  showNotification('Đang xử lý yêu cầu hủy...', 'info', 2000);
+  // Get booking code from tripCard
+  const tripCard = getTripById(currentTripToCancel);
+  if (!tripCard) {
+    showNotification(
+      getTranslation('tripNotFound'),
+      'error', 
+      3000
+    );
+    return;
+  }
   
-  // Simulate API call
-  setTimeout(() => {
-    // Move trip to cancelled tab
-    const tripCard = getTripById(currentTripToCancel);
-    if (tripCard) {
+  const bookingCode = tripCard.dataset.tripId; // data-trip-id="${booking.booking_code}"
+  
+  try {
+    const response = await fetch(`/api/bookings/${bookingCode}/cancel`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        cancellation_reason: reason,
+        cancellation_notes: note
+      })
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
       // Update trip status
       const statusElement = tripCard.querySelector('.trip-status');
       statusElement.className = 'trip-status cancelled';
-      statusElement.innerHTML = '<span>Đã hủy</span>';
+      statusElement.innerHTML = `<span>${lang === 'vi' ? 'Đã hủy' : 'Cancelled'}</span>`;
       
       // Update price info
       const priceContainer = tripCard.querySelector('.trip-price');
       const originalPrice = priceContainer.querySelector('.price').textContent;
       priceContainer.innerHTML = `
         <span class="price">${originalPrice}</span>
-        <span class="refund-info">Hoàn tiền: ${calculateRefund(originalPrice)}</span>
+        <span class="refund-info">${lang === 'vi' ? 'Hoàn tiền:' : 'Refund:'} ${calculateRefund(originalPrice)}</span>
       `;
       
       // Update actions
@@ -922,11 +1317,11 @@ function confirmCancelTrip() {
       actionsContainer.innerHTML = `
         <button class="btn btn-outline" onclick="viewCancellationDetails('${currentTripToCancel}')">
           <i class="fas fa-info-circle"></i>
-          <span>Chi tiết hủy</span>
+          <span>${lang === 'vi' ? 'Chi tiết hủy' : 'Cancellation Details'}</span>
         </button>
         <button class="btn btn-primary" onclick="rebookSimilarTrip('${currentTripToCancel}')">
           <i class="fas fa-repeat"></i>
-          <span>Đặt tương tự</span>
+          <span>${lang === 'vi' ? 'Đặt tương tự' : 'Rebook Similar'}</span>
         </button>
       `;
       
@@ -937,16 +1332,39 @@ function confirmCancelTrip() {
       if (cancelledList && upcomingList) {
         cancelledList.appendChild(tripCard);
       }
+      
+      closeCancelModal();
+      showNotification(
+        getTranslation('tripCancelledSuccessWithSeats'),
+        'success', 
+        5000
+      );
+      
+      // Check if upcoming tab is now empty
+      if (currentTab === 'upcoming') {
+        checkEmptyState();
+      }
+      
+      // Reload trips to ensure data is fresh (don't await to avoid blocking success message)
+      loadTripsData().catch(err => {
+        console.error('Error reloading trips after cancellation:', err);
+        // Silently fail - success message already shown
+      });
+    } else {
+      showNotification(
+        result.message || getTranslation('cancelTripFailed'),
+        'error', 
+        4000
+      );
     }
-    
-    closeCancelModal();
-    showNotification(getTranslation('tripCancelledSuccess') + ' ' + getTranslation('refundProcessing'), 'success', 5000);
-    
-    // Check if upcoming tab is now empty
-    if (currentTab === 'upcoming') {
-      checkEmptyState();
-    }
-  }, 2000);
+  } catch (error) {
+    console.error('Cancel trip error:', error);
+    showNotification(
+      getTranslation('cancelTripError'),
+      'error', 
+      4000
+    );
+  }
 }
 
 // Helper functions
@@ -984,17 +1402,12 @@ function showNotification(message, type = 'info', duration = 3000) {
       // Retry notification after toast.js is loaded
       if (typeof window.showToast === 'function') {
         window.showToast(message, { type: type, duration: duration });
-      } else {
-        console.log('Toast notification:', message);
       }
     };
     script.onerror = function() {
-      console.log('Toast notification:', message);
+      // Toast script failed to load
     };
     document.head.appendChild(script);
-  } else {
-    // Toast.js load was attempted but failed, just log
-    console.log('Toast notification:', message);
   }
 }
 
@@ -1268,7 +1681,4 @@ document.addEventListener('languageChanged', function(e) {
   checkEmptyState();
 
   // Debugging language change event
-  console.debug('[Language Change Event]', e.detail);
-  console.debug('[Current Language]', lang);
-  console.debug('[Empty State Updated]');
 });

@@ -10,6 +10,18 @@
 
   const TRIP_KEY = 'skyplan_trip_selection';
 
+  function getAuthToken() {
+    try {
+      if (typeof window.AuthState !== 'undefined' && typeof window.AuthState.getToken === 'function') {
+        const token = window.AuthState.getToken();
+        if (token) return token;
+      }
+    } catch (err) {
+      console.warn('getAuthToken: AuthState not available', err);
+    }
+    return localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+  }
+
   // Booking overview state management
   const OverviewState = {
     getBookingData: function () {
@@ -85,9 +97,11 @@
         total += extrasTotal;
       }
 
-      // 3. Fixed fees (taxes and other charges)
-      const fixedFees = 200000; // Fixed 200k VND
-      total += fixedFees;
+  // 3. Fixed fees (taxes and other charges)
+  // Derive a base fare to compute fees (use seatTotal or flight data when available)
+  const baseFare = seatTotal || ((data.flights && ((data.flights.selectedFlight && Number(data.flights.selectedFlight.price)) || Number(data.flights.price || 0))) || 0) || 0;
+  const fixedFees = baseFare ? Math.round(baseFare * 0.1) : 0; // 10% fee if base fare present
+  total += fixedFees;
 
       console.log('Calculate total cost (NEW LOGIC):', {
         seatTotal: seatTotal,
@@ -250,12 +264,26 @@
     // Ensure payment button is visible and properly configured
     setTimeout(() => {
       updatePaymentButton();
-    }, 100);
+    }, 300);
   }
 
   function syncDatesFromURL() {
-    // Check URL parameters and save to localStorage if found
+    // Check URL parameters for booking code (tripId or booking_code) and load booking data if exists
     const urlParams = new URLSearchParams(window.location.search);
+    const tripId = urlParams.get('tripId') || urlParams.get('booking_code');
+    if (tripId) {
+      localStorage.setItem('currentBookingCode', tripId);
+      localStorage.setItem('overviewMode', 'existing-trip');
+      console.log('🔍 Overview: Found tripId/booking_code in URL, saved to currentBookingCode:', tripId);
+      // Load booking data from backend
+      loadBookingData(tripId);
+    } else {
+      // New booking flow - clear stale booking codes so confirm button stays visible
+      localStorage.setItem('overviewMode', 'new-trip');
+      localStorage.removeItem('currentBookingCode');
+    }
+    
+    // Check URL parameters and save to localStorage if found
     const departDate = urlParams.get('depart_date');
     const returnDate = urlParams.get('return_date');
     
@@ -530,9 +558,122 @@
     }
   }
 
+  // Load booking data from backend and populate overview page
+  async function loadBookingData(bookingCode) {
+    if (!bookingCode) {
+      console.log('No booking code provided for loading booking data');
+      return;
+    }
+
+    const token = getAuthToken();
+    console.log(`🔍 Loading booking data for: ${bookingCode}, Token: ${token ? 'Present' : 'None'}`);
+
+    try {
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`/api/bookings/${bookingCode}`, { headers });
+      if (!response.ok) {
+        console.warn(`Failed to load booking: ${response.status}`);
+        return;
+      }
+
+      const result = await response.json();
+      const booking = result.booking;
+      console.log('🔍 Loaded booking data:', booking);
+
+      // Populate overview page with booking data
+      if (booking && booking.booking_code) {
+        console.log('🔍 Populating overview with booking:', booking);
+        
+        // Build complete trip data from booking
+        const tripData = {
+          outbound_flight_id: booking.outbound_flight_id,
+          flightId: booking.outbound_flight_id,
+          inbound_flight_id: booking.inbound_flight_id,
+          returnFlightId: booking.inbound_flight_id,
+          fromCode: booking.outbound_flight?.departure_airport || booking.outbound_flight?.origin_code,
+          toCode: booking.outbound_flight?.arrival_airport || booking.outbound_flight?.destination_code,
+          departDateISO: booking.outbound_flight?.departure_time,
+          returnDateISO: booking.inbound_flight?.departure_time,
+          selectedFlight: booking.outbound_flight,
+          returnFlight: booking.inbound_flight,
+          tripType: booking.trip_type,
+          fareClass: booking.fare_class
+        };
+        localStorage.setItem('skyplan_trip_selection', JSON.stringify(tripData));
+        localStorage.setItem('fareClass', booking.fare_class || 'economy');
+        
+        // Save passenger data
+        if (booking.passengers && booking.passengers.length > 0) {
+          const passenger = booking.passengers[0];
+          localStorage.setItem('currentPassenger', JSON.stringify(passenger));
+        }
+        
+        // Save seat data
+        if (booking.passengers) {
+          const seats = booking.passengers.map(p => ({
+            seatNumber: p.seat_number || p.seatNumber || '',
+            price: 0,
+            type: booking.fare_class || 'economy'
+          })).filter(s => s.seatNumber);
+          if (seats.length > 0) {
+            localStorage.setItem('selectedSeats', JSON.stringify(seats));
+          }
+        }
+        
+        // Calculate extras from total_amount
+        // Since extras are not stored in booking, we estimate from total - (flight cost + tax)
+        const flightCost = (booking.outbound_flight?.price || 0) + (booking.inbound_flight?.price || 0);
+        const tax = Math.round(flightCost * 0.1);
+        const estimatedExtras = Math.max(0, (booking.total_amount || 0) - flightCost - tax);
+        
+        // Save extras data (estimated since not stored in booking)
+        const extrasData = {
+          meals: [],
+          baggage: estimatedExtras > 0 ? { kg: 30, price: estimatedExtras } : null,
+          services: [],
+          totalCost: estimatedExtras
+        };
+        localStorage.setItem('skyplan_extras_v2', JSON.stringify(extrasData));
+        
+        // Save complete booking data
+        const completeData = {
+          totalCost: booking.total_amount || 0,
+          trip: tripData,
+          passenger: booking.passengers && booking.passengers.length > 0 ? booking.passengers[0] : null,
+          seats: { seats: booking.passengers ? booking.passengers.map(p => ({
+            seatNumber: p.seat_number || p.seatNumber || '',
+            price: 0,
+            type: booking.fare_class || 'economy'
+          })).filter(s => s.seatNumber) : [], fareClass: booking.fare_class || 'economy' },
+          extras: extrasData,
+          timestamp: new Date().toISOString()
+        };
+        localStorage.setItem('completeBookingData', JSON.stringify(completeData));
+
+        // Re-render overview page with loaded data
+        setTimeout(() => {
+          if (typeof render === 'function') {
+            render();
+          }
+        }, 100);
+        setTimeout(() => {
+          updatePaymentButton();
+        }, 200);
+      }
+    } catch (error) {
+      console.error('Error loading booking data:', error);
+    }
+  }
+
   // Check booking status from backend
   async function checkBookingStatus(bookingCode) {
-    const token = localStorage.getItem('authToken'); // Optional
+    const token = getAuthToken(); // Optional
     if (!bookingCode) {
       console.log('No booking code provided for status check');
       return null;
@@ -593,18 +734,23 @@
     }
 
     // Check if this is a guest checkout (no auth token)
-    const token = localStorage.getItem('authToken');
+    const token = getAuthToken();
     if (!token) {
       console.log('💳 No auth token - guest checkout, assuming booking is not paid yet');
       return false;
     }
 
     console.log(`💳 Checking if booking ${bookingCode} is already paid`);
-    const booking = await checkBookingStatus(bookingCode);
-    const isPaid = booking && booking.status === 'CONFIRMED';
-    
-    console.log(`💳 Booking payment status: ${isPaid ? 'PAID' : 'UNPAID/NEW'} (status: ${booking?.status || 'none'})`);
-    return isPaid;
+    try {
+      const booking = await checkBookingStatus(bookingCode);
+      const isPaid = booking && (booking.status === 'CONFIRMED' || booking.status === 'COMPLETED');
+      
+      console.log(`💳 Booking payment status: ${isPaid ? 'PAID' : 'UNPAID/NEW'} (status: ${booking?.status || 'none'})`);
+      return isPaid;
+    } catch (error) {
+      console.error('💳 Error checking booking status:', error);
+      return false;
+    }
   }
 
 
@@ -612,12 +758,22 @@
   // Create booking API call
   async function createBooking() {
     console.log('🔍 createBooking function called!');
-    let token = localStorage.getItem('authToken'); // Optional - can be null for guest checkout
+    const token = getAuthToken();
+    console.log('🔑 Token used for booking:', token ? `${token.substring(0,20)}...` : null);
 
     const bookingData = OverviewState.getBookingData();
     const trip = bookingData.flights;
     const passenger = bookingData.passenger;
     const seats = bookingData.seats;
+
+    // If the payment_order helper is available, use it to build/persist a pendingBookingPayload
+    // so overview and payment pages share the same payload shape.
+    try {
+      if (typeof window.buildPendingBookingPayload === 'function') {
+        const code = window.buildPendingBookingPayload();
+        console.log('Pending booking payload built by shared helper, clientCode:', code);
+      }
+    } catch (e) { console.warn('buildPendingBookingPayload invocation failed:', e); }
     
     console.log('🔍 Booking data:', { trip, passenger, seats, token });
 
@@ -722,14 +878,57 @@
     let requestData;
     if (token) {
       // Authenticated booking
-      requestData = {
-        outbound_flight_id: parseInt(outboundFlightId),
-        inbound_flight_id: inboundFlightId ? parseInt(inboundFlightId) : undefined,
-        trip_type: tripType,
-        fare_class: fareClass,
-        passengers: [passenger.id],
-        total_amount: bookingData.totalCost.toString()
-      };
+      // Ensure we have a passenger ID (try bookingData passenger.id or fallback to storedPassengerId)
+      const passengerIdFromStorage = localStorage.getItem('storedPassengerId') || localStorage.getItem('activePassengerId');
+      const pid = passenger && passenger.id ? Number(passenger.id) : (passengerIdFromStorage ? Number(passengerIdFromStorage) : null);
+      if (!pid) {
+        console.warn('No passenger ID found for authenticated user; falling back to guest payload');
+        // Fallback to guest booking if we can't find a passenger id
+        requestData = {
+          outbound_flight_id: parseInt(outboundFlightId),
+          inbound_flight_id: inboundFlightId ? parseInt(inboundFlightId) : undefined,
+          trip_type: tripType,
+          fare_class: fareClass,
+          guest_passenger: {
+            lastname: passenger.lastname,
+            firstname: passenger.firstname,
+            cccd: passenger.cccd,
+            dob: formatDobISO(passenger.dob),
+            gender: passenger.gender,
+            phone_number: passenger.phone_number,
+            email: passenger.email,
+            address: passenger.address,
+            city: passenger.city,
+            nationality: passenger.nationality,
+            notes: passenger.notes || '',
+            // Include seat information if available
+            seatNumber: (seats && seats.seats && seats.seats.length > 0) ? (seats.seats[0].seatNumber || seats.seats[0].seat_number || seats.seats[0].seat || null) : null,
+            seat_id: (seats && seats.seats && seats.seats.length > 0) ? (seats.seats[0].seat_id || null) : null
+          },
+          seats: seats, // Also send seats separately for backend to extract
+          total_amount: bookingData.totalCost.toString()
+        };
+      } else {
+        // Include seat information if available
+        const selectedSeats = seats && seats.seats ? seats.seats : [];
+        // BUG FIX: Only 1 passenger, so only take first seat (if any)
+        const firstSeat = selectedSeats.length > 0 ? selectedSeats[0] : null;
+        const passengerWithSeat = firstSeat ? {
+          id: pid,
+          seatNumber: firstSeat.seatNumber || firstSeat.seat_number || firstSeat.seat || null,
+          seat_id: firstSeat.seat_id || null
+        } : { id: pid };
+        
+        requestData = {
+          outbound_flight_id: parseInt(outboundFlightId),
+          inbound_flight_id: inboundFlightId ? parseInt(inboundFlightId) : undefined,
+          trip_type: tripType,
+          fare_class: fareClass,
+          passengers: [passengerWithSeat], // Always send as array with 1 passenger
+          seats: seats, // Also send seats separately for backend to extract
+          total_amount: bookingData.totalCost.toString()
+        };
+      }
     } else {
       // Guest booking - send passenger data directly
       requestData = {
@@ -748,8 +947,12 @@
           address: passenger.address,
           city: passenger.city,
           nationality: passenger.nationality,
-          notes: passenger.notes || ''
+          notes: passenger.notes || '',
+          // Include seat information if available
+          seatNumber: (seats && seats.seats && seats.seats.length > 0) ? (seats.seats[0].seatNumber || seats.seats[0].seat_number || seats.seats[0].seat || null) : null,
+          seat_id: (seats && seats.seats && seats.seats.length > 0) ? (seats.seats[0].seat_id || null) : null
         },
+        seats: seats, // Also send seats separately for backend to extract
         total_amount: bookingData.totalCost.toString()
       };
     }
@@ -802,6 +1005,7 @@
         if (response.ok && result.success) {
           // Store booking code for payment page
           localStorage.setItem('currentBookingCode', result.booking_code);
+          localStorage.setItem('overviewMode', 'new-trip');
           return result.booking_code;
         } else {
           throw new Error(`API Error: ${result.message || 'Unknown error'}`);
@@ -864,12 +1068,13 @@
       return `payment.html?${params.toString()}`;
     };
 
-    // 2) Thử gọi BE tạo booking; nếu thất bại => fallback mã tạm và đi tiếp
+    // 2) Do 'safe' flow: persist booking data as pending payload and navigate to payment.
+    // The actual booking will be created on confirmation (payment page) to avoid premature PENDING bookings.
     try {
-      const bookingCode = await createBooking(); // hàm có sẵn trong file
-      window.location.href = buildPaymentURL(bookingCode || null);
+      // Persist a payload that payment.js can use to create booking on confirmation
+      try { localStorage.setItem('pendingBookingPayload', JSON.stringify(data)); } catch(_) {}
+      window.location.href = buildPaymentURL(null);
     } catch (err) {
-      // Mã tạm (guest)
       const tmp = `TMP${new Date().getFullYear()}${String(Date.now()).slice(-5)}`;
       try { localStorage.setItem('currentBookingCode', tmp); } catch (_) {}
       window.location.href = buildPaymentURL(tmp);
@@ -878,36 +1083,34 @@
 
   // Update payment button based on booking status
   async function updatePaymentButton() {
-    const payBtn = document.querySelector('.pay-btn');
+    const payBtn = document.getElementById('confirmBookingBtn') || document.querySelector('.pay-btn');
     if (!payBtn) {
       console.warn('Payment button not found in DOM');
       return;
     }
 
     try {
-      const alreadyPaid = await isBookingAlreadyPaid();
+      const bookingCode = localStorage.getItem('currentBookingCode');
+      const mode = localStorage.getItem('overviewMode') || 'new-trip';
+      const shouldCheckPaid = bookingCode && mode === 'existing-trip';
+      const alreadyPaid = shouldCheckPaid ? await isBookingAlreadyPaid() : false;
       const lang = getLang();
 
       if (alreadyPaid) {
-        // Booking is paid - hide payment button and show trip view button
-        const btnText = payBtn.querySelector('span');
-        if (btnText) {
-          btnText.textContent = lang === 'vi' ? 'Xem chuyến đi' : 'View Trip';
-        }
-        payBtn.classList.add('paid');
-        payBtn.style.background = '#28a745';
-        payBtn.style.display = 'flex';
-        payBtn.style.visibility = 'visible';
+        // Booking is paid - hide payment button or show view button
+        payBtn.style.display = 'none';
+        console.log('🔍 Booking already paid, hiding confirm button');
       } else {
         // Booking not paid or doesn't exist - show payment button
         const btnText = payBtn.querySelector('span');
         if (btnText) {
-          btnText.textContent = lang === 'vi' ? 'Xác nhận thanh toán' : 'Confirm Payment';
+          btnText.textContent = lang === 'vi' ? 'Xác nhận đặt vé' : 'Confirm Booking';
         }
-        payBtn.classList.remove('paid');
-        payBtn.style.background = '';
         payBtn.style.display = 'flex';
         payBtn.style.visibility = 'visible';
+        payBtn.classList.remove('paid');
+        payBtn.style.background = '';
+        console.log('🔍 Booking not paid, showing confirm button');
       }
     } catch (error) {
       console.error('Error updating payment button:', error);
@@ -915,12 +1118,12 @@
       const btnText = payBtn.querySelector('span');
       const lang = getLang();
       if (btnText) {
-        btnText.textContent = lang === 'vi' ? 'Xác nhận thanh toán' : 'Confirm Payment';
+        btnText.textContent = lang === 'vi' ? 'Xác nhận đặt vé' : 'Confirm Booking';
       }
-      payBtn.classList.remove('paid');
-      payBtn.style.background = '';
       payBtn.style.display = 'flex';
       payBtn.style.visibility = 'visible';
+      payBtn.classList.remove('paid');
+      payBtn.style.background = '';
     }
   }
 
@@ -945,7 +1148,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     // Debug: Check localStorage state
     const bookingCode = localStorage.getItem('currentBookingCode');
-    const authToken = localStorage.getItem('authToken');
+    const authToken = getAuthToken();
     console.log('🔍 Overview page loaded:', {
       bookingCode,
       hasAuthToken: !!authToken,

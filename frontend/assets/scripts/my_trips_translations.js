@@ -79,7 +79,13 @@
       goingToSearch: "Going to booking page...",
       findingSimilarFlights: "Finding similar flights...",
       showingCancellationDetails: "Showing cancellation details...",
+      processingCancellation: "Processing cancellation...",
       tripCancelledSuccess: "Trip cancelled successfully!",
+      tripCancelledSuccessWithSeats: "Trip cancelled successfully! Seats have been released.",
+      cancelTripError: "Error cancelling trip",
+      cancelTripFailed: "Failed to cancel trip",
+      tripNotFound: "Trip not found!",
+      pleaseLoginToContinue: "Please login to continue",
       refundProcessing: "Refund will be processed within 3-5 business days",
 
       // Empty states
@@ -101,6 +107,10 @@
       // Cancel modal
       cancelTripTitle: "Cancel Trip",
       cancelWarning: "Are you sure you want to cancel this trip?",
+      tripInformation: "Trip Information",
+      routeLabel: "Route:",
+      bookingCodeLabel: "Booking code:",
+      priceLabel: "Price:",
       cancellationPolicy: "Cancellation Policy",
       refundAmount: "Refund: 80% of ticket price (390,000 VND cancellation fee)",
       refundTime: "Refund time: 3-5 business days",
@@ -211,7 +221,13 @@
       goingToSearch: "Đang chuyển đến trang đặt vé...",
       findingSimilarFlights: "Đang tìm chuyến bay tương tự...",
       showingCancellationDetails: "Hiển thị chi tiết hủy vé...",
+      processingCancellation: "Đang xử lý yêu cầu hủy...",
       tripCancelledSuccess: "Chuyến đi đã được hủy thành công!",
+      tripCancelledSuccessWithSeats: "Đã hủy chuyến bay thành công! Ghế đã được hồi phục.",
+      cancelTripError: "Lỗi khi hủy chuyến bay",
+      cancelTripFailed: "Không thể hủy chuyến bay",
+      tripNotFound: "Không tìm thấy thông tin chuyến đi!",
+      pleaseLoginToContinue: "Vui lòng đăng nhập để tiếp tục",
       refundProcessing: "Tiền hoàn sẽ được xử lý trong vòng 3-5 ngày làm việc",
 
       // Empty states
@@ -233,6 +249,10 @@
       // Cancel modal
       cancelTripTitle: "Hủy chuyến đi",
       cancelWarning: "Bạn có chắc chắn muốn hủy chuyến đi này không?",
+      tripInformation: "Thông tin chuyến đi",
+      routeLabel: "Tuyến bay:",
+      bookingCodeLabel: "Mã đặt chỗ:",
+      priceLabel: "Giá vé:",
       cancellationPolicy: "Chính sách hủy",
       refundAmount: "Hoàn tiền: 80% giá vé (390.000 VND phí hủy)",
       refundTime: "Thời gian hoàn tiền: 3-5 ngày làm việc",

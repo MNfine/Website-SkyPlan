@@ -250,6 +250,8 @@ function enableSmoothScrolling() {
     }
 
     window.resolveCityLabel = resolveCityLabel;
+    // Backwards-compatible alias used by some pages
+    window.resolveCity = resolveCityLabel;
 })();
 
 // User dropdown functionality

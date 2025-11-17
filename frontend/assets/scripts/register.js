@@ -228,14 +228,10 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(data.message || 'Đăng ký thất bại');
       }
       
-      // Registration successful - store user data and token
-      saveUserData(data, true);
-      
-      // Show success message
-      alert('Đăng ký thành công!\n\nChào mừng ' + userData.fullname + '!');
-      
-      // Redirect to home page
-      window.location.href = '/';
+  // Registration successful - do NOT auto-login. Redirect user to login page.
+  // Show success message then redirect to login so user can sign in.
+  alert('Đăng ký thành công!\n\nVui lòng đăng nhập bằng tài khoản mới.');
+  window.location.href = '/login.html?message=registration-success';
       
     } catch (error) {
       if (error.message.includes('Email already registered')) {
@@ -262,6 +258,9 @@ document.addEventListener('DOMContentLoaded', () => {
         window.Loader.show();
       }
 
+      // Debug: log dữ liệu gửi lên backend
+      console.log('[DEBUG] Registration payload:', { fullname: fullName, email, phone, password });
+
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
@@ -277,26 +276,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const data = await response.json();
 
+      // Debug: log response trả về từ backend
+      console.log('[DEBUG] Registration response:', data);
+
       if (!response.ok || !data.success) {
         throw new Error(data.message || 'Registration failed');
       }
 
-      // Set authentication state if token is provided
-      if (data.token && data.user && window.AuthState) {
-        window.AuthState.setAuth(data.token, data.user, false);
-      }
-
-      // Show success message
+      // Do not auto-login. Show success toast and redirect to login page.
       showToast(getTranslation('register.successToast'), {
         type: 'success',
         duration: 2000,
         dismissible: true
       });
 
-      // Redirect to homepage after successful registration (user is now logged in)
       setTimeout(() => {
-        window.location.href = 'index.html?message=registration-success';
-      }, 2000);
+        window.location.href = 'login.html?message=registration-success';
+      }, 1500);
 
     } catch (error) {
       console.error('Registration error:', error);

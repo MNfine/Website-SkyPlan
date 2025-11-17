@@ -27,8 +27,11 @@ class Flight(Base):
             "id": self.id,
             "flight_number": self.flight_number,
             "airline": self.airline,
+            "airline_name": self.airline,  # Alias for frontend compatibility
             "departure_airport": self.departure_airport,
             "arrival_airport": self.arrival_airport,
+            "origin_code": self.departure_airport,  # Alias for frontend compatibility
+            "destination_code": self.arrival_airport,  # Alias for frontend compatibility
             "departure_time": self.departure_time.isoformat() if self.departure_time else None,
             "arrival_time": self.arrival_time.isoformat() if self.arrival_time else None,
             "price": float(self.price),

@@ -21,9 +21,42 @@
     const vnpAmount = urlParams.get('vnp_Amount');
     const vnpOrderInfo = urlParams.get('vnp_OrderInfo');
 
-    // If VNPay redirected back with parameters, display immediately and avoid requiring auth
+    // If VNPay redirected back with parameters, try to verify txnRef with server
     if (vnpResponseCode && vnpTxnRef) {
-      // Build a lightweight payment object from URL params
+      const txnRef = vnpTxnRef;
+
+      // Try server lookup first: prefer authoritative booking data when txnRef is actually a booking_code
+      try {
+        const statusResp = await fetch(`/api/bookings/status/${encodeURIComponent(txnRef)}`);
+        if (statusResp.ok) {
+          const statusData = await statusResp.json();
+          if (statusData && statusData.success && statusData.booking) {
+            // Use server-provided booking info as authoritative
+            const booking = statusData.booking;
+            const paymentObj = {
+              booking_code: booking.booking_code,
+              transaction_id: vnpTransactionId || booking.transaction_id || 'N/A',
+              amount: booking.total_amount || booking.amount || (vnpAmount ? (parseInt(vnpAmount) / 100) : undefined)
+            };
+
+            if (vnpResponseCode === '00') {
+              showSuccessConfirmation(paymentObj, vnpAmount);
+              localStorage.setItem('lastBookingCode', paymentObj.booking_code);
+              if (vnpTransactionId) localStorage.setItem('lastTxnRef', vnpTransactionId);
+              if (paymentObj.amount !== undefined) localStorage.setItem('lastAmount', String(paymentObj.amount));
+            } else {
+              showPaymentFailure(vnpTransactionId || 'N/A', vnpAmount);
+            }
+
+            return;
+          }
+        }
+      } catch (e) {
+        // network / fetch error — fall back to URL-based display below
+        console.warn('⚠️ Could not verify txnRef with server:', e);
+      }
+
+      // Fallback: treat the txnRef from URL as the booking code / display value
       const paymentFromUrl = {
         booking_code: vnpTxnRef,
         transaction_id: vnpTransactionId || 'N/A',
@@ -135,6 +168,31 @@
     if (iconEl) {
       iconEl.innerHTML = '<i class="fas fa-check-circle" style="color: #4caf50; font-size: 4rem;"></i>';
     }
+      // Try to claim booking for authenticated user so it appears in My Trips.
+      try {
+        const token = localStorage.getItem('authToken');
+        const bookingCode = payment.booking_code || localStorage.getItem('lastBookingCode') || localStorage.getItem('currentBookingCode');
+        if (token && bookingCode) {
+          (async function() {
+            try {
+              const resp = await fetch(`/api/bookings/${encodeURIComponent(bookingCode)}/claim`, {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                }
+              });
+              const data = await resp.json();
+              console.log('[confirmation] claim booking result:', data);
+              // If successfully claimed, optionally reload my_trips or update UI
+            } catch (e) {
+              console.warn('[confirmation] failed to claim booking:', e);
+            }
+          })();
+        }
+      } catch (e) {
+        console.warn('Error in claim booking flow:', e);
+      }
   }
 
   // Show payment failure

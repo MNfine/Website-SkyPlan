@@ -64,13 +64,52 @@ def get_flight_seats(flight_id):
         if not seats:
             seats = initialize_flight_seats(session, flight)
         
-        # Add user-specific availability info
+        # Get all confirmed bookings for this flight to mark seats as CONFIRMED
+        from backend.models.booking import Booking, BookingPassenger, BookingStatus
+        confirmed_bookings = session.query(Booking).filter(
+            Booking.outbound_flight_id == flight_id,
+            Booking.status == BookingStatus.CONFIRMED
+        ).all()
+        
+        # Build a set of confirmed seat numbers from BookingPassenger
+        confirmed_seat_numbers = set()
+        confirmed_seat_ids = set()
+        for booking in confirmed_bookings:
+            for bp in booking.passengers:
+                if bp.seat_number:
+                    confirmed_seat_numbers.add(bp.seat_number)
+                if bp.seat_id:
+                    confirmed_seat_ids.add(bp.seat_id)
+        
+        # Also check inbound flights for round trips
+        inbound_confirmed_bookings = session.query(Booking).filter(
+            Booking.inbound_flight_id == flight_id,
+            Booking.status == BookingStatus.CONFIRMED
+        ).all()
+        for booking in inbound_confirmed_bookings:
+            for bp in booking.passengers:
+                if bp.seat_number:
+                    confirmed_seat_numbers.add(bp.seat_number)
+                if bp.seat_id:
+                    confirmed_seat_ids.add(bp.seat_id)
+        
+        # Add user-specific availability info and update status based on confirmed bookings
         seats_data = []
         for seat in seats:
             seat_dict = seat.as_dict()
+            
+            # If seat is in confirmed bookings, mark it as CONFIRMED
+            if seat.seat_number in confirmed_seat_numbers or seat.id in confirmed_seat_ids:
+                if seat.status != SeatStatus.CONFIRMED.value:
+                    seat.status = SeatStatus.CONFIRMED.value
+                    session.add(seat)
+            
+            seat_dict['status'] = seat.status  # Update status in response
             seat_dict['available_for_user'] = seat.is_available_for_user(user_id) if user_id else False
             seat_dict['reserved_by_current_user'] = (seat.reserved_by == user_id) if user_id else False
             seats_data.append(seat_dict)
+        
+        session.flush()  # Commit seat status updates
         
         return jsonify({
             'success': True,
@@ -269,59 +308,84 @@ def book_seats():
     try:
         data = request.get_json()
         flight_id = data.get('flight_id')
-        seats = data.get('seats', [])  # List of seat objects with seat_code, seat_class
+        seats = data.get('seats', [])  # List of seat objects with seat_code/seat_number, seat_class
         booking_code = data.get('booking_code')
-        
+
         if not flight_id or not seats:
             return jsonify({
-                'success': False, 
+                'success': False,
                 'message': 'Missing flight_id or seats data'
             }), 400
-        
+
         with session_scope() as session:
             # Verify flight exists
             flight = session.query(Flight).get(flight_id)
             if not flight:
                 return jsonify({
-                    'success': False, 
+                    'success': False,
                     'message': 'Flight not found'
                 }), 404
-            
+
+            # Try to resolve booking_id from booking_code if provided
+            booking_id = None
+            if booking_code:
+                from backend.models.booking import Booking as _Booking
+                booking = session.query(_Booking).filter_by(booking_code=booking_code).first()
+                if booking:
+                    booking_id = booking.id
+
             updated_seats = []
-            
-            # Update each seat status to BOOKED
+
+            # Update each seat status to CONFIRMED (model uses seat_number)
             for seat_data in seats:
-                seat_code = seat_data.get('seat_code')
+                # Accept either 'seat_code' or 'seat_number'
+                seat_code = seat_data.get('seat_code') or seat_data.get('seat_number') or seat_data.get('seat')
                 if not seat_code:
                     continue
-                    
+
                 seat = session.query(Seat).filter(
                     Seat.flight_id == flight_id,
-                    Seat.seat_code == seat_code
+                    Seat.seat_number == seat_code
                 ).first()
-                
+
                 if seat:
-                    # Update seat status to booked
-                    seat.status = SeatStatus.BOOKED.value
-                    seat.booked_by = booking_code
-                    seat.booked_at = datetime.utcnow()
-                    seat.reserved_until = None  # Clear reservation expiry
-                    
-                    updated_seats.append({
-                        'seat_code': seat.seat_code,
-                        'status': seat.status,
-                        'booking_code': booking_code
-                    })
-            
-            session.commit()
-            
+                    # Confirm reservation using model helper when possible
+                    try:
+                        if booking_id:
+                            seat.confirm_reservation(booking_id)
+                        else:
+                            # Mark as CONFIRMED and clear reservation info
+                            seat.status = SeatStatus.CONFIRMED.value
+                            seat.confirmed_booking_id = None
+                            seat.reserved_until = None
+                            seat.reserved_by = None
+
+                        updated_seats.append({
+                            'seat_number': seat.seat_number,
+                            'status': seat.status,
+                            'booking_code': booking_code
+                        })
+                    except Exception:
+                        # Fall back to direct assignment if helper fails
+                        seat.status = SeatStatus.CONFIRMED.value
+                        seat.reserved_until = None
+                        seat.reserved_by = None
+                        seat.confirmed_booking_id = booking_id
+                        updated_seats.append({
+                            'seat_number': seat.seat_number,
+                            'status': seat.status,
+                            'booking_code': booking_code
+                        })
+
+            session.flush()
+
             return jsonify({
                 'success': True,
                 'message': f'Successfully booked {len(updated_seats)} seats',
                 'booked_seats': updated_seats,
                 'flight_id': flight_id
             })
-            
+
     except Exception as e:
         return jsonify({
             'success': False,
