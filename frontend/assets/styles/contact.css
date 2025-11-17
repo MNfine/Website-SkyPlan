@@ -210,6 +210,9 @@
   transition: all 0.3s ease;
   cursor: pointer;
   border: 1px solid #e2e8f0;
+  text-decoration: none;
+  display: block;
+  text-align: center;
 }
 
 .quick-contact-item:hover {
