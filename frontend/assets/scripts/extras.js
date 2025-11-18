@@ -414,6 +414,7 @@ function initDrawer() {
     backdrop.hidden = false;
     panel.hidden = false;
     panel.setAttribute("aria-hidden", "false");
+    panel.dataset.type = type;
     (closeBtn || panel).focus();
   };
   window.closeDrawer = function () {
