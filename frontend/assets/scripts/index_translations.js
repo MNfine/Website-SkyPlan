@@ -51,7 +51,7 @@ const translations = {
     blogLink: "Blog",
     bookingHelp: "Booking Help",
     faq: "FAQ",
-    promotion: "Promotion",
+    promotion: "Promotions",
     paymentMethodsTitle: "Payment Methods",
     downloadAppTitle: "Download Our App",
     appStore: "App Store",
