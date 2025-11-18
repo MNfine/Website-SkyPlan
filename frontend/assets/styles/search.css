@@ -423,7 +423,7 @@
 .sp-modal__header h2 {
     margin: 0;
     font-size: 28px;
-    font-weight: 800
+    font-weight: 600
 }
 
 .sp-modal__close {
@@ -492,7 +492,7 @@
 
 .sp-leg__title {
     font-size: 22px;
-    font-weight: 800;
+    font-weight: 600;
     margin-bottom: 10px
 }
 
