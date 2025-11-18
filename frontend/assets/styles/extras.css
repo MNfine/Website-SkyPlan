@@ -57,7 +57,7 @@
     transform 0.2s ease;
 }
 .extra-card__btn:hover {
-  background: #097f85; /*xem lại có đồng bộ team chưa*/
+  background: #097f85;
   transform: translateY(-1px);
 }
 .extra-card__btn:active {
@@ -427,16 +427,6 @@
   .service-price {
     font-size: 14px;
   }
-}
-.service-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-}
-.service-row input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
 }
 
 @media (max-width: 1080px) {
