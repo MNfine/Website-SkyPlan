@@ -4,8 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SkyPlan - Đăng ký</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
+
     <link rel="stylesheet" href="./assets/styles/register.css" />
     <link rel="stylesheet" href="./assets/styles/login.css" />
+    <link rel="stylesheet" href="./assets/styles/loader.css" />
 
     <!-- Translation scripts -->
     <script src="./assets/scripts/index_translations.js"></script>
@@ -333,5 +339,29 @@
 
     <script src="./assets/scripts/toast.js"></script>
     <script src="./assets/scripts/register.js"></script>
+
+    <!-- Loader component (JS) -->
+    <script src="assets/scripts/loader.js"></script>
+    <script>
+      // Import loader HTML vào DOM càng sớm càng tốt
+      fetch('components/loader.html').then(r => r.text()).then(html => {
+        document.body.insertAdjacentHTML('afterbegin', html);
+        // Show loader ngay khi vừa insert vào DOM (cho F5/reload)
+        if (window.Loader) {
+          window.Loader.show();
+          document.body.style.overflow = 'hidden';
+        }
+      });
+      
+      // Ẩn loader khi tất cả resources đã load xong (window.load)
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          if (window.Loader) {
+            window.Loader.hide();
+            document.body.style.overflow = '';
+          }
+        }, 500); // Delay 500ms để smooth
+      });
+    </script>
   </body>
 </html>

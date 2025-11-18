@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="myTripsTitle">SkyPlan - Chuyến đi của tôi</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
+  
+  <!-- Font Awesome CDN for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="assets/styles/reset.css">
+  <link rel="stylesheet" href="assets/styles/index.css">
+  <link rel="stylesheet" href="assets/styles/flags.css">
+  <link rel="stylesheet" href="assets/styles/header.css">
+  <link rel="stylesheet" href="assets/styles/footer.css">
+  <link rel="stylesheet" href="assets/styles/my_trips.css">
+</head>
+
+<body class="my-trips-page">
+  <!-- Header -->
+  <div id="header-container"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="page-header">
+        <h1 data-i18n="myTripsPageTitle">Chuyến đi của tôi</h1>
+        <p data-i18n="myTripsSubtitle">Quản lý và theo dõi các chuyến đi của bạn</p>
+      </div>
+
+      <!-- Tabs Filter -->
+      <div class="trips-tabs">
+        <button class="tab-btn active" data-status="all" data-i18n="allTrips">
+          <i class="fas fa-list"></i>
+          Tất cả
+        </button>
+        <button class="tab-btn" data-status="upcoming" data-i18n="upcomingTrips">
+          <i class="fas fa-clock"></i>
+          Sắp tới
+        </button>
+        <button class="tab-btn" data-status="completed" data-i18n="completedTrips">
+          <i class="fas fa-check-circle"></i>
+          Hoàn tất
+        </button>
+        <button class="tab-btn" data-status="cancelled" data-i18n="cancelledTrips">
+          <i class="fas fa-times-circle"></i>
+          Đã hủy
+        </button>
+      </div>
+
+      <!-- Trips Content -->
+      <div class="trips-content">
+        <!-- All Trips -->
+        <div class="tab-content active" id="all-content">
+          <div class="trips-list">
+            <!-- Sample Trip Card - Upcoming -->
+            <div class="trip-card" data-trip-id="TR001" onclick="goToOverview('TR001')">
+              <div class="trip-status upcoming">
+                <span data-i18n="statusUpcoming">Sắp tới</span>
+              </div>
+              
+              <div class="trip-header">
+                <div class="route-info">
+                  <div class="route-title">
+                    <h3><span class="route-text">Hà Nội → Hồ Chí Minh</span></h3>
+                  </div>
+                  <p class="booking-ref">Mã đặt chỗ: <strong>VJ123456</strong></p>
+                </div>
+                <div class="trip-price">
+                  <span class="price">2.150.000 VND</span>
+                  <span class="passengers">1 hành khách</span>
+                </div>
+              </div>
+
+              <div class="trip-details">
+                <div class="flight-segment">
+                  <div class="flight-info">
+                    <div class="airline">
+                      <i class="fas fa-plane"></i>
+                      <span>VietJet Air - VJ165</span>
+                    </div>
+                    <div class="flight-time">
+                      <span class="departure">
+                        <strong>07:30</strong>
+                        <small>Sân bay Nội Bài (HAN)</small>
+                      </span>
+                      <div class="duration">
+                        <div class="line"></div>
+                        <span>2h 15m</span>
+                      </div>
+                      <span class="arrival">
+                        <strong>09:45</strong>
+                        <small>Sân bay Tân Sơn Nhất (SGN)</small>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="booking-details">
+                  <div class="detail-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>Ngày bay: <strong>15/11/2025</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-users"></i>
+                    <span>Hành khách: <strong>Nguyễn Văn A</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-chair"></i>
+                    <span>Ghế: <strong>12A</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="trip-actions">
+                <div class="trip-buttons">
+                  <button class="btn btn-outline" onclick="event.stopPropagation(); downloadTicket('TR001')">
+                    <i class="fas fa-download"></i>
+                    <span data-i18n="downloadTicket">Tải vé</span>
+                  </button>
+                  <button class="btn btn-outline" onclick="event.stopPropagation(); modifyTrip('TR001')">
+                    <i class="fas fa-edit"></i>
+                    <span data-i18n="modifyTrip">Thay đổi</span>
+                  </button>
+                  <button class="btn btn-danger" onclick="event.stopPropagation(); cancelTrip('TR001')">
+                    <i class="fas fa-times"></i>
+                    <span data-i18n="cancelTrip">Hủy chuyến</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sample Trip Card - Upcoming -->
+            <div class="trip-card" data-trip-id="TR002" onclick="goToOverview('TR002')">
+              <div class="trip-status upcoming">
+                <span data-i18n="statusUpcoming">Sắp tới</span>
+              </div>
+              
+              <div class="trip-header">
+                <div class="route-info">
+                  <div class="route-title">
+                    <h3><span class="route-text">Đà Nẵng → Hà Nội</span></h3>
+                  </div>
+                  <p class="booking-ref">Mã đặt chỗ: <strong>VN789012</strong></p>
+                </div>
+                <div class="trip-price">
+                  <span class="price">1.850.000 VND</span>
+                  <span class="passengers">1 hành khách</span>
+                </div>
+              </div>
+
+              <div class="trip-details">
+                <div class="flight-segment">
+                  <div class="flight-info">
+                    <div class="airline">
+                      <i class="fas fa-plane"></i>
+                      <span>Vietnam Airlines - VN1317</span>
+                    </div>
+                    <div class="flight-time">
+                      <span class="departure">
+                        <strong>14:25</strong>
+                        <small>Sân bay Đà Nẵng (DAD)</small>
+                      </span>
+                      <div class="duration">
+                        <div class="line"></div>
+                        <span>1h 25m</span>
+                      </div>
+                      <span class="arrival">
+                        <strong>15:50</strong>
+                        <small>Sân bay Nội Bài (HAN)</small>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="booking-details">
+                  <div class="detail-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>Ngày bay: <strong>20/11/2025</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-users"></i>
+                    <span>Hành khách: <strong>Trần Văn C</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-chair"></i>
+                    <span>Ghế: <strong>8A</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="trip-actions">
+                <div class="trip-buttons">
+                  <button class="btn btn-outline" onclick="event.stopPropagation(); downloadTicket('TR002')">
+                    <i class="fas fa-download"></i>
+                    <span data-i18n="downloadTicket">Tải vé</span>
+                  </button>
+                  <button class="btn btn-outline" onclick="event.stopPropagation(); modifyTrip('TR002')">
+                    <i class="fas fa-edit"></i>
+                    <span data-i18n="modifyTrip">Thay đổi</span>
+                  </button>
+                  <button class="btn btn-danger" onclick="event.stopPropagation(); cancelTrip('TR002')">
+                    <i class="fas fa-times"></i>
+                    <span data-i18n="cancelTrip">Hủy chuyến</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sample Trip Card - Completed -->
+            <div class="trip-card" data-trip-id="TR003" onclick="goToOverview('TR003')">
+              <div class="trip-status completed">
+                <span data-i18n="statusCompleted">Hoàn tất</span>
+              </div>
+              
+              <div class="trip-header">
+                <div class="route-info">
+                  <div class="route-title">
+                    <h3><span class="route-text">Hồ Chí Minh → Đà Nẵng</span></h3>
+                  </div>
+                  <p class="booking-ref">Mã đặt chỗ: <strong>BB345678</strong></p>
+                </div>
+                <div class="trip-price">
+                  <span class="price">1.650.000 VND</span>
+                  <span class="passengers">1 hành khách</span>
+                </div>
+              </div>
+
+              <div class="trip-details">
+                <div class="flight-segment">
+                  <div class="flight-info">
+                    <div class="airline">
+                      <i class="fas fa-plane"></i>
+                      <span>Bamboo Airways - QH1234</span>
+                    </div>
+                    <div class="flight-time">
+                      <span class="departure">
+                        <strong>10:15</strong>
+                        <small>Sân bay Tân Sơn Nhất (SGN)</small>
+                      </span>
+                      <div class="duration">
+                        <div class="line"></div>
+                        <span>1h 20m</span>
+                      </div>
+                      <span class="arrival">
+                        <strong>11:35</strong>
+                        <small>Sân bay Đà Nẵng (DAD)</small>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="booking-details">
+                  <div class="detail-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>Ngày bay: <strong>28/10/2025</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-users"></i>
+                    <span>Hành khách: <strong>Lê Thị D</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-chair"></i>
+                    <span>Ghế: <strong>15C</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Trạng thái: <strong>Đã bay thành công</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="trip-actions">
+                <div class="trip-buttons">
+                  <button class="btn btn-outline" onclick="event.stopPropagation(); downloadTicket('TR003')">
+                    <i class="fas fa-download"></i>
+                    <span data-i18n="downloadTicket">Tải vé</span>
+                  </button>
+                  <button class="btn btn-outline" onclick="event.stopPropagation(); downloadInvoice('TR003')">
+                    <i class="fas fa-download"></i>
+                    <span data-i18n="downloadInvoice">Tải hóa đơn</span>
+                  </button>
+                  <button class="btn btn-primary" onclick="event.stopPropagation(); rebookTrip('TR003')">
+                    <i class="fas fa-repeat"></i>
+                    <span data-i18n="rebookTrip">Đặt lại</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sample Trip Card - Cancelled -->
+            <div class="trip-card" data-trip-id="TR004" onclick="goToOverview('TR004')">
+              <div class="trip-status cancelled">
+                <span data-i18n="statusCancelled">Đã hủy</span>
+              </div>
+              
+              <div class="trip-header">
+                <div class="route-info">
+                  <div class="route-title">
+                    <h3><span class="route-text">Nha Trang → Hà Nội</span></h3>
+                  </div>
+                  <p class="booking-ref">Mã đặt chỗ: <strong>VJ987654</strong></p>
+                </div>
+                <div class="trip-price">
+                  <span class="price">1.950.000 VND</span>
+                  <span class="passengers">1 hành khách</span>
+                  <span class="refund-info">Hoàn tiền: 1.560.000 VND</span>
+                </div>
+              </div>
+
+              <div class="trip-details">
+                <div class="flight-segment">
+                  <div class="flight-info">
+                    <div class="airline">
+                      <i class="fas fa-plane"></i>
+                      <span>VietJet Air - VJ1567</span>
+                    </div>
+                    <div class="flight-time">
+                      <span class="departure">
+                        <strong>16:45</strong>
+                        <small>Sân bay Cam Ranh (CXR)</small>
+                      </span>
+                      <div class="duration">
+                        <div class="line"></div>
+                        <span>2h 10m</span>
+                      </div>
+                      <span class="arrival">
+                        <strong>18:55</strong>
+                        <small>Sân bay Nội Bài (HAN)</small>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="booking-details">
+                  <div class="detail-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>Ngày bay: <strong>10/11/2025</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-users"></i>
+                    <span>Hành khách: <strong>Phạm Văn F</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-chair"></i>
+                    <span>Ghế: <strong>20A</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-times-circle"></i>
+                    <span><span data-i18n="cancelledAt">Hủy lúc:</span> <strong>08/11/2025 14:30</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span><span data-i18n="cancelReason">Lý do hủy:</span> <strong>Thay đổi kế hoạch cá nhân</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="trip-actions">
+                <div class="trip-buttons">
+                  <button class="btn btn-outline" onclick="event.stopPropagation(); viewCancellationDetails('TR004')">
+                    <i class="fas fa-info-circle"></i>
+                    <span data-i18n="viewCancellationDetails">Chi tiết hủy</span>
+                  </button>
+                  <button class="btn btn-primary" onclick="event.stopPropagation(); rebookSimilarTrip('TR004')">
+                    <i class="fas fa-repeat"></i>
+                    <span data-i18n="rebookSimilar">Đặt tương tự</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Trips -->
+        <div class="tab-content" id="upcoming-content">
+          <div class="trips-list">
+            <!-- Sample Trip Card -->
+            <div class="trip-card" data-trip-id="TR001" onclick="goToOverview('TR001')">
+              <div class="trip-status upcoming">
+                <span data-i18n="statusUpcoming">Sắp tới</span>
+              </div>
+              
+              <div class="trip-header">
+                <div class="route-info">
+                  <div class="route-title">
+                    <h3><span class="route-text">Hà Nội → Hồ Chí Minh</span></h3>
+                  </div>
+                  <p class="booking-ref">Mã đặt chỗ: <strong>VJ123456</strong></p>
+                </div>
+                <div class="trip-price">
+                  <span class="price">2.150.000 VND</span>
+                  <span class="passengers">1 hành khách</span>
+                </div>
+              </div>
+
+              <div class="trip-details">
+                <div class="flight-segment">
+                  <div class="flight-info">
+                    <div class="airline">
+                      <i class="fas fa-plane"></i>
+                      <span>VietJet Air - VJ165</span>
+                    </div>
+                    <div class="flight-time">
+                      <span class="departure">
+                        <strong>07:30</strong>
+                        <small>Sân bay Nội Bài (HAN)</small>
+                      </span>
+                      <div class="duration">
+                        <div class="line"></div>
+                        <span>2h 15m</span>
+                      </div>
+                      <span class="arrival">
+                        <strong>09:45</strong>
+                        <small>Sân bay Tân Sơn Nhất (SGN)</small>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="booking-details">
+                  <div class="detail-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>Ngày bay: <strong>15/11/2025</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-users"></i>
+                    <span>Hành khách: <strong>Nguyễn Văn A</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-chair"></i>
+                    <span>Ghế: <strong>12A</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="trip-actions">
+                <div class="trip-buttons">
+                  <button class="btn btn-outline" onclick="event.stopPropagation(); downloadTicket('TR001')">
+                    <i class="fas fa-download"></i>
+                    <span data-i18n="downloadTicket">Tải vé</span>
+                  </button>
+                  <button class="btn btn-outline" onclick="event.stopPropagation(); modifyTrip('TR001')">
+                    <i class="fas fa-edit"></i>
+                    <span data-i18n="modifyTrip">Thay đổi</span>
+                  </button>
+                  <button class="btn btn-danger" onclick="event.stopPropagation(); cancelTrip('TR001')">
+                    <i class="fas fa-times"></i>
+                    <span data-i18n="cancelTrip">Hủy chuyến</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Another Sample Trip -->
+            <div class="trip-card" data-trip-id="TR002" onclick="goToOverview('TR002')">
+              <div class="trip-status upcoming">
+                <span data-i18n="statusUpcoming">Sắp tới</span>
+              </div>
+              
+              <div class="trip-header">
+                <div class="route-info">
+                  <div class="route-title">
+                    <h3><span class="route-text">Đà Nẵng → Hà Nội</span></h3>
+                  </div>
+                  <p class="booking-ref">Mã đặt chỗ: <strong>VN789012</strong></p>
+                </div>
+                <div class="trip-price">
+                  <span class="price">1.850.000 VND</span>
+                  <span class="passengers">1 hành khách</span>
+                </div>
+              </div>
+
+              <div class="trip-details">
+                <div class="flight-segment">
+                  <div class="flight-info">
+                    <div class="airline">
+                      <i class="fas fa-plane"></i>
+                      <span>Vietnam Airlines - VN1317</span>
+                    </div>
+                    <div class="flight-time">
+                      <span class="departure">
+                        <strong>14:25</strong>
+                        <small>Sân bay Đà Nẵng (DAD)</small>
+                      </span>
+                      <div class="duration">
+                        <div class="line"></div>
+                        <span>1h 25m</span>
+                      </div>
+                      <span class="arrival">
+                        <strong>15:50</strong>
+                        <small>Sân bay Nội Bài (HAN)</small>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="booking-details">
+                  <div class="detail-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>Ngày bay: <strong>20/11/2025</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-users"></i>
+                    <span>Hành khách: <strong>Trần Văn C</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-chair"></i>
+                    <span>Ghế: <strong>8A</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="trip-actions">
+                <div class="trip-buttons">
+                  <button class="btn btn-outline" onclick="event.stopPropagation(); downloadTicket('TR002')">
+                    <i class="fas fa-download"></i>
+                    <span data-i18n="downloadTicket">Tải vé</span>
+                  </button>
+                  <button class="btn btn-outline" onclick="event.stopPropagation(); modifyTrip('TR002')">
+                    <i class="fas fa-edit"></i>
+                    <span data-i18n="modifyTrip">Thay đổi</span>
+                  </button>
+                  <button class="btn btn-danger" onclick="event.stopPropagation(); cancelTrip('TR002')">
+                    <i class="fas fa-times"></i>
+                    <span data-i18n="cancelTrip">Hủy chuyến</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Completed Trips -->
+        <div class="tab-content" id="completed-content">
+          <div class="trips-list">
+            <div class="trip-card" data-trip-id="TR003" onclick="goToOverview('TR003')">
+              <div class="trip-status completed">
+                <span data-i18n="statusCompleted">Hoàn tất</span>
+              </div>
+              
+              <div class="trip-header">
+                <div class="route-info">
+                  <h3>Hồ Chí Minh → Đà Nẵng</h3>
+                  <p class="booking-ref">Mã đặt chỗ: <strong>BB345678</strong></p>
+                </div>
+                <div class="trip-price">
+                  <span class="price">1.650.000 VND</span>
+                  <span class="passengers">1 hành khách</span>
+                </div>
+              </div>
+
+              <div class="trip-details">
+                <div class="flight-segment">
+                  <div class="flight-info">
+                    <div class="airline">
+                      <i class="fas fa-plane"></i>
+                      <span>Bamboo Airways - QH1234</span>
+                    </div>
+                    <div class="flight-time">
+                      <span class="departure">
+                        <strong>10:15</strong>
+                        <small>Sân bay Tân Sơn Nhất (SGN)</small>
+                      </span>
+                      <div class="duration">
+                        <div class="line"></div>
+                        <span>1h 20m</span>
+                      </div>
+                      <span class="arrival">
+                        <strong>11:35</strong>
+                        <small>Sân bay Đà Nẵng (DAD)</small>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="booking-details">
+                  <div class="detail-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>Ngày bay: <strong>28/10/2025</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-users"></i>
+                    <span>Hành khách: <strong>Lê Thị D</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-chair"></i>
+                    <span>Ghế: <strong>15C</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Trạng thái: <strong>Đã bay thành công</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="trip-actions">
+                <div class="trip-buttons">
+                  <button class="btn btn-outline" onclick="event.stopPropagation(); downloadTicket('TR003')">
+                    <i class="fas fa-download"></i>
+                    <span data-i18n="downloadTicket">Tải vé</span>
+                  </button>
+                  <button class="btn btn-outline" onclick="event.stopPropagation(); downloadInvoice('TR003')">
+                    <i class="fas fa-download"></i>
+                    <span data-i18n="downloadInvoice">Tải hóa đơn</span>
+                  </button>
+                  <button class="btn btn-primary" onclick="event.stopPropagation(); rebookTrip('TR003')">
+                    <i class="fas fa-repeat"></i>
+                    <span data-i18n="rebookTrip">Đặt lại</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cancelled Trips -->
+        <div class="tab-content" id="cancelled-content">
+          <div class="trips-list">
+            <div class="trip-card" data-trip-id="TR004" onclick="goToOverview('TR004')">
+              <div class="trip-status cancelled">
+                <span data-i18n="statusCancelled">Đã hủy</span>
+              </div>
+              
+              <div class="trip-header">
+                <div class="route-info">
+                  <h3>Nha Trang → Hà Nội</h3>
+                  <p class="booking-ref">Mã đặt chỗ: <strong>VJ987654</strong></p>
+                </div>
+                <div class="trip-price">
+                  <span class="price">1.950.000 VND</span>
+                  <span class="passengers">1 hành khách</span>
+                  <span class="refund-info">Hoàn tiền: 1.560.000 VND</span>
+                </div>
+              </div>
+
+              <div class="trip-details">
+                <div class="flight-segment">
+                  <div class="flight-info">
+                    <div class="airline">
+                      <i class="fas fa-plane"></i>
+                      <span>VietJet Air - VJ1567</span>
+                    </div>
+                    <div class="flight-time">
+                      <span class="departure">
+                        <strong>16:45</strong>
+                        <small>Sân bay Cam Ranh (CXR)</small>
+                      </span>
+                      <div class="duration">
+                        <div class="line"></div>
+                        <span>2h 10m</span>
+                      </div>
+                      <span class="arrival">
+                        <strong>18:55</strong>
+                        <small>Sân bay Nội Bài (HAN)</small>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="booking-details">
+                  <div class="detail-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>Ngày bay: <strong>10/11/2025</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-users"></i>
+                    <span>Hành khách: <strong>Phạm Văn F</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-chair"></i>
+                    <span>Ghế: <strong>20A</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-times-circle"></i>
+                    <span><span data-i18n="cancelledAt">Hủy lúc:</span> <strong>08/11/2025 14:30</strong></span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span><span data-i18n="cancelReason">Lý do hủy:</span> <strong>Thay đổi kế hoạch cá nhân</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="trip-actions">
+                <div class="trip-buttons">
+                  <button class="btn btn-outline" onclick="event.stopPropagation(); viewCancellationDetails('TR004')">
+                    <i class="fas fa-info-circle"></i>
+                    <span data-i18n="viewCancellationDetails">Chi tiết hủy</span>
+                  </button>
+                  <button class="btn btn-primary" onclick="event.stopPropagation(); rebookSimilarTrip('TR004')">
+                    <i class="fas fa-repeat"></i>
+                    <span data-i18n="rebookSimilar">Đặt tương tự</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="empty-state" style="display: none;">
+          <div class="empty-icon">
+            <i class="fas fa-plane-slash"></i>
+          </div>
+          <h3 data-i18n="noTripsTitle">Chưa có chuyến đi nào</h3>
+          <p data-i18n="noTripsMessage">Bạn chưa có chuyến đi nào trong danh mục này. Hãy đặt chuyến bay đầu tiên!</p>
+          <button class="btn btn-primary" onclick="window.location.href='index.html'">
+            <i class="fas fa-search"></i>
+            <span data-i18n="searchFlights">Tìm chuyến bay</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Cancel Trip Modal -->
+  <div class="modal-overlay" id="cancelModal" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 data-i18n="cancelTripTitle">Hủy chuyến đi</h3>
+        <button class="close-btn" onclick="closeCancelModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="cancel-warning">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p data-i18n="cancelWarning">Bạn có chắc chắn muốn hủy chuyến đi này không?</p>
+        </div>
+
+        <div class="trip-summary" id="cancelTripSummary">
+          <!-- Trip details will be populated here -->
+        </div>
+
+        <div class="cancellation-policy">
+          <h4 data-i18n="cancellationPolicy">Chính sách hủy</h4>
+          <div class="policy-item">
+            <i class="fas fa-check-circle"></i>
+            <span data-i18n="refundAmount">Hoàn tiền: 80% giá vé (390.000 VND phí hủy)</span>
+          </div>
+          <div class="policy-item">
+            <i class="fas fa-clock"></i>
+            <span data-i18n="refundTime">Thời gian hoàn tiền: 3-5 ngày làm việc</span>
+          </div>
+        </div>
+
+        <div class="cancel-reason">
+          <label for="cancelReason" data-i18n="cancelReasonLabel">Lý do hủy (tùy chọn):</label>
+          <select id="cancelReason">
+            <option value="" data-i18n="selectReason">Chọn lý do...</option>
+            <option value="schedule_change" data-i18n="reasonScheduleChange">Thay đổi lịch trình</option>
+            <option value="personal_reason" data-i18n="reasonPersonal">Lý do cá nhân</option>
+            <option value="weather" data-i18n="reasonWeather">Thời tiết xấu</option>
+            <option value="emergency" data-i18n="reasonEmergency">Trường hợp khẩn cấp</option>
+            <option value="other" data-i18n="reasonOther">Khác</option>
+          </select>
+        </div>
+
+        <div class="cancel-note">
+          <label for="cancelNote" data-i18n="additionalNotes">Ghi chú thêm:</label>
+          <textarea id="cancelNote" placeholder="Nhập ghi chú (tùy chọn)..." data-i18n-placeholder="notePlaceholder"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeCancelModal()" data-i18n="keepTrip">
+          Giữ chuyến đi
+        </button>
+        <button class="btn btn-danger" onclick="confirmCancelTrip()" data-i18n="confirmCancel">
+          Xác nhận hủy
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div id="footer-container"></div>
+
+  <!-- JavaScript -->
+  <script src="assets/scripts/toast.js"></script>
+  <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/my_trips_translations.js"></script>
+  <script src="assets/scripts/my_trips.js"></script>
+
+  <!-- Load Components -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Function to handle component loading errors
+      function handleComponentError(componentName) {
+        console.error(`Failed to load ${componentName} component`);
+      }
+      
+      // Load header
+      fetch('components/header.html')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        })
+        .then(data => {
+          document.getElementById('header-container').innerHTML = data;
+          // Initialize all header functionalities after DOM is ready
+          requestAnimationFrame(() => {
+            // Initialize mobile menu
+            if (typeof initializeMobileMenu === 'function') {
+              initializeMobileMenu();
+            }
+            // Initialize language selector
+            if (typeof initializeLanguageSelector === 'function') {
+              initializeLanguageSelector();
+            }
+            // Initialize language functionality after header loads
+            if (typeof initializeLanguage === 'function') {
+              initializeLanguage();
+            }
+          });
+        })
+        .catch(error => {
+          handleComponentError('header');
+          if (typeof initializeLanguage === 'function') {
+            initializeLanguage();
+          }
+        });
+        
+      // Load footer
+      fetch('components/footer.html')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        })
+        .then(data => {
+          document.getElementById('footer-container').innerHTML = data;
+        })
+        .catch(error => {
+          handleComponentError('footer');
+        });
+    });
+  </script>
+</body>
+</html>

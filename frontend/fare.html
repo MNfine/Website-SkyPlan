@@ -6,7 +6,8 @@
   <title>SkyPlan - Chọn giá vé</title>
   <meta name="description" content="Chọn hạng giá vé phù hợp cho chuyến bay của bạn với SkyPlan.">
 
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
   <link rel="stylesheet" href="assets/styles/reset.css">
@@ -15,6 +16,7 @@
   <link rel="stylesheet" href="assets/styles/header.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/fare.css">
+  <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
 <body>
   <div id="header-container"></div>
@@ -246,6 +248,26 @@
         try { initFareRouteTitle && initFareRouteTitle(lang); } catch (e) {}
       });
     }
+  </script>
+  <script src="assets/scripts/loader.js"></script>
+  <script>
+    // Import loader HTML vào DOM càng sớm càng tốt
+    fetch('components/loader.html').then(r => r.text()).then(html => {
+      document.body.insertAdjacentHTML('beforeend', html);
+    });
+    // Gắn sự kiện click cho nút chọn để show loader và chuyển trang
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.btn-select').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          var href = btn.getAttribute('href');
+          if (window.Loader) window.Loader.show();
+          setTimeout(function() {
+            window.location.href = href;
+          }, 1200);
+        });
+      });
+    });
   </script>
 </body>
 </html>

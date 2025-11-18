@@ -57,32 +57,13 @@
     transform 0.2s ease;
 }
 .extra-card__btn:hover {
-  background: #097f85; /*xem lại có đồng bộ team chưa*/
+  background: #097f85;
   transform: translateY(-1px);
 }
 .extra-card__btn:active {
   transform: translateY(1px);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
 }
-.extra-card__btn.added {
-  background: var(--primary-color);
-  color: #fff;
-  border-color: var(--primary-color);
-}
-.extra-card.selected {
-  outline: 3px solid rgba(31, 182, 160, 0.2);
-}
-.extra-card__badge.chosen {
-  background: #e8f5f4;
-  color: var(--primary-color);
-  border: 1px solid var(--primary-color);
-  border-radius: 8px;
-  padding: 6px 10px;
-  display: inline-block;
-  margin-top: 6px;
-  font-weight: 600;
-}
-
 .extras-actions {
   margin-top: 28px;
   margin-bottom: 60px;
@@ -98,8 +79,8 @@
   background: var(--primary-color);
   color: #fff;
   font-weight: 700;
-  padding: 14px 22px;
-  border-radius: 10px;
+  padding: 12px 24px;
+  border-radius: 12px;
   text-decoration: none;
   transition: background-color var(--transition-speed, 0.3s) ease,
     transform 0.2s ease;
@@ -193,7 +174,7 @@
 .meal-thumb {
   width: 72px;
   height: 72px;
-  object-fit: cover; /* nếu là ảnh món ăn thực tế */
+  object-fit: cover;
   border-radius: 10px;
   border: 1px solid #eee;
   background: #fff;
@@ -252,7 +233,7 @@
 }
 .baggage-card {
   display: grid;
-  grid-template-columns: auto 1fr max-content max-content; /* thumb | info | price | btn */
+  grid-template-columns: auto 1fr max-content max-content;
   align-items: center;
   gap: 12px;
   padding: 12px 0;
@@ -342,7 +323,7 @@
 }
 .service-card {
   display: grid;
-  grid-template-columns: auto 1fr auto auto; /* thumb | info | price | button */
+  grid-template-columns: auto 1fr auto auto;
   align-items: center;
   gap: 12px;
   padding: 12px 0;
@@ -427,16 +408,6 @@
   .service-price {
     font-size: 14px;
   }
-}
-.service-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-}
-.service-row input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
 }
 
 @media (max-width: 1080px) {

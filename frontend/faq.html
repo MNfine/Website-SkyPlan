@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="Câu hỏi thường gặp về SkyPlan" />
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate icon" href="favicon.ico" type="image/x-icon" />
+    <title>SkyPlan - Câu hỏi thường gặp</title>
+
+    <link rel="stylesheet" href="assets/styles/reset.css" />
+    <link rel="stylesheet" href="assets/styles/index.css" />
+    <link rel="stylesheet" href="assets/styles/flags.css" />
+    <link rel="stylesheet" href="assets/styles/header.css" />
+    <link rel="stylesheet" href="assets/styles/footer.css" />
+    <link rel="stylesheet" href="assets/styles/faq.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div id="header-container"></div>
+    <main class="container faq-page">
+      <!--Thanh tìm kiếm -->
+      <section class="faq-header">
+        <h1 class="faq-title" data-i18n="faqTitle">Câu hỏi thường gặp</h1>
+        <form id="faqSearchForm" class="faq-search" role="search">
+          <label
+            for="faqSearchInput"
+            class="visually-hidden"
+            data-i18n="searchLabel"
+          >
+            Tìm kiếm câu hỏi
+          </label>
+
+          <input
+            id="faqSearchInput"
+            type="search"
+            placeholder="Tìm kiếm"
+            data-i18n-placeholder="searchPlaceholder"
+            aria-label="Tìm kiếm"
+            autocomplete="off"
+          />
+
+          <button type="submit" class="faq-search__btn" data-i18n="searchBtn">
+            Tìm kiếm
+          </button>
+
+          <button
+            id="faqSearchClear"
+            type="button"
+            class="faq-search__clear"
+            aria-label="Xóa tìm kiếm"
+            hidden
+            title="Xóa"
+          >
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
+        </form>
+      </section>
+
+      <!-- Bố cục 2 cột -->
+      <div class="faq-layout">
+        <!-- Sidebar danh mục -->
+        <aside class="faq-sidebar" aria-label="Danh mục FAQ">
+          <nav class="faq-nav">
+            <button
+              class="faq-nav__item active"
+              data-category="popular"
+              type="button"
+              aria-controls="section-popular"
+              aria-expanded="true"
+              aria-current="true"
+            >
+              <span data-i18n="catPopular">Các câu hỏi thường gặp</span>
+              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+            </button>
+
+            <button
+              class="faq-nav__item"
+              data-category="schedule"
+              type="button"
+              aria-controls="section-schedule"
+              aria-expanded="false"
+            >
+              <span data-i18n="catSchedule">Lịch trình</span>
+              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+            </button>
+
+            <button
+              class="faq-nav__item"
+              data-category="booking"
+              type="button"
+              aria-controls="section-booking"
+              aria-expanded="false"
+            >
+              <span data-i18n="catBooking">Đặt vé</span>
+              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+            </button>
+
+            <button
+              class="faq-nav__item"
+              data-category="payment"
+              type="button"
+              aria-controls="section-payment"
+              aria-expanded="false"
+            >
+              <span data-i18n="catPayment">Thanh toán</span>
+              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+            </button>
+
+            <button
+              class="faq-nav__item"
+              data-category="baggage"
+              type="button"
+              aria-controls="section-baggage"
+              aria-expanded="false"
+            >
+              <span data-i18n="catBaggage">Hành lý</span>
+              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+            </button>
+
+            <button
+              class="faq-nav__item"
+              data-category="changes"
+              type="button"
+              aria-controls="section-changes"
+              aria-expanded="false"
+            >
+              <span data-i18n="catChanges">Đổi vé và Hoàn tiền ></span>
+              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+            </button>
+          </nav>
+        </aside>
+
+        <!-- Nội dung (JS render) -->
+        <section class="faq-content">
+          <!-- Trạng thái tìm kiếm -->
+          <div
+            id="faqSearchState"
+            class="faq-search-state"
+            aria-live="polite"
+            hidden
+          >
+            <p class="faq-search-count">
+              <span id="faqSearchCount">0</span>
+              <span data-i18n="searchResults">kết quả</span>
+            </p>
+            <button
+              id="faqSearchReset"
+              class="btn-link"
+              type="button"
+              data-i18n="clearSearch"
+            >
+              Xóa tìm kiếm
+            </button>
+          </div>
+
+          <!--không có kết quả -->
+          <div id="faqNoResults" class="faq-empty" hidden>
+            <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
+            <p data-i18n="noResults">Không tìm thấy kết quả phù hợp.</p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Footer (nạp bằng JS) -->
+    <div id="footer-container"></div>
+
+    <!-- Scripts (defer) -->
+    <script src="assets/scripts/index_translations.js" defer></script>
+    <script src="assets/scripts/common.js" defer></script>
+    <script src="assets/scripts/faq_translations.js" defer></script>
+    <script src="assets/scripts/faq.js" defer></script>
+  </body>
+</html>

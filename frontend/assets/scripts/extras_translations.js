@@ -19,7 +19,7 @@ const extrasI18n = {
     backToPassenger: "Back",
     baggageIncluded: "Includes 7kg cabin + 23kg checked (free)",
     yourExtras: "Selected extras:",
-    continuePayment: "Continue to payment",
+    continuePayment: "Continue",
     meals: {
       meal_basic: "Basic combo",
       meal_standard: "Standard combo",
@@ -28,7 +28,7 @@ const extrasI18n = {
     mealItemDescs: {
       meal_basic: "Basic meal",
       meal_standard: "Standard meal",
-      meal_premium: "Preminum meal",
+      meal_premium: "Premium meal",
     },
 
     baggagePkgs: {
@@ -74,7 +74,7 @@ const extrasI18n = {
     backToPassenger: "Quay lại",
     baggageIncluded: "Bao gồm 7kg xách tay + 23kg ký gửi (miễn phí)",
     yourExtras: "Dịch vụ đã chọn:",
-    continuePayment: "Tiếp tục thanh toán",
+    continuePayment: "Tiếp tục",
     meals: {
       meal_basic: "Suất ăn cơ bản",
       meal_standard: "Suất ăn tiêu chuẩn",
@@ -142,6 +142,17 @@ function applyExtrasTranslations(lang) {
       if (typeof applyExtrasTranslations === "function")
         applyExtrasTranslations(lang);
       if (typeof initRouteTitle === "function") initRouteTitle(lang);
+    } catch (e) {}
+    try {
+      const panel = document.getElementById("extras-panel");
+      if (
+        panel &&
+        panel.getAttribute("aria-hidden") === "false" &&
+        typeof renderDrawerContent === "function"
+      ) {
+        const type = panel.dataset.type;
+        if (type) renderDrawerContent(type);
+      }
     } catch (e) {}
   };
 })();

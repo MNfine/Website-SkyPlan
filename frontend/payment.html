@@ -6,7 +6,8 @@
   <title data-i18n="paymentTitle">SkyPlan - Thanh toán</title>
 
   <!-- Favicon -->
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
 
   <!-- Font Awesome CDN for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -18,6 +19,7 @@
   <link rel="stylesheet" href="assets/styles/header.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/payment.css">
+  <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
 <body>
   <!-- Header -->
@@ -228,7 +230,26 @@
               </div>
               <div class="price-item total">
                 <span data-i18n="totalLabel">Tổng cộng</span>
-                <span>1.598.000 VND</span>
+                <span id="totalAmount">1.598.000 VND</span>
+              </div>
+            </div>
+
+            <!-- Voucher Section -->
+            <div class="voucher-section">
+              <div class="voucher-input">
+                <input type="text" id="voucherInput" placeholder="Nhập mã giảm giá" data-i18n="voucherPlaceholder">
+                <button type="button" id="applyVoucherBtn" data-i18n="applyVoucher">Áp dụng</button>
+              </div>
+              <div class="voucher-message" id="voucherMessage"></div>
+              <div class="voucher-discount hidden" id="voucherDiscount">
+                <div class="price-item discount">
+                  <span data-i18n="discountLabel">Giảm giá</span>
+                  <span id="discountAmount">-0 VND</span>
+                </div>
+                <div class="price-item final-total">
+                  <span data-i18n="finalTotalLabel">Tổng thanh toán</span>
+                  <span id="finalAmount">1.598.000 VND</span>
+                </div>
               </div>
             </div>
 
@@ -326,7 +347,16 @@
               applyPaymentTranslations(lang);
             }
           }
-          mainPayBtn.onclick = function() { window.location.href = 'confirmation.html'; };
+          mainPayBtn.onclick = function() {
+            if (window.Loader) {
+              window.Loader.show();
+              setTimeout(function() {
+                window.location.href = 'confirmation.html';
+              }, 1500);
+            } else {
+              window.location.href = 'confirmation.html';
+            }
+          };
           return;
         }
         // E-wallet
@@ -390,6 +420,30 @@
           applyPaymentTranslations(lang);
         }
       });
+  </script>
+
+  <!-- Loader component (JS) -->
+  <script src="assets/scripts/loader.js"></script>
+  <script>
+    // Import loader HTML vào DOM càng sớm càng tốt
+    fetch('components/loader.html').then(r => r.text()).then(html => {
+      document.body.insertAdjacentHTML('afterbegin', html);
+      // Show loader ngay khi vừa insert vào DOM (cho F5/reload)
+      if (window.Loader) {
+        window.Loader.show();
+        document.body.style.overflow = 'hidden';
+      }
+    });
+    
+    // Ẩn loader khi tất cả resources đã load xong (window.load)
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        if (window.Loader) {
+          window.Loader.hide();
+          document.body.style.overflow = '';
+        }
+      }, 500); // Delay 500ms để smooth
+    });
   </script>
 </body>
 </html>
