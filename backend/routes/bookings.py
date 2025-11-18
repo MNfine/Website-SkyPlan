@@ -293,16 +293,36 @@ def create_booking():
 				passengers.append(passenger_map[e['id']])
 		# Guest passenger flow (no passenger_ids provided)
 		if not passenger_entries and guest_passenger_data:
-			try:
-				# Parse date safely
-				dob_value = None
-				if guest_passenger_data.get('dob'):
-					try:
-						dob_value = datetime.strptime(guest_passenger_data.get('dob'), '%Y-%m-%d').date()
-					except ValueError:
-						print(f"❌ Invalid date format: {guest_passenger_data.get('dob')}")
-						return jsonify({'success': False, 'message': f'Invalid date format: {guest_passenger_data.get("dob")}'}), 400
+			# Parse date safely - dob is required (validate BEFORE database operations)
+			dob_raw = guest_passenger_data.get('dob') or ''
+			if not dob_raw or not str(dob_raw).strip():
+				print(f"❌ Missing dob in guest_passenger_data")
+				return jsonify({'success': False, 'message': 'Date of birth (dob) is required'}), 400
+			
+			dob_value = None
+			dob_str = str(dob_raw).strip()
+			# Try multiple date formats
+			date_formats = [
+				('%Y-%m-%d', 'YYYY-MM-DD'),
+				('%d/%m/%Y', 'DD/MM/YYYY'),
+				('%m/%d/%Y', 'MM/DD/YYYY'),
+				('%d-%m-%Y', 'DD-MM-YYYY'),
+				('%m-%d-%Y', 'MM-DD-YYYY')
+			]
+			
+			for fmt, fmt_name in date_formats:
+				try:
+					dob_value = datetime.strptime(dob_str, fmt).date()
+					print(f"✅ Parsed dob '{dob_str}' as {fmt_name}")
+					break
+				except ValueError:
+					continue
+			
+			if dob_value is None:
+				print(f"❌ Invalid date format: {dob_str}")
+				return jsonify({'success': False, 'message': f'Invalid date format: {dob_str}. Expected formats: YYYY-MM-DD, DD/MM/YYYY, or MM/DD/YYYY'}), 400
 
+			try:
 				guest_passenger = Passenger(
 					user_id=user_id,  # Attach to user if token present, otherwise None (guest)
 					lastname=guest_passenger_data.get('lastname', ''),
@@ -333,7 +353,10 @@ def create_booking():
 				print(f"❌ Error creating passenger: {str(e)}")
 				import traceback
 				traceback.print_exc()
-				return jsonify({'success': False, 'message': f'Failed to create passenger: {str(e)}'}), 400
+				# Rollback the session on error
+				session.rollback()
+				# Re-raise to let outer exception handler return proper error
+				raise
 
 		# Server-side recompute / validation of total_amount
 		# Assumptions: Flight.price is base economy price per passenger per leg.
