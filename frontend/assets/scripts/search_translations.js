@@ -17,6 +17,7 @@ const searchTranslations = {
         customerService: "Customer Service",
         bookingHelp: "Booking Help",
         faq: "FAQ",
+        promotion: "Promotions",
         paymentMethodsTitle: "Payment Methods",
         downloadAppTitle: "Download our app",
         appStore: "App Store",
@@ -66,6 +67,7 @@ const searchTranslations = {
         customerService: "Dịch vụ khách hàng",
         bookingHelp: "Hỗ trợ đặt vé",
         faq: "Câu hỏi thường gặp",
+        promotion: "Khuyến mãi",
         paymentMethodsTitle: "Phương thức thanh toán",
         downloadAppTitle: "Tải ứng dụng của chúng tôi",
         appStore: "App Store",
@@ -278,7 +280,7 @@ function changeSearchLanguage(lang) {
     applySearchTranslations(next);
 
     // Trigger date format update via custom event
-    const event = new CustomEvent('languageChanged', { 
+    const event = new CustomEvent('languageChanged', {
         detail: { lang: next }
     });
     document.dispatchEvent(event);
