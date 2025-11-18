@@ -78,7 +78,7 @@
         <div class="contact-form-section">
           <h2 data-i18n="contactFormTitle">Gửi tin nhắn cho chúng tôi</h2>
           
-          <form id="contactForm" class="contact-form">
+          <form id="contactForm" class="contact-form" novalidate>
             <div class="form-group">
               <label for="fullName" data-i18n="formFullName">Họ và tên *</label>
               <input type="text" id="fullName" name="fullName" required>
@@ -151,6 +151,7 @@
 
   <div id="footer-container"></div>
 
+  <script src="assets/scripts/toast.js"></script>
   <script src="assets/scripts/contact_translations.js"></script>
   <script src="assets/scripts/common.js"></script>
 
@@ -171,8 +172,16 @@
         })
         .then(data => {
           document.getElementById('header-container').innerHTML = data;
-          // Initialize language functionality after header loads
-          initializeLanguage();
+          
+          // Initialize all header functionalities after DOM is ready
+          requestAnimationFrame(() => {
+            // Initialize mobile menu
+            if (typeof initializeMobileMenu === 'function') {
+              initializeMobileMenu();
+            }
+            // Initialize language functionality after header loads
+            initializeLanguage();
+          });
         })
         .catch(error => {
           handleComponentError('header');
@@ -200,9 +209,8 @@
 
     // Initialize language functionality
     function initializeLanguage() {
-      // Force Vietnamese as default for contact page
-      let currentLang = 'vi';
-      localStorage.setItem('preferredLanguage', 'vi');
+      // Get preferred language from localStorage or default to Vietnamese
+      let currentLang = localStorage.getItem('preferredLanguage') || 'vi';
       
       console.log('Contact page - Initializing language:', currentLang);
       document.documentElement.lang = currentLang;
@@ -242,30 +250,31 @@
           // Get form data
           const formData = new FormData(contactForm);
           const data = Object.fromEntries(formData);
+          const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
           
           // Validate all fields
           let isValid = true;
           
           if (!data.fullName.trim()) {
-            showError('fullName', 'Vui lòng nhập họ và tên');
+            showError('fullName', contactTranslations[currentLang]?.errorFullName || 'Vui lòng nhập họ và tên');
             isValid = false;
           }
           
           if (!data.email.trim()) {
-            showError('email', 'Vui lòng nhập địa chỉ email');
+            showError('email', contactTranslations[currentLang]?.errorEmail || 'Vui lòng nhập địa chỉ email');
             isValid = false;
           } else if (!isValidEmail(data.email)) {
-            showError('email', 'Vui lòng nhập địa chỉ email hợp lệ');
+            showError('email', contactTranslations[currentLang]?.errorInvalidEmail || 'Vui lòng nhập địa chỉ email hợp lệ');
             isValid = false;
           }
           
           if (!data.subject) {
-            showError('subject', 'Vui lòng chọn chủ đề');
+            showError('subject', contactTranslations[currentLang]?.errorSubject || 'Vui lòng chọn chủ đề');
             isValid = false;
           }
           
           if (!data.message.trim()) {
-            showError('message', 'Vui lòng nhập nội dung tin nhắn');
+            showError('message', contactTranslations[currentLang]?.errorMessage || 'Vui lòng nhập nội dung tin nhắn');
             isValid = false;
           }
           
@@ -283,16 +292,19 @@
     function validateField(e) {
       const field = e.target;
       const value = field.value.trim();
+      const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
       
       clearError(field.name);
       
       if (field.hasAttribute('required') && !value) {
-        showError(field.name, `Vui lòng điền ${field.previousElementSibling.textContent.replace(' *', '')}`);
+        const fieldLabel = field.previousElementSibling.textContent.replace(' *', '');
+        const errorMsg = `${contactTranslations[currentLang]?.errorRequired || 'Vui lòng điền'} ${fieldLabel}`;
+        showError(field.name, errorMsg);
         return false;
       }
       
       if (field.type === 'email' && value && !isValidEmail(value)) {
-        showError(field.name, 'Vui lòng nhập địa chỉ email hợp lệ');
+        showError(field.name, contactTranslations[currentLang]?.errorInvalidEmail || 'Vui lòng nhập địa chỉ email hợp lệ');
         return false;
       }
       
@@ -306,21 +318,21 @@
 
     function showError(fieldName, message) {
       const field = document.querySelector(`[name="${fieldName}"]`);
-      const formGroup = field.closest('.form-group');
       
-      field.classList.add('error');
-      
-      // Remove existing error message
-      const existingError = formGroup.querySelector('.error-message');
-      if (existingError) {
-        existingError.remove();
+      // Add error class to field
+      if (field) {
+        field.classList.add('error');
+        
+        // Focus on the first error field
+        if (!document.querySelector('.form-group input.error, .form-group select.error, .form-group textarea.error')) {
+          field.focus();
+        }
       }
       
-      // Add new error message
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'error-message';
-      errorDiv.textContent = message;
-      formGroup.appendChild(errorDiv);
+      // Show toast notification
+      if (typeof showToast === 'function') {
+        showToast(message, { type: 'error', duration: 4000 });
+      }
     }
 
     function clearError(fieldName) {
@@ -329,13 +341,7 @@
         : fieldName.target || fieldName;
       
       if (field && field.name) {
-        const formGroup = field.closest('.form-group');
         field.classList.remove('error');
-        
-        const errorMessage = formGroup.querySelector('.error-message');
-        if (errorMessage) {
-          errorMessage.remove();
-        }
       }
     }
 
@@ -344,35 +350,27 @@
       errorFields.forEach(field => {
         field.classList.remove('error');
       });
-      
-      const errorMessages = document.querySelectorAll('.error-message');
-      errorMessages.forEach(message => {
-        message.remove();
-      });
     }
 
     function submitForm(form, data) {
       const submitBtn = form.querySelector('.btn-submit');
       const originalText = submitBtn.textContent;
+      const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
       
       // Show loading state
-      submitBtn.textContent = 'Đang gửi...';
+      submitBtn.textContent = contactTranslations[currentLang]?.btnSubmitting || 'Đang gửi...';
       submitBtn.disabled = true;
       form.classList.add('form-loading');
       
       // Simulate API call
       setTimeout(() => {
-        // Show success message
-        const successDiv = document.createElement('div');
-        successDiv.className = 'success-message';
-        
-        // Get current language and use appropriate translation
-        const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+        // Show success toast
         const successMessage = contactTranslations[currentLang]?.successMessage || 
                                'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.';
-        successDiv.textContent = successMessage;
         
-        form.insertBefore(successDiv, form.firstChild);
+        if (typeof showToast === 'function') {
+          showToast(successMessage, { type: 'success', duration: 5000 });
+        }
         
         // Reset form
         form.reset();
@@ -381,13 +379,6 @@
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
         form.classList.remove('form-loading');
-        
-        // Remove success message after 5 seconds
-        setTimeout(() => {
-          if (successDiv.parentNode) {
-            successDiv.remove();
-          }
-        }, 5000);
         
       }, 2000);
     }

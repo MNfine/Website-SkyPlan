@@ -56,7 +56,6 @@ const fareTranslations = {
         businessClass: "Business",
         
         // Seating options
-        autoAssigned: "Auto assigned",
         seatSelection: "Seat selection",
         
         // Baggage options
@@ -72,9 +71,9 @@ const fareTranslations = {
         select: "Select",
         
         // Prices (USD)
-        price90: "$90",
-        price120: "$120",
-        price350: "$350"
+        price90: "2.374.000 VND",
+        price120: "3.165.000 VND", 
+        price350: "9.230.000 VND"
     },
     vi: {
         // Header 
@@ -215,9 +214,42 @@ function changeFareLanguage(lang) {
     localStorage.setItem('preferredLanguage', lang);
     document.documentElement.lang = lang;
     applyFareTranslations(lang);
+    try { if (typeof initFareRouteTitle === 'function') initFareRouteTitle(lang); } catch(e) {}
+    // Broadcast to let other modules refresh (date inputs, common, etc.)
+    try { document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } })); } catch(e) {}
 }
 
 // Ensure Vietnamese is set as default on first visit
 if (!localStorage.getItem('preferredLanguage')) {
     localStorage.setItem('preferredLanguage', 'vi');
+}
+
+// Initialize route title from real search selection
+function initFareRouteTitle(langOverride) {
+    try {
+        const L = langOverride || localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+        // Prefer skyplan_trip_selection from search modal
+        let trip = null; try { trip = JSON.parse(localStorage.getItem('skyplan_trip_selection') || 'null'); } catch {}
+        const p = new URLSearchParams(location.search);
+        let fromRaw = (trip && (trip.fromCode || trip.from)) || localStorage.getItem('route_from') || p.get('from') || '';
+        let toRaw = (trip && (trip.toCode || trip.to)) || localStorage.getItem('route_to') || p.get('to') || '';
+        // Fallback sensible defaults
+        if (!fromRaw) fromRaw = 'HoChiMinh';
+        if (!toRaw) toRaw = 'HaNoi';
+        const resolve = (val) => {
+            if (typeof window !== 'undefined' && typeof window.resolveCityLabel === 'function') return window.resolveCityLabel(val, L);
+            const MAP = (typeof window !== 'undefined' && window.SKYPLAN_CITY_TRANSLATIONS) || {};
+            const dict = MAP[L] || MAP.vi || {};
+            return dict[val] || val;
+        };
+        const fromName = resolve(fromRaw);
+        const toName = resolve(toRaw);
+        const phrase = (L === 'vi') ? { a: 'Từ', b: 'đến' } : { a: 'From', b: 'to' };
+        const el = document.querySelector('.route-title');
+        if (el) {
+            // prevent later static translation override
+            el.removeAttribute('data-i18n');
+            el.textContent = `${phrase.a} ${fromName} ${phrase.b} ${toName}`;
+        }
+    } catch(e) { /* no-op */ }
 }

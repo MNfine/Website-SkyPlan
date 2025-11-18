@@ -50,6 +50,8 @@ function initializeLanguageSelector() {
                 const path = window.location.pathname;
                 if (typeof changeOverviewLanguage === 'function' && (path.includes('overview.html') || path.endsWith('/overview'))) {
                     changeOverviewLanguage(selectedLangValue);
+                } else if (typeof changeConfirmationLanguage === 'function' && (path.includes('confirmation.html') || path.endsWith('/confirmation'))) {
+                    changeConfirmationLanguage(selectedLangValue);
                 } else if (typeof changePaymentLanguage === 'function' && (path.includes('payment.html') || path.endsWith('/payment'))) {
                     changePaymentLanguage(selectedLangValue);
                 } else if (typeof changeSeatLanguage === 'function' && (path.includes('seat.html') || path.endsWith('/seat'))) {
@@ -121,3 +123,95 @@ function enableSmoothScrolling() {
         });
     });
 }
+
+// Global city label resolver: ensures diacritics from SKYPLAN_CITY_TRANSLATIONS for all pages
+// Usage: window.resolveCityLabel(raw, lang?) -> localized label or original string
+(function(){
+    if (typeof window === 'undefined') return;
+    // Ensure global city translations exist for all pages
+    if (!window.SKYPLAN_CITY_TRANSLATIONS) {
+        window.SKYPLAN_CITY_TRANSLATIONS = {
+            vi: {
+                AnGiang: 'An Giang',
+                CanTho: 'Cần Thơ',
+                DaLat: 'Đà Lạt',
+                DaNang: 'Đà Nẵng',
+                DakLak: 'Đắk Lắk',
+                DienBien: 'Điện Biên',
+                GiaLai: 'Gia Lai',
+                HaNoi: 'Hà Nội',
+                HaiPhong: 'Hải Phòng',
+                HoChiMinh: 'Hồ Chí Minh',
+                Hue: 'Huế',
+                KhanhHoa: 'Khánh Hòa',
+                LamDong: 'Lâm Đồng',
+                NgheAn: 'Nghệ An',
+                QuangNinh: 'Quảng Ninh',
+                QuangTri: 'Quảng Trị',
+                SonLa: 'Sơn La',
+                ThanhHoa: 'Thanh Hóa'
+            },
+            en: {
+                AnGiang: 'An Giang',
+                CanTho: 'Can Tho',
+                DaLat: 'Da Lat',
+                DaNang: 'Da Nang',
+                DakLak: 'Dak Lak',
+                DienBien: 'Dien Bien',
+                GiaLai: 'Gia Lai',
+                HaNoi: 'Ha Noi',
+                HaiPhong: 'Hai Phong',
+                HoChiMinh: 'Ho Chi Minh',
+                Hue: 'Hue',
+                KhanhHoa: 'Khanh Hoa',
+                LamDong: 'Lam Dong',
+                NgheAn: 'Nghe An',
+                QuangNinh: 'Quang Ninh',
+                QuangTri: 'Quang Tri',
+                SonLa: 'Son La',
+                ThanhHoa: 'Thanh Hoa'
+            }
+        };
+    }
+    if (window.resolveCityLabel) return; // do not override if already defined
+
+    const IATA_TO_CODE = {
+        HAN: 'HaNoi', SGN: 'HoChiMinh', DAD: 'DaNang', PQC: 'PhuQuoc', HPH: 'HaiPhong', HUI: 'Hue',
+        DLI: 'DaLat', VCA: 'CanTho', CXR: 'KhanhHoa', VII: 'NgheAn', VDO: 'QuangNinh', VDH: 'QuangTri',
+        VKG: 'AnGiang', DIN: 'DienBien', PXU: 'GiaLai', SQH: 'SonLa', THD: 'ThanhHoa'
+    };
+
+    function getLang(){ return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi'; }
+
+    function resolveCityLabel(raw, langOverride){
+        if (!raw) return '';
+        const lang = langOverride || getLang();
+        const MAP = (typeof window !== 'undefined' && window.SKYPLAN_CITY_TRANSLATIONS) || {};
+        const dict = MAP[lang] || {};
+        const viMap = MAP.vi || {};
+        const enMap = MAP.en || {};
+        let val = String(raw).trim();
+        if (!val) return '';
+        // Map IATA -> code
+        if (IATA_TO_CODE[val]) val = IATA_TO_CODE[val];
+        // If is known code, return localized label
+        if (Object.prototype.hasOwnProperty.call(dict, val)) return dict[val] || val;
+        // If matches any code in vi/en
+        if (Object.prototype.hasOwnProperty.call(viMap, val) || Object.prototype.hasOwnProperty.call(enMap, val))
+            return dict[val] || viMap[val] || enMap[val] || val;
+        // Try reverse-lookup by comparing labels (case-insensitive)
+        const lowers = (s) => (s||'').toString().toLowerCase();
+        const sought = lowers(val);
+        const mapsToCheck = [viMap, enMap];
+        for (const m of mapsToCheck) {
+            for (const code of Object.keys(m)) {
+                if (lowers(m[code]) === sought) {
+                    return dict[code] || m[code] || code;
+                }
+            }
+        }
+        return val;
+    }
+
+    window.resolveCityLabel = resolveCityLabel;
+})();

@@ -1,373 +1,435 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 :root {
-    --skyplan-primary: #00A896;
-    --skyplan-primary-dark: #008B7A;
-    --skyplan-bg-lighter: #FAFAFA;
-    --skyplan-border: #E0E0E0;
-    --skyplan-text-dark: #333333;
-    --skyplan-text-medium: #666666;
-    --skyplan-text-light: #999999;
-    --skyplan-error: #EF4444;
+  --skyplan-primary: #00a896;
+  --skyplan-primary-dark: #008b7a;
+  --skyplan-bg-lighter: #fafafa;
+  --skyplan-border: #e0e0e0;
+  --skyplan-text-dark: #333333;
+  --skyplan-text-medium: #666666;
+  --skyplan-text-light: #999999;
+  --skyplan-error: #ef4444;
 }
 
 html {
-    font-size: 16px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    sans-serif;
+  background: linear-gradient(135deg, #e6f9f6 0%, #b3ede5 100%);
+  background-attachment: fixed;
 }
 
 body {
-    background: linear-gradient(135deg, #E6F9F6 0%, #B3EDE5 100%);
-    min-height: 100svh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
+  background: transparent;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 10px;
 }
 
 /* Register Card  */
 
 .register-container {
-    width: 100%;
-    max-width: 520px;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, .15);
-    overflow: hidden;
+  width: 100%;
+  max-width: 520px;
+  min-width: 320px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  margin: 10px 0;
 }
 
 .register-content {
-    padding: 28px;
-    position: relative;
+  padding: 28px;
+  position: relative;
 }
 
 /* Back Button */
 .back-button {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    width: 40px;
-    height: 40px;
-    border: none;
-    background: #f8f9fa;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    color: var(--skyplan-text-medium);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: #f8f9fa;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  color: var(--skyplan-text-medium);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .back-button:hover {
-    background: var(--skyplan-primary);
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 168, 150, 0.3);
+  background: var(--skyplan-primary);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 168, 150, 0.3);
 }
 
 .back-button:active {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
 /*  Header / Logo */
 
 .logo-section {
-    text-align: center;
-    margin-bottom: 18px;
+  text-align: center;
+  margin-bottom: 18px;
 }
 
 .logo-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
 .logo-text {
-    font-size: 2.25rem;
-    font-weight: 700;
-    letter-spacing: -.02em;
-    color: var(--skyplan-primary);
-    margin: 0;
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0a969d !important;
+  margin: 0;
 }
 
 .page-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 6px;
-    color: var(--skyplan-text-dark);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--skyplan-text-dark);
 }
 
 .page-subtitle {
-    font-size: .875rem;
-    color: var(--skyplan-text-medium);
-    margin: 0;
+  font-size: 0.875rem;
+  color: var(--skyplan-text-medium);
+  margin: 0;
 }
 
 /* Form */
 
 .register-form {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 .form-group {
-    margin-bottom: 14px;
+  margin-bottom: 14px;
 }
 
 .form-label {
-    display: block;
-    font-size: .875rem;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: var(--skyplan-text-medium);
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--skyplan-text-medium);
 }
 
 .input-wrapper {
-    position: relative;
+  position: relative;
 }
 
 .input-icon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    color: var(--skyplan-text-light);
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--skyplan-text-light);
 }
 
 .form-input {
-    width: 100%;
-    height: 42px;
-    padding-left: 44px;
-    padding-right: 12px;
-    border: 1.5px solid var(--skyplan-border);
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: var(--skyplan-bg-lighter);
-    transition: all .3s ease;
-    color: var(--skyplan-text-dark);
+  width: 100%;
+  height: 42px;
+  padding-left: 44px;
+  padding-right: 12px;
+  border: 1.5px solid var(--skyplan-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: var(--skyplan-bg-lighter);
+  transition: all 0.3s ease;
+  color: var(--skyplan-text-dark);
 }
 
 .form-input::placeholder {
-    color: var(--skyplan-text-light);
+  color: var(--skyplan-text-light);
 }
 
 .form-input:focus {
-    outline: 0;
-    box-shadow: 0 0 0 3px rgba(0, 168, 150, .1);
-    border-color: var(--skyplan-primary);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.1);
+  border-color: var(--skyplan-primary);
 }
 
 .form-input.error {
-    border-color: var(--skyplan-error);
+  border-color: var(--skyplan-error);
 }
 
 .form-input.has-toggle {
-    padding-right: 40px;
+  padding-right: 40px;
 }
 
 .toggle-password {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    color: var(--skyplan-text-light);
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--skyplan-text-light);
 }
 
 .toggle-password:hover {
-    color: var(--skyplan-text-medium);
+  color: var(--skyplan-text-medium);
 }
 
 /* Hide default reveal on Edge/IE */
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
-    display: none;
+  display: none;
 }
 
 .error-message {
-    font-size: .75rem;
-    color: var(--skyplan-error);
-    margin-top: 4px;
-    display: none;
+  font-size: 0.75rem;
+  color: var(--skyplan-error);
+  margin-top: 4px;
+  display: none;
 }
 
 .error-message.show {
-    display: block;
+  display: block;
 }
 
-/* Footer row under inputs  */
+/* Special styling for terms error message */
+.form-footer + .error-message {
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+
+/*Footer row under inputs  */
 
 .form-footer {
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    margin-top: 10px;
-    margin-bottom: 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  margin-top: 10px;
+  margin-bottom: 0;
 }
 
 .checkbox-wrapper {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .form-checkbox {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    border: 1.5px solid #999;
-    border-radius: 3px;
-    background: #fff;
-    cursor: pointer;
-    position: relative;
-    flex-shrink: 0;
-    margin-top: 2px;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid #999;
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .form-checkbox:checked {
-    border-color: #333;
-    background: #fff;
+  border-color: #333;
+  background: #fff;
 }
 
 .form-checkbox:checked::after {
-    content: "";
-    position: absolute;
-    left: 4px;
-    top: 1px;
-    width: 4px;
-    height: 8px;
-    border: solid #333;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid #333;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 .checkbox-label {
-    font-size: .75rem;
-    color: var(--skyplan-text-medium);
-    cursor: pointer;
-    line-height: 1.4;
+  font-size: 0.75rem;
+  color: var(--skyplan-text-medium);
+  cursor: pointer;
+  line-height: 1.4;
 }
 
 .terms-link {
-    color: var(--skyplan-primary);
-    text-decoration: none;
-    font-weight: 600;
+  color: var(--skyplan-primary);
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .terms-link:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 /*Buttons*/
 
 .btn-primary {
-    width: 100%;
-    height: 42px;
-    background: var(--skyplan-primary);
-    color: #fff;
-    font-weight: 600;
-    border: 0;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all .3s ease;
-    box-shadow: 0 2px 8px rgba(0, 168, 150, .2);
-    font-size: 1rem;
+  width: 100%;
+  height: 42px;
+  background: var(--skyplan-primary);
+  color: #fff;
+  font-weight: 600;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 168, 150, 0.2);
+  font-size: 1rem;
 }
 
 .btn-primary:hover {
-    background: var(--skyplan-primary-dark);
+  background: var(--skyplan-primary-dark);
 }
 
 .btn-social {
-    width: 100%;
-    height: 38px;
-    background: #fff;
-    border: 1.5px solid var(--skyplan-border);
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all .3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 8px;
-    font-size: .875rem;
-    color: var(--skyplan-text-dark);
+  width: 100%;
+  height: 38px;
+  background: #fff;
+  border: 1.5px solid var(--skyplan-border);
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+  color: var(--skyplan-text-dark);
 }
 
 .btn-social:hover {
-    border-color: var(--skyplan-primary);
+  border-color: var(--skyplan-primary);
 }
 
 /*Divider*/
 
 .divider {
-    display: flex;
-    align-items: center;
-    margin: 12px 0;
+  display: flex;
+  align-items: center;
+  margin: 12px 0;
 }
 
 .divider-line {
-    flex: 1;
-    height: 1px;
-    background-color: var(--skyplan-border);
+  flex: 1;
+  height: 1px;
+  background-color: var(--skyplan-border);
 }
 
 .divider-text {
-    padding: 0 12px;
-    font-size: .75rem;
-    color: var(--skyplan-text-light);
+  padding: 0 12px;
+  font-size: 0.75rem;
+  color: var(--skyplan-text-light);
 }
 
 /*Switch page (Register/Login)*/
 
 .switch-page {
-    text-align: center;
-    margin-top: 12px;
-    font-size: .875rem;
+  text-align: center;
+  margin-top: 12px;
+  font-size: 0.875rem;
 }
 
 .switch-page-text {
-    color: var(--skyplan-text-medium);
+  color: var(--skyplan-text-medium);
 }
 
 .switch-page-link {
-    color: var(--skyplan-primary);
-    font-weight: 600;
-    text-decoration: none;
+  color: var(--skyplan-primary);
+  font-weight: 600;
+  text-decoration: none;
 }
 
 .switch-page-link:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 /*Responsive*/
 
 @media (max-width: 640px) {
-    .register-content {
-        padding: 24px;
-    }
+  body {
+    padding: 10px;
+  }
+
+  .register-container {
+    border-radius: 12px;
+  }
+
+  .register-content {
+    padding: 20px 16px;
+  }
+
+  .logo-text {
+    font-size: 1.875rem;
+  }
+
+  .page-title {
+    font-size: 1.25rem;
+  }
+
+  .form-input {
+    height: 40px;
+    font-size: 0.9375rem;
+  }
+
+  .btn-primary {
+    height: 40px;
+    font-size: 0.9375rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .register-content {
+    padding: 16px 12px;
+  }
+
+  .logo-text {
+    font-size: 1.625rem;
+  }
+
+  .page-title {
+    font-size: 1.125rem;
+  }
+
+  .form-label {
+    font-size: 0.8125rem;
+  }
+}
+
+/* Prevent layout shift on zoom */
+@media (min-width: 641px) {
+  .register-container {
+    width: 520px;
+  }
 }

@@ -9,7 +9,7 @@ const translations = {
     helpText: "Help",
     myTripsText: "My Trips",
     signUpText: "Sign Up",
-    signInText: "Log In",
+    signInText: "Sign In",
     
     // Hero section
     heroTitle: "Best deals are waiting for you",
@@ -137,8 +137,7 @@ const cityTranslations = {
     NgheAn: 'Nghệ An',
     QuangNinh: 'Quảng Ninh',
     SonLa: 'Sơn La',
-    DaLat: 'Đà Lạt',
-    PhuQuoc: 'Phú Quốc'
+    DaLat: 'Đà Lạt'
   },
   en: {
     HaNoi: 'Ha Noi',
@@ -158,8 +157,7 @@ const cityTranslations = {
     NgheAn: 'Nghe An',
     QuangNinh: 'Quang Ninh',
     SonLa: 'Son La',
-    DaLat: 'Da Lat',
-    PhuQuoc: 'Phu Quoc'
+    DaLat: 'Da Lat'
   }
 };
 

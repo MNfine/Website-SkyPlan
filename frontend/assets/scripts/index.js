@@ -1,8 +1,9 @@
 // Index page-specific logic (no global init duplication)
 
 (function () {
-  let VI_DATE_MODE = false; // track if current language is Vietnamese for date display
-  let TODAY_ISO = null;
+  // Check if date format handler is loaded
+  const dateHandler = window.dateFormatHandler;
+  
   // City dictionary is provided by index_translations.js
   const CITY_LABELS = (typeof window !== 'undefined' && window.SKYPLAN_CITY_TRANSLATIONS) ? window.SKYPLAN_CITY_TRANSLATIONS : null;
   const CITY_CODES = CITY_LABELS ? Object.keys(CITY_LABELS.vi) : [];
@@ -37,16 +38,25 @@
   }
 
   function setDateMinAndDefaults() {
+    // If dateFormatHandler is available, use it
+    if (window.dateFormatHandler) {
+      window.dateFormatHandler.ensureTodayAndMins();
+      return;
+    }
+    
+    // Fallback implementation if dateFormatHandler is not available
     const dep = document.getElementById('departure');
     const ret = document.getElementById('return');
     if (!dep || !ret) return;
+    
     const today = new Date();
     const pad = (n) => String(n).padStart(2, '0');
     const toISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
     const todayISO = toISO(today);
-    TODAY_ISO = todayISO;
+    
     dep.min = todayISO;
     ret.min = todayISO;
+    
     // Set sensible defaults if empty/old
     if (!dep.value || dep.value < todayISO) dep.value = todayISO;
     const retDefault = new Date(today);
@@ -59,24 +69,37 @@
     ret.dataset.isoValue = ret.value;
 
     // keep return >= departure
-    dep.addEventListener('change', () => {
-      const d = (VI_DATE_MODE ? (dep.dataset.isoValue || dep.value) : dep.value);
-      if (!d) return;
-      ret.min = d;
-      const retISO = VI_DATE_MODE ? (ret.dataset.isoValue || '') : ret.value;
-      if (!retISO || retISO < d) {
-        if (VI_DATE_MODE) {
-          ret.dataset.isoValue = d;
-          switchToTextDisplay(ret);
-        } else {
-          ret.value = d;
+    if (!dep.dataset.boundChange) {
+      dep.addEventListener('change', () => {
+        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        const isVietnamese = lang === 'vi';
+        const d = (isVietnamese ? (dep.dataset.isoValue || dep.value) : dep.value);
+        if (!d) return;
+        ret.min = d;
+        const retISO = isVietnamese ? (ret.dataset.isoValue || '') : ret.value;
+        if (!retISO || retISO < d) {
+          if (isVietnamese) {
+            ret.dataset.isoValue = d;
+            if (window.dateFormatHandler) {
+              window.dateFormatHandler.updateDateInputsByLang(lang);
+            } else {
+              // Fallback
+              try {
+                ret.type = 'text';
+                ret.value = formatDDMMYYYY(d);
+              } catch(e) {}
+            }
+          } else {
+            ret.value = d;
+          }
         }
-      }
-      dep.dataset.isoValue = d;
-      if (!VI_DATE_MODE) {
-        ret.dataset.isoValue = ret.value;
-      }
-    });
+        dep.dataset.isoValue = d;
+        if (!isVietnamese) {
+          ret.dataset.isoValue = ret.value;
+        }
+      });
+      dep.dataset.boundChange = '1';
+    }
   }
 
   function setDateInputsLang(lang) {
@@ -84,11 +107,20 @@
     const ret = document.getElementById('return');
     if (dep) dep.setAttribute('lang', lang);
     if (ret) ret.setAttribute('lang', lang);
+    
+    // Use global date format handler if available
+    if (window.dateFormatHandler) {
+      window.dateFormatHandler.updateDateInputsByLang(lang);
+      return; // Exit early since the handler takes care of everything
+    }
+    
+    // Fallback to legacy implementation
     applyDateLocalization(lang);
   }
 
   function applyDateLocalization(lang) {
-    VI_DATE_MODE = (lang === 'vi');
+    // Fallback implementation when dateFormatHandler is not available
+    const isVietnamese = (lang === 'vi');
     const dep = document.getElementById('departure');
     const ret = document.getElementById('return');
     if (!dep || !ret) return;
@@ -97,7 +129,7 @@
     bindDateLocalizationHandlers(ret);
 
     // initial display based on current mode
-    if (VI_DATE_MODE) {
+    if (isVietnamese) {
       switchToTextDisplay(dep);
       switchToTextDisplay(ret);
     } else {
@@ -132,31 +164,45 @@
   }
 
   function bindDateLocalizationHandlers(input) {
+    // If global date format handler is available, delegate to it
+    if (window.dateFormatHandler) {
+      // The date handler will bind the events
+      return;
+    }
+    
+    // Fallback legacy implementation when dateFormatHandler is not available
     if (!input || input.dataset.dateLocalizedBound === '1') return;
+    
+    // Get language state
+    const getLang = () => localStorage.getItem('preferredLanguage') || 'vi';
+    const isVietnameseMode = () => getLang() === 'vi';
+    
     // Vietnamese mode: show native date picker on focus, display DD/MM/YYYY on blur
     input.addEventListener('focus', () => {
-      if (!VI_DATE_MODE) return;
+      if (!isVietnameseMode()) return;
       // switch to date to use native picker
       switchToDateInput(input);
       // re-apply min constraints when switching
       if (input.id === 'return') {
-        const depISO = document.getElementById('departure')?.dataset.isoValue || TODAY_ISO;
+        const depISO = document.getElementById('departure')?.dataset.isoValue || getTodayISOFallback();
         if (depISO) input.min = depISO;
       } else {
-        if (TODAY_ISO) input.min = TODAY_ISO;
+        input.min = getTodayISOFallback();
       }
       // Try open the picker where supported
       try { if (typeof input.showPicker === 'function') input.showPicker(); } catch (e) {}
     });
+    
     input.addEventListener('input', () => {
-      if (!VI_DATE_MODE) return;
+      if (!isVietnameseMode()) return;
       // when using native date picker, keep dataset in sync as user picks
       if (input.type === 'date') {
         input.dataset.isoValue = input.value;
       }
     });
+    
     input.addEventListener('blur', () => {
-      if (!VI_DATE_MODE) return;
+      if (!isVietnameseMode()) return;
       // persist iso value from the date input before switching
       if (input.type === 'date') {
         input.dataset.isoValue = input.value || input.dataset.isoValue || '';
@@ -177,7 +223,7 @@
         }
       } else if (input === ret) {
         // ensure ret >= dep
-        const depISO = dep && dep.dataset.isoValue ? dep.dataset.isoValue : TODAY_ISO;
+        const depISO = dep && dep.dataset.isoValue ? dep.dataset.isoValue : getTodayISOFallback();
         const retISO = ret.dataset.isoValue || '';
         if (depISO && retISO && retISO < depISO) {
           ret.dataset.isoValue = depISO;
@@ -185,13 +231,22 @@
         }
       }
     });
+    
     input.addEventListener('change', () => {
-      if (!VI_DATE_MODE) return;
+      if (!isVietnameseMode()) return;
       // keep iso synced and normalize view
       if (input.type === 'date') input.dataset.isoValue = input.value;
       sanitizeTextDate(input);
     });
+    
     input.dataset.dateLocalizedBound = '1';
+  }
+  
+  // Helper function to get today's ISO date
+  function getTodayISOFallback() {
+    const today = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
   }
 
   function maskDDMMYYYY(input) {
@@ -264,8 +319,18 @@
   function initPageOnce() {
     const lang = (localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi');
     updateCityDropdowns(lang);
-    setDateMinAndDefaults();
-    setDateInputsLang(lang);
+    
+    // Initialize date handling
+    if (window.dateFormatHandler) {
+      // Always ensure date values are properly set up
+      window.dateFormatHandler.ensureTodayAndMins();
+      // Apply proper formatting based on current language
+      window.dateFormatHandler.updateDateInputsByLang(lang);
+    } else {
+      setDateMinAndDefaults();
+      setDateInputsLang(lang);
+    }
+    
     initializeSearch();
     enableSmoothScrolling();
     setupPopularRoutesHover();
@@ -277,17 +342,29 @@
       form.addEventListener('submit', () => {
         const dep = document.getElementById('departure');
         const ret = document.getElementById('return');
+        const handler = window.dateFormatHandler;
+        const toISO = (input) => {
+          if (!input) return '';
+          const raw = input.dataset.isoValue || input.value || '';
+          if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw; // already ISO
+          if (handler && handler.parseDDMMToISO) {
+            let iso = handler.parseDDMMToISO(raw);
+            if (!iso && handler.parseMMDDToISO) iso = handler.parseMMDDToISO(raw);
+            return iso || raw;
+          }
+          return raw;
+        };
         if (dep) {
-          if (VI_DATE_MODE) sanitizeTextDate(dep);
-          dep.dataset.isoValue = dep.dataset.isoValue || dep.value;
+          const iso = toISO(dep);
+          dep.dataset.isoValue = iso;
           try { dep.type = 'date'; } catch (e) {}
-          dep.value = dep.dataset.isoValue || dep.value;
+          dep.value = iso;
         }
         if (ret) {
-          if (VI_DATE_MODE) sanitizeTextDate(ret);
-          ret.dataset.isoValue = ret.dataset.isoValue || ret.value;
+          const iso = toISO(ret);
+          ret.dataset.isoValue = iso;
           try { ret.type = 'date'; } catch (e) {}
-          ret.value = ret.dataset.isoValue || ret.value;
+          ret.value = iso;
         }
       });
       form.dataset.dateSubmitBound = '1';
@@ -303,5 +380,13 @@
   });
 
   // DOM ready
-  document.addEventListener('DOMContentLoaded', initPageOnce);
+  document.addEventListener('DOMContentLoaded', () => {
+    initPageOnce();
+    
+    // Force an immediate date format update to ensure proper display on page load
+    if (window.dateFormatHandler) {
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      setTimeout(() => window.dateFormatHandler.updateDateInputsByLang(lang), 0);
+    }
+  });
 })();

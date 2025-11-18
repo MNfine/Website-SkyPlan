@@ -3,10 +3,22 @@
     --sp-panel: #ffffff;
     --sp-ink: #1f2937;
     --sp-muted: #6b7280;
-    --sp-primary: #20B2AA;
+    --sp-primary: #0A969D;
     --sp-line: #e5e7eb;
-    --sp-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+    --sp-shadow: 0 4px 12px #0000000f;
     --sp-radius: 14px;
+    html,
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    button,
+    input,
+    select,
+    textarea {
+        font-family: inherit;
+    }
 }
 
 
@@ -52,6 +64,7 @@
 
 .sp-filters {
     margin-left: -32px;
+    display: block !important;
     position: sticky;
     top: 88px;
     align-self: start;
@@ -105,9 +118,10 @@
 .sp-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    border: 0;
-    cursor: pointer;
+    line-height: 1;
+    vertical-align: middle;
 }
 
 .sp-btn.sp-btn-secondary {
@@ -118,6 +132,20 @@
     color: #fff;
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.25);
     padding: 10px 14px;
+}
+
+.sp-btn.sp-btn-secondary:hover {
+    background: #4b5563;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.3);
+    transition: all 0.25s ease;
+}
+
+.sp-btn.sp-btn-secondary:active {
+    background: #1f2937;
+    transform: translateY(0);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
 }
 
 .sp-section {
@@ -200,7 +228,7 @@
 }
 
 
-/* ===== Price slider ===== */
+/* ===== Price ===== */
 
 .sp-price-top,
 .sp-price-bottom {
@@ -253,6 +281,8 @@
     display: flex;
     flex-direction: column;
     gap: 50px;
+    /* When using scrollIntoView, ensure results stop below fixed header */
+    scroll-margin-top: 90px;
 }
 
 .sp-card {
@@ -497,9 +527,6 @@
     position: relative;
 }
 
-
-/* Node chung */
-
 .sp-node {
     display: grid;
     grid-template-columns: 80px 28px 1fr;
@@ -509,9 +536,6 @@
     padding: 14px 0;
 }
 
-
-/* Biểu tượng tròn 28px để tính đúng tâm */
-
 .sp-node__icon {
     width: 28px;
     height: 28px;
@@ -519,9 +543,6 @@
     place-items: center;
     border-radius: 50%;
 }
-
-
-/* giữ node plane đúng vị trí */
 
 .sp-node--plane {
     position: relative;
@@ -533,14 +554,13 @@
     color: #F2C94C;
 }
 
-
-/* 2 đoạn gạch gạch dọc quanh icon máy bay */
-
 .sp-node--plane::before,
 .sp-node--plane::after {
     content: "";
     position: absolute;
-    left: calc(80px + 24px - 1px);
+    /* align dashed line center with plane icon (includes first col + gap + half of icon col) */
+    /* fine-tune half-pixel to visually center with FA plane glyph */
+    left: calc(80px + 10px + 14px - 1px);
     border-left: 2px dashed #9ca3af;
     pointer-events: none;
     width: 0;
@@ -598,7 +618,6 @@
     }
     .sp-card {
         grid-template-columns: 1fr;
-        /* aside xuống dưới */
     }
     .sp-card-aside {
         border-left: 0;
@@ -632,18 +651,6 @@
         margin: 0 0 10px 0;
         cursor: pointer;
     }
-    .sp-filters {
-        display: none;
-    }
-    .sp-filters.active {
-        display: block;
-        position: fixed;
-        inset: 0;
-        z-index: 2000;
-        background: #fff;
-        padding: 16px;
-        overflow-y: auto;
-    }
     .sp-results {
         gap: 16px;
     }
@@ -666,6 +673,7 @@
         font-size: 11px;
     }
     .sp-btn.sp-btn-block {
+        align-items: center;
         font-size: 13px;
         padding: 10px 12px;
     }
@@ -691,9 +699,15 @@
         grid-template-columns: 64px 24px 1fr;
         padding: 10px 0;
     }
+    /* Match icon cell size to the 24px column to keep plane centered */
+    .sp-node__icon {
+        width: 24px;
+        height: 24px;
+    }
     .sp-node--plane::before,
     .sp-node--plane::after {
-        left: calc(64px + 20px - 1px);
+        /* 64 (col1) + 10 (gap) + 12 (half of 24px icon col) - 1 */
+    left: calc(64px + 10px + 12px - 0.5px);
     }
 }
 
@@ -715,5 +729,13 @@
     .sp-btn--ghost {
         padding: 10px 14px;
         font-size: 13px;
+    }
+    /* Stack modal footer buttons vertically on small screens */
+    .sp-modal__footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .sp-modal__footer .sp-btn {
+        width: 100%;
     }
 }

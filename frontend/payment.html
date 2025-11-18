@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-i18n="paymentTitle">SkyPlan - Thanh toán</title>
 
   <!-- Favicon -->
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
 
   <!-- Font Awesome CDN for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
   <!-- CSS -->
-  <link rel="stylesheet" href="assets/styles/reset.css" />
-  <link rel="stylesheet" href="assets/styles/index.css" />
-  <link rel="stylesheet" href="assets/styles/flags.css" />
-  <link rel="stylesheet" href="assets/styles/header.css" />
-  <link rel="stylesheet" href="assets/styles/footer.css" />
-  <link rel="stylesheet" href="assets/styles/payment.css" />
+  <link rel="stylesheet" href="assets/styles/reset.css">
+  <link rel="stylesheet" href="assets/styles/index.css">
+  <link rel="stylesheet" href="assets/styles/flags.css">
+  <link rel="stylesheet" href="assets/styles/header.css">
+  <link rel="stylesheet" href="assets/styles/footer.css">
+  <link rel="stylesheet" href="assets/styles/payment.css">
 </head>
 <body>
   <!-- Header -->
@@ -166,7 +166,7 @@
                         <div class="payment-details">
                           <div class="detail-row">
                             <span data-i18n="totalAmount">Số tiền:</span>
-                            <strong>1.598.000 ₫</strong>
+                            <strong>1.598.000 VND</strong>
                           </div>
                           <div class="detail-row">
                             <span data-i18n="bookingCode">Mã đặt vé:</span>
@@ -220,15 +220,15 @@
             <div class="price-breakdown">
               <div class="price-item">
                 <span data-i18n="ticketLabel">Vé máy bay (2 chiều)</span>
-                <span>1.398.000 ₫</span>
+                <span>1.398.000 VND</span>
               </div>
               <div class="price-item">
                 <span data-i18n="taxLabel">Thuế và phí</span>
-                <span>200.000 ₫</span>
+                <span>200.000 VND</span>
               </div>
               <div class="price-item total">
                 <span data-i18n="totalLabel">Tổng cộng</span>
-                <span>1.598.000 ₫</span>
+                <span>1.598.000 VND</span>
               </div>
             </div>
 
@@ -257,6 +257,7 @@
   <!-- JavaScript -->
   <script src="assets/scripts/common.js"></script>
   <script src="assets/scripts/payment_translations.js"></script>
+  <script src="assets/scripts/payment_order.js"></script>
   <script>
     // Tự động dịch khi trang load
     document.addEventListener('DOMContentLoaded', function() {
@@ -368,12 +369,26 @@
         if (typeof initializeLanguageSelector === 'function') {
           initializeLanguageSelector();
         }
+        if (typeof initializeMobileMenu === 'function') {
+          initializeMobileMenu();
+        }
+        const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+        if (typeof applyPaymentTranslations === 'function') {
+          applyPaymentTranslations(lang);
+        }
+        if (typeof updateSelectedLanguage === 'function') {
+          updateSelectedLanguage(lang);
+        }
       });
 
     fetch('components/footer.html')
       .then((res) => res.ok ? res.text() : Promise.reject())
       .then((html) => {
         document.getElementById('footer-container').innerHTML = html;
+        const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+        if (typeof applyPaymentTranslations === 'function') {
+          applyPaymentTranslations(lang);
+        }
       });
   </script>
 </body>
