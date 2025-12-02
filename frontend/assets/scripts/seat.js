@@ -57,17 +57,7 @@ const SeatNotifications = {
     }
   },
 
-  // Show restricted seat notification
-  showRestrictedSeat: function() {
-    const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
-    const restrictedMsg = currentLang === 'vi' ? 
-      'Ghế này không khả dụng cho hạng vé của bạn' : 
-      'This seat is not available for your fare class';
-    
-    if (typeof showToast === 'function') {
-      showToast(restrictedMsg, {type: 'error', duration: 3000});
-    }
-  },
+
 
   // Show countdown expired notification
   showTimeExpired: function() {
