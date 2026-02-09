@@ -251,11 +251,11 @@
   </script>
   <script src="assets/scripts/loader.js"></script>
   <script>
-    // Import loader HTML vào DOM càng sớm càng tốt
+    // Import loader HTML into DOM as early as possible
     fetch('components/loader.html').then(r => r.text()).then(html => {
       document.body.insertAdjacentHTML('beforeend', html);
     });
-    // Gắn sự kiện click cho nút chọn để show loader và chuyển trang
+    // Attach click event for select button to show loader and navigate
     document.addEventListener('DOMContentLoaded', function() {
       document.querySelectorAll('.btn-select').forEach(function(btn) {
         btn.addEventListener('click', function(e) {

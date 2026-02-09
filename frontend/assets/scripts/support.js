@@ -1,7 +1,6 @@
 // Customer Support Chat Page JavaScript
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize page
     initializePage();
     initializeChat();
     setupEventListeners();
@@ -9,43 +8,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Initialize page functionality
 function initializePage() {
-    // Load header and footer
-    loadHeaderFooter();
-    
-    // Apply translations
-    setTimeout(() => {
+    loadHeaderFooter().then(() => {
         applySupportTranslations();
-    }, 100);
-}
-
-// Load header and footer components
-function loadHeaderFooter() {
-    // Load header
-    fetch('components/header.html')
-        .then(response => response.text())
-        .then(data => {
-            const headerMount = document.getElementById('header-container') || document.getElementById('header-placeholder');
-            if (headerMount) headerMount.innerHTML = data;
-            // Initialize header behaviors: language + mobile menu
-            if (typeof initializeLanguageSelector === 'function') initializeLanguageSelector();
-            if (typeof initializeMobileMenu === 'function') initializeMobileMenu();
-            const lang = getCurrentLanguage();
-            if (typeof updateSelectedLanguage === 'function') updateSelectedLanguage(lang);
-        });
-
-    // Load footer
-    fetch('components/footer.html')
-        .then(response => response.text())
-        .then(data => {
-            const footerMount = document.getElementById('footer-container') || document.getElementById('footer-placeholder');
-            if (footerMount) footerMount.innerHTML = data;
-        });
+    });
 }
 
 // Initialize chat functionality
 function initializeChat() {
     const chatMessages = document.getElementById('chatMessages');
-    const chatContainer = document.querySelector('.chat-container');
     
     // Auto-scroll to bottom
     if (chatMessages) {

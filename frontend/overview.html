@@ -255,31 +255,6 @@
   </script>
 
   <script>
-    // Ẩn nút thanh toán cho từng vé đã thanh toán thành công
-    (function () {
-      // Giả sử mỗi vé có 1 container với id hoặc class chứa bookingCode
-      document.querySelectorAll('[data-booking-code]').forEach(function (ticket) {
-        const code = ticket.getAttribute('data-booking-code');
-        if (code && localStorage.getItem('paid_' + code) === 'true') {
-          const payBtn = ticket.querySelector('.pay-btn');
-          if (payBtn) payBtn.style.display = 'none';
-        }
-      });
-    })();
-  </script>
-
-  <script>
-    // Tự động dịch khi trang load
-    document.addEventListener('DOMContentLoaded', function () {
-      const lang = localStorage.getItem('preferredLanguage') || 'vi';
-      if (typeof applyOverviewTranslations === 'function') {
-        applyOverviewTranslations(lang);
-      }
-    });
-  </script>
-
-  <script>
-    // Read fare selection and extras, render services summary and total
   (function(){
       const EXTRAS_KEY = 'skyplan_extras_v2';
       const FARE_KEY = 'skyplan_fare_selection';

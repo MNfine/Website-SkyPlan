@@ -202,7 +202,7 @@ function renderAll(){
 function openDetail(id){
     window._promoCurrentId = id;
     const base = PROMO_ITEMS.find(x=>x.id===id); if(!base) return;
-    // LẤY BẢN DỊCH (EN) NẾU CÓ
+    // GET TRANSLATED VERSION (EN) IF AVAILABLE
     const p = (window.getLocalizedItem ? window.getLocalizedItem(base) : base);
   
     dHero.src = p.img; dHero.alt = p.title;
@@ -241,7 +241,7 @@ function openDetail(id){
             ta.value = code; ta.readOnly = true; ta.style.position="absolute"; ta.style.left="-9999px";
             document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta);
           }
-          // === i18n cho trạng thái nút ===
+          // === i18n for button state ===
           const lang = (typeof getLang === "function") ? getLang() : "vi";
           const copiedText = (window.ui?.[lang]?.copied) || (lang==="en"?"Copied!":"Đã sao chép!");
           btn.textContent = copiedText;
@@ -299,7 +299,7 @@ window.skyplanPromo = {
     rerender() {
       renderAll();
       if (!detailEl.hidden && typeof window._promoCurrentId === 'number') {
-        openDetail(window._promoCurrentId); // mở lại detail theo lang mới
+        openDetail(window._promoCurrentId); // reopen detail with new language
       }
     }
   };

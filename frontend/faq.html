@@ -22,7 +22,7 @@
   <body>
     <div id="header-container"></div>
     <main class="container faq-page">
-      <!--Thanh tìm kiếm -->
+      <!-- Search bar -->
       <section class="faq-header">
         <h1 class="faq-title" data-i18n="faqTitle">Câu hỏi thường gặp</h1>
         <form id="faqSearchForm" class="faq-search" role="search">
@@ -60,9 +60,9 @@
         </form>
       </section>
 
-      <!-- Bố cục 2 cột -->
+      <!-- 2-column layout -->
       <div class="faq-layout">
-        <!-- Sidebar danh mục -->
+        <!-- Category sidebar -->
         <aside class="faq-sidebar" aria-label="Danh mục FAQ">
           <nav class="faq-nav">
             <button
@@ -134,9 +134,9 @@
           </nav>
         </aside>
 
-        <!-- Nội dung (JS render) -->
+        <!-- Content (JS render) -->
         <section class="faq-content">
-          <!-- Trạng thái tìm kiếm -->
+          <!-- Search state -->
           <div
             id="faqSearchState"
             class="faq-search-state"
@@ -157,7 +157,7 @@
             </button>
           </div>
 
-          <!--không có kết quả -->
+          <!-- No results -->
           <div id="faqNoResults" class="faq-empty" hidden>
             <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
             <p data-i18n="noResults">Không tìm thấy kết quả phù hợp.</p>
@@ -166,7 +166,7 @@
       </div>
     </main>
 
-    <!-- Footer (nạp bằng JS) -->
+    <!-- Footer (loaded by JS) -->
     <div id="footer-container"></div>
 
     <!-- Scripts (defer) -->

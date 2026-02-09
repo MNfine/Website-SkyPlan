@@ -1,5 +1,53 @@
 // Common JS for SkyPlan: shared UI logic (menu, language selector, etc.)
 
+// Shared helper to load header and footer components (separate promises to prevent footer delay)
+function loadHeaderFooter() {
+    return new Promise((resolve) => {
+        const headerContainer = document.getElementById('header-container') || document.getElementById('header-placeholder');
+        
+        // Load and initialize header - critical for UI
+        if (headerContainer) {
+            fetch('components/header.html')
+                .then(r => r.ok ? r.text() : Promise.reject())
+                .then(html => {
+                    headerContainer.innerHTML = html;
+                    if (typeof initializeMobileMenu === 'function') initializeMobileMenu();
+                    if (typeof initializeLanguageSelector === 'function') initializeLanguageSelector();
+                    resolve();
+                })
+                .catch(() => resolve());
+        } else {
+            resolve();
+        }
+
+        // Load footer asynchronously (non-blocking)
+        const footerContainer = document.getElementById('footer-container') || document.getElementById('footer-placeholder');
+        if (footerContainer) {
+            fetch('components/footer.html')
+                .then(r => r.ok ? r.text() : Promise.reject())
+                .then(html => {
+                    footerContainer.innerHTML = html;
+                })
+                .catch(() => {});
+        }
+    });
+}
+
+// Get current language
+function getCurrentLanguage() {
+    return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+}
+
+// Read JSON from localStorage safely
+function readJSON(key, fallback) {
+    try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : fallback;
+    } catch {
+        return fallback;
+    }
+}
+
 // Mobile menu functionality
 function initializeMobileMenu() {
     setTimeout(() => {

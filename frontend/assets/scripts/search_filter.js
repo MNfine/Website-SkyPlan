@@ -17,7 +17,7 @@
         return toNumber(n ? n.textContent : 0);
     };
 
-    // lấy giờ khởi hành chiều đi (cột đầu tiên trong .sp-itinerary)
+    // get departure time of outbound flight (first column in .sp-itinerary)
     const timeOfCard = (card) => {
         const itin = card.querySelector(".sp-itinerary");
         const t = itin ? txt(itin.querySelectorAll(".sp-time")[0]) : "00:00";
@@ -33,14 +33,14 @@
 
     // ---------- Current selections ----------
     function getTimeRange() {
-        // Ưu tiên data-start/data-end trên radio (định dạng "HH:MM")
+        // Prioritize data-start/data-end on radio (format "HH:MM")
         const r = timeRadios.find((x) => x.checked);
         if (r) {
             const ds = r.dataset.start,
                 de = r.dataset.end;
             if (ds && de) return [hhmmToMin(ds), hhmmToMin(de)];
-            // fallback đọc text hiển thị
-            // lấy text trong .sp-choice hoặc text node kế bên
+            // fallback read display text
+            // get text in .sp-choice or adjacent text node
             let label = "";
             const wrap = r.closest(".sp-choice");
             if (wrap) label = txt(wrap).replace(/\s+/g, " ");
@@ -50,7 +50,7 @@
             const m = /(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/.exec(label);
             if (m) return [hhmmToMin(m[1]), hhmmToMin(m[2])];
         }
-        // mặc định: 00:00–23:59 (không giới hạn)
+        // default: 00:00–23:59 (no limit)
         return [0, hhmmToMin("23:59")];
     }
 
@@ -64,7 +64,7 @@
         const priceMax = getPriceMax();
 
         let anyVisible = false;
-        // lấy lại danh sách card mỗi lần (phòng khi render động)
+        // re-get card list each time (in case of dynamic rendering)
         const cards = $all(".sp-results .sp-card");
 
         for (let i = 0; i < cards.length; i++) {
@@ -89,7 +89,7 @@
         }
 
         // empty state
-        // helper nhỏ để lấy chuỗi theo ngôn ngữ hiện tại
+        // small helper to get string according to current language
         function t(key, fallbackVi, fallbackEn) {
             const lang = document.documentElement.lang === 'vi' ? 'vi' : 'en';
             try { return _t(lang)[key] || (lang === 'vi' ? (fallbackEn || '') : (fallbackVi || '')); } catch (_) { return (lang === 'vi' ? (fallbackEn || '') : (fallbackVi || '')); }
@@ -110,7 +110,7 @@
                 results.appendChild(empty);
             }
 
-            // lấy ngôn ngữ hiện tại
+            // get current language
             const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
             const messages = {
                 vi: "Không có chuyến bay phù hợp với bộ lọc.",

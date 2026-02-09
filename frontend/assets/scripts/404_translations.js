@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('sp:langchange', e => {
     const code = e && e.detail && e.detail.lang;
     if (code) {
-        localStorage.setItem('preferredLanguage', code); // Lưu vào localStorage
+        localStorage.setItem('preferredLanguage', code); // Save to localStorage
         apply404Translations(code);
     }
     (function(L) { var s = document.querySelector('#lang-select,#language-select'); if (s) s.value = L; var b = document.querySelector('[data-lang-label]'); if (b) b.textContent = L.toUpperCase(); })((typeof code !== 'undefined' ? code : (typeof lang !== 'undefined' ? lang : (new URLSearchParams(location.search).get('lang') || localStorage.getItem('preferredLanguage') || 'vi'))).toLowerCase());

@@ -5,7 +5,7 @@
     try { return JSON.parse(localStorage.getItem(TRIP_KEY)) || null; } catch { return null; }
   }
   function getLang(){
-    return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+    return window.getCurrentLanguage ? window.getCurrentLanguage() : localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
   }
   function cityLabel(raw, lang){
     if (typeof window !== 'undefined' && typeof window.resolveCityLabel === 'function') {

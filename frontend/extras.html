@@ -103,14 +103,14 @@
         </article>
       </section>
 
-      <!-- Tổng & điều hướng -->
+      <!-- Total & navigation -->
       <section class="extras-actions">
         <div class="extras-total">
           <span data-i18n="yourExtras">Dịch vụ đã chọn:</span>
           <strong id="extrasTotal">0 VND</strong>
         </div>
 
-        <!-- Liên kết sang Overview -->
+        <!-- Link to Overview -->
         <a id="toPaymentBtn" class="next-btn" href="overview.html">
           <i class="fas fa-arrow-right"></i>
           <span data-i18n="continuePayment">Tiếp tục</span>
@@ -161,13 +161,13 @@
     <script src="assets/scripts/extras.js"></script>
     <script src="assets/scripts/loader.js"></script>
     <script>
-      // Import loader HTML vào DOM càng sớm càng tốt
+      // Import loader HTML into DOM as early as possible
       fetch("components/loader.html")
         .then((r) => r.text())
         .then((html) => {
           document.body.insertAdjacentHTML("beforeend", html);
         });
-      // Gắn sự kiện click cho nút tiếp tục thanh toán để show loader và chuyển trang
+      // Attach click event for continue payment button to show loader and navigate
       document.addEventListener("DOMContentLoaded", function () {
         var btn = document.getElementById("toPaymentBtn");
         if (btn) {

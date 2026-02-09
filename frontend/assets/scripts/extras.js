@@ -1,4 +1,4 @@
-// Key lưu state extras
+// Key to store extras state
 const STORAGE_KEY = "skyplan_extras_v2";
 const DEFAULT_EXTRAS = {
   meals: [],
@@ -6,7 +6,8 @@ const DEFAULT_EXTRAS = {
   services: [],
   total: 0,
 };
-//Initialization
+
+// Initialization
 document.addEventListener("DOMContentLoaded", () => {
   loadHeaderFooter().then(initializeLanguage);
   bindDetailsButtons();
@@ -14,30 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
   updateTotalsUI(getState());
 });
 
-function loadHeaderFooter() {
-  return new Promise((resolve) => {
-    // Header
-    fetch("components/header.html")
-      .then((r) => (r.ok ? r.text() : Promise.reject()))
-      .then((html) => {
-        document.getElementById("header-container").innerHTML = html;
-        if (typeof initializeMobileMenu === "function") initializeMobileMenu();
-        resolve();
-      })
-      .catch(() => resolve());
-
-    // Footer
-    fetch("components/footer.html")
-      .then((r) => (r.ok ? r.text() : Promise.reject()))
-      .then((html) => {
-        document.getElementById("footer-container").innerHTML = html;
-      })
-      .catch(() => {});
-  });
-}
-
 function initializeLanguage() {
-  const currentLang = localStorage.getItem("preferredLanguage") || "vi";
+  const currentLang = getCurrentLanguage();
   document.documentElement.lang = currentLang;
   if (typeof applyTranslations === "function") {
     try {

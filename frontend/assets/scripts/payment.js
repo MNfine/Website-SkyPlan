@@ -283,7 +283,7 @@ function processCardPayment() {
 
 // Process bank transfer
 function processBankTransfer() {
-  // Giả lập đã nhận được tiền, chuyển đến trang xác nhận
+  // Simulate received payment, redirect to confirmation page
   if (window.Loader) {
     window.Loader.show();
     setTimeout(function() {
@@ -347,8 +347,8 @@ function hideLoadingState() {
 
 // Show payment success
 function showPaymentSuccess() {
-  // Lưu trạng thái thanh toán thành công theo từng mã vé
-  // Lấy mã vé (bookingCode) và số tiền
+  // Save successful payment status for each booking code
+  // Get booking code (bookingCode) and amount
   const bookingCode = document.getElementById('bookingCode')?.textContent || window.lastTxnRef || '';
   const amount = window.lastAmount || 1598000;
   if (bookingCode) {
@@ -358,7 +358,7 @@ function showPaymentSuccess() {
   localStorage.setItem('lastTxnRef', bookingCode);
   localStorage.setItem('lastAmount', amount);
   
-  // Show loader trước khi redirect
+  // Show loader before redirect
   if (window.Loader) {
     window.Loader.show();
     setTimeout(function() {
@@ -543,7 +543,7 @@ function formatDate(date) {
 
 // --- LOCK ICON UI UPDATE (no duplicate validators) ---
 
-// Xử lý thay đổi giao diện nút thanh toán
+// Handle payment button UI changes
 function updatePayBtnUI() {
   const payBtn = document.querySelector('.pay-btn');
   const selectedPayment = document.querySelector('input[name="payment"]:checked');
@@ -598,7 +598,7 @@ function updatePayBtnUI() {
   // Do not call page-level updater here to avoid conflicting DOM updates
 }
 
-// Theo dõi thay đổi input thẻ để cập nhật nút
+// Monitor card input changes to update button
 function listenCardFormChange() {
   ['cardNumber', 'expiryDate', 'cvv', 'cardName'].forEach(id => {
     const el = document.getElementById(id);

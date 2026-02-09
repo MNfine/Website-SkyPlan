@@ -3,7 +3,7 @@
     const FARE_KEY = 'skyplan_fare_selection';
     const EXTRAS_KEY = 'skyplan_extras_v2';
 
-    function getLang() { return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi'; }
+    function getLang() { return window.getCurrentLanguage ? window.getCurrentLanguage() : localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi'; }
     function resolveCity(val, lang) {
         if (typeof window !== 'undefined' && typeof window.resolveCityLabel === 'function') return window.resolveCityLabel(val, lang);
         const MAP = (typeof window !== 'undefined' && window.SKYPLAN_CITY_TRANSLATIONS) || {};
@@ -11,7 +11,7 @@
         return dict[val] || val || '';
     }
     function fmtVND(v) { return new Intl.NumberFormat('vi-VN').format(Number(v) || 0) + ' VND'; }
-    function readJSON(key, fb) { try { return JSON.parse(localStorage.getItem(key)) || fb; } catch { return fb; } }
+    function readJSON(key, fb) { return window.readJSON ? window.readJSON(key, fb) : (function() { try { return JSON.parse(localStorage.getItem(key)) || fb; } catch { return fb; } })(); }
     function parseDigits(text) { const n = String(text || '').replace(/[^0-9]/g, ''); return Number(n) || 0; }
 
     function fmtDateISO(iso, lang) {
@@ -89,7 +89,7 @@
         const fareVND = (fare && (Number(fare.priceVND) || parseDigits(fare.priceLabel))) || 0;
         const extrasTotal = Number(extras.total) || 0;
         const tax = 200000; // demo flat tax/fees
-        const ticketAmount = fareVND; // chỉ hiển thị giá vé thuần không cộng dịch vụ thêm
+        const ticketAmount = fareVND; // only display base ticket price without extra services
         const total = fareVND + extrasTotal + tax;
 
         const breakdownEl = document.querySelector('.price-breakdown');
