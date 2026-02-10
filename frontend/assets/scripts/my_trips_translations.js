@@ -1,33 +1,36 @@
 // My Trips page translations
-(function() {
+(function () {
   if (typeof window === 'undefined') return;
 
   window.myTripsTranslations = {
     en: {
       // Meta
       myTripsTitle: "SkyPlan - My Trips",
-      
+      // Login required messages
+      loginRequired: "Login required",
+      loginRequiredDesc: "Please sign in to view your trips and booking history.",
+
       // Header
       helpText: "Help",
       myTripsText: "My Trips",
       signUpText: "Sign Up",
       signInText: "Sign In",
-      
+
       // Page title and header
       myTripsPageTitle: "My Trips",
       myTripsSubtitle: "Manage and track your trips",
-      
+
       // Tabs
       allTrips: "All",
       upcomingTrips: "Upcoming",
-      completedTrips: "Completed", 
+      completedTrips: "Completed",
       cancelledTrips: "Cancelled",
-      
+
       // Trip status
       statusUpcoming: "Upcoming",
       statusCompleted: "Completed",
       statusCancelled: "Cancelled",
-      
+
       // Trip details
       bookingCode: "Booking code:",
       passengers: "passengers",
@@ -40,20 +43,20 @@
       status: "Status:",
       flightCompleted: "Flight completed successfully",
       refundInfo: "Refund:",
-      
+
       // Cancellation reasons
       personalPlanChange: "Personal plan change",
       scheduleConflict: "Schedule conflict",
       emergencyReason: "Emergency",
       weatherCondition: "Weather condition",
       healthIssue: "Health issue",
-      
+
       // Airport names
       noibaAirport: "Noi Bai Airport",
       tansonnhatAirport: "Tan Son Nhat Airport",
       danangAirport: "Da Nang Airport",
       camranhAirport: "Cam Ranh Airport",
-      
+
       // Actions
       viewTicket: "View Ticket",
       downloadTicket: "Download Ticket",
@@ -63,7 +66,7 @@
       rebookTrip: "Rebook",
       rebookSimilar: "Book Similar",
       viewCancellationDetails: "Cancellation Details",
-      
+
       // Notifications
       goingToOverview: "Going to overview page...",
       downloadingTicket: "Downloading e-ticket...",
@@ -76,12 +79,21 @@
       goingToSearch: "Going to booking page...",
       findingSimilarFlights: "Finding similar flights...",
       showingCancellationDetails: "Showing cancellation details...",
+      processingCancellation: "Processing cancellation...",
       tripCancelledSuccess: "Trip cancelled successfully!",
+      tripCancelledSuccessWithSeats: "Trip cancelled successfully! Seats have been released.",
+      cancelTripError: "Error cancelling trip",
+      cancelTripFailed: "Failed to cancel trip",
+      tripNotFound: "Trip not found!",
+      pleaseLoginToContinue: "Please login to continue",
       refundProcessing: "Refund will be processed within 3-5 business days",
-      
+
       // Empty states
       noTripsTitle: "No trips yet",
       noTripsMessage: "You don't have any trips in this category. Book your first flight!",
+      // Message specifically for logged-in users who don't have any trips yet
+      noTripsLoggedInTitle: "You have no trips yet",
+      noTripsLoggedInMessage: "You're signed in but haven't booked any trips yet. Start by searching for flights!",
       noAllTripsTitle: "No trips yet",
       noAllTripsMessage: "You don't have any trips yet. Book your first flight!",
       noUpcomingTripsTitle: "No upcoming trips",
@@ -91,10 +103,14 @@
       noCancelledTripsTitle: "No cancelled trips",
       noCancelledTripsMessage: "You haven't cancelled any trips. Hope you won't need this section!",
       searchFlights: "Search Flights",
-      
+
       // Cancel modal
       cancelTripTitle: "Cancel Trip",
       cancelWarning: "Are you sure you want to cancel this trip?",
+      tripInformation: "Trip Information",
+      routeLabel: "Route:",
+      bookingCodeLabel: "Booking code:",
+      priceLabel: "Price:",
       cancellationPolicy: "Cancellation Policy",
       refundAmount: "Refund: 80% of ticket price (390,000 VND cancellation fee)",
       refundTime: "Refund time: 3-5 business days",
@@ -109,7 +125,7 @@
       notePlaceholder: "Enter notes (optional)...",
       keepTrip: "Keep Trip",
       confirmCancel: "Confirm Cancellation",
-      
+
       // Footer
       footerDesc: "Your trusted travel companion for the best flight deals and unforgettable journeys.",
       quickLinksTitle: "Quick Links",
@@ -129,32 +145,35 @@
       googlePlay: "Google Play",
       copyright: "© 2024 SkyPlan. All rights reserved."
     },
-    
+
     vi: {
       // Meta
       myTripsTitle: "SkyPlan - Chuyến đi của tôi",
-      
+      // Login required messages
+      loginRequired: "Đăng nhập",
+      loginRequiredDesc: "Vui lòng đăng nhập để xem các chuyến đi và lịch sử đặt vé của bạn.",
+
       // Header
       helpText: "Trợ giúp",
       myTripsText: "Chuyến đi của tôi",
       signUpText: "Đăng ký",
       signInText: "Đăng nhập",
-      
+
       // Page title and header
       myTripsPageTitle: "Chuyến đi của tôi",
       myTripsSubtitle: "Quản lý và theo dõi các chuyến đi của bạn",
-      
+
       // Tabs
       allTrips: "Tất cả",
       upcomingTrips: "Sắp tới",
       completedTrips: "Hoàn tất",
       cancelledTrips: "Đã hủy",
-      
+
       // Trip status
       statusUpcoming: "Sắp tới",
       statusCompleted: "Hoàn tất",
       statusCancelled: "Đã hủy",
-      
+
       // Trip details
       bookingCode: "Mã đặt chỗ:",
       passengers: "hành khách",
@@ -167,20 +186,20 @@
       status: "Trạng thái:",
       flightCompleted: "Đã bay thành công",
       refundInfo: "Hoàn tiền:",
-      
+
       // Cancellation reasons
       personalPlanChange: "Thay đổi kế hoạch cá nhân",
       scheduleConflict: "Xung đột lịch trình",
       emergencyReason: "Trường hợp khẩn cấp",
       weatherCondition: "Điều kiện thời tiết",
       healthIssue: "Vấn đề sức khỏe",
-      
+
       // Airport names
       noibaAirport: "Sân bay Nội Bài",
       tansonnhatAirport: "Sân bay Tân Sơn Nhất",
       danangAirport: "Sân bay Đà Nẵng",
       camranhAirport: "Sân bay Cam Ranh",
-      
+
       // Actions
       viewTicket: "Xem vé",
       downloadTicket: "Tải vé",
@@ -190,7 +209,7 @@
       rebookTrip: "Đặt lại",
       rebookSimilar: "Đặt tương tự",
       viewCancellationDetails: "Chi tiết hủy",
-      
+
       // Notifications
       goingToOverview: "Đang chuyển đến trang tổng quan...",
       downloadingTicket: "Đang tải vé điện tử...",
@@ -203,12 +222,21 @@
       goingToSearch: "Đang chuyển đến trang đặt vé...",
       findingSimilarFlights: "Đang tìm chuyến bay tương tự...",
       showingCancellationDetails: "Hiển thị chi tiết hủy vé...",
+      processingCancellation: "Đang xử lý yêu cầu hủy...",
       tripCancelledSuccess: "Chuyến đi đã được hủy thành công!",
+      tripCancelledSuccessWithSeats: "Đã hủy chuyến bay thành công! Ghế đã được hồi phục.",
+      cancelTripError: "Lỗi khi hủy chuyến bay",
+      cancelTripFailed: "Không thể hủy chuyến bay",
+      tripNotFound: "Không tìm thấy thông tin chuyến đi!",
+      pleaseLoginToContinue: "Vui lòng đăng nhập để tiếp tục",
       refundProcessing: "Tiền hoàn sẽ được xử lý trong vòng 3-5 ngày làm việc",
-      
+
       // Empty states
       noTripsTitle: "Chưa có chuyến đi nào",
       noTripsMessage: "Bạn chưa có chuyến đi nào trong danh mục này. Hãy đặt chuyến bay đầu tiên!",
+      // Thông điệp riêng cho người dùng đã đăng nhập nhưng chưa có chuyến đi
+      noTripsLoggedInTitle: "Bạn chưa có chuyến đi nào",
+      noTripsLoggedInMessage: "Bạn đã đăng nhập nhưng chưa đặt chuyến nào. Bắt đầu tìm chuyến bay ngay!",
       noAllTripsTitle: "Chưa có chuyến đi nào",
       noAllTripsMessage: "Bạn chưa có chuyến đi nào. Hãy đặt chuyến bay đầu tiên!",
       noUpcomingTripsTitle: "Chưa có chuyến đi sắp tới",
@@ -218,10 +246,14 @@
       noCancelledTripsTitle: "Chưa có chuyến đi bị hủy",
       noCancelledTripsMessage: "Bạn chưa hủy chuyến đi nào. Hy vọng bạn sẽ không cần đến mục này!",
       searchFlights: "Tìm chuyến bay",
-      
+
       // Cancel modal
       cancelTripTitle: "Hủy chuyến đi",
       cancelWarning: "Bạn có chắc chắn muốn hủy chuyến đi này không?",
+      tripInformation: "Thông tin chuyến đi",
+      routeLabel: "Tuyến bay:",
+      bookingCodeLabel: "Mã đặt chỗ:",
+      priceLabel: "Giá vé:",
       cancellationPolicy: "Chính sách hủy",
       refundAmount: "Hoàn tiền: 80% giá vé (390.000 VND phí hủy)",
       refundTime: "Thời gian hoàn tiền: 3-5 ngày làm việc",
@@ -236,7 +268,7 @@
       notePlaceholder: "Nhập ghi chú (tùy chọn)...",
       keepTrip: "Giữ chuyến đi",
       confirmCancel: "Xác nhận hủy",
-      
+
       // Footer
       footerDesc: "Đối tác du lịch đáng tin cậy của bạn cho các ưu đãi vé máy bay tốt nhất và những hành trình khó quên.",
       quickLinksTitle: "Liên kết nhanh",
@@ -257,7 +289,7 @@
       copyright: "© 2024 SkyPlan. Bảo lưu mọi quyền."
     }
   };
-  
+
   // City translations
   window.cityTranslations = {
     vi: {
@@ -281,7 +313,7 @@
   };
 
   // Apply translations when language changes
-  document.addEventListener('languageChanged', function(e) {
+  document.addEventListener('languageChanged', function (e) {
     if (typeof window.applyMyTripsTranslations === 'function') {
       window.applyMyTripsTranslations(e.detail.language);
     }

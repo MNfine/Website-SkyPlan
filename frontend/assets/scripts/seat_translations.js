@@ -53,7 +53,7 @@ const seatTranslations = {
         seatReserved: "Seat reserved for:",
         pleaseComplete: "Please complete your selection quickly!",
         timeExpired: "Time expired! Please select your seats again.",
-        selectAtLeastOne: "Please select at least one seat before continuing.",
+        selectAtLeastOne: "Please select a seat before continuing.",
         seatReservedNotification: "Seat {seat} reserved for 30 seconds"
     },
     vi: {
@@ -108,7 +108,7 @@ const seatTranslations = {
         seatReserved: "Ghế được giữ trong:",
         pleaseComplete: "Vui lòng hoàn thành việc chọn ghế!",
         timeExpired: "Hết thời gian! Vui lòng chọn ghế lại.",
-        selectAtLeastOne: "Vui lòng chọn ít nhất một ghế trước khi tiếp tục.",
+        selectAtLeastOne: "Vui lòng chọn một ghế trước khi tiếp tục.",
         seatReservedNotification: "Ghế {seat} được giữ trong 30 giây"
     }
 };
@@ -145,7 +145,20 @@ function changeSeatLanguage(lang) {
     localStorage.setItem('preferredLanguage', lang);
     document.documentElement.lang = lang;
     applySeatTranslations(lang);
+    
+    // Use global broadcaster if available, otherwise dispatch directly
+    if (typeof window.broadcastLanguageChange === 'function') {
+        window.broadcastLanguageChange(lang);
+    } else {
+        window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: lang } }));
+    }
 }
+
+// Listen for language changes from header
+window.addEventListener('languageChanged', function(event) {
+    const newLang = event.detail.language;
+    applySeatTranslations(newLang);
+});
 
 // Ensure Vietnamese is set as default on first visit
 if (!localStorage.getItem('preferredLanguage')) {

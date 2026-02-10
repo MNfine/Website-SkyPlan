@@ -1,3 +1,14 @@
+// Quiet mode: suppress non-essential console output unless debugging flag is enabled.
+// Set window.SKYPLAN_DEBUG = true in the console to re-enable logs.
+(function(){
+  try {
+    if (!window.SKYPLAN_DEBUG) {
+      console._orig = console._orig || {};
+      ['log','info','debug'].forEach(function(m){ if (!console._orig[m]) console._orig[m]=console[m]; console[m]=function(){}; });
+    }
+  } catch(e){}
+})();
+
 // Form state
 const formData = {
   lastname: "",
@@ -322,8 +333,203 @@ function clearAllErrors() {
   inputs.forEach((input) => input.classList.remove("error"));
 }
 
+// Get auth token for Bearer authorization (using AuthState)
+function getAuthToken() {
+  if (typeof window.AuthState !== 'undefined') {
+    return window.AuthState.getToken();
+  }
+  
+  // Fallback if AuthState not loaded
+  try {
+    const keys = ['authToken', 'accessToken', 'token', 'jwt'];
+    for (const key of keys) {
+      const token = localStorage.getItem(key) || sessionStorage.getItem(key);
+      if (token) return token;
+    }
+  } catch {}
+  
+  return null;
+}
+
+// Convert DD/MM/YYYY to MM/DD/YYYY for backend
+function convertDateForBackend(ddmmyyyy) {
+  if (!ddmmyyyy) return '';
+  const parts = ddmmyyyy.split('/');
+  if (parts.length !== 3) return ddmmyyyy;
+  return `${parts[1]}/${parts[0]}/${parts[2]}`;
+}
+
+// Submit passenger data to backend API or localStorage for guest checkout
+async function submitPassengerData() {
+  const token = getAuthToken();
+  
+  // If no token, save to localStorage for guest checkout
+  if (!token) {
+    console.log('No auth token - saving passenger data to localStorage for guest checkout');
+    try {
+      const guestPassengerData = {
+        lastname: formData.lastname,
+        firstname: formData.firstname,
+        cccd: formData.cccd,
+        dob: convertDateForBackend(formData.dob),
+        gender: formData.gender,
+        phoneNumber: formData.phoneNumber,
+        email: formData.email,
+        address: formData.address,
+        city: formData.city === 'other' ? (cityCustomInput.value || '') : formData.city,
+        nationality: formData.nationality === 'other' ? (nationalityCustomInput.value || '') : formData.nationality,
+        notes: formData.notes || undefined
+      };
+      
+      localStorage.setItem('skyplan_passenger_data', JSON.stringify(guestPassengerData));
+      localStorage.setItem('currentPassenger', JSON.stringify(guestPassengerData));
+      
+      const successMsg = t('successMessage') || 'Passenger information saved successfully!';
+      if (typeof window.showToast === 'function') {
+        window.showToast(successMsg, { type: 'success', duration: 2000 });
+      } else {
+        alert(successMsg);
+      }
+      
+      return true; // Success for guest checkout
+    } catch (error) {
+      console.error('Error saving passenger data to localStorage:', error);
+      if (typeof window.showToast === 'function') {
+        window.showToast('Failed to save passenger information', { type: 'error', duration: 3000 });
+      } else {
+        alert('Failed to save passenger information');
+      }
+      return false;
+    }
+  }
+
+  // Prepare data for backend API
+  const payload = {
+    lastname: formData.lastname,
+    firstname: formData.firstname,
+    cccd: formData.cccd,
+    dob: convertDateForBackend(formData.dob), // Convert DD/MM/YYYY -> MM/DD/YYYY
+    gender: formData.gender,
+    phoneNumber: formData.phoneNumber,
+    email: formData.email,
+    address: formData.address,
+    city: formData.city === 'other' ? (cityCustomInput.value || '') : formData.city,
+    nationality: formData.nationality === 'other' ? (nationalityCustomInput.value || '') : formData.nationality,
+    notes: formData.notes || undefined
+  };
+
+  // Add custom fields if applicable
+  if (formData.city === 'other') {
+    payload.customCity = cityCustomInput.value || '';
+  }
+  if (formData.nationality === 'other') {
+    payload.customNationality = nationalityCustomInput.value || '';
+  }
+
+  // Prepare headers - only include Authorization if token exists
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  try {
+    console.log('Submitting passenger data to API:', { headers, payload });
+    const response = await fetch('/api/bookings/passenger', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(payload)
+    });
+
+    let result = {};
+    try {
+      result = await response.json();
+    } catch {}
+    
+    console.log('API Response:', { status: response.status, result });
+
+    if (!response.ok || result.success === false) {
+      // If unauthorized but we have token, try guest fallback
+      if (response.status === 401) {
+        console.log('API returned 401 - falling back to localStorage guest checkout');
+        try {
+          const guestPassengerData = {
+            lastname: formData.lastname,
+            firstname: formData.firstname,
+            cccd: formData.cccd,
+            dob: convertDateForBackend(formData.dob),
+            gender: formData.gender,
+            phoneNumber: formData.phoneNumber,
+            email: formData.email,
+            address: formData.address,
+            city: formData.city === 'other' ? (cityCustomInput.value || '') : formData.city,
+            nationality: formData.nationality === 'other' ? (nationalityCustomInput.value || '') : formData.nationality,
+            notes: formData.notes || undefined
+          };
+          
+          localStorage.setItem('skyplan_passenger_data', JSON.stringify(guestPassengerData));
+          localStorage.setItem('currentPassenger', JSON.stringify(guestPassengerData));
+          
+          const successMsg = t('successMessage') || 'Passenger information saved successfully!';
+          if (typeof window.showToast === 'function') {
+            window.showToast(successMsg, { type: 'success', duration: 2000 });
+          } else {
+            alert(successMsg);
+          }
+          
+          return true; // Success with fallback
+        } catch (fallbackError) {
+          console.error('Fallback localStorage save failed:', fallbackError);
+        }
+      }
+      
+      const errorMsg = result.message || 'Request failed';
+      if (typeof window.showToast === 'function') {
+        window.showToast(errorMsg, { type: 'error', duration: 3000 });
+      } else {
+        alert(`Error: ${errorMsg}`);
+      }
+      return false;
+    }
+
+    // Success - save passenger data to localStorage for next steps
+    try {
+      localStorage.setItem('currentPassenger', JSON.stringify(result.passenger || payload));
+      localStorage.setItem('skyplan_passenger_data', JSON.stringify(result.passenger || payload));
+      // Save passenger ID for booking creation
+      if (result.passenger && result.passenger.id) {
+        localStorage.setItem('storedPassengerId', String(result.passenger.id));
+        localStorage.setItem('activePassengerId', String(result.passenger.id));
+        console.log('🔍 Passenger Debug: Saved passenger ID to localStorage:', result.passenger.id);
+      } else {
+        console.warn('🔍 Passenger Debug: No passenger ID in response:', result);
+      }
+    } catch {}
+
+    // Show success message
+    const successMsg = t('successMessage') || 'Passenger information saved successfully!';
+    if (typeof window.showToast === 'function') {
+      window.showToast(successMsg, { type: 'success', duration: 2000 });
+    } else {
+      alert(successMsg);
+    }
+
+    return true;
+  } catch (error) {
+    const errorMsg = error.message || 'Network error occurred';
+    if (typeof window.showToast === 'function') {
+      window.showToast(errorMsg, { type: 'error', duration: 3000 });
+    } else {
+      alert(`Error: ${errorMsg}`);
+    }
+    return false;
+  }
+}
+
 // Form submission
-form.addEventListener("submit", function (e) {
+form.addEventListener("submit", async function (e) {
   e.preventDefault();
 
   // Clear all previous errors
@@ -331,28 +537,27 @@ form.addEventListener("submit", function (e) {
 
   // Validate form
   if (validateForm()) {
-    // Show success toast notification
-    if (typeof window.showToast === "function") {
-      window.showToast(t("successMessage"), {
-        type: "success",
-        duration: 2000,
-        dismissible: true,
-      });
-      
-      // Redirect to extras page after 2 seconds
+    // Submit to backend API
+    const success = await submitPassengerData();
+    
+    if (success) {
+      // Redirect to extras page after successful submission
       setTimeout(() => {
-        window.location.href = "extras.html";
-      }, 2000);
-    } else {
-      alert(t("successMessage") + "\n\n" + t("successDetail"));
-      // Redirect immediately if no toast
-      window.location.href = "extras.html";
+        const currentParams = new URLSearchParams(window.location.search);
+        window.location.href = "extras.html?" + currentParams.toString();
+      }, 1500);
     }
   }
 });
 
-// Initialize defaults on page load
+// Check authentication and initialize page
 document.addEventListener("DOMContentLoaded", function () {
+  // Guest checkout is supported - no authentication required
+  // if (typeof window.AuthState !== 'undefined') {
+  //   if (!window.AuthState.requireAuth()) {
+  //     return; // Will redirect to login if not authenticated
+  //   }
+  // }
   // Set default nationality to Vietnam after a small delay to ensure datalist is ready
   setTimeout(() => {
     if (nationalityInput && !nationalityInput.value) {

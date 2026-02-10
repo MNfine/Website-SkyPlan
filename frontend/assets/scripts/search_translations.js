@@ -25,6 +25,9 @@ const searchTranslations = {
         copyright: "© 2024 SkyPlan. All rights reserved.",
         // Titles & labels
         searchTitle: "Your trip",
+        tripType: "Trip Type",
+        oneWay: "One-way",
+        roundTrip: "Round-trip",
         fromLabel: "From",
         toLabel: "To",
         departureLabel: "Departure date",
@@ -46,6 +49,7 @@ const searchTranslations = {
         dotDeparture: "· Departure",
         dotReturn: "· Return",
         nonstop: "Nonstop",
+          noReturnFlights: "No return flights found for the selected date. Showing departure flights:",
         modalTitle: "Flight Details",
         legTo: "To",
     },
@@ -75,6 +79,9 @@ const searchTranslations = {
         copyright: "© 2024 SkyPlan. Bảo lưu mọi quyền.",
         // Titles & labels
         searchTitle: "Chuyến đi của bạn",
+        tripType: "Loại vé",
+        oneWay: "Một chiều", 
+        roundTrip: "Khứ hồi",
         fromLabel: "Từ",
         toLabel: "Đến",
         departureLabel: "Ngày đi",
@@ -96,6 +103,7 @@ const searchTranslations = {
         dotDeparture: "· Khởi hành",
         dotReturn: "· Về",
         nonstop: "Bay thẳng",
+        noReturnFlights: "Không tìm thấy chuyến về cho ngày đã chọn. Hiển thị chuyến đi:",
         modalTitle: "Chi tiết chuyến bay",
         legTo: "Đến",
     }
@@ -188,8 +196,15 @@ function applySearchTranslations(lang) {
     // 2) Form & filters (không cần data-i18n)
     const setText = (sel, v, ctx) => { const el = _$(sel, ctx); if (el) el.textContent = v; };
     setText('.sp-title', dict.searchTitle, aside);
-    setText('label[for="from"]', dict.fromLabel, aside);
-    setText('label[for="to"]', dict.toLabel, aside);
+    // Trip type labels
+    const tripTypeLabels = document.querySelectorAll('.sp-trip-option span');
+    if (tripTypeLabels[0]) tripTypeLabels[0].textContent = dict.roundTrip || 'Round-trip';
+    if (tripTypeLabels[1]) tripTypeLabels[1].textContent = dict.oneWay || 'One-way';
+    // Find and set from/to labels by their data-i18n attributes or position
+    const fromLabel = document.querySelector('label[data-i18n="search.from"]');
+    const toLabel = document.querySelector('label[data-i18n="search.to"]');
+    if (fromLabel) fromLabel.textContent = dict.fromLabel;
+    if (toLabel) toLabel.textContent = dict.toLabel;
     setText('label[for="dep"]', dict.departureLabel, aside);
     setText('label[for="ret"]', dict.returnLabel, aside);
 
@@ -235,6 +250,9 @@ function applySearchTranslations(lang) {
             el.innerHTML = String(el.innerHTML).replace(/Bay thẳng|Nonstop/gi, dict.nonstop);
         }
     });
+    
+    // 4) Update airport names and city names
+    updateAirportAndCityNames(lang);
 
     // 4) Modal
     const modal = _$('#spModal');
@@ -244,8 +262,38 @@ function applySearchTranslations(lang) {
 
         _$all('.sp-leg__title', modal).forEach(tEl => {
             const span = tEl.querySelector('span');
-            const city = span ? span.outerHTML : '';
-            tEl.innerHTML = `${dict.legTo || ''} ${city}`.trim();
+            let city = span ? span.textContent : '';
+            
+            // Translate city name if it contains airport code
+            const airportMatch = city.match(/\(([A-Z]{3})\)$/);
+            if (airportMatch) {
+                const code = airportMatch[1];
+                const airportData = {
+                    'HAN': { vi: 'Hà Nội', en: 'Hanoi' },
+                    'SGN': { vi: 'Hồ Chí Minh', en: 'Ho Chi Minh' },
+                    'DAD': { vi: 'Đà Nẵng', en: 'Da Nang' },
+                    'CXR': { vi: 'Nha Trang', en: 'Nha Trang' },
+                    'PQC': { vi: 'Phú Quốc', en: 'Phu Quoc' },
+                    'VCA': { vi: 'Cần Thơ', en: 'Can Tho' },
+                    'HUI': { vi: 'Huế', en: 'Hue' },
+                    'VII': { vi: 'Vinh', en: 'Vinh' }
+                };
+                const data = airportData[code];
+                if (data) {
+                    const cityName = data[lang] || data.vi;
+                    city = `${cityName} (${code})`;
+                }
+            }
+            
+            // Update only the "To" text, keep city span intact
+            const toSpan = tEl.querySelector('[data-i18n="legTo"]');
+            if (toSpan) {
+                toSpan.textContent = dict.legTo || 'To';
+            }
+            // Update city span if it has content
+            if (city && span) {
+                span.textContent = city;
+            }
         });
 
         const shareBtn = _$('.sp-modal__footer .sp-btn.sp-btn--ghost', modal);
@@ -302,9 +350,11 @@ if (!localStorage.getItem('preferredLanguage')) {
 // Function để init translations sau khi components đã load
 function initSearchTranslations() {
     const qLang = new URLSearchParams(location.search).get('lang');
+    const storedLang = localStorage.getItem('preferredLanguage');
+    
     const lang = (qLang === 'vi' || qLang === 'en') ?
         qLang :
-        (localStorage.getItem('preferredLanguage') || 'en');
+        (storedLang || 'vi');
 
     applySearchTranslations(lang);
 
@@ -328,8 +378,101 @@ function initSearchTranslations() {
     }
 }
 
-// Expose init function
+// Function to update airport and city names based on language
+function updateAirportAndCityNames(lang) {
+    const airportData = {
+        'HAN': {
+            city: { vi: 'Hà Nội', en: 'Hanoi' },
+            airport: { vi: 'Sân bay Nội Bài', en: 'Noi Bai Airport' }
+        },
+        'SGN': {
+            city: { vi: 'Hồ Chí Minh', en: 'Ho Chi Minh' },
+            airport: { vi: 'Sân bay Tân Sơn Nhất', en: 'Tan Son Nhat Airport' }
+        },
+        'DAD': {
+            city: { vi: 'Đà Nẵng', en: 'Da Nang' },
+            airport: { vi: 'Sân bay Đà Nẵng', en: 'Da Nang Airport' }
+        },
+        'CXR': {
+            city: { vi: 'Nha Trang', en: 'Nha Trang' },
+            airport: { vi: 'Sân bay Cam Ranh', en: 'Cam Ranh Airport' }
+        },
+        'PQC': {
+            city: { vi: 'Phú Quốc', en: 'Phu Quoc' },
+            airport: { vi: 'Sân bay Phú Quốc', en: 'Phu Quoc Airport' }
+        },
+        'VCA': {
+            city: { vi: 'Cần Thơ', en: 'Can Tho' },
+            airport: { vi: 'Sân bay Cần Thơ', en: 'Can Tho Airport' }
+        },
+        'HUI': {
+            city: { vi: 'Huế', en: 'Hue' },
+            airport: { vi: 'Sân bay Phú Bài', en: 'Phu Bai Airport' }
+        },
+        'VII': {
+            city: { vi: 'Vinh', en: 'Vinh' },
+            airport: { vi: 'Sân bay Vinh', en: 'Vinh Airport' }
+        }
+    };
+    
+    // Update city names in .sp-meta elements
+    _$all('.sp-meta').forEach(el => {
+        const text = el.textContent.trim();
+        // Extract airport code from text like "Hồ Chí Minh (SGN)"
+        const match = text.match(/\(([A-Z]{3})\)$/);
+        if (match) {
+            const code = match[1];
+            const data = airportData[code];
+            if (data) {
+                const cityName = data.city[lang] || data.city.vi;
+                el.textContent = `${cityName} (${code})`;
+            }
+        }
+    });
+    
+    // Update airport names in .sp-airport-name elements
+    _$all('.sp-airport-name').forEach(el => {
+        const text = el.textContent.trim();
+        // Find matching airport by Vietnamese or English name
+        for (const [code, data] of Object.entries(airportData)) {
+            if (text === data.airport.vi || text === data.airport.en) {
+                const airportName = data.airport[lang] || data.airport.vi;
+                el.textContent = airportName;
+                break;
+            }
+        }
+    });
+    
+    // Update modal airport content
+    const modalSelectors = [
+        '[data-out-dep-airport]',
+        '[data-out-arr-airport]',
+        '[data-in-dep-airport]', 
+        '[data-in-arr-airport]'
+    ];
+    
+    modalSelectors.forEach(selector => {
+        const el = document.querySelector(selector);
+        if (el) {
+            const text = el.textContent.trim();
+            // Extract airport code from text like "Hồ Chí Minh (SGN)"
+            const match = text.match(/\(([A-Z]{3})\)$/);
+            if (match) {
+                const code = match[1];
+                const data = airportData[code];
+                if (data) {
+                    const cityName = data.city[lang] || data.city.vi;
+                    const newText = `${cityName} (${code})`;
+                    el.textContent = newText;
+                }
+            }
+        }
+    });
+}
+
+// Expose functions
 window.initSearchTranslations = initSearchTranslations;
+window.applySearchTranslations = applySearchTranslations;
 
 // Expose dictionary for other scripts that need to read translations directly
 try { window.searchTranslations = searchTranslations; } catch (_) {}
