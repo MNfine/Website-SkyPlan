@@ -1,7 +1,6 @@
 """Database initialization and session management for SkyPlan.
 
-Supports PostgreSQL via DATABASE_URL environment variable.
-Fallback to local SQLite (dev.db) if not set so developers can run quickly.
+PostgreSQL only - requires DATABASE_URL environment variable.
 """
 
 from __future__ import annotations
@@ -17,9 +16,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///skylan.db")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-if not DATABASE_URL.startswith("postgresql"):  # Chỉ cho phép PostgreSQL
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL is required. Please set it to a valid PostgreSQL connection string.")
+
+if not DATABASE_URL.startswith("postgresql"):
     raise ValueError("Only PostgreSQL is allowed. Please set DATABASE_URL to a valid PostgreSQL connection string.")
 
 print("DATABASE_URL:", DATABASE_URL)
@@ -29,16 +31,13 @@ class Base(DeclarativeBase):
 	pass
 
 
-# Engine config – tune pool only for non-SQLite
+# Engine config for PostgreSQL
 engine_kwargs = {
 	"future": True,
+	"pool_pre_ping": True,
+	"pool_size": 5,
+	"max_overflow": 10,
 }
-if not DATABASE_URL.startswith("sqlite"):
-	engine_kwargs.update({
-		"pool_pre_ping": True,
-		"pool_size": 5,
-		"max_overflow": 10,
-	})
 
 # Allow enabling SQL echo via environment variable for debug
 SQL_ECHO = os.getenv('SQL_ECHO', 'false').lower() in ('1', 'true', 'yes')

@@ -58,9 +58,12 @@ class VNPayConfig:
 class DatabaseConfig:
     """Database configuration for storing booking/payment data"""
     
-    # SQLite for development
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///skyplan.db'
+    # PostgreSQL only
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
+    if not SQLALCHEMY_DATABASE_URI:
+        raise ValueError("DATABASE_URL is required. Please set it to a valid PostgreSQL connection string.")
 
 # Email configuration (for booking confirmations)
 class EmailConfig:

@@ -14,7 +14,7 @@
 Yêu cầu:
 - Python 3.10+
 - Git
-- (Tùy chọn) PostgreSQL 13+ cho môi trường gần production; SQLite có thể dùng cho chạy local nhanh.
+- PostgreSQL 13+ (required)
 
 Các bước cơ bản:
 
@@ -44,13 +44,13 @@ python backend/app.py
 ```
 
 Ghi chú:
-- Nếu không có PostgreSQL, bạn có thể dùng SQLite bằng cách đặt `DATABASE_URL=sqlite:///skyplan_local.db` trong `backend/.env`.
+- PostgreSQL là bắt buộc. Đảm bảo đã cài đặt và tạo database trước khi chạy.
 - Frontend tĩnh cũng có thể mở trực tiếp file HTML, nhưng để gọi API bạn nên chạy backend server.
 
 ## Biến môi trường quan trọng
 
 - `SECRET_KEY` — Khóa bí mật của Flask
-- `DATABASE_URL` — DSN của SQLAlchemy (vd: `postgresql+psycopg2://user:pass@localhost:5432/skyplan` hoặc `sqlite:///skyplan.db`)
+- `DATABASE_URL` — DSN của SQLAlchemy (vd: `postgresql+psycopg2://user:pass@localhost:5432/skyplan`)
 - `VNPAY_TMN_CODE`, `VNPAY_HASH_SECRET`, `VNPAY_RETURN_URL` — Cấu hình VNPay (demo)
 - Cấu hình mail nếu muốn gửi email xác nhận
 
