@@ -633,7 +633,18 @@ function getCityName(code, lang = 'vi') {
     'HUI': { vi: 'Huế', en: 'Hue' },
     'VII': { vi: 'Vinh', en: 'Vinh' },
     'HPH': { vi: 'Hải Phòng', en: 'Hai Phong' },
-    'DLI': { vi: 'Đà Lạt', en: 'Da Lat' }
+    'DLI': { vi: 'Đà Lạt', en: 'Da Lat' },
+    'BMV': { vi: 'Buôn Ma Thuột', en: 'Buon Ma Thuot' },
+    'DIN': { vi: 'Điện Biên', en: 'Dien Bien' },
+    'PXU': { vi: 'Pleiku', en: 'Pleiku' },
+    'VKG': { vi: 'Rạch Giá', en: 'Rach Gia' },
+    'THD': { vi: 'Thanh Hóa', en: 'Thanh Hoa' },
+    'VDO': { vi: 'Vân Đồn', en: 'Van Don' },
+    'SQH': { vi: 'Sơn La', en: 'Son La' },
+    'VCS': { vi: 'Côn Đảo', en: 'Con Dao' },
+    'VDH': { vi: 'Đồng Hới', en: 'Dong Hoi' },
+    'VCL': { vi: 'Chu Lai', en: 'Chu Lai' },
+    'TBB': { vi: 'Tuy Hòa', en: 'Tuy Hoa' }
   };
   
   const data = cityData[code];

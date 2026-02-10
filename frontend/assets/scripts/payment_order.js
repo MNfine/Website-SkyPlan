@@ -131,7 +131,26 @@
     function fmtDateISO(iso, lang) {
         if (!iso) return '';
         try {
-            const d = new Date(iso + 'T00:00:00');
+            let dateStr = iso;
+            
+            // Check if date is in DD/MM/YYYY format and convert to YYYY-MM-DD
+            if (typeof iso === 'string' && iso.includes('/')) {
+                const parts = iso.split('/');
+                if (parts.length === 3) {
+                    // Assume DD/MM/YYYY format
+                    const [day, month, year] = parts;
+                    dateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                }
+            }
+            
+            const d = new Date(dateStr + 'T00:00:00');
+            
+            // Check if date is valid
+            if (isNaN(d.getTime())) {
+                console.warn('Invalid date in fmtDateISO:', iso);
+                return iso;
+            }
+            
             if (lang === 'vi') {
                 // e.g., "Ngày 23 thg 10, 2025"
                 const day = d.getDate();
@@ -142,7 +161,10 @@
                 // e.g., "Oct 23, 2025"
                 return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
             }
-        } catch { return iso; }
+        } catch(e) {
+            console.warn('Error formatting date:', iso, e);
+            return iso;
+        }
     }
             function getOT(lang){
                 try {

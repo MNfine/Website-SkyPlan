@@ -281,6 +281,18 @@
       // New booking flow - clear stale booking codes so confirm button stays visible
       localStorage.setItem('overviewMode', 'new-trip');
       localStorage.removeItem('currentBookingCode');
+      console.log('🔍 Overview: New booking flow - cleared currentBookingCode');
+      
+      // FORCE show payment button for new booking
+      setTimeout(() => {
+        const payBtn = document.getElementById('confirmBookingBtn') || document.querySelector('.pay-btn');
+        if (payBtn) {
+          payBtn.style.display = 'flex';
+          payBtn.style.visibility = 'visible';
+          console.log('🔍 Force showing payment button for new booking');
+        }
+        updatePaymentButton();
+      }, 100);
     }
     
     // Check URL parameters and save to localStorage if found

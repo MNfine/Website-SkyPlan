@@ -481,6 +481,15 @@ mã vé tại quầy check-in sân bay.
     if (txnRef) document.getElementById('bookingCode').textContent = txnRef;
     if (transactionNo) document.getElementById('txnRef').textContent = transactionNo;
     
+    // Update "Xem vé của tôi" link to include tripId parameter
+    const viewMyTicketLink = document.getElementById('viewMyTicketLink');
+    if (viewMyTicketLink) {
+      const bookingCode = txnRef || localStorage.getItem('lastBookingCode') || localStorage.getItem('currentBookingCode');
+      if (bookingCode) {
+        viewMyTicketLink.href = `overview.html?tripId=${encodeURIComponent(bookingCode)}`;
+      }
+    }
+    
     confirmPaymentStatus();
     
     // Add download button event listener

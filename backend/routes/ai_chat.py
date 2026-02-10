@@ -64,13 +64,13 @@ if GEMINI_API_KEY:
 				if preferred_model in model_names:
 					MODEL_NAME = preferred_model
 					break
-		
-		if not MODEL_NAME:
-			# Last resort: use first available model
-			if model_names:
-				MODEL_NAME = model_names[0]
-			else:
-				print("[AI Chat] ❌ No available models found!")
+			
+			if not MODEL_NAME:
+				# Last resort: use first available model
+				if model_names:
+					MODEL_NAME = model_names[0]
+				else:
+					print("[AI Chat] ❌ No available models found!")
 	except Exception as e:
 		print(f"[AI Chat] ⚠️ Could not list models: {e}")
 		# Fallback to default

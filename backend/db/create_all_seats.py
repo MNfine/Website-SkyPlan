@@ -43,23 +43,25 @@ def create_all_seats():
         
         # Lấy flights chưa có seats (batch processing)
         batch_size = 50
-        offset = 0
         total_seats_created = 0
+        batch_number = 0
         
         while True:
+            # Query lại từ đầu mỗi lần (không dùng OFFSET vì dữ liệu thay đổi sau mỗi batch)
             flights = session.execute(text("""
                 SELECT f.id, f.flight_number
                 FROM flights f
                 LEFT JOIN seats s ON f.id = s.flight_id
                 WHERE s.flight_id IS NULL
                 ORDER BY f.id
-                LIMIT :batch_size OFFSET :offset
-            """), {'batch_size': batch_size, 'offset': offset}).fetchall()
+                LIMIT :batch_size
+            """), {'batch_size': batch_size}).fetchall()
             
             if not flights:
                 break
             
-            print(f"\n🔄 Processing batch {offset//batch_size + 1}: {len(flights)} flights...")
+            batch_number += 1
+            print(f"\n🔄 Processing batch {batch_number}: {len(flights)} flights...")
             
             batch_seats = 0
             for i, flight in enumerate(flights, 1):
@@ -75,8 +77,6 @@ def create_all_seats():
             
             # Commit batch
             session.commit()
-            
-            offset += batch_size
         
         print(f"\n🎉 HOÀN THÀNH!")
         print(f"   - Total seats created: {total_seats_created:,}")
@@ -104,7 +104,21 @@ def create_seats_for_flight(session, flight_id, flight_number):
     for row in range(1, rows_per_flight + 1):
         for letter in seat_letters:
             seat_number = f"{row}{letter}"
-            seat_class = "Business" if row <= 3 else "Economy"
+            
+            # Phân loại ghế theo hàng và tính price_modifier
+            if row <= 3:
+                seat_class = "Business"
+                price_modifier = 500000.0  # +500k VND cho Business
+            elif row <= 8:
+                seat_class = "Premium"
+                price_modifier = 200000.0  # +200k VND cho Premium
+            else:
+                seat_class = "Economy"
+                price_modifier = 0.0       # Giá gốc cho Economy
+            
+            # Ghế cửa sổ (A, F) thêm phụ phí
+            if letter in ['A', 'F']:
+                price_modifier += 50000.0  # +50k VND cho cửa sổ
             
             session.execute(text("""
                 INSERT INTO seats (
@@ -119,7 +133,7 @@ def create_seats_for_flight(session, flight_id, flight_number):
                 'seat_number': seat_number,
                 'seat_class': seat_class,
                 'status': 'available',
-                'price_modifier': 0.0,
+                'price_modifier': price_modifier,
                 'created_at': datetime.now()
             })
             

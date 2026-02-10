@@ -25,26 +25,54 @@ window.openFlightModal = function() {
 
 // Chuẩn hoá tên thành phố -> mã IATA để dùng chung
 const CITY_TO_IATA = {
-    'Hà Nội': 'HAN','HaNoi': 'HAN','Hanoi': 'HAN','HAN': 'HAN',
-    'Hồ Chí Minh': 'SGN','HoChiMinh': 'SGN','TP.Hồ Chí Minh': 'SGN','TP Ho Chi Minh': 'SGN','Sài Gòn': 'SGN','Sai Gon': 'SGN','SGN': 'SGN',
-    'Đà Nẵng': 'DAD','Da Nang': 'DAD','DaNang': 'DAD','DAD': 'DAD',
-    'Phú Quốc': 'PQC','Phu Quoc': 'PQC','PQC': 'PQC',
-    'Cần Thơ': 'VCA','Can Tho': 'VCA','VCA': 'VCA',
-    'Lâm Đồng': 'DLI','Lam Dong': 'DLI','DLI': 'DLI',
+    // HAN - Hà Nội
+    'Hà Nội': 'HAN','HaNoi': 'HAN','Ha Noi': 'HAN','Hanoi': 'HAN','HAN': 'HAN',
+    // SGN - TP.HCM
+    'Hồ Chí Minh': 'SGN','HoChiMinh': 'SGN','Ho Chi Minh': 'SGN','TP.Hồ Chí Minh': 'SGN','TP.HCM': 'SGN','TP HCM': 'SGN','TPHCM': 'SGN','TP Ho Chi Minh': 'SGN','Sài Gòn': 'SGN','Saigon': 'SGN','Sai Gon': 'SGN','SGN': 'SGN',
+    // DAD - Đà Nẵng
+    'Đà Nẵng': 'DAD','DaNang': 'DAD','Da Nang': 'DAD','Danang': 'DAD','DAD': 'DAD',
+    // PQC - Phú Quốc
+    'Phú Quốc': 'PQC','PhuQuoc': 'PQC','Phu Quoc': 'PQC','PQC': 'PQC',
+    // VCA - Cần Thơ
+    'Cần Thơ': 'VCA','CanTho': 'VCA','Can Tho': 'VCA','VCA': 'VCA',
+    // DLI - Lâm Đồng / Đà Lạt
+    'Lâm Đồng': 'DLI','LamDong': 'DLI','Lam Dong': 'DLI','Đà Lạt': 'DLI','DaLat': 'DLI','Da Lat': 'DLI','Dalat': 'DLI','DLI': 'DLI',
+    // HUI - Huế
     'Huế': 'HUI','Hue': 'HUI','HUI': 'HUI',
-    'Điện Biên': 'DIN','Dien Bien': 'DIN','DIN': 'DIN',
-    'Gia Lai': 'PXU','PXU': 'PXU',
-    'An Giang': 'VKG','VKG': 'VKG',
-    'Thanh Hóa': 'THD','Thanh Hoa': 'THD','THD': 'THD',
-    'Nghệ An': 'VII','Nghe An': 'VII','VII': 'VII',
-    'Quảng Ninh': 'VDO','Quang Ninh': 'VDO','VDO': 'VDO',
-    'Sơn La': 'SQH','Son La': 'SQH','SQH': 'SQH',
-    'Khánh Hòa': 'CXR','Khanh Hoa': 'CXR','CXR': 'CXR',
-    'Đắk Lắk': 'BMV','Dak Lak': 'BMV','BMV': 'BMV',
-    'Quảng Trị': 'VDH','Quang Tri': 'VDH','VDH': 'VDH',
-    'Chu Lai': 'VCL','VCL': 'VCL',
-    'Hải Phòng': 'HPH','Hai Phong': 'HPH','HPH': 'HPH',
-    'Tuy Hòa': 'TBB','Tuy Hoa': 'TBB','TBB': 'TBB'
+    // DIN - Điện Biên
+    'Điện Biên': 'DIN','DienBien': 'DIN','Dien Bien': 'DIN','DIN': 'DIN',
+    // PXU - Gia Lai / Pleiku
+    'Gia Lai': 'PXU','GiaLai': 'PXU','Pleiku': 'PXU','PXU': 'PXU',
+    // VKG - An Giang / Rạch Giá
+    'An Giang': 'VKG','AnGiang': 'VKG','Rạch Giá': 'VKG','RachGia': 'VKG','Rach Gia': 'VKG','VKG': 'VKG',
+    // THD - Thanh Hóa
+    'Thanh Hóa': 'THD','ThanhHoa': 'THD','Thanh Hoa': 'THD','THD': 'THD',
+    // VII - Nghệ An / Vinh
+    'Nghệ An': 'VII','NgheAn': 'VII','Nghe An': 'VII','Vinh': 'VII','VII': 'VII',
+    // VDO - Quảng Ninh / Vân Đồn
+    'Quảng Ninh': 'VDO','QuangNinh': 'VDO','Quang Ninh': 'VDO','Vân Đồn': 'VDO','VanDon': 'VDO','Van Don': 'VDO','VDO': 'VDO',
+    // SQH - Sơn La
+    'Sơn La': 'SQH','SonLa': 'SQH','Son La': 'SQH','SQH': 'SQH',
+    // CXR - Khánh Hòa / Cam Ranh / Nha Trang
+    'Khánh Hòa': 'CXR','KhanhHoa': 'CXR','Khanh Hoa': 'CXR','Cam Ranh': 'CXR','CamRanh': 'CXR','Nha Trang': 'CXR','NhaTrang': 'CXR','CXR': 'CXR',
+    // BMV - Đắk Lắk / Buôn Ma Thuột
+    'Đắk Lắk': 'BMV','DakLak': 'BMV','Dak Lak': 'BMV','Buôn Ma Thuột': 'BMV','BuonMaThuot': 'BMV','Buon Ma Thuot': 'BMV','BMV': 'BMV',
+    // VDH - Quảng Trị / Đông Hà
+    'Quảng Trị': 'VDH','QuangTri': 'VDH','Quang Tri': 'VDH','Đông Hà': 'VDH','DongHa': 'VDH','Dong Ha': 'VDH','VDH': 'VDH',
+    // VCL - Chu Lai / Quảng Nam
+    'Chu Lai': 'VCL','ChuLai': 'VCL','Quảng Nam': 'VCL','QuangNam': 'VCL','Quang Nam': 'VCL','VCL': 'VCL',
+    // HPH - Hải Phòng
+    'Hải Phòng': 'HPH','HaiPhong': 'HPH','Hai Phong': 'HPH','HPH': 'HPH',
+    // VCS - Côn Đảo
+    'Côn Đảo': 'VCS','ConDao': 'VCS','Con Dao': 'VCS','VCS': 'VCS',
+    // TBB - Phú Yên / Tuy Hòa
+    'Phú Yên': 'TBB','PhuYen': 'TBB','Phu Yen': 'TBB','Tuy Hòa': 'TBB','TuyHoa': 'TBB','Tuy Hoa': 'TBB','TBB': 'TBB',
+    // UIH - Bình Định / Quy Nhơn
+    'Bình Định': 'UIH','BinhDinh': 'UIH','Binh Dinh': 'UIH','Quy Nhơn': 'UIH','QuyNhon': 'UIH','Quy Nhon': 'UIH','UIH': 'UIH',
+    // CAH - Cà Mau
+    'Cà Mau': 'CAH','CaMau': 'CAH','Ca Mau': 'CAH','CAH': 'CAH',
+    // VKT - Kon Tum
+    'Kon Tum': 'VKT','KonTum': 'VKT','VKT': 'VKT'
 };
 
 // Lấy tham số từ URL
