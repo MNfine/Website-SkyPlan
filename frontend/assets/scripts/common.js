@@ -1,7 +1,13 @@
-// Common JS for SkyPlan: shared UI logic (menu, language selector, etc.)
+// Common JS for SkyPlan: shared UI logic (menu, language selector, authentication, etc.)
+
+// Retry init user dropdown when header loads late
+let userDropdownInitAttempts = 0;
+const MAX_USER_DROPDOWN_INIT_ATTEMPTS = 20; // ~5s if each retry is 250ms
 
 // Mobile menu functionality
 function initializeMobileMenu() {
+    console.log("Initializing mobile menu...");
+    // Increase timeout to ensure header is fully loaded
     setTimeout(() => {
         const menuToggle = document.querySelector('.menu-toggle');
         const navLinks = document.querySelector('.nav-links');
@@ -70,7 +76,17 @@ function initializeLanguageSelector() {
                     changeBlogLanguage(selectedLangValue);
                 } else if (typeof changeLanguage === 'function') {
                     changeLanguage(selectedLangValue);
+                } else if (typeof applyTranslations === 'function') {
+                    applyTranslations(selectedLangValue);
                 }
+                
+                // Always update header translations when language changes
+                setTimeout(() => {
+                    if (typeof applyTranslations === 'function') {
+                        applyTranslations(selectedLangValue);
+                    }
+                }, 100);
+                
                 updateSelectedLanguage(selectedLangValue);
             });
             option.dataset.bound = '1';
@@ -234,4 +250,95 @@ function enableSmoothScrolling() {
     }
 
     window.resolveCityLabel = resolveCityLabel;
+    // Backwards-compatible alias used by some pages
+    window.resolveCity = resolveCityLabel;
 })();
+
+// User dropdown functionality
+function initializeUserDropdown() {
+    const userButton = document.querySelector('.user-button');
+    const userDropdown = document.querySelector('.user-dropdown');
+
+    // If header hasn't been injected yet, retry a few times
+    if (!userButton || !userDropdown) {
+        if (userDropdownInitAttempts < MAX_USER_DROPDOWN_INIT_ATTEMPTS) {
+            userDropdownInitAttempts++;
+            console.debug('[initializeUserDropdown] header not ready, retry attempt', userDropdownInitAttempts);
+            setTimeout(initializeUserDropdown, 250);
+        } else {
+            console.warn('[initializeUserDropdown] header not found after multiple retries, giving up');
+        }
+        return;
+    }
+
+    // Already bound? nothing to do
+    if (userButton.dataset.dropdownBound === 'true') {
+        console.debug('[initializeUserDropdown] Dropdown already bound, skipping');
+        return;
+    }
+
+    console.debug('[initializeUserDropdown] Adding event listeners');
+
+    // Toggle dropdown on button click
+    userButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        userDropdown.classList.toggle('active');
+        console.debug('[initializeUserDropdown] Toggled dropdown, state:', userDropdown.classList.contains('active'));
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!userDropdown.contains(e.target) && !userButton.contains(e.target)) {
+            if (userDropdown.classList.contains('active')) {
+                userDropdown.classList.remove('active');
+                console.debug('[initializeUserDropdown] Closed dropdown by outside click');
+            }
+        }
+    });
+
+    // Close on ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && userDropdown.classList.contains('active')) {
+            userDropdown.classList.remove('active');
+            console.debug('[initializeUserDropdown] Closed dropdown by ESC');
+        }
+    });
+
+    // Mark as initialized
+    userButton.dataset.dropdownBound = 'true';
+    console.debug('[initializeUserDropdown] Dropdown initialized successfully');
+}
+
+// Initialize all common functionality
+document.addEventListener('DOMContentLoaded', function() {
+    initializeUserDropdown();
+    
+    // Update header auth state when page loads (with delay)
+    setTimeout(() => {
+        if (typeof updateHeaderUserInfo === 'function') {
+            updateHeaderUserInfo();
+        }
+    }, 600);
+});
+
+// Global language change broadcaster
+window.broadcastLanguageChange = function(lang) {
+    // Store in localStorage
+    localStorage.setItem('preferredLanguage', lang);
+    
+    // Update document lang
+    document.documentElement.lang = lang;
+    
+    // Dispatch event for all pages to listen
+    try {
+        window.dispatchEvent(new CustomEvent('languageChanged', { 
+            detail: { language: lang, lang: lang } 
+        }));
+        document.dispatchEvent(new CustomEvent('languageChanged', { 
+            detail: { language: lang, lang: lang } 
+        }));
+    } catch(e) {
+        console.warn('Language change event dispatch failed:', e);
+    }
+};

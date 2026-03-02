@@ -69,9 +69,7 @@
     transform 0.2s ease;
 }
 .extra-card__btn:hover {
-  /* --- Interactive States --- */
   background: #097f85;
-  /* Lifts the button up slightly on hover to give a "floating" effect. */
   transform: translateY(-1px);
 }
 .extra-card__btn:active {

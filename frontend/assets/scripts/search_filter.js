@@ -206,5 +206,8 @@
         if (titleEl) titleEl.textContent = t.title;
     });
 
+    // Export function để search.js có thể gọi
+    window.applyFilters = applyFilters;
+    
     applyFilters();
 })();

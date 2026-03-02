@@ -1,3 +1,14 @@
+// Quiet mode: suppress non-essential console output unless debugging flag is enabled.
+// Set window.SKYPLAN_DEBUG = true in the console to re-enable logs.
+(function(){
+  try {
+    if (!window.SKYPLAN_DEBUG) {
+      console._orig = console._orig || {};
+      ['log','info','debug'].forEach(function(m){ if (!console._orig[m]) console._orig[m]=console[m]; console[m]=function(){}; });
+    }
+  } catch(e){}
+})();
+
 // Key lưu state extras
 const STORAGE_KEY = "skyplan_extras_v2";
 const DEFAULT_EXTRAS = {
@@ -6,13 +17,125 @@ const DEFAULT_EXTRAS = {
   services: [],
   total: 0,
 };
-//Initialization
+
+// Extras state management for booking flow integration
+const ExtrasState = {
+  // Get current extras selection
+  getSelection: function() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : {...DEFAULT_EXTRAS};
+    } catch {
+      return {...DEFAULT_EXTRAS};
+    }
+  },
+  
+  // Save extras selection
+  saveSelection: function(data) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.warn('Failed to save extras selection:', e);
+    }
+  },
+  
+  // Get formatted summary for other pages
+  getSummary: function() {
+    const state = this.getSelection();
+    const summary = {
+      meals: [],
+      baggage: null,
+      services: [],
+      totalCost: state.total || 0
+    };
+    
+    // Format meals
+    const mealCatalog = MEALS.reduce((m, x) => ((m[x.id] = x), m), {});
+    summary.meals = (state.meals || []).map(m => ({
+      id: m.id,
+      name: mealCatalog[m.id]?.name || 'Unknown meal',
+      quantity: m.qty || 0,
+      price: mealCatalog[m.id]?.price || 0
+    }));
+    
+    // Format baggage
+    if (state.baggage && state.baggage.kg > 0) {
+      const pkg = BAGGAGE_PKGS.find(p => p.kg === state.baggage.kg);
+      if (pkg) {
+        summary.baggage = {
+          kg: pkg.kg,
+          label: pkg.label,
+          price: pkg.price
+        };
+      }
+    }
+    
+    // Format services
+    summary.services = (state.services || []).map(serviceId => {
+      const service = SERVICES.find(s => s.id === serviceId);
+      return service ? {
+        id: service.id,
+        label: service.label,
+        price: service.price
+      } : null;
+    }).filter(Boolean);
+    
+    return summary;
+  },
+  
+  // Validate selection (optional - all extras are optional)
+  isValid: function() {
+    return true; // Extras are always optional
+  }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   loadHeaderFooter().then(initializeLanguage);
   bindDetailsButtons();
   initDrawer();
   updateTotalsUI(getState());
+  setupContinueButton();
 });
+
+// Setup continue button for navigation to overview/payment
+function setupContinueButton() {
+  // Wait a bit for DOM to be fully ready
+  setTimeout(() => {
+    const continueBtn = document.querySelector('#toPaymentBtn, .continue-btn, .btn-continue, a[href*="overview"], button[onclick*="overview"]');
+    if (continueBtn) {
+      // Update the href to include current URL parameters
+      const currentParams = new URLSearchParams(window.location.search);
+      if (continueBtn.href && continueBtn.href.includes('overview.html')) {
+        continueBtn.href = 'overview.html?' + currentParams.toString();
+      }
+      
+      // Override the onclick to ensure data is saved before navigation
+      const originalOnclick = continueBtn.onclick;
+      continueBtn.onclick = function(e) {
+        // Ensure current state is saved
+        const currentState = getState();
+        ExtrasState.saveSelection(currentState);
+        
+        // Show confirmation toast if extras were selected
+        if (currentState.total > 0) {
+          const lang = localStorage.getItem('preferredLanguage') || 'vi';
+          const message = lang === 'vi' 
+            ? `Đã lưu dịch vụ bổ sung: ${formatVND(currentState.total)}` 
+            : `Extras saved: ${formatVND(currentState.total)}`;
+          
+          if (typeof showToast === 'function') {
+            showToast(message, { type: 'success', duration: 2000 });
+          }
+        }
+        
+        // Call original onclick if exists
+        if (originalOnclick) {
+          return originalOnclick.call(this, e);
+        }
+      };
+    }
+  }, 500);
+}
 
 function loadHeaderFooter() {
   return new Promise((resolve) => {
@@ -285,6 +408,7 @@ function initDrawer() {
     backdrop.hidden = false;
     panel.hidden = false;
     panel.setAttribute("aria-hidden", "false");
+    panel.dataset.type = type;
     (closeBtn || panel).focus();
   };
   window.closeDrawer = function () {
@@ -471,3 +595,6 @@ function renderDrawerContent(type) {
   }
   updateTotalsUI(state);
 }
+
+// Make ExtrasState available globally for other pages
+window.ExtrasState = ExtrasState;

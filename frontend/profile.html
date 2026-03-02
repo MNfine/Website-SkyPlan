@@ -7,6 +7,7 @@
   <meta name="description" content="Quản lý thông tin tài khoản SkyPlan của bạn.">
   
   <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="assets/styles/reset.css">
@@ -128,6 +129,7 @@
   <script src="assets/scripts/profile_translations.js"></script>
   <script src="assets/scripts/common.js"></script>
   <script src="assets/scripts/profile.js"></script>
+  <script src="assets/scripts/auth-utils.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -145,6 +147,16 @@
           if (typeof updateSelectedLanguage === 'function') {
             updateSelectedLanguage(lang);
           }
+
+          // Ensure user dropdown and header user info are initialized after header injection
+          if (typeof initializeUserDropdown === 'function') {
+            initializeUserDropdown();
+          }
+          if (typeof updateHeaderUserInfo === 'function') {
+            // slight delay to let any header scripts settle
+            setTimeout(() => updateHeaderUserInfo(), 50);
+          }
+
           // Apply translations to header using common.js
           if (typeof applyTranslations === 'function') {
             applyTranslations(lang);

@@ -8,9 +8,10 @@
   
   <!-- Favicon -->
   <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
   
   <!-- Font Awesome CDN for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   
   <!-- CSS -->
   <link rel="stylesheet" href="assets/styles/reset.css">
@@ -37,7 +38,7 @@
   <!-- Search Box -->
   <div class="container">
     <div class="search-container">
-      <form class="search-box" action="search.html" method="GET">
+      <form class="search-box" action="/search" method="GET">
         <div class="search-form">
           <div class="search-field">
             <label for="from" data-i18n="search.from">Từ</label>
@@ -191,6 +192,7 @@
   <div id="footer-container"></div>
 
   <!-- JavaScript -->
+  <script src="assets/scripts/auth-utils.js"></script>
   <script src="assets/scripts/index_translations.js"></script>
   <script src="assets/scripts/toast.js"></script>
   <script src="assets/scripts/common.js"></script>
@@ -206,16 +208,40 @@
     
     // Wait for translations.js to load before using functions
     function initializeApp() {
-      // Load header
-      fetch('components/header.html')
+      // Debug logs
+      console.log("Initializing app...");
+      console.log("Current path:", window.location.pathname);
+      
+      // Load header - Use absolute path to avoid issues
+      const headerPath = window.location.pathname.endsWith('/') ? 
+        'components/header.html' : './components/header.html';
+      
+      console.log("Fetching header from:", headerPath);
+      
+      fetch(headerPath)
         .then(response => {
           if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error(`Network response was not ok: ${response.status}`);
           }
           return response.text();
         })
         .then(data => {
           document.getElementById('header-container').innerHTML = data;
+          console.log("Header loaded successfully");
+          
+          // After header loads, initialize mobile menu with a delay
+          setTimeout(() => {
+            if (typeof initializeMobileMenu === 'function') {
+              console.log("Initializing mobile menu...");
+              initializeMobileMenu();
+            }
+            
+            // Update header for auth status using the new function
+            if (typeof handleHeaderLoaded === 'function') {
+              console.log("Handling header loaded...");
+              handleHeaderLoaded();
+            }
+          }, 100);
           
           // After header loads, initialize language functionality
           initializeLanguage();
@@ -225,16 +251,22 @@
           }
         })
         .catch(error => {
+          console.error("Header loading error:", error);
           handleComponentError('header');
           // Still initialize language even if header fails
           initializeLanguage();
         });
       
-      // Load footer
-      fetch('components/footer.html')
+      // Load footer - Use same path determination as header
+      const footerPath = window.location.pathname.endsWith('/') ? 
+        'components/footer.html' : './components/footer.html';
+      
+      console.log("Fetching footer from:", footerPath);
+      
+      fetch(footerPath)
         .then(response => {
           if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error(`Network response was not ok: ${response.status}`);
           }
           return response.text();
         })
@@ -249,6 +281,7 @@
           } catch (e) {}
         })
         .catch(error => {
+          console.error("Footer loading error:", error);
           handleComponentError('footer');
         });
     }

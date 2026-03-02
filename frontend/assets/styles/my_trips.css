@@ -402,12 +402,16 @@
 .my-trips-page .trip-actions {
   width: 100%;
   box-sizing: border-box;
+  position: relative;
+  z-index: 10;
 }
 
 .my-trips-page .trip-buttons {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
+  position: relative;
+  z-index: 10;
 }
 
 .my-trips-page .trip-buttons .btn {

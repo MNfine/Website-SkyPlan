@@ -230,6 +230,89 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   window.profileGetCurrentLang = getCurrentLang;
+
+  // --- ENFORCE AUTH ---
+  // Use AuthState (supports localStorage & sessionStorage) instead of reading localStorage directly
+  if (window.AuthState && typeof AuthState.requireAuth === 'function') {
+    const ok = AuthState.requireAuth(window.location.pathname + window.location.search);
+    if (!ok) return; // requireAuth will redirect if not authenticated
+  }
+
+  // Retrieve token via AuthState.getToken to support sessionStorage tokens as well
+  const token = (window.AuthState && typeof AuthState.getToken === 'function')
+    ? AuthState.getToken()
+    : (localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
+
+  if (!token) {
+    // Fallback: redirect to login
+    alert('You need to log in to view your profile.');
+    window.location.href = '/login.html';
+    return;
+  }
+
+  // Use centralized fetchWithAuth when available so 401 handling is consistent
+  const profileUrl = (typeof window !== 'undefined' && window.location && window.location.pathname && window.location.pathname.startsWith('/'))
+    ? '/api/auth/profile'
+    : '/api/auth/profile';
+
+  const doFetch = (window.AuthState && typeof AuthState.fetchWithAuth === 'function')
+    ? AuthState.fetchWithAuth(profileUrl, { method: 'GET' })
+    : fetch(profileUrl, { method: 'GET', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } });
+
+  doFetch
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch profile information.');
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data && data.success) {
+        console.debug('[profile] profile data', data.user);
+        // Fill account display fields if present
+        const accountEmailEl = document.getElementById('accountEmail');
+        const accountPhoneEl = document.getElementById('accountPhone');
+        const memberIdEl = document.getElementById('memberId');
+        const memberTierEl = document.getElementById('memberTier');
+        const memberPointsEl = document.getElementById('memberPoints');
+
+        if (accountEmailEl && data.user.email) accountEmailEl.textContent = data.user.email;
+        if (accountPhoneEl && (data.user.phone || data.user.mobile)) accountPhoneEl.textContent = data.user.phone || data.user.mobile;
+        if (memberIdEl && (data.user.memberId || data.user.id)) memberIdEl.textContent = data.user.memberId || data.user.id;
+        if (memberTierEl && data.user.tier) memberTierEl.textContent = data.user.tier;
+        if (memberPointsEl && (data.user.points || data.user.loyaltyPoints)) memberPointsEl.textContent = (data.user.points || data.user.loyaltyPoints) + ' ' + (memberPointsEl.querySelector('[data-i18n]') ? '' : '');
+
+        // Fill legacy/profile-name and profile-email if present (some templates use these ids)
+        const profileNameEl = document.getElementById('profile-name');
+        const profileEmailEl = document.getElementById('profile-email');
+        if (profileNameEl && data.user.fullname) profileNameEl.textContent = data.user.fullname;
+        if (profileEmailEl && data.user.email) profileEmailEl.textContent = data.user.email;
+
+        // Populate form inputs if present
+        try {
+          const fullNameInput = document.getElementById('fullName');
+          const emailInput = document.getElementById('email');
+          const phoneInput = document.getElementById('phone');
+          const dobInput = document.getElementById('dob');
+          const genderSelect = document.getElementById('gender');
+
+          if (fullNameInput && data.user.fullname) fullNameInput.value = data.user.fullname;
+          if (emailInput && data.user.email) emailInput.value = data.user.email;
+          if (phoneInput && (data.user.phone || data.user.mobile)) phoneInput.value = data.user.phone || data.user.mobile;
+          if (dobInput && (data.user.dob || data.user.dateOfBirth)) dobInput.value = data.user.dob || data.user.dateOfBirth;
+          if (genderSelect && data.user.gender) genderSelect.value = data.user.gender;
+        } catch (e) {
+          console.warn('[profile] failed to populate form inputs', e);
+        }
+
+      } else {
+        alert((data && data.message) || 'Failed to load profile.');
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching profile:', error);
+      alert('An error occurred while loading your profile.');
+    });
 });
 
 // Language switcher for profile page

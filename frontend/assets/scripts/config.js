@@ -23,7 +23,7 @@ class Config {
       case 'development':
         return 'http://localhost:5000';
       case 'production':
-        return 'https://your-production-api.com'; // Replace with actual production URL
+        return 'https://85a4fc6a3ec6.ngrok-free.app'; // Đúng domain ngrok backend
       default:
         return 'http://localhost:5000';
     }
@@ -34,7 +34,7 @@ class Config {
       case 'development':
         return 'http://localhost:5000';
       case 'production':
-        return 'https://your-production-domain.com'; // Replace with actual domain
+        return 'https://85a4fc6a3ec6.ngrok-free.app'; // Đúng domain ngrok backend
       default:
         return window.location.origin;
     }
@@ -48,6 +48,7 @@ class Config {
   // API endpoints
   getApiEndpoints() {
     return {
+      bookings: `${this.apiBaseUrl}/api/bookings`,
       vnpayCreate: `${this.apiBaseUrl}/api/payment/vnpay/create`,
       vnpayReturn: `${this.apiBaseUrl}/api/payment/vnpay/return`,
       vnpayConfig: `${this.apiBaseUrl}/api/payment/config`,

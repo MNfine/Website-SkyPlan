@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <meta name="description" content="Chọn hạng giá vé phù hợp cho chuyến bay của bạn với SkyPlan.">
 
   <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
   <link rel="stylesheet" href="assets/styles/reset.css">
@@ -17,6 +19,7 @@
   <link rel="stylesheet" href="assets/styles/fare.css">
   <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
+
 <body>
   <div id="header-container"></div>
 
@@ -122,7 +125,9 @@
 
   <div id="footer-container"></div>
 
+  <script src="assets/scripts/auth-utils.js"></script>
   <script src="assets/scripts/fare_translations.js"></script>
+  <script src="assets/scripts/fare.js"></script>
   <script src="assets/scripts/common.js"></script>
   <script>
     // Persist selected fare class and price (VND) to localStorage
@@ -171,12 +176,17 @@
   </script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+      // Signal that we will handle initialization manually
+      if (typeof window.setManualInit === 'function') {
+        window.setManualInit();
+      }
+
       // Function to handle component loading errors
       function handleComponentError(componentName) {
         console.error(`Failed to load ${componentName} component`);
       }
-      
+
       // Load header
       fetch('components/header.html')
         .then(response => {
@@ -196,11 +206,21 @@
             }
             // Initialize language functionality after header loads
             initializeLanguage();
+            // Initialize fare page functionality
+            if (typeof window.initializeFarePage === 'function') {
+              window.initializeFarePage();
+            }
           });
         })
         .catch(error => {
           handleComponentError('header');
-          initializeLanguage();
+          // Fallback initialization if header fails
+          if (typeof window.initializeLanguage === 'function') {
+            window.initializeLanguage();
+          }
+          if (typeof window.initializeFarePage === 'function') {
+            window.initializeFarePage();
+          }
         });
 
       // Load footer
@@ -269,4 +289,5 @@
     });
   </script>
 </body>
+
 </html>

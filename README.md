@@ -1,122 +1,126 @@
-# ✈️ SkyPlan - Website Đặt Vé Máy Bay
 
-## 📋 Giới thiệu
+ # SkyPlan — Ứng dụng đặt vé máy bay
 
-**SkyPlan** là một website đặt vé máy bay nội địa Việt Nam được phát triển như đồ án môn học **IE104 - Công nghệ Web**. Website cung cấp trải nghiệm đặt vé máy bay trực tuyến hoàn chỉnh với giao diện thân thiện, hỗ trợ đa ngôn ngữ (Tiếng Việt/Tiếng Anh) và tích hợp thanh toán VNPay.
+ Đây là repository chứa toàn bộ ứng dụng SkyPlan: frontend tĩnh bằng HTML/CSS/JavaScript (vanilla) và backend bằng Python + Flask sử dụng SQLAlchemy. README này hướng dẫn cài đặt, chạy local, cấu hình và các lưu ý phát triển cho cả frontend và backend.
 
-## ✨ Tính năng chính
+## Nội dung chính
 
-### 🔍 Tìm kiếm & Đặt vé
-- Tìm kiếm chuyến bay theo điểm đi/đến, ngày bay
-- Bộ lọc theo giá, thời gian bay
-- Hiển thị kết quả tìm kiếm với thông tin chi tiết
+- `frontend/` — Mã nguồn giao diện tĩnh (HTML, CSS, JS)
+- `backend/` — Ứng dụng Flask + API
+- `docs/architecture.md` — Tài liệu kiến trúc chi tiết (luồng booking, thiết kế DB, vận hành)
 
-### 🎫 Quy trình đặt vé hoàn chỉnh
-1. **Tìm kiếm** - Chọn điểm đi/đến và ngày bay
-2. **Chọn chuyến bay** - Xem và chọn chuyến bay phù hợp
-3. **Chọn giá vé** - Economy, Premium Economy, Business
-4. **Chọn ghế** - Giao diện chọn ghế trực quan
-5. **Thông tin hành khách** - Nhập thông tin cá nhân
-6. **Dịch vụ thêm** - Hành lý, bảo hiểm, suất ăn
-7. **Thanh toán** - Tích hợp VNPay, thẻ tín dụng, ví điện tử
-8. **Xác nhận** - Nhận mã đặt vé
+## Chạy nhanh (Windows PowerShell)
 
-### 🌐 Đa ngôn ngữ
-- Hỗ trợ Tiếng Việt (mặc định)
-- Hỗ trợ Tiếng Anh
-- Chuyển đổi ngôn ngữ mượt mà
+Yêu cầu:
+- Python 3.10+
+- Git
+- (Tùy chọn) PostgreSQL 13+ cho môi trường gần production; SQLite có thể dùng cho chạy local nhanh.
 
-### 👤 Quản lý tài khoản
-- Đăng nhập / Đăng ký
-- Quản lý hồ sơ cá nhân
-- Xem lịch sử chuyến đi (My Trips)
+Các bước cơ bản:
 
-### 💬 Hỗ trợ khách hàng
-- Trang hỗ trợ với Live Chat
-- FAQ - Câu hỏi thường gặp
-- Trang liên hệ
-- Blog du lịch với AI Assistant
+```powershell
+# 1. Clone repo
+git clone <repo-url> SkyPlan
+cd "SkyPlan"
 
-## 🛠️ Công nghệ sử dụng
+# 2. Tạo virtualenv và cài dependency backend
+python -m venv .venv
+.\.venv\Scripts\Activate
+pip install --upgrade pip
+pip install -r backend/requirements.txt
 
-### Frontend
-| Công nghệ | Mô tả |
-|-----------|-------|
-| HTML5 | Cấu trúc trang web |
-| CSS3 | Thiết kế giao diện, responsive |
-| JavaScript (ES6+) | Xử lý logic, tương tác người dùng |
-| Font Awesome | Icons |
+# 3. Tạo file cấu hình .env (copy từ template nếu có)
+copy backend\.env.example backend\.env
+# Sửa backend\.env để thiết lập DATABASE_URL, SECRET_KEY, VNPAY_*...
 
-### Backend
-| Công nghệ | Mô tả |
-|-----------|-------|
-| Python 3.x | Ngôn ngữ lập trình |
-| Flask | Web framework |
-| VNPay SDK | Tích hợp thanh toán |
+# 4. (Tuỳ chọn) Import dữ liệu demo và tạo ghế
+python backend/db/import_flights.py
+python backend/db/create_all_seats.py
 
-## 📁 Cấu trúc dự án
+# 5. Chạy backend (phục vụ cả frontend trong dev)
+python backend/app.py
 
-```
-Website-SkyPlan/
-├── 📂 backend/
-│   ├── app.py                 # Flask application chính
-│   ├── config.py              # Cấu hình (VNPay, etc.)
-│   ├── requirements.txt       # Python dependencies
-│   ├── 📂 db/
-│   │   ├── schema.sql         # Database schema
-│   │   └── seed.py            # Seed data
-│   ├── 📂 models/
-│   │   └── db.py              # Database models
-│   └── 📂 routes/
-│       ├── auth.py            # Authentication routes
-│       ├── bookings.py        # Booking routes
-│       ├── flights.py         # Flight routes
-│       ├── payment.py         # Payment routes (VNPay)
-│       └── tickets.py         # Ticket routes
-│
-├── 📂 frontend/
-│   ├── index.html             # Trang chủ
-│   ├── search.html            # Trang tìm kiếm
-│   ├── fare.html              # Chọn giá vé
-│   ├── seat.html              # Chọn ghế
-│   ├── passenger.html         # Thông tin hành khách
-│   ├── extras.html            # Dịch vụ thêm
-│   ├── payment.html           # Thanh toán
-│   ├── confirmation.html      # Xác nhận đặt vé
-│   ├── overview.html          # Tổng quan chuyến đi
-│   ├── my_trips.html          # Quản lý chuyến đi
-│   ├── login.html             # Đăng nhập
-│   ├── register.html          # Đăng ký
-│   ├── profile.html           # Hồ sơ cá nhân
-│   ├── support.html           # Hỗ trợ khách hàng
-│   ├── contact.html           # Liên hệ
-│   ├── faq.html               # Câu hỏi thường gặp
-│   ├── blog.html              # Blog du lịch
-│   ├── promotion.html         # Khuyến mãi
-│   ├── 404.html               # Trang lỗi
-│   │
-│   ├── 📂 assets/
-│   │   ├── 📂 images/         # Hình ảnh
-│   │   ├── 📂 scripts/        # JavaScript files
-│   │   │   ├── common.js      # Shared functions
-│   │   │   ├── config.js      # Frontend config
-│   │   │   ├── toast.js       # Notifications
-│   │   │   ├── loader.js      # Loading animation
-│   │   │   └── *_translations.js  # i18n files
-│   │   └── 📂 styles/         # CSS files
-│   │       ├── reset.css      # CSS reset
-│   │       ├── index.css      # Main styles
-│   │       ├── header.css     # Header styles
-│   │       ├── footer.css     # Footer styles
-│   │       └── *.css          # Page-specific styles
-│   │
-│   └── 📂 components/
-│       ├── header.html        # Header component
-│       ├── footer.html        # Footer component
-│       └── loader.html        # Loader component
-│
-├── .gitignore
-├── CONTRIBUTING.md
-└── README.md
+# Mở http://localhost:5000
 ```
 
+Ghi chú:
+- Nếu không có PostgreSQL, bạn có thể dùng SQLite bằng cách đặt `DATABASE_URL=sqlite:///skyplan_local.db` trong `backend/.env`.
+- Frontend tĩnh cũng có thể mở trực tiếp file HTML, nhưng để gọi API bạn nên chạy backend server.
+
+## Biến môi trường quan trọng
+
+- `SECRET_KEY` — Khóa bí mật của Flask
+- `DATABASE_URL` — DSN của SQLAlchemy (vd: `postgresql+psycopg2://user:pass@localhost:5432/skyplan` hoặc `sqlite:///skyplan.db`)
+- `VNPAY_TMN_CODE`, `VNPAY_HASH_SECRET`, `VNPAY_RETURN_URL` — Cấu hình VNPay (demo)
+- Cấu hình mail nếu muốn gửi email xác nhận
+
+Không commit file `.env` chứa secrets lên Git.
+
+## Tổng quan Backend
+
+Thư mục `backend/` chứa ứng dụng Flask và các model SQLAlchemy. Thành phần chính:
+
+- `backend/app.py` — Khởi tạo app, đăng ký blueprint
+- `backend/config.py` — Load cấu hình
+- `backend/models/` — Models: User, Flight, Booking, Passenger, Seat, Payment, Ticket...
+- `backend/routes/` — Blueprints: `auth.py`, `flights.py`, `bookings.py`, `payments.py`, `seats.py`, `tickets.py`
+- `backend/db/` — scripts để tạo bảng/import dữ liệu demo
+
+Lưu ý hành vi chính:
+- `POST /api/bookings/create` chấp nhận `passengers` (list id) hoặc `guest_passenger` (object). Nếu user đã đăng nhập nhưng gửi `guest_passenger`, backend sẽ tạo Passenger gán cho user rồi tiếp tục tạo booking (tránh lỗi khi frontend chưa lưu `storedPassengerId`).
+- Server sẽ recompute `total_amount` trên server khi tạo booking để tránh client tamper.
+- VNPay: các endpoint tạo giao dịch, return, IPN đã có để demo.
+
+## Tổng quan Frontend
+
+Frontend là tĩnh, nằm trong `frontend/`. Một số file/điểm quan trọng:
+
+- Trang: `index.html`, `search.html`, `seat.html`, `confirmation.html`, `my_trips.html`, ...
+- Scripts: `frontend/assets/scripts/`
+	- `overview.js`, `payment_order.js`, `payment.js` — Xây payload booking và gọi API
+	- `passenger.js` — Tạo/cập nhật passenger; lưu `storedPassengerId` vào `localStorage` khi có id
+	- `confirmation.js` — Kiểm tra txnRef với `GET /api/bookings/status/:code`, gọi claim nếu cần
+	- `my_trips.js` — Hiển thị bookings của user (GET /api/bookings/)
+
+Một vài khóa `localStorage` thường dùng:
+- `storedPassengerId` / `activePassengerId` — id passenger đã lưu
+- `currentBookingCode` / `lastBookingCode` — mã booking để hiển thị fallback
+- `selectedSeats` — danh sách ghế đã chọn
+
+Nếu confirmation hiển thị code nhưng `my_trips` không tăng số booking, kiểm tra Network → `POST /api/bookings/create` có trả 201 không (nếu 400 thì booking không được commit).
+
+## Chạy test (gợi ý)
+
+Hiện chưa có bộ test đầy đủ. Nên bổ sung:
+- Unit test cho models, utils (pytest)
+- Integration smoke test: tạo booking → mark-paid → assert booking.status == CONFIRMED
+
+Ví dụ chạy pytest (nếu có):
+
+```powershell
+pytest backend/tests/
+```
+
+## Debug & Troubleshooting
+
+- Xem logs backend khi chạy `python backend/app.py` để biết lỗi
+- Dùng DevTools Network để kiểm tra payload gửi lên `/api/bookings/create` và `/api/payments/*`
+- Debug endpoint: `GET /api/bookings/debug/inspect` (gửi Bearer token) để xem số lượng booking của user
+
+## Tài liệu kiến trúc
+
+Tài liệu chi tiết về kiến trúc và các luồng nghiệp vụ nằm ở `docs/architecture.md` (tiếng Việt).
+
+## Triển khai
+
+- Production: dùng PostgreSQL, WSGI server (Gunicorn/uWSGI), reverse proxy (nginx)
+- Quản lý secrets bằng biến môi trường hoặc secret manager
+- Nên dùng Alembic để migrate schema khi thay đổi model
+
+## Contributing
+
+1. Tạo branch: `git checkout -b feature/xxx`
+2. Code, test local
+3. Tạo PR vào `main`
+
+Vui lòng follow coding style và thêm test khi thay đổi logic quan trọng.

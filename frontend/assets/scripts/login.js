@@ -115,6 +115,77 @@ document.addEventListener("DOMContentLoaded", () => {
     return activeLangElem ? activeLangElem.getAttribute("data-lang") : "vi";
   }
 
+  /* Login API call */
+  async function performLogin(email, password, remember) {
+    try {
+      // Show loader
+      if (window.Loader) {
+        window.Loader.show();
+      }
+
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      // Store authentication data using AuthState
+      const token = data.token;
+      const user = data.user;
+
+      if (typeof window.AuthState !== 'undefined') {
+        window.AuthState.setAuth(token, user, remember);
+      } else {
+        // Fallback if AuthState not loaded
+        const storage = remember ? localStorage : sessionStorage;
+        storage.setItem('authToken', token);
+        storage.setItem('currentUser', JSON.stringify(user));
+      }
+
+      // Show success message
+      showToast(getTranslation("login.successToast"), {
+        type: "success",
+        duration: 2000,
+      });
+
+      // Redirect after successful login
+      setTimeout(() => {
+        const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
+        window.location.href = returnUrl || 'index.html';
+      }, 2000);
+
+    } catch (error) {
+      console.error('Login error:', error);
+      
+      // Hide loader
+      if (window.Loader) {
+        window.Loader.hide();
+      }
+
+      // Show error message
+      const errorMessage = error.message || 'Đã xảy ra lỗi khi đăng nhập';
+      if (errorMessage.includes('email') || errorMessage.includes('password')) {
+        showError('password', errorMessage);
+      } else {
+        showToast(errorMessage, {
+          type: 'error',
+          duration: 4000,
+        });
+      }
+    }
+  }
+
   /* Form submit handler */
   if (form && emailInput && passwordInput) {
     form.addEventListener("submit", (e) => {
@@ -143,21 +214,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (hasError) return;
-    
-      showToast(getTranslation("login.successToast"), {
-        type: "success",
-        duration: 2000,
-      });
 
-      // Show loader
-      if (window.Loader) {
-        window.Loader.show();
-      }
-
-      // Redirect to home page after successful login
-      setTimeout(() => {
-        window.location.href = "index.html";
-      }, 2000);
+      // Call login API
+      performLogin(email, password, remember);
     });
   }
 

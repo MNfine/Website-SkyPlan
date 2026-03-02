@@ -162,6 +162,163 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* User authentication functions */
+  function saveUserData(data, remember = false) {
+    const storage = remember ? localStorage : sessionStorage;
+    storage.setItem('user', JSON.stringify(data.user));
+    storage.setItem('token', data.token);
+    storage.setItem('isLoggedIn', 'true');
+  }
+  
+  function getUserData() {
+    // Try session storage first, then local storage
+    const userFromSession = sessionStorage.getItem('user');
+    const tokenFromSession = sessionStorage.getItem('token');
+    
+    if (userFromSession && tokenFromSession) {
+      return { 
+        user: JSON.parse(userFromSession), 
+        token: tokenFromSession 
+      };
+    }
+    
+    const userFromLocal = localStorage.getItem('user');
+    const tokenFromLocal = localStorage.getItem('token');
+    
+    if (userFromLocal && tokenFromLocal) {
+      return { 
+        user: JSON.parse(userFromLocal), 
+        token: tokenFromLocal 
+      };
+    }
+    
+    return null;
+  }
+  
+  function checkLoginStatus() {
+    const userData = getUserData();
+    if (userData) {
+      console.log('User is already logged in', userData.user);
+      
+      // Redirect to home page if on register page
+      if (window.location.pathname.includes('register') || window.location.pathname === '/register') {
+        window.location.href = '/';
+      }
+    }
+  }
+  
+  async function performRegistration(userData) {
+    try {
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner"></span> Đang xử lý...';
+      }
+      
+      const response = await fetch(`${API_URL}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Đăng ký thất bại');
+      }
+      
+  // Registration successful - do NOT auto-login. Redirect user to login page.
+  // Show success message then redirect to login so user can sign in.
+  alert('Đăng ký thành công!\n\nVui lòng đăng nhập bằng tài khoản mới.');
+  window.location.href = '/login.html?message=registration-success';
+      
+    } catch (error) {
+      if (error.message.includes('Email already registered')) {
+        showError('email', 'Email đã được đăng ký');
+      } else if (error.message.includes('Phone number already registered')) {
+        showError('phone', 'Số điện thoại đã được đăng ký');
+      } else {
+        alert('Đăng ký thất bại: ' + error.message);
+      }
+      console.error('Registration error:', error);
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Đăng ký';
+      }
+    }
+  }
+
+  /* Registration API call */
+  async function performRegistration(fullName, email, phone, password) {
+    try {
+      // Show loader
+      if (window.Loader) {
+        window.Loader.show();
+      }
+
+      // Debug: log dữ liệu gửi lên backend
+      console.log('[DEBUG] Registration payload:', { fullname: fullName, email, phone, password });
+
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fullname: fullName,
+          email: email,
+          phone: phone,
+          password: password
+        })
+      });
+
+      const data = await response.json();
+
+      // Debug: log response trả về từ backend
+      console.log('[DEBUG] Registration response:', data);
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      // Do not auto-login. Show success toast and redirect to login page.
+      showToast(getTranslation('register.successToast'), {
+        type: 'success',
+        duration: 2000,
+        dismissible: true
+      });
+
+      setTimeout(() => {
+        window.location.href = 'login.html?message=registration-success';
+      }, 1500);
+
+    } catch (error) {
+      console.error('Registration error:', error);
+      
+      // Hide loader
+      if (window.Loader) {
+        window.Loader.hide();
+      }
+
+      // Show error message
+      const errorMessage = error.message || 'Đã xảy ra lỗi khi đăng ký';
+      
+      // Handle specific field errors
+      if (errorMessage.includes('email') && errorMessage.includes('already')) {
+        showError('email', 'Email này đã được đăng ký');
+      } else if (errorMessage.includes('phone') && errorMessage.includes('already')) {
+        showError('phone', 'Số điện thoại này đã được đăng ký');
+      } else {
+        showToast(errorMessage, {
+          type: 'error',
+          duration: 4000,
+        });
+      }
+    }
+  }
+
   /* Form submit */
   if (form && fullNameInput && emailInput && phoneInput && passwordInput && confirmPasswordInput && agreeTermsCheckbox) {
     form.addEventListener('submit', (e) => {
@@ -238,25 +395,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // NOTE: In production, send registration data to backend API
-      // Example: fetch('/api/auth/register', { method: 'POST', body: JSON.stringify({ fullName, email, phone, password }) })
-      
-      // Show success toast notification
-      showToast(getTranslation('register.successToast'), {
-        type: 'success',
-        duration: 2000,
-        dismissible: true
-      });
-
-      // Show loader
-      if (window.Loader) {
-        window.Loader.show();
-      }
-
-      // Redirect to login page after successful registration
-      setTimeout(() => {
-        window.location.href = 'login.html';
-      }, 2000);
+      // Call registration API
+      performRegistration(fullName, email, phone, password);
     });
   }
 
