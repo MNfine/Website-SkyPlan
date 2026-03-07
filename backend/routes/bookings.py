@@ -9,6 +9,7 @@ from backend.models.passenger import Passenger
 from backend.models.booking import Booking, BookingPassenger, BookingStatus, TripType, FareClass
 from sqlalchemy.orm import joinedload
 from backend.models.flights import Flight
+from backend.utils.blockchain import generate_booking_hash_simple
 
 bookings_bp = Blueprint('bookings', __name__)
 
@@ -439,6 +440,16 @@ def create_booking():
 			print(f"❌ Failed to generate unique booking code after {max_retries} attempts")
 			return jsonify({'success': False, 'message': 'Failed to generate unique booking code'}), 500
 
+		# Extract wallet address if provided (optional)
+		wallet_address = data.get('wallet_address') or data.get('walletAddress') or None
+		if wallet_address and not wallet_address.startswith('0x'):
+			# Invalid format - must start with 0x
+			wallet_address = None
+		
+		# Generate blockchain hash from booking code
+		booking_hash = generate_booking_hash_simple(booking_code)
+		print(f"✅ Generated booking_hash: {booking_hash}")
+
 		# Create booking
 		booking = Booking(
 			booking_code=booking_code,
@@ -448,7 +459,9 @@ def create_booking():
 			fare_class=fare_class,
 			outbound_flight_id=outbound_flight_id,
 			inbound_flight_id=inbound_flight_id,
-			total_amount=final_total
+			total_amount=final_total,
+			booking_hash=booking_hash,
+			wallet_address=wallet_address
 		)
 		session.add(booking)
 		session.flush()  # Get booking ID
@@ -499,7 +512,9 @@ def create_booking():
 			'success': True, 
 			'booking': booking.as_dict(),
 			'booking_code': booking.booking_code,
-			'booking_id': booking.id
+			'booking_id': booking.id,
+			'booking_hash': booking.booking_hash,
+			'wallet_address': booking.wallet_address
 		}), 201
 	except Exception as e:
 		print(f"❌ Unexpected error in create_booking: {str(e)}")
@@ -706,3 +721,47 @@ def get_booking_status(booking_code):
 			'success': True,
 			'booking': booking.as_dict()
 		}), 200
+
+
+@bookings_bp.route('/blockchain/record', methods=['POST'])
+def record_booking_on_blockchain():
+	"""Record a booking on the blockchain (Sepolia testnet).
+	
+	Request JSON:
+	- booking_code: The booking code to record
+	
+	Requires:
+	- BOOKING_REGISTRY_ADDRESS in .env (deployed contract address)
+	- User's MetaMask wallet to sign transaction (frontend responsibility)
+	
+	This endpoint returns the booking_hash and booking_code that should be
+	used to call the smart contract's recordBooking() function.
+	"""
+	user_id = _get_user_id_from_bearer()
+	if not user_id:
+		return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+
+	data = request.get_json(silent=True) or {}
+	booking_code = data.get('booking_code')
+	
+	if not booking_code:
+		return jsonify({'success': False, 'message': 'Missing booking_code'}), 400
+
+	with session_scope() as session:
+		booking = session.query(Booking).filter_by(
+			booking_code=booking_code,
+			user_id=user_id
+		).first()
+
+		if not booking:
+			return jsonify({'success': False, 'message': 'Booking not found'}), 404
+
+		# Return booking data needed for blockchain recording
+		return jsonify({
+			'success': True,
+			'booking_code': booking.booking_code,
+			'booking_hash': booking.booking_hash,
+			'wallet_address': booking.wallet_address,
+			'message': 'Use these values to call BookingRegistry.recordBooking() from your wallet'
+		}), 200
+

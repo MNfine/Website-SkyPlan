@@ -107,8 +107,9 @@ def create_app():
     app.register_blueprint(ai_chat_bp, url_prefix='/api/ai')  # AI Chat API (Gemini)
     app.register_blueprint(contact_bp, url_prefix='/api/contact')  # Contact form API
     # Initialize SocketIO (exposed at module level)
+    # Use threading async_mode for Python 3.13 compatibility
     global socketio
-    socketio = SocketIO(app, cors_allowed_origins="*")
+    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
     # Socket.IO event handlers for support chat
     @socketio.on('connect')

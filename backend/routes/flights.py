@@ -61,9 +61,11 @@ def get_flights():
         'SQH': ['SQH'],
         'Khánh Hòa': ['CXR'],
         'Khanh Hoa': ['CXR'],
+        'KhanhHoa': ['CXR'],  # Frontend gửi không có space
         'CXR': ['CXR'],
         'Đắk Lắk': ['BMV'],
         'Dak Lak': ['BMV'],
+        'DakLak': ['BMV'],  # Frontend gửi không có space
         'BMV': ['BMV'],
         'Quảng Trị': ['VDH'],
         'Quang Tri': ['VDH'],

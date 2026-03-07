@@ -15,7 +15,14 @@ sys.path.append(project_root)
 
 try:
     from backend.models.db import session_scope
+    # Import all models to ensure relationships are properly initialized
+    from backend.models.user import User
     from backend.models.flights import Flight
+    from backend.models.passenger import Passenger
+    from backend.models.booking import Booking, BookingPassenger
+    from backend.models.payments import Payment
+    from backend.models.seats import Seat
+    from backend.models.tickets import Ticket
 except ImportError as e:
     print(f"❌ Error importing models: {e}")
     print("Make sure you're running from the project root directory")

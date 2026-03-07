@@ -46,6 +46,10 @@ class Booking(Base):
     # Pricing
     total_amount = Column(Numeric(12, 2), nullable=False)
     
+    # Blockchain fields
+    booking_hash = Column(String(66), nullable=True)  # keccak256 hash (0x + 64 hex)
+    wallet_address = Column(String(42), nullable=True)  # Ethereum address (0x + 40 hex)
+    
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     confirmed_at = Column(DateTime, nullable=True)
@@ -134,6 +138,8 @@ class Booking(Base):
             "passengers": passenger_list,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "confirmed_at": self.confirmed_at.isoformat() if self.confirmed_at else None,
+            "booking_hash": self.booking_hash,
+            "wallet_address": self.wallet_address,
         }
 
     @staticmethod
