@@ -9,6 +9,13 @@ from sqlalchemy.orm import sessionmaker
 
 from backend.models.user import User
 from backend.models.db import get_session
+from backend.utils.wallet_auth import (
+    generate_nonce,
+    create_signin_message,
+    verify_signature,
+    is_valid_ethereum_address,
+    normalize_address
+)
 
 # Create blueprint for auth routes
 auth_bp = Blueprint('auth', __name__)
@@ -319,6 +326,309 @@ def update_profile():
         return jsonify({
             'success': False,
             'message': 'An error occurred during profile update'
+        }), 500
+    finally:
+        session.close()
+
+
+# ============================================================================
+# WALLET-BASED AUTHENTICATION
+# ============================================================================
+
+@auth_bp.route('/wallet/nonce', methods=['POST'])
+def get_wallet_nonce():
+    """Get or create a nonce for wallet signature verification.
+    
+    Request JSON:
+        {
+            "wallet_address": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+        }
+    
+    Response:
+        {
+            "success": true,
+            "nonce": "abc123...",
+            "message": "Sign this message...",
+            "wallet_address": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+        }
+    """
+    data = request.json
+    
+    if not data or 'wallet_address' not in data:
+        return jsonify({
+            'success': False,
+            'message': 'wallet_address is required'
+        }), 400
+    
+    wallet_address = data['wallet_address']
+    
+    # Validate Ethereum address format
+    if not is_valid_ethereum_address(wallet_address):
+        return jsonify({
+            'success': False,
+            'message': 'Invalid Ethereum address format'
+        }), 400
+    
+    # Normalize address to checksum format
+    wallet_address = normalize_address(wallet_address)
+    
+    try:
+        session = get_session()
+        
+        # Find or create user with this wallet address
+        user = session.query(User).filter_by(wallet_address=wallet_address).first()
+        
+        if user:
+            # Existing user - generate new nonce
+            user.wallet_nonce = generate_nonce()
+            user.updated_at = datetime.utcnow()
+        else:
+            # New wallet - create placeholder user
+            # User will complete profile after wallet verification
+            nonce = generate_nonce()
+            user = User(
+                fullname=f"User {wallet_address[:6]}",  # Temporary name
+                email=f"{wallet_address.lower()}@wallet.skyplan.local",  # Temporary email
+                phone="0000000000",  # Temporary phone
+                wallet_address=wallet_address,
+                wallet_nonce=nonce,
+                password_hash=None  # No password for wallet users
+            )
+            session.add(user)
+        
+        session.commit()
+        
+        # Create sign-in message
+        message = create_signin_message(wallet_address, user.wallet_nonce)
+        
+        return jsonify({
+            'success': True,
+            'nonce': user.wallet_nonce,
+            'message': message,
+            'wallet_address': wallet_address,
+            'is_new_user': user.id is None or user.email.endswith('@wallet.skyplan.local')
+        }), 200
+        
+    except Exception as e:
+        session.rollback()
+        current_app.logger.error(f"Wallet nonce error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'Failed to generate nonce'
+        }), 500
+    finally:
+        session.close()
+
+
+@auth_bp.route('/wallet/verify', methods=['POST'])
+def verify_wallet_signature():
+    """Verify wallet signature and login user.
+    
+    Request JSON:
+        {
+            "wallet_address": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+            "signature": "0x...",
+            "message": "Sign this message..."
+        }
+    
+    Response:
+        {
+            "success": true,
+            "token": "jwt_token...",
+            "user": {...},
+            "message": "Login successful"
+        }
+    """
+    data = request.json
+    
+    # Validate required fields
+    required_fields = ['wallet_address', 'signature', 'message']
+    if not all(field in data for field in required_fields):
+        return jsonify({
+            'success': False,
+            'message': f'Missing required fields: {", ".join(required_fields)}'
+        }), 400
+    
+    wallet_address = data['wallet_address']
+    signature = data['signature']
+    message = data['message']
+    
+    # Validate Ethereum address
+    if not is_valid_ethereum_address(wallet_address):
+        return jsonify({
+            'success': False,
+            'message': 'Invalid Ethereum address'
+        }), 400
+    
+    wallet_address = normalize_address(wallet_address)
+    
+    try:
+        session = get_session()
+        
+        # Find user by wallet address
+        user = session.query(User).filter_by(wallet_address=wallet_address).first()
+        
+        if not user:
+            return jsonify({
+                'success': False,
+                'message': 'Wallet address not registered. Please request a nonce first.'
+            }), 404
+        
+        if not user.wallet_nonce:
+            return jsonify({
+                'success': False,
+                'message': 'No nonce found. Please request a new nonce.'
+            }), 400
+        
+        # Verify the signature
+        is_valid = verify_signature(message, signature, wallet_address)
+        
+        if not is_valid:
+            return jsonify({
+                'success': False,
+                'message': 'Invalid signature. Authentication failed.'
+            }), 401
+        
+        # Verify message contains the correct nonce
+        if user.wallet_nonce not in message:
+            return jsonify({
+                'success': False,
+                'message': 'Message nonce mismatch. Please request a new nonce.'
+            }), 401
+        
+        # Check if user account is active
+        if not user.is_active:
+            return jsonify({
+                'success': False,
+                'message': 'Account is deactivated'
+            }), 403
+        
+        # Clear nonce after successful verification (prevent replay attacks)
+        user.wallet_nonce = None
+        user.updated_at = datetime.utcnow()
+        session.commit()
+        
+        # Generate JWT token
+        token = user.generate_auth_token()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Wallet authentication successful',
+            'token': token,
+            'user': user.as_dict(),
+            'needs_profile_update': user.email.endswith('@wallet.skyplan.local')
+        }), 200
+        
+    except Exception as e:
+        session.rollback()
+        current_app.logger.error(f"Wallet verification error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'Authentication failed'
+        }), 500
+    finally:
+        session.close()
+
+
+@auth_bp.route('/wallet/connect', methods=['POST'])
+def connect_wallet_to_existing_user():
+    """Connect a wallet address to an existing user account (requires login).
+    
+    Request JSON:
+        {
+            "wallet_address": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+        }
+    
+    Headers:
+        Authorization: Bearer <token>
+    
+    Response:
+        {
+            "success": true,
+            "message": "Wallet connected successfully",
+            "user": {...}
+        }
+    """
+    # Get authenticated user
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return jsonify({
+            'success': False,
+            'message': 'Authentication required'
+        }), 401
+    
+    token = auth_header.split(' ')[1]
+    user_id = User.verify_auth_token(token)
+    
+    if not user_id:
+        return jsonify({
+            'success': False,
+            'message': 'Invalid or expired token'
+        }), 401
+    
+    data = request.json
+    
+    if not data or 'wallet_address' not in data:
+        return jsonify({
+            'success': False,
+            'message': 'wallet_address is required'
+        }), 400
+    
+    wallet_address = data['wallet_address']
+    
+    # Validate address
+    if not is_valid_ethereum_address(wallet_address):
+        return jsonify({
+            'success': False,
+            'message': 'Invalid Ethereum address'
+        }), 400
+    
+    wallet_address = normalize_address(wallet_address)
+    
+    try:
+        session = get_session()
+        
+        # Get current user
+        user = session.query(User).filter_by(id=user_id).first()
+        
+        if not user:
+            return jsonify({
+                'success': False,
+                'message': 'User not found'
+            }), 404
+        
+        # Check if wallet is already connected to another user
+        existing = session.query(User).filter_by(wallet_address=wallet_address).first()
+        
+        if existing and existing.id != user.id:
+            return jsonify({
+                'success': False,
+                'message': 'Wallet address already connected to another account'
+            }), 409
+        
+        # Connect wallet to user
+        user.wallet_address = wallet_address
+        user.updated_at = datetime.utcnow()
+        session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Wallet connected successfully',
+            'user': user.as_dict()
+        }), 200
+        
+    except IntegrityError:
+        session.rollback()
+        return jsonify({
+            'success': False,
+            'message': 'Wallet address already in use'
+        }), 409
+    except Exception as e:
+        session.rollback()
+        current_app.logger.error(f"Wallet connect error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'Failed to connect wallet'
         }), 500
     finally:
         session.close()
