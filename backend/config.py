@@ -72,3 +72,18 @@ class EmailConfig:
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER') or 'noreply@skyplan.com'
+
+# Blockchain configuration
+class BlockchainConfig:
+    """Blockchain configuration for Sepolia testnet"""
+    
+    # Sepolia RPC URL (Alchemy, Infura, or other provider)
+    SEPOLIA_RPC_URL = os.environ.get('SEPOLIA_RPC_URL') or 'https://eth-sepolia.g.alchemy.com/v2/demo'
+    
+    # BookingRegistry contract address (deployed on Sepolia)
+    BOOKING_REGISTRY_ADDRESS = os.environ.get('BOOKING_REGISTRY_ADDRESS')
+    
+    @classmethod
+    def is_configured(cls):
+        """Check if blockchain is properly configured"""
+        return cls.BOOKING_REGISTRY_ADDRESS is not None

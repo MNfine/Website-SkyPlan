@@ -28,6 +28,7 @@ from backend.routes.ai_chat import ai_chat_bp
 from backend.routes.contact import contact_bp
 from backend.models.db import init_db
 from backend.utils.email_service import init_mail
+from backend.config import BlockchainConfig
 
 # Import all models to ensure they are registered
 from backend.models.user import User
@@ -81,6 +82,10 @@ def create_app():
     # App configuration
     app.config['SECRET_KEY'] = 'skyplan-secret-key-2025'
     app.config['DEBUG'] = True
+    
+    # Blockchain configuration
+    app.config['SEPOLIA_RPC_URL'] = BlockchainConfig.SEPOLIA_RPC_URL
+    app.config['BOOKING_REGISTRY_ADDRESS'] = BlockchainConfig.BOOKING_REGISTRY_ADDRESS
     
     # Initialize database tables
     with app.app_context():
