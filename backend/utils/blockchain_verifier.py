@@ -216,8 +216,8 @@ def check_booking_recorded(tx_hash: str, contract_address: str) -> Tuple[bool, s
             return False, f"Transaction not sent to BookingRegistry contract. Expected: {expected_to}, Got: {tx_to}"
         
         # Check for BookingRecorded event
-        # Event signature: BookingRecorded(bytes32 indexed bookingHash, string bookingCode, address indexed booker)
-        booking_recorded_topic = w3.keccak(text="BookingRecorded(bytes32,string,address)").hex()
+        # Event signature in contract: BookingRecorded(string bookingCode, bytes32 bookingHash, address indexed owner, uint64 timestamp)
+        booking_recorded_topic = w3.keccak(text="BookingRecorded(string,bytes32,address,uint64)").hex()
         
         logs = receipt.get('logs', [])
         event_found = False

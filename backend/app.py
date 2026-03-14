@@ -86,6 +86,10 @@ def create_app():
     # Blockchain configuration
     app.config['SEPOLIA_RPC_URL'] = BlockchainConfig.SEPOLIA_RPC_URL
     app.config['BOOKING_REGISTRY_ADDRESS'] = BlockchainConfig.BOOKING_REGISTRY_ADDRESS
+    app.config['TICKET_NFT_ADDRESS'] = BlockchainConfig.TICKET_NFT_ADDRESS
+    app.config['SKY_TOKEN_ADDRESS'] = BlockchainConfig.SKY_TOKEN_ADDRESS
+    app.config['PRIVATE_KEY'] = BlockchainConfig.PRIVATE_KEY
+    app.config['SKY_REWARD_AMOUNT'] = BlockchainConfig.SKY_REWARD_AMOUNT
     
     # Initialize database tables
     with app.app_context():

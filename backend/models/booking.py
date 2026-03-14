@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, Numeric, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, DateTime, Numeric, ForeignKey, Enum, Boolean
 from sqlalchemy.orm import relationship
 import enum
 
@@ -49,6 +49,12 @@ class Booking(Base):
     # Blockchain fields
     booking_hash = Column(String(66), nullable=True)  # keccak256 hash (0x + 64 hex)
     wallet_address = Column(String(42), nullable=True)  # Ethereum address (0x + 40 hex)
+    onchain_recorded = Column(Boolean, nullable=False, default=False)
+    nft_minted = Column(Boolean, nullable=False, default=False)
+    sky_minted = Column(Boolean, nullable=False, default=False)
+    onchain_record_tx_hash = Column(String(66), nullable=True)
+    nft_mint_tx_hash = Column(String(66), nullable=True)
+    sky_mint_tx_hash = Column(String(66), nullable=True)
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
@@ -140,6 +146,12 @@ class Booking(Base):
             "confirmed_at": self.confirmed_at.isoformat() if self.confirmed_at else None,
             "booking_hash": self.booking_hash,
             "wallet_address": self.wallet_address,
+            "onchain_recorded": bool(self.onchain_recorded),
+            "nft_minted": bool(self.nft_minted),
+            "sky_minted": bool(self.sky_minted),
+            "onchain_record_tx_hash": self.onchain_record_tx_hash,
+            "nft_mint_tx_hash": self.nft_mint_tx_hash,
+            "sky_mint_tx_hash": self.sky_mint_tx_hash,
         }
 
     @staticmethod
