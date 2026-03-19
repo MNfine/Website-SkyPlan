@@ -41,6 +41,23 @@
         </div>
       </div>
       
+      <div class="wallet-section">
+        <button id="wallet-connect-btn" class="btn btn-wallet" data-connected="false" title="Connect MetaMask Wallet">
+          <i class="fas fa-wallet"></i>
+          <span data-i18n="connectWalletText">Connect Wallet</span>
+        </button>
+        
+        <div id="wallet-menu" class="wallet-menu">
+          <div class="wallet-info">
+            <span id="wallet-address" class="wallet-address"></span>
+          </div>
+          <button id="wallet-disconnect-btn" class="wallet-menu-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span data-i18n="disconnectText">Disconnect</span>
+          </button>
+        </div>
+      </div>
+      
       <div class="auth-buttons">
         <a href="login.html" class="btn btn-outline" data-i18n="signInText">Đăng nhập</a>
         <a href="register.html" class="btn btn-primary" data-i18n="signUpText">Đăng ký</a>
