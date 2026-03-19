@@ -6,6 +6,54 @@
 const SEPOLIA_CHAIN_ID = '0xaa36a7';
 const SEPOLIA_CHAIN_ID_INT = 11155111;
 
+function walletLang() {
+  if (typeof window.getWalletLanguage === 'function') {
+    return window.getWalletLanguage();
+  }
+
+  const localStorageLang = localStorage.getItem('preferredLanguage') || localStorage.getItem('language');
+  const docLang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+  const lang = (localStorageLang || docLang || 'vi').toLowerCase();
+  return lang === 'en' ? 'en' : 'vi';
+}
+
+function walletText(key, fallback) {
+  if (typeof window.getWalletTranslation === 'function') {
+    return window.getWalletTranslation(key, walletLang());
+  }
+
+  return fallback || key;
+}
+
+function walletTextWithParams(key, values, fallback) {
+  if (typeof window.formatWalletTranslation === 'function') {
+    return window.formatWalletTranslation(key, values, walletLang());
+  }
+
+  return fallback || key;
+}
+
+function walletToast(key, fallback, type, values) {
+  if (typeof showToast !== 'function') return;
+  const message = values ? walletTextWithParams(key, values, fallback) : walletText(key, fallback);
+  showToast(message, { type: type || 'info' });
+}
+
+function getNetworkNameByChainId(chainId) {
+  if (!chainId) return 'Unknown';
+
+  const normalized = String(chainId).toLowerCase();
+  if (normalized === '0xaa36a7' || normalized === '11155111') return 'Sepolia';
+  if (normalized === '0x1' || normalized === '1') return 'Ethereum Mainnet';
+  if (normalized === '0x14a34' || normalized === '84532') return 'Base Sepolia';
+
+  if (normalized.startsWith('0x')) {
+    return 'Chain ' + parseInt(normalized, 16);
+  }
+
+  return 'Chain ' + normalized;
+}
+
 const MetaMaskWallet = {
   isConnected: false,
   account: null,
@@ -35,11 +83,21 @@ const MetaMaskWallet = {
     this.provider.on('chainChanged', (chainId) => {
       this.chainId = chainId;
       this.isCorrectNetwork = this.isSepoliaNetwork();
-      this.updateUI();
 
       if (!this.isCorrectNetwork) {
+        this.isConnected = false;
+        this.clearConnectionState();
+        this.updateUI();
         this.showNetworkWarning();
+        return;
       }
+
+      if (this.account) {
+        this.isConnected = true;
+        this.saveConnectionState();
+      }
+
+      this.updateUI();
     });
 
     // Try to restore previous connection
@@ -53,7 +111,10 @@ const MetaMaskWallet = {
 
   connect: function() {
     if (!this.provider) {
-      return Promise.resolve({ success: false, error: 'MetaMask not detected' });
+      return Promise.resolve({
+        success: false,
+        error: walletText('metamaskNotDetected', 'MetaMask not detected. Please install MetaMask.'),
+      });
     }
 
     const self = this;
@@ -76,7 +137,24 @@ const MetaMaskWallet = {
         self.isCorrectNetwork = self.isSepoliaNetwork();
 
         if (!self.isCorrectNetwork) {
-          return self.switchToSepolia();
+          return self.switchToSepolia().then(function(switched) {
+            if (!switched) {
+              throw new Error(walletText('sepoliaRequired', 'Cannot continue unless you switch to Sepolia network.'));
+            }
+
+            return self.provider.request({
+              method: 'eth_chainId',
+            }).then(function(updatedChainId) {
+              self.chainId = updatedChainId;
+              self.isCorrectNetwork = self.isSepoliaNetwork();
+
+              if (!self.isCorrectNetwork) {
+                throw new Error(walletText('sepoliaRequired', 'Cannot continue unless you switch to Sepolia network.'));
+              }
+
+              return true;
+            });
+          });
         }
         return true;
       })
@@ -88,7 +166,13 @@ const MetaMaskWallet = {
       })
       .catch(function(error) {
         console.error('[MetaMask] Connect failed:', error);
-        return { success: false, error: error.message };
+        self.isConnected = false;
+        self.clearConnectionState();
+        self.updateUI();
+        const normalizedError = error && error.message
+          ? error.message
+          : walletText('unknownError', 'Unknown error');
+        return { success: false, error: normalizedError };
       });
   },
 
@@ -176,11 +260,29 @@ const MetaMaskWallet = {
     return this.account.substring(0, 6) + '...' + this.account.substring(this.account.length - 4);
   },
 
+  getConnectionInfo: function() {
+    return {
+      account: this.account,
+      shortAddress: this.getShortAddress(),
+      chainId: this.chainId,
+      networkName: getNetworkNameByChainId(this.chainId),
+      isConnected: this.isConnected,
+      isCorrectNetwork: this.isCorrectNetwork,
+      requiredNetwork: 'Sepolia',
+      requiredChainId: SEPOLIA_CHAIN_ID,
+    };
+  },
+
   saveConnectionState: function() {
     if (this.isConnected && this.account) {
       localStorage.setItem('walletConnected', 'true');
       localStorage.setItem('walletAddress', this.account);
     }
+  },
+
+  clearConnectionState: function() {
+    localStorage.removeItem('walletConnected');
+    localStorage.removeItem('walletAddress');
   },
 
   restoreConnection: function() {
@@ -212,7 +314,12 @@ const MetaMaskWallet = {
         if (chainId) {
           self.chainId = chainId;
           self.isCorrectNetwork = self.isSepoliaNetwork();
-          self.isConnected = true;
+          self.isConnected = self.isCorrectNetwork;
+
+          if (!self.isCorrectNetwork) {
+            self.clearConnectionState();
+          }
+
           self.updateUI();
         }
       })
@@ -236,16 +343,14 @@ const MetaMaskWallet = {
       walletBtn.classList.remove('connected');
       walletBtn.setAttribute('data-connected', 'false');
       walletBtn.innerHTML =
-        '<i class="fas fa-wallet"></i><span data-i18n="connectWalletText">Connect Wallet</span>';
+        '<i class="fas fa-wallet"></i><span data-i18n="connectWalletText">' +
+        walletText('connectWalletText', 'Connect Wallet') +
+        '</span>';
     }
   },
 
   showNetworkWarning: function() {
-    if (typeof showToast === 'function') {
-      const lang = localStorage.getItem('preferredLanguage') || 'vi';
-      const msg = lang === 'en' ? 'Please switch to Sepolia testnet' : 'Vui lòng chuyển sang mạng Sepolia';
-      showToast('⚠️ Wrong Network', msg, 'warning');
-    }
+    walletToast('switchToSepolia', 'Please switch to Sepolia network', 'warning');
   },
 };
 
@@ -274,17 +379,20 @@ document.addEventListener('click', function(e) {
     } else {
       MetaMaskWallet.connect().then(function(result) {
         if (!result.success) {
-          if (typeof showToast === 'function') {
-            showToast('❌ Connection Failed', result.error || 'Unknown error', 'error');
-          }
-        } else {
+          const errText = result.error || walletText('unknownError', 'Unknown error');
           if (typeof showToast === 'function') {
             showToast(
-              '✅ Connected',
-              'Wallet ' + MetaMaskWallet.getShortAddress() + ' connected',
-              'success'
+              walletText('connectionFailed', 'Connection failed') + ': ' + errText,
+              { type: 'error' }
             );
           }
+        } else {
+          walletToast(
+            'connectedMessage',
+            'Wallet {address} connected',
+            'success',
+            { address: MetaMaskWallet.getShortAddress() }
+          );
         }
       });
     }
@@ -299,9 +407,7 @@ document.addEventListener('click', function(e) {
     const menu = document.getElementById('wallet-menu');
     if (menu) menu.classList.remove('active');
 
-    if (typeof showToast === 'function') {
-      showToast('👋 Disconnected', 'Wallet disconnected', 'info');
-    }
+    walletToast('disconnectedMessage', 'Wallet disconnected', 'info');
   }
 
   // Close menu when clicking outside
