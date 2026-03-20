@@ -176,6 +176,41 @@
   }
 }
 
+/* Wallet button in mobile menu - show text */
+.nav-links .btn-wallet {
+  width: 100% !important;
+  height: auto;
+  padding: 0.6rem 0.75rem !important;
+  justify-content: center;
+}
+
+.nav-links .btn-wallet span {
+  display: inline !important;
+}
+
+.nav-links .btn-wallet i {
+  font-size: 0.9rem;
+  margin-right: 0.6rem;
+}
+
+/* Wallet menu items in mobile menu - ensure text displays */
+.nav-links .wallet-menu-item {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  margin-top: 0.25rem;
+}
+
+.nav-links .wallet-menu-item span {
+  display: inline;
+}
+
 /**
  * Small Mobile (max 480px)
  */

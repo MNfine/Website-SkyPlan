@@ -90,8 +90,8 @@ header {
   min-width: 80px;
 }
 
-/* Mobile menu styles */
-@media (max-width: 768px) {
+/* Mobile menu styles - Tablet (iPad) and Mobile */
+@media (max-width: 1024px) {
   .header {
     height: var(--header-height);
     padding: 10px 0;
