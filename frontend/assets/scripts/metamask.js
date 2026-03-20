@@ -368,14 +368,14 @@ const MetaMaskWallet = {
       walletBtn.classList.add('connected');
       walletBtn.setAttribute('data-connected', 'true');
       walletBtn.innerHTML =
-        '<i class="fas fa-wallet"></i><span class="wallet-address">' +
+        '<span class="wallet-address">' +
         this.getShortAddress() +
         '</span>';
     } else {
       walletBtn.classList.remove('connected');
       walletBtn.setAttribute('data-connected', 'false');
       walletBtn.innerHTML =
-        '<i class="fas fa-wallet"></i><span data-i18n="connectWalletText">' +
+        '<span data-i18n="connectWalletText">' +
         walletText('connectWalletText', 'Connect Wallet') +
         '</span>';
     }
