@@ -1,42 +1,42 @@
 /* Blockchain/Crypto Payment Styles for SkyPlan */
 
 .crypto-info {
-  padding: 20px;
-  background: #0a969d;
-  border-radius: 12px;
-  color: white;
+  background: transparent;
+  color: #333;
 }
 
 .crypto-info h4 {
-  margin: 0 0 10px 0;
+  margin: 0 0 8px 0;
   font-size: 16px;
-  font-weight: 600;
-  color: #fff;
+  font-weight: 700;
+  color: #0a969d;
   display: flex;
   align-items: center;
   gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #0a969d;
 }
 
 .crypto-info p {
-  margin: 8px 0;
+  margin: 8px 0 20px 0;
   font-size: 14px;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  color: #666;
 }
 
 .wallet-connection {
-  margin: 20px 0;
+  margin: 30px 0;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
+  background: #f8fafb;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-left: 4px solid #0a969d;
 }
 
 .wallet-btn {
   width: 100%;
   padding: 14px 20px;
-  background: white;
-  color: #0a969d;
+  background: #0a969d;
+  color: white;
   border: none;
   border-radius: 8px;
   font-size: 16px;
@@ -51,20 +51,22 @@
 
 .wallet-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 16px rgba(10, 150, 157, 0.25);
+  background: #088690;
 }
 
 .wallet-btn:disabled {
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.8;
   transform: none;
+  background: #0a969d;
 }
 
 .wallet-status {
   margin-top: 15px;
   padding: 12px 16px;
-  background: rgba(10, 150, 157, 0.2);
-  border: 1px solid rgba(10, 150, 157, 0.5);
+  background: #e8f5f5;
+  border: 1px solid #0a969d;
   border-radius: 8px;
 }
 
@@ -73,34 +75,38 @@
   align-items: center;
   gap: 10px;
   font-size: 14px;
-  color: white;
+  color: #0a969d;
+  flex-wrap: wrap;
 }
 
 .wallet-address {
   font-family: 'Courier New', monospace;
   font-size: 12px;
   word-break: break-all;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 4px 8px;
+  background: white;
+  padding: 6px 10px;
   border-radius: 4px;
-  margin-left: auto;
-  max-width: 250px;
-  color: white;
+  border: 1px solid #bbb;
+  max-width: 100%;
+  color: #333;
+  flex-grow: 1;
 }
 
 .crypto-payment-details {
-  margin: 20px 0;
+  margin: 30px 0;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
+  background: #f8fafb;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-left: 4px solid #0a969d;
 }
 
 .crypto-payment-details h4 {
   margin: 0 0 15px 0;
   font-size: 15px;
-  font-weight: 600;
-  color: white;
+  font-weight: 700;
+  color: #0a969d;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #ddd;
 }
 
 .payment-details {
@@ -110,10 +116,10 @@
 .detail-row {
   display: flex;
   justify-content: space-between;
-  padding: 8px 0;
+  padding: 10px 0;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.9);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #666;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .detail-row:last-child {
@@ -121,15 +127,15 @@
 }
 
 .detail-row strong {
-  color: white;
+  color: #0a969d;
   font-weight: 600;
 }
 
 .crypto-checkout-btn {
   width: 100%;
   padding: 14px 20px;
-  background: white;
-  color: #0a969d;
+  background: #0a969d;
+  color: white;
   border: none;
   border-radius: 8px;
   font-size: 16px;
@@ -145,34 +151,35 @@
 
 .crypto-checkout-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 16px rgba(10, 150, 157, 0.25);
+  background: #088690;
 }
 
 .crypto-checkout-btn:disabled {
-  opacity: 0.7;
+  opacity: 0.8;
   cursor: not-allowed;
 }
 
 /* Transaction Status Container */
 .transaction-status-container {
-  margin: 20px 0;
+  margin: 30px 0;
   padding: 20px;
-  background: #f5f5f5;
-  border-radius: 12px;
-  display: none;
+  background: white;
+  border-radius: 8px;
+  border-left: 4px solid #0a969d;
 }
 
 .status-header {
   margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #ddd;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #0a969d;
 }
 
 .status-header h4 {
   margin: 0;
   font-size: 16px;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: #0a969d;
 }
 
 .status-box {
@@ -180,25 +187,56 @@
   border-radius: 8px;
   text-align: center;
   display: none;
-  border: 1px solid;
+  border-left: 4px solid;
+  background: white;
 }
 
 .status-box.pending {
   background: #fff9e6;
-  border-color: #ffc107;
+  border-left-color: #ffc107;
   color: #856404;
+}
+
+.status-box.pending h5 {
+  color: #ffc107;
+  margin: 0 0 10px 0;
+}
+
+.status-box.pending p {
+  color: #856404;
+  margin: 5px 0;
 }
 
 .status-box.success {
   background: #e8f5e9;
-  border-color: #4CAF50;
+  border-left-color: #0a969d;
   color: #155724;
+}
+
+.status-box.success h5 {
+  color: #0a969d;
+  margin: 0 0 10px 0;
+}
+
+.status-box.success p {
+  color: #155724;
+  margin: 5px 0;
 }
 
 .status-box.failed {
   background: #ffebee;
-  border-color: #f44336;
+  border-left-color: #f44336;
   color: #721c24;
+}
+
+.status-box.failed h5 {
+  color: #f44336;
+  margin: 0 0 10px 0;
+}
+
+.status-box.failed p {
+  color: #721c24;
+  margin: 5px 0;
 }
 
 .status-spinner {

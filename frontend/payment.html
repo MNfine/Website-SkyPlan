@@ -207,47 +207,49 @@
                   <div class="crypto-info">
                     <h4><span data-i18n="cryptoTitle">Thanh toán qua MetaMask (Ethereum Sepolia)</span></h4>
                     <p data-i18n="cryptoDesc">Kết nối ví MetaMask của bạn để thanh toán bằng cryptocurrency trên mạng Sepolia testnet.</p>
+                  </div>
 
-                    <div class="wallet-connection">
-                      <button id="connectWalletBtn" class="wallet-btn">
-                        <span data-i18n="connectWallet">Kết nối Ví</span>
-                      </button>
-                      <div id="walletStatus" class="wallet-status" style="display: none;">
-                        <div class="status-connected">
-                          <span data-i18n="walletConnected">Ví đã kết nối:</span>
-                          <span id="walletAddress" class="wallet-address">0x...</span>
-                        </div>
+                  <div class="wallet-connection">
+                    <h5 style="margin: 0 0 15px 0; font-size: 14px; font-weight: 600; color: #0a969d;">Kết nối Ví</h5>
+                    <button id="connectWalletBtn" class="wallet-btn">
+                      <span data-i18n="connectWallet">Kết nối Ví</span>
+                    </button>
+                    <div id="walletStatus" class="wallet-status" style="display: none;">
+                      <div class="status-connected">
+                        <span data-i18n="walletConnected">Ví đã kết nối:</span>
+                        <span id="walletAddress" class="wallet-address">0x...</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="crypto-payment-details" style="display: none;" id="cryptoPaymentDetails">
+                    <h4 data-i18n="paymentDetails">Chi tiết thanh toán</h4>
+                    <div class="payment-details">
+                      <div class="detail-row">
+                        <span data-i18n="totalAmount">Số tiền (VND):</span>
+                        <strong id="cryptoAmountVnd">1.598.000 VND</strong>
+                      </div>
+                      <div class="detail-row">
+                        <span data-i18n="estimatedEth">Ước tính (ETH):</span>
+                        <strong id="cryptoAmountEth">~0.5 ETH</strong>
+                      </div>
+                      <div class="detail-row">
+                        <span data-i18n="network">Mạng:</span>
+                        <strong data-i18n="sepoliaNetwork">Sepolia (Testnet)</strong>
+                      </div>
+                      <div class="detail-row">
+                        <span data-i18n="bookingCode">Mã đặt vé:</span>
+                        <strong id="cryptoBookingCode">SP2025001</strong>
                       </div>
                     </div>
 
-                    <div class="crypto-payment-details" style="display: none;" id="cryptoPaymentDetails">
-                      <h4 data-i18n="paymentDetails">Chi tiết thanh toán:</h4>
-                      <div class="payment-details">
-                        <div class="detail-row">
-                          <span data-i18n="totalAmount">Số tiền (VND):</span>
-                          <strong id="cryptoAmountVnd">1.598.000 VND</strong>
-                        </div>
-                        <div class="detail-row">
-                          <span data-i18n="estimatedEth">Ước tính (ETH):</span>
-                          <strong id="cryptoAmountEth">~0.5 ETH</strong>
-                        </div>
-                        <div class="detail-row">
-                          <span data-i18n="network">Mạng:</span>
-                          <strong data-i18n="sepoliaNetwork">Sepolia (Testnet)</strong>
-                        </div>
-                        <div class="detail-row">
-                          <span data-i18n="bookingCode">Mã đặt vé:</span>
-                          <strong id="cryptoBookingCode">SP2025001</strong>
-                        </div>
-                      </div>
+                    <button id="sendCryptoPaymentBtn" class="crypto-checkout-btn" style="display: none;">
+                      <span data-i18n="sendTransaction">Gửi Giao dịch</span>
+                    </button>
+                  </div>
 
-                      <button id="sendCryptoPaymentBtn" class="crypto-checkout-btn" style="display: none;">
-                        <span data-i18n="sendTransaction">Gửi Giao dịch</span>
-                      </button>
-                    </div>
-
-                    <!-- Transaction Status Display -->
-                    <div id="transactionStatusContainer" style="display: none;" class="transaction-status-container">
+                  <!-- Transaction Status Display -->
+                  <div id="transactionStatusContainer" style="display: none;" class="transaction-status-container">
                       <div class="status-header">
                         <h4 data-i18n="transactionStatus">Trạng thái Giao dịch:</h4>
                       </div>
