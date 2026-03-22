@@ -305,9 +305,9 @@ const MetaMaskWallet = (function () {
       if (state.isConnected && state.account) {
         // Show connected status
         walletStatus.style.display = 'block';
-        connectBtn.textContent = `✓ ${state.account.substring(0, 6)}...${state.account.substring(38)}`;
+        connectBtn.textContent = `${state.account.substring(0, 6)}...${state.account.substring(38)}`;
         connectBtn.disabled = true;
-        connectBtn.style.background = '#4CAF50';
+        connectBtn.style.background = '#0a969d';
 
         if (walletAddress) {
           walletAddress.textContent = state.account;
@@ -316,7 +316,7 @@ const MetaMaskWallet = (function () {
       } else {
         // Show disconnected status
         walletStatus.style.display = 'none';
-        connectBtn.textContent = '🔌 Connect Wallet';
+        connectBtn.textContent = 'Connect Wallet';
         connectBtn.disabled = false;
         connectBtn.style.background = '';
       }
