@@ -1,0 +1,379 @@
+/* Blockchain/Crypto Payment Styles for SkyPlan */
+
+.crypto-info {
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+}
+
+.crypto-info h4 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.crypto-info p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.wallet-connection {
+  margin: 20px 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.wallet-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: white;
+  color: #667eea;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.wallet-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.wallet-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
+}
+
+.wallet-status {
+  margin-top: 15px;
+  padding: 12px 16px;
+  background: rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.5);
+  border-radius: 8px;
+}
+
+.status-connected {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: white;
+}
+
+.wallet-address {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  word-break: break-all;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-left: auto;
+  max-width: 250px;
+}
+
+.crypto-payment-details {
+  margin: 20px 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.crypto-payment-details h4 {
+  margin: 0 0 15px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+}
+
+.payment-details {
+  margin: 15px 0;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row strong {
+  color: white;
+  font-weight: 600;
+}
+
+.crypto-checkout-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: white;
+  color: #667eea;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.crypto-checkout-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.crypto-checkout-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Transaction Status Container */
+.transaction-status-container {
+  margin: 20px 0;
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  display: none;
+}
+
+.status-header {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #ddd;
+}
+
+.status-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.status-box {
+  padding: 30px 20px;
+  border-radius: 8px;
+  text-align: center;
+  display: none;
+  border: 1px solid;
+}
+
+.status-box.pending {
+  background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
+  border-color: #ffc107;
+  color: #856404;
+}
+
+.status-box.success {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border-color: #4CAF50;
+  color: #155724;
+}
+
+.status-box.failed {
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  border-color: #f44336;
+  color: #721c24;
+}
+
+.status-spinner {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.status-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.status-spinner i {
+  animation: spin 1s linear infinite;
+  color: #ffc107;
+}
+
+.status-box.success .status-icon i {
+  color: #4CAF50;
+  animation: none;
+}
+
+.status-box.failed .status-icon i {
+  color: #f44336;
+  animation: none;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.status-text h5 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.status-text p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.tx-hash-display {
+  margin-top: 15px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  font-size: 12px;
+  word-break: break-all;
+  text-align: left;
+  font-family: 'Courier New', monospace;
+}
+
+.tx-hash-display a {
+  color: #1976d2;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.tx-hash-display a:hover {
+  text-decoration: underline;
+}
+
+.redirect-btn,
+.retry-btn {
+  margin-top: 15px;
+  padding: 12px 24px;
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.redirect-btn:hover,
+.retry-btn:hover {
+  background: #1565c0;
+  transform: translateY(-2px);
+}
+
+.error-code {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  font-size: 13px;
+  color: #d32f2f;
+  font-family: 'Courier New', monospace;
+  text-align: left;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .crypto-info {
+    padding: 15px;
+  }
+
+  .wallet-btn,
+  .crypto-checkout-btn {
+    font-size: 14px;
+    padding: 12px 16px;
+  }
+
+  .wallet-address {
+    font-size: 10px;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 10px;
+  }
+
+  .detail-row {
+    font-size: 13px;
+    gap: 10px;
+  }
+
+  .detail-row span:last-child {
+    text-align: right;
+  }
+
+  .status-box {
+    padding: 20px 15px;
+  }
+
+  .status-spinner,
+  .status-icon {
+    font-size: 36px;
+  }
+
+  .status-text h5 {
+    font-size: 16px;
+  }
+
+  .status-text p {
+    font-size: 13px;
+  }
+
+  .tx-hash-display {
+    font-size: 11px;
+  }
+
+  .redirect-btn,
+  .retry-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .crypto-info h4 {
+    font-size: 14px;
+  }
+
+  .crypto-info p {
+    font-size: 12px;
+  }
+
+  .wallet-btn,
+  .crypto-checkout-btn {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+
+  .detail-row {
+    font-size: 12px;
+    padding: 6px 0;
+  }
+
+  .tx-hash-display {
+    font-size: 10px;
+    word-break: break-word;
+  }
+}

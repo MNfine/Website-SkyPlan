@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="assets/styles/header.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/payment.css">
+  <link rel="stylesheet" href="assets/styles/blockchain-payment.css">
   <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
 <body>
@@ -192,6 +193,119 @@
               <!-- /E-Wallet -->
             </div>
             <!-- /Row 2 -->
+
+            <!-- Row 3: Blockchain/Crypto Payment (Full Width) -->
+            <div class="payment-row">
+              <div class="payment-method active full-width">
+                <input type="radio" id="blockchain" name="payment" value="blockchain" />
+                <label for="blockchain" class="method-header">
+                  <i class="fas fa-coins"></i>
+                  <span data-i18n="cryptoPayment">Thanh toán bằng Crypto</span>
+                </label>
+
+                <div class="method-content">
+                  <div class="crypto-info">
+                    <h4><i class="fas fa-ethereum"></i> <span data-i18n="cryptoTitle">Thanh toán qua MetaMask (Ethereum Sepolia)</span></h4>
+                    <p data-i18n="cryptoDesc">Kết nối ví MetaMask của bạn để thanh toán bằng cryptocurrency trên mạng Sepolia testnet.</p>
+
+                    <div class="wallet-connection">
+                      <button id="connectWalletBtn" class="wallet-btn">
+                        <i class="fas fa-wallet"></i>
+                        <span data-i18n="connectWallet">Kết nối Ví</span>
+                      </button>
+                      <div id="walletStatus" class="wallet-status" style="display: none;">
+                        <div class="status-connected">
+                          <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+                          <span data-i18n="walletConnected">Ví đã kết nối:</span>
+                          <span id="walletAddress" class="wallet-address">0x...</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="crypto-payment-details" style="display: none;" id="cryptoPaymentDetails">
+                      <h4 data-i18n="paymentDetails">Chi tiết thanh toán:</h4>
+                      <div class="payment-details">
+                        <div class="detail-row">
+                          <span data-i18n="totalAmount">Số tiền (VND):</span>
+                          <strong id="cryptoAmountVnd">1.598.000 VND</strong>
+                        </div>
+                        <div class="detail-row">
+                          <span data-i18n="estimatedEth">Ước tính (ETH):</span>
+                          <strong id="cryptoAmountEth">~0.5 ETH</strong>
+                        </div>
+                        <div class="detail-row">
+                          <span data-i18n="network">Mạng:</span>
+                          <strong data-i18n="sepoliaNetwork">Sepolia (Testnet)</strong>
+                        </div>
+                        <div class="detail-row">
+                          <span data-i18n="bookingCode">Mã đặt vé:</span>
+                          <strong id="cryptoBookingCode">SP2025001</strong>
+                        </div>
+                      </div>
+
+                      <button id="sendCryptoPaymentBtn" class="crypto-checkout-btn" style="display: none;">
+                        <i class="fas fa-paper-plane"></i>
+                        <span data-i18n="sendTransaction">Gửi Giao dịch</span>
+                      </button>
+                    </div>
+
+                    <!-- Transaction Status Display -->
+                    <div id="transactionStatusContainer" style="display: none;" class="transaction-status-container">
+                      <div class="status-header">
+                        <h4 data-i18n="transactionStatus">Trạng thái Giao dịch:</h4>
+                      </div>
+                      
+                      <div id="statusPending" class="status-box pending" style="display: none;">
+                        <div class="status-spinner">
+                          <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <div class="status-text">
+                          <h5 data-i18n="processing">Đang xử lý...</h5>
+                          <p data-i18n="waitingConfirmation">Chờ xác nhận giao dịch...</p>
+                          <p class="tx-hash-display" style="font-size: 0.9em; margin-top: 10px;">
+                            <strong data-i18n="txHash">Hash:</strong>
+                            <span id="txHashPending">-</span>
+                          </p>
+                        </div>
+                      </div>
+
+                      <div id="statusSuccess" class="status-box success" style="display: none;">
+                        <div class="status-icon">
+                          <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="status-text">
+                          <h5 data-i18n="successTitle">Thành công!</h5>
+                          <p data-i18n="successDesc">Giao dịch của bạn đã được xác nhận.</p>
+                          <p class="tx-hash-display" style="font-size: 0.9em; margin-top: 10px;">
+                            <strong data-i18n="txHash">Hash:</strong>
+                            <span id="txHashSuccess">-</span>
+                          </p>
+                          <button class="redirect-btn" onclick="window.location.href='confirmation.html';">
+                            <span data-i18n="viewTicket">Xem Vé</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div id="statusFailed" class="status-box failed" style="display: none;">
+                        <div class="status-icon">
+                          <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="status-text">
+                          <h5 data-i18n="failedTitle">Thất bại</h5>
+                          <p id="errorMessage" data-i18n="failedDesc">Giao dịch không thành công.</p>
+                          <p class="error-code" id="errorCodeDisplay" style="margin-top: 10px;"></p>
+                          <button class="retry-btn" onclick="location.reload();">
+                            <span data-i18n="retryPayment">Thử lại</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- /Transaction Status -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /Row 3 -->
           </div>
           <!-- /payment-methods -->
         </div>
@@ -290,6 +404,8 @@
   <script src="assets/scripts/config.js"></script>
   <script src="assets/scripts/payment.js"></script>
   <script src="assets/scripts/payment_vnpay.js"></script>
+  <script src="assets/scripts/metamask.js"></script>
+  <script src="assets/scripts/blockchain-payment.js"></script>
 <script>
   // Chỉ hiển thị đúng 1 nút phù hợp với phương thức thanh toán, luôn dịch text nút
   document.addEventListener('DOMContentLoaded', function() {

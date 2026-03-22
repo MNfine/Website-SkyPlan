@@ -99,6 +99,27 @@ const paymentTranslations = {
         // Confirm button
         toConfirmation: "Go to confirmation page",
         bankConfirm: "Go to confirmation page",
+        // Blockchain/Crypto Payment
+        cryptoPayment: "Pay with Crypto",
+        cryptoTitle: "Pay with MetaMask (Ethereum Sepolia)",
+        cryptoDesc: "Connect your MetaMask wallet to pay with cryptocurrency on the Sepolia testnet.",
+        connectWallet: "Connect Wallet",
+        walletConnected: "Wallet Connected:",
+        paymentDetails: "Payment Details:",
+        estimatedEth: "Estimated (ETH):",
+        sepoliaNetwork: "Sepolia (Testnet)",
+        transactionStatus: "Transaction Status:",
+        sendTransaction: "Send Transaction",
+        processing: "Processing...",
+        waitingConfirmation: "Waiting for confirmation...",
+        successTitle: "Success!",
+        successDesc: "Your transaction has been confirmed.",
+        failedTitle: "Failed",
+        failedDesc: "The transaction was not successful.",
+        txHash: "Hash:",
+        viewTicket: "View Ticket",
+        viewOnExplorer: "View on Explorer",
+        retryPayment: "Retry Payment",
         // ...add more as needed
     },
     vi: {
@@ -199,8 +220,28 @@ const paymentTranslations = {
         // Confirm button
         toConfirmation: "Đến trang xác nhận",
         bankConfirm: "Đến trang xác nhận",
+        // Blockchain/Crypto Payment
+        cryptoPayment: "Thanh toán bằng Crypto",
+        cryptoTitle: "Thanh toán qua MetaMask (Ethereum Sepolia)",
+        cryptoDesc: "Kết nối ví MetaMask của bạn để thanh toán bằng cryptocurrency trên mạng Sepolia testnet.",
+        connectWallet: "Kết nối Ví",
+        walletConnected: "Ví đã kết nối:",
+        paymentDetails: "Chi tiết thanh toán:",
+        estimatedEth: "Ước tính (ETH):",
+        sepoliaNetwork: "Sepolia (Testnet)",
+        transactionStatus: "Trạng thái Giao dịch:",
+        sendTransaction: "Gửi Giao dịch",
+        processing: "Đang xử lý...",
+        waitingConfirmation: "Chờ xác nhận giao dịch...",
+        successTitle: "Thành công!",
+        successDesc: "Giao dịch của bạn đã được xác nhận.",
+        failedTitle: "Thất bại",
+        failedDesc: "Giao dịch không thành công.",
+        txHash: "Hash:",
+        viewTicket: "Xem Vé",
+        viewOnExplorer: "Xem trên Explorer",
+        retryPayment: "Thử lại",
         // ...add more as needed
-    }
 };
 
 // Export for usage in payment.js if needed
