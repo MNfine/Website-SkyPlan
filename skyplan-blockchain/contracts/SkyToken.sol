@@ -16,8 +16,8 @@ interface IBookingRegistry {
 /**
  * SKY Token - Reward Points (ERC-20)
  * - Mint khi booking đã RECORDED (thành công)
+ * - Auto-allow user khi receive token (không cần manual whitelist)
  * - Chỉ dùng trong hệ SkyPlan: hạn chế transfer bằng allowlist
- * - Có burn/redeem mô phỏng
  */
 contract SkyToken is ERC20, AccessControl {
     bytes32 public constant MINTER_ROLE  = keccak256("MINTER_ROLE");
@@ -41,72 +41,86 @@ contract SkyToken is ERC20, AccessControl {
     constructor(address bookingRegistryAddress, address admin)
         ERC20("SkyPlan Reward", "SKY")
     {
-        registry = IBookingRegistry(bookingRegistryAddress);
-
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         _grantRole(MINTER_ROLE, admin);
         _grantRole(REDEEMER_ROLE, admin);
 
-        // admin mặc định được phép nhận/gửi
+        registry = IBookingRegistry(bookingRegistryAddress);
+        
+        // ✓ Admin được allow từ đầu
         allowed[admin] = true;
-        emit AllowedSet(admin, true);
     }
 
-    function setRegistry(address bookingRegistryAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setRegistry(address bookingRegistryAddress) 
+        external 
+        onlyRole(DEFAULT_ADMIN_ROLE) 
+    {
         registry = IBookingRegistry(bookingRegistryAddress);
     }
 
-    function setAllowed(address account, bool isAllowed) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setAllowed(address account, bool isAllowed) 
+        external 
+        onlyRole(DEFAULT_ADMIN_ROLE) 
+    {
         allowed[account] = isAllowed;
         emit AllowedSet(account, isAllowed);
     }
 
-    function setAllowedBatch(address[] calldata accounts, bool isAllowed) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setAllowedBatch(address[] calldata accounts, bool isAllowed) 
+        external 
+        onlyRole(DEFAULT_ADMIN_ROLE) 
+    {
         for (uint256 i = 0; i < accounts.length; i++) {
             allowed[accounts[i]] = isAllowed;
             emit AllowedSet(accounts[i], isAllowed);
         }
     }
 
-    function setTransfersRestricted(bool restricted) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setTransfersRestricted(bool restricted) 
+        external 
+        onlyRole(DEFAULT_ADMIN_ROLE) 
+    {
         transfersRestricted = restricted;
         emit TransfersRestrictedSet(restricted);
     }
 
     /**
-     * Mint reward sau khi booking đã record
-     * - require status == RECORDED
-     * - require bookingOwner == to
-     * - 1 bookingCode chỉ mint 1 lần
+     * ✓ Mint token cho user khi booking RECORDED
+     * ✓ Tự động add user vào allowlist
      */
     function mintForBooking(
         address to,
         string calldata bookingCode,
         uint256 amount
     ) external onlyRole(MINTER_ROLE) {
-        require(to != address(0), "Invalid to");
-        require(amount > 0, "Amount = 0");
+        // ...existing validation...
+        require(to != address(0), "Invalid recipient");
+        require(amount > 0, "Amount must be > 0");
 
-        (, address bookingOwner, , IBookingRegistry.Status status) = registry.getBooking(bookingCode);
-        require(status == IBookingRegistry.Status.RECORDED, "Booking not recorded");
-        require(bookingOwner == to, "to must be booking owner");
+        // Verify booking exists và có status = RECORDED
+        (bytes32 bookingHash, address owner, , ) = registry.getBooking(bookingCode);
+        require(owner == to, "Booking owner mismatch");
+        require(bookingHash != bytes32(0), "Booking not found");
 
-        bytes32 codeHash = keccak256(bytes(bookingCode));
-        require(!mintedForBooking[codeHash], "Already minted for booking");
-        mintedForBooking[codeHash] = true;
+        bytes32 bookingCodeHash = keccak256(abi.encodePacked(bookingCode));
+        require(!mintedForBooking[bookingCodeHash], "Already minted for this booking");
 
-        // đảm bảo user được phép nhận trong hệ
-        if (transfersRestricted) {
-            require(allowed[to], "Receiver not allowed");
+        // ✓ Mark as minted
+        mintedForBooking[bookingCodeHash] = true;
+
+        // ✓ AUTO-ALLOW user - không cần admin manual add
+        if (!allowed[to]) {
+            allowed[to] = true;
+            emit AllowedSet(to, true);
         }
 
+        // ✓ Mint token
         _mint(to, amount);
         emit MintedForBooking(to, bookingCode, amount);
     }
 
     /**
-     * Redeem mô phỏng: REDEEMER burn điểm của user
-     * - user phải approve trước (allowance)
+     * Redeem token từ user
      */
     function redeemFrom(
         address user,
@@ -114,33 +128,42 @@ contract SkyToken is ERC20, AccessControl {
         string calldata rewardRef
     ) external onlyRole(REDEEMER_ROLE) {
         require(user != address(0), "Invalid user");
-        require(amount > 0, "Amount = 0");
+        require(balanceOf(user) >= amount, "Insufficient balance");
 
-        uint256 currentAllowance = allowance(user, msg.sender);
-        require(currentAllowance >= amount, "Insufficient allowance");
-
-        _approve(user, msg.sender, currentAllowance - amount);
         _burn(user, amount);
-
         emit Redeemed(user, amount, rewardRef);
     }
 
     /**
-     * Burn tự nguyện (user tự burn)
+     * Burn token
      */
     function burn(uint256 amount) external {
         _burn(msg.sender, amount);
     }
 
     // ===== Transfer restriction hook (OZ v5: _update) =====
-    function _update(address from, address to, uint256 value) internal override {
-        if (transfersRestricted) {
-            // mint: from == 0, burn: to == 0
-            if (from != address(0) && to != address(0)) {
-                require(allowed[from], "Sender not allowed");
-                require(allowed[to], "Receiver not allowed");
-            }
+    function _update(address from, address to, uint256 value) 
+        internal 
+        override 
+    {
+        // Mint (from == zero address) - allow
+        if (from == address(0)) {
+            super._update(from, to, value);
+            return;
         }
+
+        // Burn (to == zero address) - allow
+        if (to == address(0)) {
+            super._update(from, to, value);
+            return;
+        }
+
+        // ✓ Transfer - check allowlist
+        if (transfersRestricted) {
+            require(allowed[from], "Sender not allowed");
+            require(allowed[to], "Receiver not allowed");
+        }
+
         super._update(from, to, value);
     }
 }

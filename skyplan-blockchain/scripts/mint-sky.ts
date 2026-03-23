@@ -39,15 +39,10 @@ async function main() {
   console.log("BookingCode:", bookingCode);
   console.log("Amount:", amountHuman, "SKY");
 
-  // 1) allowlist user (vì transfersRestricted = true)
-  const tx1 = await sky.setAllowed(user, true);
-  console.log("setAllowed tx:", tx1.hash);
-  await tx1.wait();
-
-  // 2) mint reward cho booking đã record
-  const tx2 = await sky.mintForBooking(user, bookingCode, amount);
-  console.log("mintForBooking tx:", tx2.hash);
-  await tx2.wait();
+  // mint reward cho booking đã record (user sẽ được auto-allow trong mintForBooking)
+  const tx = await sky.mintForBooking(user, bookingCode, amount);
+  console.log("mintForBooking tx:", tx.hash);
+  await tx.wait();
 
   const bal = await sky.balanceOf(user);
   console.log("New balance:", ethers.formatUnits(bal, 18), "SKY");
