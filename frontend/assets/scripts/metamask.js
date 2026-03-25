@@ -299,15 +299,31 @@ const MetaMaskWallet = (function () {
       const walletStatus = document.getElementById('walletStatus');
       const connectBtn = document.getElementById('connectWalletBtn');
       const walletAddress = document.getElementById('walletAddress');
+      const demoConnectBtn = document.getElementById('demoConnectWalletBtn');
 
-      if (!walletStatus || !connectBtn) return;
+      if (!walletStatus && !connectBtn) return;
+
+      // In UI demo mode, wallet visibility is controlled by blockchain-payment.js demo flow.
+      if (demoConnectBtn && !connectBtn) {
+        if (!state.isConnected && walletStatus) {
+          walletStatus.style.display = 'none';
+        }
+        return;
+      }
 
       if (state.isConnected && state.account) {
         // Show connected status
-        walletStatus.style.display = 'block';
-        connectBtn.textContent = `${state.account.substring(0, 6)}...${state.account.substring(38)}`;
-        connectBtn.disabled = true;
-        connectBtn.style.background = '#0a969d';
+        if (walletStatus) {
+          walletStatus.style.display = 'block';
+        }
+        if (connectBtn) {
+          const lang = localStorage.getItem('preferredLanguage') || 'vi';
+          connectBtn.textContent = (lang === 'vi') ? 'Ví đã kết nối' : 'Wallet connected';
+          connectBtn.disabled = true;
+          connectBtn.style.background = 'rgba(255, 255, 255, 0.92)';
+          connectBtn.style.color = '#0d9ca8';
+          connectBtn.style.boxShadow = 'none';
+        }
 
         if (walletAddress) {
           walletAddress.textContent = state.account;
@@ -315,10 +331,16 @@ const MetaMaskWallet = (function () {
 
       } else {
         // Show disconnected status
-        walletStatus.style.display = 'none';
-        connectBtn.textContent = 'Connect Wallet';
-        connectBtn.disabled = false;
-        connectBtn.style.background = '';
+        if (walletStatus) {
+          walletStatus.style.display = 'none';
+        }
+        if (connectBtn) {
+          connectBtn.textContent = '🔌 Connect Wallet';
+          connectBtn.disabled = false;
+          connectBtn.style.background = '';
+          connectBtn.style.color = '';
+          connectBtn.style.boxShadow = '';
+        }
       }
 
       // Show warning if wrong network

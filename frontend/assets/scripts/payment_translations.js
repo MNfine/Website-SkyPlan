@@ -120,6 +120,20 @@ const paymentTranslations = {
         viewTicket: "View Ticket",
         viewOnExplorer: "View on Explorer",
         retryPayment: "Retry Payment",
+        // Demo UI
+        demoSimulationTitle: "Transaction Flow Simulation (no real transaction sent)",
+        demoSimSteps: "Step 1: Connect wallet. Step 2: Run transaction flow to simulate Pending -> final result.",
+        demoConnectBtn: "Connect Wallet",
+        demoRunBtn: "Run Transaction Flow",
+        demoResetBtn: "Reset",
+        demoViewStates: "View individual status UI:",
+        demoStatePending: "Pending",
+        demoStateSuccess: "Success",
+        demoStateReject: "Reject",
+        demoStateGas: "Insufficient Gas",
+        demoStateRpc: "RPC Error",
+        demoStateFail: "Failed",
+        demoConnectedMsg: "Wallet connected. Now you can run the transaction flow.",
         // ...add more as needed
     },
     vi: {
@@ -241,7 +255,21 @@ const paymentTranslations = {
         viewTicket: "Xem Vé",
         viewOnExplorer: "Xem trên Explorer",
         retryPayment: "Thử lại",
-        // ...add more as needed
+        // Demo UI
+        demoSimulationTitle: "Mô phỏng luồng giao dịch (không gửi giao dịch thật)",
+        demoSimSteps: "Bước 1: Kết nối ví. Bước 2: Chạy luồng giao dịch để mô phỏng Pending -> kết quả cuối.",
+        demoConnectBtn: "Kết nối ví",
+        demoRunBtn: "Chạy luồng giao dịch",
+        demoResetBtn: "Đặt lại",
+        demoViewStates: "Xem từng trạng thái UI:",
+        demoStatePending: "Pending",
+        demoStateSuccess: "Success",
+        demoStateReject: "Từ chối",
+        demoStateGas: "Thiếu gas",
+        demoStateRpc: "RPC lỗi",
+        demoStateFail: "Thất bại",
+        demoConnectedMsg: "Đã kết nối ví. Bây giờ bạn có thể chạy luồng giao dịch."
+    }
 };
 
 // Export for usage in payment.js if needed
@@ -288,15 +316,6 @@ function getPaymentTranslation(key, lang) {
     return key;
 }
 
-// expose helpers for other scripts and debugging
-try {
-    window.getPaymentTranslation = getPaymentTranslation;
-    window.paymentTranslations = paymentTranslations;
-    window.applyPaymentTranslations = applyPaymentTranslations;
-} catch (e) {
-    // ignore in restricted environments
-}
-
 // Function to change language for payment page
 function changePaymentLanguage(lang) {
     if (__SKYPLAN_DEBUG__) console.debug('[i18n] changePaymentLanguage ->', lang);
@@ -309,7 +328,19 @@ function changePaymentLanguage(lang) {
     } catch (e) { /* ignore */ }
 }
 
-// Ensure Vietnamese is set as default on first visit
-if (!localStorage.getItem('preferredLanguage')) {
-    localStorage.setItem('preferredLanguage', 'vi');
+// expose helpers for other scripts and debugging (AFTER all functions are defined)
+try {
+    window.getPaymentTranslation = getPaymentTranslation;
+    window.paymentTranslations = paymentTranslations;
+    window.applyPaymentTranslations = applyPaymentTranslations;
+    window.changePaymentLanguage = changePaymentLanguage;
+} catch (e) {
+    // ignore in restricted environments
+}
+
+// Ensure Vietnamese is set as default on first visit (only in browser)
+if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    if (!localStorage.getItem('preferredLanguage')) {
+        localStorage.setItem('preferredLanguage', 'vi');
+    }
 }

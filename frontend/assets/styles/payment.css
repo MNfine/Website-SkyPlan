@@ -153,7 +153,7 @@ body {
 }
 
 .section-header {
-  background: linear-gradient(135deg, var(--primary-color) 0%, #0d7a82 100%);
+  background: #0a969d;
   color: white;
   padding: 20px 30px;
   margin: 0;
@@ -447,7 +447,7 @@ body {
 .vnpay-form {
   margin-top: 20px;
   padding: 20px;
-  background: linear-gradient(135deg, #e8f5f4 0%, #f0f9f8 100%);
+  background: #f0f9f8;
   border: 2px solid var(--primary-color);
   border-radius: 12px;
 }
@@ -580,7 +580,7 @@ body {
   font-size: 20px;
   font-weight: 700;
   color: var(--primary-color);
-  background: linear-gradient(135deg, #f0f9f8 0%, #e8f5f4 100%);
+  background: #f0f9f8;
   margin: 16px -20px -20px -20px;
   padding: 20px;
   border-radius: 0 0 12px 12px;
@@ -681,7 +681,7 @@ body {
   font-size: 18px;
   font-weight: 700;
   color: var(--primary-color);
-  background: linear-gradient(135deg, #f0f9f8 0%, #e8f5f4 100%);
+  background: #f0f9f8;
   margin-left: -20px;
   margin-right: -20px;
   padding-left: 20px;
