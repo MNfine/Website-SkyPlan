@@ -39,6 +39,75 @@
   opacity: 0.9;
 }
 
+.my-trips-page .wallet-link-panel {
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--box-shadow);
+  padding: 18px;
+  margin-bottom: 24px;
+  border: 1px solid #d9eef0;
+}
+
+.my-trips-page .wallet-link-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--dark-color);
+}
+
+.my-trips-page .wallet-link-header p {
+  margin: 8px 0 0;
+  color: #5f6b7a;
+  font-size: 0.92rem;
+}
+
+.my-trips-page .wallet-filter-row {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.my-trips-page .wallet-filter-row label {
+  font-weight: 600;
+  color: #334155;
+}
+
+.my-trips-page .wallet-filter-row select {
+  min-width: 260px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.my-trips-page .wallet-summary-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.my-trips-page .wallet-summary-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fcfeff;
+}
+
+.my-trips-page .wallet-summary-card .summary-label {
+  display: block;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.my-trips-page .wallet-summary-card .summary-value {
+  margin-top: 4px;
+  display: block;
+  font-size: 1.05rem;
+  color: #0f172a;
+}
+
 /* Tabs */
 .my-trips-page .trips-tabs {
   display: flex;
@@ -398,6 +467,14 @@
   color: var(--dark-color);
 }
 
+.my-trips-page .detail-item.verified-yes strong {
+  color: #166534;
+}
+
+.my-trips-page .detail-item.verified-no strong {
+  color: #b45309;
+}
+
 /* Trip Actions */
 .my-trips-page .trip-actions {
   width: 100%;
@@ -734,6 +811,20 @@
     padding: 8px;
     margin: 0 0 20px 0;
     gap: 8px;
+  }
+
+  .my-trips-page .wallet-link-panel {
+    padding: 14px;
+  }
+
+  .my-trips-page .wallet-filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .my-trips-page .wallet-filter-row select {
+    min-width: 0;
+    width: 100%;
   }
 
   .my-trips-page .trips-tabs .tab-btn {

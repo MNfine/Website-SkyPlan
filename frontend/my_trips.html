@@ -32,6 +32,38 @@
         <p data-i18n="myTripsSubtitle">Quản lý và theo dõi các chuyến đi của bạn</p>
       </div>
 
+      <section class="wallet-link-panel">
+        <div class="wallet-link-header">
+          <h2 data-i18n="walletLinkedTitle">Booking lien ket voi vi</h2>
+        </div>
+        <div class="wallet-filter-row">
+          <label for="walletFilterSelect" data-i18n="walletFilterLabel">Loc theo vi</label>
+          <select id="walletFilterSelect" aria-label="Wallet filter"></select>
+        </div>
+        <div class="wallet-summary-grid">
+          <article class="wallet-summary-card">
+            <span class="summary-label" data-i18n="walletLinkedLabel">Vi lien ket</span>
+            <strong id="summaryWalletAddressValue" class="summary-value">-</strong>
+          </article>
+          <article class="wallet-summary-card">
+            <span class="summary-label" data-i18n="verifiedBookingsCount">Booking da verify</span>
+            <strong id="summaryVerifiedBookingsValue" class="summary-value">0</strong>
+          </article>
+          <article class="wallet-summary-card">
+            <span class="summary-label" data-i18n="nftTicketsCount">NFT ve da mint</span>
+            <strong id="summaryNftTicketsValue" class="summary-value">0</strong>
+          </article>
+          <article class="wallet-summary-card">
+            <span class="summary-label" data-i18n="skyBalanceLabel">So du SKY</span>
+            <strong id="summarySkyBalanceValue" class="summary-value">0 SKY</strong>
+          </article>
+          <article class="wallet-summary-card">
+            <span class="summary-label" data-i18n="skyRewardTotalLabel">Token thuong tu booking</span>
+            <strong id="summarySkyRewardValue" class="summary-value">0 SKY</strong>
+          </article>
+        </div>
+      </section>
+
       <!-- Tabs Filter -->
       <div class="trips-tabs">
         <button class="tab-btn active" data-status="all" data-i18n="allTrips">
