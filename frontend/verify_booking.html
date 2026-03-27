@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="verifyBookingTitle">SkyPlan - Kiểm tra đặt chỗ</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
+
+  <!-- Font Awesome CDN for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="assets/styles/reset.css">
+  <link rel="stylesheet" href="assets/styles/index.css">
+  <link rel="stylesheet" href="assets/styles/flags.css">
+  <link rel="stylesheet" href="assets/styles/header.css">
+  <link rel="stylesheet" href="assets/styles/footer.css">
+  <link rel="stylesheet" href="assets/styles/verify_booking.css">
+  <link rel="stylesheet" href="assets/styles/loader.css">
+</head>
+<body>
+  <!-- Header -->
+  <div id="header-container"></div>
+
+  <!-- Main Content -->
+  <main class="container verify-booking-container">
+    <!-- Form Section -->
+    <div class="verify-booking-card">
+      <div class="verify-header">
+        <div class="verify-icon">
+          <i class="fas fa-search"></i>
+        </div>
+        <h1 data-i18n="verifyBookingTitle">Kiểm tra Đặt chỗ</h1>
+        <p data-i18n="verifyBookingSubtitle">Nhập mã đặt chỗ để xem trạng thái trên blockchain</p>
+      </div>
+
+      <form id="verifyBookingForm" class="verify-form">
+        <div class="input-group">
+          <label for="bookingCode" data-i18n="bookingCodeLabel">Mã Đặt chỗ</label>
+          <input 
+            type="text" 
+            id="bookingCode" 
+            placeholder="VD: BK123456789" 
+            class="booking-code-input"
+            autocomplete="off"
+            maxlength="50"
+          />
+          <span class="input-hint" data-i18n="bookingCodeHint">Nhập mã đặt chỗ được cấp khi hoàn tất đặt chỗ</span>
+        </div>
+
+        <button type="submit" class="verify-button">
+          <span class="button-text" data-i18n="verifyButton">Kiểm tra</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- Results Section -->
+    <div id="verifyResults" class="verify-results hidden">
+      <!-- Loading State -->
+      <div id="loadingState" class="result-card hidden">
+        <div class="spinner"></div>
+        <p data-i18n="loadingMessage">Đang kiểm tra trên blockchain...</p>
+      </div>
+
+      <!-- Success State -->
+      <div id="successState" class="result-card hidden">
+        <div class="result-header success">
+          <i class="fas fa-check-circle"></i>
+          <h2 data-i18n="verificationSuccess">Kiểm tra thành công</h2>
+        </div>
+
+        <div class="booking-details">
+          <div class="detail-item">
+            <label data-i18n="bookingCodeLabel">Mã Đặt chỗ</label>
+            <p id="resultBookingCode">-</p>
+          </div>
+
+          <div class="detail-item">
+            <label data-i18n="onChainStatus">Trạng thái On-chain</label>
+            <p id="resultOnChainStatus" class="status-badge">-</p>
+          </div>
+
+          <div class="detail-item">
+            <label data-i18n="transactionHash">Hash Giao dịch</label>
+            <div class="hash-display">
+              <p id="resultTransactionHash">-</p>
+              <button type="button" class="copy-icon" id="copyTxHashBtn" title="Sao chép">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <label data-i18n="explorerLink">Xem trên Explorer</label>
+            <a id="explorerLink" href="#" target="_blank" class="explorer-link" rel="noopener noreferrer">
+              <i class="fas fa-external-link-alt"></i>
+              <span data-i18n="viewOnExplorer">Xem trên Sepolia Etherscan</span>
+            </a>
+          </div>
+
+          <div class="detail-item">
+            <label data-i18n="blockNumber">Số Block</label>
+            <p id="resultBlockNumber">-</p>
+          </div>
+
+          <div class="detail-item">
+            <label data-i18n="confirmations">Số lần xác nhận</label>
+            <p id="resultConfirmations">-</p>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button type="button" class="btn-secondary" id="verifyAgainBtn">
+            <i class="fas fa-redo"></i>
+            <span data-i18n="verifyAnother">Kiểm tra khác</span>
+          </button>
+          <a href="/my_trips" class="btn-primary">
+            <i class="fas fa-ticket-alt"></i>
+            <span data-i18n="myTrips">Chuyến bay của tôi</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="result-card hidden">
+        <div class="result-header error">
+          <i class="fas fa-times-circle"></i>
+          <h2 id="errorTitle" data-i18n="verificationFailed">Kiểm tra thất bại</h2>
+        </div>
+
+        <div class="error-message">
+          <p id="errorMessage">-</p>
+        </div>
+
+        <button type="button" class="btn-primary" id="retryBtn">
+          <i class="fas fa-redo"></i>
+          <span data-i18n="tryAgain">Thử lại</span>
+        </button>
+      </div>
+
+      <!-- Not Found State -->
+      <div id="notFoundState" class="result-card hidden">
+        <div class="result-header warning">
+          <i class="fas fa-question-circle"></i>
+          <h2 data-i18n="bookingNotFound">Không tìm thấy đặt chỗ</h2>
+        </div>
+
+        <p class="message-text" data-i18n="bookingNotFoundMessage">
+          Mã đặt chỗ không tồn tại. Vui lòng kiểm tra lại mã của bạn.
+        </p>
+
+        <button type="button" class="btn-primary" id="notFoundRetryBtn">
+          <i class="fas fa-redo"></i>
+          <span data-i18n="tryAgain">Thử lại</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <div id="footer-container"></div>
+
+  <!-- Scripts -->
+  <script src="assets/scripts/loader.js"></script>
+  <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/config.js"></script>
+  <script src="assets/scripts/verify_booking_translations.js"></script>
+  <script src="assets/scripts/verify_booking.js"></script>
+</body>
+</html>
