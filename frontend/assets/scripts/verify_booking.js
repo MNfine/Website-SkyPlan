@@ -136,6 +136,16 @@ function attachEventListeners() {
   elements.verifyAgainBtn.addEventListener('click', resetForm);
   elements.retryBtn.addEventListener('click', resetForm);
   elements.notFoundRetryBtn.addEventListener('click', resetForm);
+  
+  // Clear error state when user focuses on input
+  elements.bookingCodeInput.addEventListener('focus', function() {
+    this.classList.remove('error');
+    const inputHint = document.querySelector('.input-hint');
+    if (inputHint) {
+      inputHint.classList.remove('error');
+      inputHint.textContent = '';
+    }
+  });
 }
 
 /**
@@ -145,15 +155,33 @@ async function handleFormSubmit(e) {
   e.preventDefault();
 
   const bookingCode = elements.bookingCodeInput.value.trim();
+  const inputHint = document.querySelector('.input-hint');
+
+  // Reset error state
+  elements.bookingCodeInput.classList.remove('error');
+  if (inputHint) {
+    inputHint.classList.remove('error');
+    inputHint.textContent = '';
+  }
 
   // Validate input
   if (!bookingCode) {
-    showError('bookingCodeRequired', 'Vui lòng nhập mã đặt chỗ');
+    elements.bookingCodeInput.classList.add('error');
+    if (inputHint) {
+      inputHint.classList.add('error');
+      inputHint.textContent = 'Vui lòng nhập mã đặt chỗ';
+    }
+    elements.bookingCodeInput.focus();
     return;
   }
 
   if (bookingCode.length < 5) {
-    showError('invalidBookingCode', 'Mã đặt chỗ không hợp lệ');
+    elements.bookingCodeInput.classList.add('error');
+    if (inputHint) {
+      inputHint.classList.add('error');
+      inputHint.textContent = 'Mã đặt chỗ không hợp lệ';
+    }
+    elements.bookingCodeInput.focus();
     return;
   }
 

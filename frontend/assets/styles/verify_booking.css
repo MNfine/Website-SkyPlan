@@ -150,10 +150,25 @@
   color: #aaa;
 }
 
+.booking-code-input.error {
+  border-color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.02);
+}
+
+.booking-code-input.error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
 .input-hint {
   font-size: 12px;
   color: #999;
   margin-top: 4px;
+}
+
+.input-hint.error {
+  color: #ef4444;
+  font-weight: 500;
 }
 
 /* Verify Button */
@@ -447,8 +462,8 @@
   text-align: center;
 }
 
-.btn-primary,
-.btn-secondary {
+.action-buttons .btn-primary,
+.action-buttons .btn-secondary {
   padding: 14px 28px;
   border: none;
   border-radius: 8px;
@@ -464,28 +479,28 @@
   white-space: nowrap;
 }
 
-.btn-primary {
+.action-buttons .btn-primary {
   background: linear-gradient(135deg, #1fb6a0 0%, #0a969d 100%);
   color: white;
   box-shadow: 0 4px 12px rgba(31, 182, 160, 0.25);
 }
 
-.btn-primary:hover {
+.action-buttons .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(31, 182, 160, 0.35);
 }
 
-.btn-primary:active {
+.action-buttons .btn-primary:active {
   transform: translateY(0);
 }
 
-.btn-secondary {
+.action-buttons .btn-secondary {
   background: #f8f9fa;
   color: #1fb6a0;
   border: 2px solid #1fb6a0;
 }
 
-.btn-secondary:hover {
+.action-buttons .btn-secondary:hover {
   background: rgba(31, 182, 160, 0.08);
   transform: translateY(-2px);
 }
