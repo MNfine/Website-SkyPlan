@@ -623,10 +623,13 @@
 /* Accessibility */
 .verify-button:focus,
 .btn-primary:focus,
-.btn-secondary:focus,
-.booking-code-input:focus {
+.btn-secondary:focus {
   outline: 2px solid #1fb6a0;
   outline-offset: 2px;
+}
+
+.booking-code-input:focus {
+  outline: none;
 }
 
 button:disabled {

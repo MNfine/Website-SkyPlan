@@ -40,8 +40,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.addEventListener('languageChanged', function (e) {
     const newLang = e.detail.language || e.detail.lang || 'vi';
+    // Update verify booking translations
     if (typeof applyVerifyBookingTranslations === 'function') {
       applyVerifyBookingTranslations(newLang);
+    }
+    // Update header/footer shared translations
+    if (typeof applyTranslations === 'function') {
+      applyTranslations(newLang);
     }
   });
 });
