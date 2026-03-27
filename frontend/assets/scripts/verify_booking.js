@@ -180,19 +180,32 @@ function initializeElements() {
  * Attach event listeners
  */
 function attachEventListeners() {
+  console.log('attachEventListeners called');
+  console.log('Elements:', {
+    form: !!elements.verifyForm,
+    input: !!elements.bookingCodeInput,
+    formId: elements.verifyForm?.id
+  });
+  
   if (!elements.verifyForm) {
-    console.error('Form not found! verifyForm is:', elements.verifyForm);
+    console.error('❌ Form not found! verifyForm is:', elements.verifyForm);
     return;
   }
   
-  elements.verifyForm.addEventListener('submit', handleFormSubmit);
-  elements.copyTxHashBtn.addEventListener('click', () => copyToClipboard(elements.resultTransactionHash.textContent));
-  elements.verifyAgainBtn.addEventListener('click', resetForm);
-  elements.retryBtn.addEventListener('click', resetForm);
-  elements.notFoundRetryBtn.addEventListener('click', resetForm);
+  console.log('✅ Form found, attaching submit listener');
+  elements.verifyForm.addEventListener('submit', function(e) {
+    console.log('📝 Form submit event fired!', e);
+    handleFormSubmit(e);
+  });
+  
+  elements.copyTxHashBtn?.addEventListener('click', () => copyToClipboard(elements.resultTransactionHash.textContent));
+  elements.verifyAgainBtn?.addEventListener('click', resetForm);
+  elements.retryBtn?.addEventListener('click', resetForm);
+  elements.notFoundRetryBtn?.addEventListener('click', resetForm);
   
   // Clear error state when user focuses on input
   elements.bookingCodeInput.addEventListener('focus', function() {
+    console.log('Input focused - clearing error');
     this.classList.remove('error');
     this.style.borderColor = '';
     const inputHint = document.querySelector('.input-hint');
@@ -207,13 +220,20 @@ function attachEventListeners() {
  * Handle form submission
  */
 async function handleFormSubmit(e) {
+  console.log('🔥 handleFormSubmit called');
   e.preventDefault();
-  console.log('Form submitted - validation starting');
+  console.log('✅ preventDefault() called');
 
   const bookingCode = elements.bookingCodeInput.value.trim();
   const inputHint = document.querySelector('.input-hint');
 
-  console.log('Booking code:', bookingCode, 'Length:', bookingCode.length);
+  console.log('📋 Form data:', {
+    code: bookingCode,
+    length: bookingCode.length,
+    isEmpty: !bookingCode,
+    inputElement: !!elements.bookingCodeInput,
+    hintElement: !!inputHint
+  });
 
   // Reset error state
   elements.bookingCodeInput.classList.remove('error');
@@ -223,30 +243,47 @@ async function handleFormSubmit(e) {
     inputHint.textContent = '';
   }
 
-  // Validate input
-  if (!bookingCode) {
-    console.log('Validation failed: empty booking code');
+  // Validate input - EMPTY CHECK
+  if (!bookingCode || bookingCode.length === 0) {
+    console.log('❌ VALIDATION FAILED: Empty booking code');
+    
+    // Add error styling
     elements.bookingCodeInput.classList.add('error');
     elements.bookingCodeInput.style.borderColor = '#ef4444';
+    elements.bookingCodeInput.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
+    
+    // Show error message
     if (inputHint) {
       inputHint.classList.add('error');
-      inputHint.textContent = 'Vui lòng nhập mã đặt chỗ';
+      inputHint.textContent = '⚠️ Vui lòng nhập mã đặt chỗ';
     }
+    
+    // Log verification
+    console.log('Error class added:', elements.bookingCodeInput.classList.contains('error'));
+    console.log('Border color:', elements.bookingCodeInput.style.borderColor);
+    
     elements.bookingCodeInput.focus();
     return;
   }
 
+  // Validate input - LENGTH CHECK
   if (bookingCode.length < 5) {
-    console.log('Validation failed: booking code too short');
+    console.log('❌ VALIDATION FAILED: Code too short (<5)');
+    
     elements.bookingCodeInput.classList.add('error');
     elements.bookingCodeInput.style.borderColor = '#ef4444';
+    elements.bookingCodeInput.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
+    
     if (inputHint) {
       inputHint.classList.add('error');
-      inputHint.textContent = 'Mã đặt chỗ không hợp lệ';
+      inputHint.textContent = '⚠️ Mã đặt chỗ không hợp lệ';
     }
+    
     elements.bookingCodeInput.focus();
     return;
   }
+
+  console.log('✅ VALIDATION PASSED: Proceeding with API call');
 
   // Show loading state
   showLoadingState();
