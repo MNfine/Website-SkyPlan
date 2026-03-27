@@ -74,10 +74,20 @@ function initializeLanguageSelector() {
                     changeBlogLanguage(selectedLangValue);
                 } else if (typeof changeBlogLanguage === 'function' && (path.includes('promotion.html') || path.endsWith('/promotion'))) {
                     changeBlogLanguage(selectedLangValue);
+                } else if (typeof applyVerifyBookingTranslations === 'function' && (path.includes('verify_booking.html') || path.endsWith('/verify_booking'))) {
+                    applyVerifyBookingTranslations(selectedLangValue);
                 } else if (typeof changeLanguage === 'function') {
                     changeLanguage(selectedLangValue);
                 } else if (typeof applyTranslations === 'function') {
                     applyTranslations(selectedLangValue);
+                }
+
+                // Keep language state consistent even on pages without a dedicated changeLanguage() function.
+                if (typeof window.broadcastLanguageChange === 'function') {
+                    window.broadcastLanguageChange(selectedLangValue);
+                } else {
+                    localStorage.setItem('preferredLanguage', selectedLangValue);
+                    document.documentElement.lang = selectedLangValue;
                 }
                 
                 // Always update header translations when language changes

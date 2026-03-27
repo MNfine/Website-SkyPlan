@@ -22,9 +22,11 @@ const VERIFY_CONFIG = {
 let elements = {};
 
 document.addEventListener('DOMContentLoaded', function () {
-  initializeElements();
-  attachEventListeners();
-  applyInitialTranslations();
+  loadCommonComponents().finally(() => {
+    initializeElements();
+    attachEventListeners();
+    applyInitialTranslations();
+  });
 
   // Listen for language changes
   window.addEventListener('storage', function (e) {
@@ -43,6 +45,42 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+
+/**
+ * Load shared header/footer and initialize shared controls.
+ */
+function loadCommonComponents() {
+  const headerPromise = fetch('components/header.html')
+    .then((response) => (response.ok ? response.text() : Promise.reject(new Error('Header load failed'))))
+    .then((html) => {
+      const headerContainer = document.getElementById('header-container');
+      if (headerContainer) {
+        headerContainer.innerHTML = html;
+      }
+      if (typeof initializeMobileMenu === 'function') {
+        initializeMobileMenu();
+      }
+      if (typeof initializeLanguageSelector === 'function') {
+        initializeLanguageSelector();
+      }
+      if (typeof updateHeaderUserInfo === 'function') {
+        updateHeaderUserInfo();
+      }
+    })
+    .catch(() => { });
+
+  const footerPromise = fetch('components/footer.html')
+    .then((response) => (response.ok ? response.text() : Promise.reject(new Error('Footer load failed'))))
+    .then((html) => {
+      const footerContainer = document.getElementById('footer-container');
+      if (footerContainer) {
+        footerContainer.innerHTML = html;
+      }
+    })
+    .catch(() => { });
+
+  return Promise.allSettled([headerPromise, footerPromise]);
+}
 
 /**
  * Initialize DOM elements references

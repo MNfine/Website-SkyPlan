@@ -3,11 +3,11 @@
 const verifyBookingTranslations = {
   vi: {
     // Page Title and Headers
-    verifyBookingTitle: 'Kiểm tra Đặt chỗ',
+    verifyBookingTitle: 'Kiểm tra đặt chỗ',
     verifyBookingSubtitle: 'Nhập mã đặt chỗ để xem trạng thái trên blockchain',
 
     // Form Labels
-    bookingCodeLabel: 'Mã Đặt chỗ',
+    bookingCodeLabel: 'Mã đặt chỗ',
     bookingCodeHint: 'Nhập mã đặt chỗ được cấp khi hoàn tất đặt chỗ',
     bookingCodeRequired: 'Vui lòng nhập mã đặt chỗ',
 

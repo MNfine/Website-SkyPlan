@@ -20,17 +20,50 @@
 
 .verify-booking-container {
   min-height: calc(100vh - 200px);
-  padding: 60px 20px;
-  background: #f8f9fa;
+  padding: 120px 20px 60px 20px;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(900px 420px at -10% -10%, rgba(31, 182, 160, 0.16), transparent 55%),
+    radial-gradient(820px 380px at 110% 0%, rgba(10, 150, 157, 0.14), transparent 58%),
+    linear-gradient(180deg, #f4fbfa 0%, #f8f9fa 38%, #f8f9fa 100%);
+}
+
+.verify-booking-container::before,
+.verify-booking-container::after {
+  content: '';
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.verify-booking-container::before {
+  width: 260px;
+  height: 260px;
+  right: -120px;
+  top: 120px;
+  background: radial-gradient(circle, rgba(31, 182, 160, 0.18) 0%, rgba(31, 182, 160, 0) 68%);
+}
+
+.verify-booking-container::after {
+  width: 220px;
+  height: 220px;
+  left: -110px;
+  bottom: 30px;
+  background: radial-gradient(circle, rgba(10, 150, 157, 0.14) 0%, rgba(10, 150, 157, 0) 70%);
 }
 
 .verify-booking-card {
   max-width: 600px;
-  margin: 0 auto;
-  background: #fff;
+  margin: 40px auto 0 auto;
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
   padding: 40px 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   animation: slideIn 0.3s ease-out;
 }
 
@@ -65,7 +98,8 @@
 .verify-header p {
   font-size: 15px;
   color: #666;
-  margin: 0;
+  max-width: 420px;
+  margin: 0 auto;
   line-height: 1.6;
 }
 
@@ -126,7 +160,7 @@
 .verify-button {
   padding: 14px 28px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -158,7 +192,7 @@
 
 /* Results Section */
 .verify-results {
-  margin-top: 30px;
+  margin-top: 50px;
 }
 
 .verify-results.hidden {
@@ -166,11 +200,15 @@
 }
 
 .result-card {
+  position: relative;
+  z-index: 1;
   animation: slideIn 0.3s ease-out;
-  background: #fff;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.93);
+  backdrop-filter: blur(3px);
+  border-radius: 16px;
   padding: 40px 30px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.62);
 }
 
 .result-card.hidden {
@@ -241,13 +279,18 @@
 
 /* Booking Details */
 .booking-details {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
   margin-bottom: 30px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 8px;
+  padding: 22px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+  border: 1px solid #e9f2f1;
+}
+
+.booking-details .detail-item:nth-child(4) {
+  grid-column: 1 / -1;
 }
 
 .detail-item {
@@ -278,9 +321,9 @@
   align-items: center;
   gap: 10px;
   padding: 10px;
-  background: white;
+  background: #fff;
   border-radius: 6px;
-  border: 1px solid #e6e6e6;
+  border: 1px solid #dceceb;
 }
 
 .hash-display p {
@@ -392,6 +435,7 @@
   display: flex;
   gap: 12px;
   margin-top: 30px;
+  align-items: stretch;
 }
 
 .action-buttons .btn-secondary,
@@ -460,7 +504,16 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .verify-booking-container {
+    padding: 100px 20px 50px 20px;
+  }
+
   .verify-booking-card {
+    padding: 30px 20px;
+    margin: 30px auto 0 auto;
+  }
+
+  .result-card {
     padding: 30px 20px;
   }
 
@@ -491,17 +544,28 @@
   }
 
   .booking-details {
+    grid-template-columns: 1fr;
     gap: 16px;
     padding: 16px;
+  }
+
+  .booking-details .detail-item:nth-child(4) {
+    grid-column: auto;
   }
 }
 
 @media (max-width: 480px) {
   .verify-booking-container {
-    padding: 40px 16px;
+    padding: 90px 16px 40px 16px;
   }
 
   .verify-booking-card {
+    padding: 24px 16px;
+    border-radius: 10px;
+    margin: 20px auto 0 auto;
+  }
+
+  .result-card {
     padding: 24px 16px;
     border-radius: 10px;
   }
