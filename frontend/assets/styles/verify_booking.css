@@ -151,18 +151,16 @@
 }
 
 .booking-code-input.error {
+
+  /* Inline styles take precedence - CSS class is backup only */
   border-color: #ef4444 !important;
-  border-width: 2px !important;
   background-color: rgba(239, 68, 68, 0.08) !important;
-  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2) !important;
 }
 
 .booking-code-input.error:focus {
   border-color: #ef4444 !important;
-  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.3) !important;
   outline: none !important;
 }
-
 .input-hint {
   font-size: 12px;
   color: #999;

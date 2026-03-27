@@ -1,4 +1,7 @@
 // Verify Booking page functionality
+// ENABLE DEBUG MODE FOR DEVELOPMENT
+window.SKYPLAN_DEBUG = true;
+
 
 // Quiet mode: suppress non-essential console output unless debugging flag is enabled
 (function () {
@@ -204,12 +207,23 @@ function attachEventListeners() {
   elements.notFoundRetryBtn?.addEventListener('click', resetForm);
   
   // Clear error state when user focuses on input
-  elements.bookingCodeInput.addEventListener('focus', function() {
-    console.log('Input focused - clearing error');
+  // Clear error state when user starts typing
+  elements.bookingCodeInput.addEventListener('input', function() {
+    console.log('Input typed - clearing error');
+    // Remove inline error styles
+    this.style.border = '';
+    this.style.backgroundColor = '';
+    this.style.boxShadow = '';
     this.classList.remove('error');
-    this.style.borderColor = '';
+    
     const inputHint = document.querySelector('.input-hint');
     if (inputHint) {
+      inputHint.style.color = '';
+      inputHint.style.fontWeight = '';
+      inputHint.style.fontSize = '';
+      inputHint.style.marginTop = '';
+      inputHint.style.display = '';
+      inputHint.textContent = '';
       inputHint.classList.remove('error');
       inputHint.textContent = '';
     }
@@ -235,51 +249,44 @@ async function handleFormSubmit(e) {
     hintElement: !!inputHint
   });
 
-  // Reset error state
-  elements.bookingCodeInput.classList.remove('error');
-  elements.bookingCodeInput.style.borderColor = '';
-  if (inputHint) {
-    inputHint.classList.remove('error');
-    inputHint.textContent = '';
+  // Helper function to show validation error
+  function showValidationError(message) {
+    console.log('❌ VALIDATION ERROR:', message);
+    
+    // DIRECT INLINE STYLES - No CSS class override possible
+    const input = elements.bookingCodeInput;
+    input.style.border = '2px solid #ef4444 !important';
+    input.style.backgroundColor = 'rgba(239, 68, 68, 0.08)';
+    input.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.3)';
+    input.style.outline = 'none';
+    
+    // Show error message
+    if (inputHint) {
+      inputHint.style.display = 'block';
+      inputHint.style.color = '#ef4444';
+      inputHint.style.fontWeight = '700';
+      inputHint.style.fontSize = '14px';
+      inputHint.style.marginTop = '8px';
+      inputHint.textContent = message;
+    }
+    
+    input.focus();
+    console.log('✅ Error state applied:', {
+      borderStyle: input.style.border,
+      bgColor: input.style.backgroundColor,
+      message: inputHint?.textContent
+    });
   }
 
   // Validate input - EMPTY CHECK
   if (!bookingCode || bookingCode.length === 0) {
-    console.log('❌ VALIDATION FAILED: Empty booking code');
-    
-    // Add error styling
-    elements.bookingCodeInput.classList.add('error');
-    elements.bookingCodeInput.style.borderColor = '#ef4444';
-    elements.bookingCodeInput.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
-    
-    // Show error message
-    if (inputHint) {
-      inputHint.classList.add('error');
-      inputHint.textContent = '⚠️ Vui lòng nhập mã đặt chỗ';
-    }
-    
-    // Log verification
-    console.log('Error class added:', elements.bookingCodeInput.classList.contains('error'));
-    console.log('Border color:', elements.bookingCodeInput.style.borderColor);
-    
-    elements.bookingCodeInput.focus();
+    showValidationError('⚠️ Vui lòng nhập mã đặt chỗ');
     return;
   }
 
   // Validate input - LENGTH CHECK
   if (bookingCode.length < 5) {
-    console.log('❌ VALIDATION FAILED: Code too short (<5)');
-    
-    elements.bookingCodeInput.classList.add('error');
-    elements.bookingCodeInput.style.borderColor = '#ef4444';
-    elements.bookingCodeInput.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
-    
-    if (inputHint) {
-      inputHint.classList.add('error');
-      inputHint.textContent = '⚠️ Mã đặt chỗ không hợp lệ';
-    }
-    
-    elements.bookingCodeInput.focus();
+    showValidationError('⚠️ Mã đặt chỗ không hợp lệ (tối thiểu 5 ký tự)');
     return;
   }
 
