@@ -44,16 +44,65 @@ document.addEventListener('DOMContentLoaded', function () {
     if (typeof applyVerifyBookingTranslations === 'function') {
       applyVerifyBookingTranslations(newLang);
     }
-    // Update header/footer shared translations
-    if (typeof applyTranslations === 'function') {
-      applyTranslations(newLang);
-    }
+    // Update header/footer shared translations by finding all [data-i18n] elements
+    updateSharedTranslations(newLang);
   });
 });
 
 /**
- * Load shared header/footer and initialize shared controls.
+ * Update header/footer translations when language changes
  */
+function updateSharedTranslations(lang) {
+  // Call header/footer translation functions if available
+  if (typeof applyTranslations === 'function') {
+    applyTranslations(lang);
+  } else {
+    // Fallback: update elements with data-i18n attribute in header and footer containers
+    const headerContainer = document.getElementById('header-container');
+    const footerContainer = document.getElementById('footer-container');
+    
+    if (headerContainer) {
+      updateElementTranslations(headerContainer, lang);
+    }
+    if (footerContainer) {
+      updateElementTranslations(footerContainer, lang);
+    }
+  }
+}
+
+/**
+ * Generic function to update translations for elements with data-i18n attribute
+ */
+function updateElementTranslations(container, lang) {
+  // Try to get translation object from window.translations first, then from verifyBookingTranslations
+  let translations = (window.translations && window.translations[lang]) || 
+                     (typeof verifyBookingTranslations !== 'undefined' && verifyBookingTranslations[lang]) || 
+                     {};
+  
+  if (!translations || Object.keys(translations).length === 0) {
+    translations = {};
+  }
+
+  container.querySelectorAll('[data-i18n]').forEach((element) => {
+    const key = element.getAttribute('data-i18n');
+    if (key && translations[key]) {
+      const text = translations[key];
+      if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+        element.placeholder = text;
+      } else if (element.tagName === 'BUTTON' || element.tagName === 'A') {
+        const hasIcon = element.querySelector('i');
+        if (hasIcon) {
+          element.innerHTML = `${hasIcon.outerHTML}<span>${text}</span>`;
+        } else {
+          element.textContent = text;
+        }
+      } else {
+        element.textContent = text;
+      }
+    }
+  });
+}
+
 function loadCommonComponents() {
   const headerPromise = fetch('components/header.html')
     .then((response) => (response.ok ? response.text() : Promise.reject(new Error('Header load failed'))))
@@ -140,6 +189,7 @@ function attachEventListeners() {
   // Clear error state when user focuses on input
   elements.bookingCodeInput.addEventListener('focus', function() {
     this.classList.remove('error');
+    this.style.borderColor = '';
     const inputHint = document.querySelector('.input-hint');
     if (inputHint) {
       inputHint.classList.remove('error');
@@ -159,6 +209,7 @@ async function handleFormSubmit(e) {
 
   // Reset error state
   elements.bookingCodeInput.classList.remove('error');
+  elements.bookingCodeInput.style.borderColor = '';
   if (inputHint) {
     inputHint.classList.remove('error');
     inputHint.textContent = '';
@@ -167,6 +218,7 @@ async function handleFormSubmit(e) {
   // Validate input
   if (!bookingCode) {
     elements.bookingCodeInput.classList.add('error');
+    elements.bookingCodeInput.style.borderColor = '#ef4444';
     if (inputHint) {
       inputHint.classList.add('error');
       inputHint.textContent = 'Vui lòng nhập mã đặt chỗ';
@@ -177,6 +229,7 @@ async function handleFormSubmit(e) {
 
   if (bookingCode.length < 5) {
     elements.bookingCodeInput.classList.add('error');
+    elements.bookingCodeInput.style.borderColor = '#ef4444';
     if (inputHint) {
       inputHint.classList.add('error');
       inputHint.textContent = 'Mã đặt chỗ không hợp lệ';

@@ -51,7 +51,33 @@ const verifyBookingTranslations = {
     blockchainExplanation: 'Blockchain là một công nghệ ghi chép dữ liệu phi tập trung. Trạng thái đặt chỗ của bạn được lưu trữ trên mạng Sepolia Testnet để đảm bảo tính bảo mật và minh bạch.',
 
     whatIsHash: 'Hash Blockchain là gì?',
-    hashExplanation: 'Hash là một chuỗi ký tự duy nhất được tạo từ dữ liệu đặt chỗ. Nếu bất kỳ thông tin nào thay đổi, hash sẽ hoàn toàn khác, giúp phát hiện sự giả mạo.'
+    hashExplanation: 'Hash là một chuỗi ký tự duy nhất được tạo từ dữ liệu đặt chỗ. Nếu bất kỳ thông tin nào thay đổi, hash sẽ hoàn toàn khác, giúp phát hiện sự giả mạo.',
+
+    // Shared Header/Footer Translations
+    helpText: 'Trợ giúp',
+    myTripsText: 'Chuyến đi của tôi',
+    signInText: 'Đăng nhập',
+    signUpText: 'Đăng ký',
+    profileText: 'Hồ sơ cá nhân',
+    logoutText: 'Đăng xuất',
+    // Footer shared
+    footerDesc: 'Đối tác du lịch đáng tin cậy của bạn cho các ưu đãi vé máy bay tốt nhất và những hành trình khó quên.',
+    quickLinksTitle: 'Liên kết nhanh',
+    aboutUs: 'Về chúng tôi',
+    contact: 'Liên hệ',
+    privacyPolicy: 'Chính sách bảo mật',
+    termsOfService: 'Điều khoản dịch vụ',
+    supportTitle: 'Hỗ trợ',
+    helpCenter: 'Trung tâm trợ giúp',
+    customerService: 'Dịch vụ khách hàng',
+    bookingHelp: 'Hỗ trợ đặt vé',
+    faq: 'Câu hỏi thường gặp',
+    promotion: 'Khuyến mãi',
+    paymentMethodsTitle: 'Phương thức thanh toán',
+    downloadAppTitle: 'Tải ứng dụng của chúng tôi',
+    appStore: 'App Store',
+    googlePlay: 'Google Play',
+    copyright: '© 2024 SkyPlan. Bảo lưu mọi quyền.'
   },
 
   en: {
@@ -104,7 +130,33 @@ const verifyBookingTranslations = {
     blockchainExplanation: 'Blockchain is a decentralized data recording technology. Your booking status is stored on the Sepolia Testnet to ensure security and transparency.',
 
     whatIsHash: 'What is Blockchain Hash?',
-    hashExplanation: 'A hash is a unique string of characters created from your booking data. If any information changes, the hash will be completely different, helping detect tampering.'
+    hashExplanation: 'A hash is a unique string of characters created from your booking data. If any information changes, the hash will be completely different, helping detect tampering.',
+
+    // Shared Header/Footer Translations
+    helpText: 'Help',
+    myTripsText: 'My Trips',
+    signInText: 'Sign In',
+    signUpText: 'Sign Up',
+    profileText: 'Profile',
+    logoutText: 'Logout',
+    // Footer shared
+    footerDesc: 'Your trusted travel companion for the best flight deals and unforgettable journeys.',
+    quickLinksTitle: 'Quick Links',
+    aboutUs: 'About Us',
+    contact: 'Contact',
+    privacyPolicy: 'Privacy Policy',
+    termsOfService: 'Terms of Service',
+    supportTitle: 'Support',
+    helpCenter: 'Help Center',
+    customerService: 'Customer Service',
+    bookingHelp: 'Booking Help',
+    faq: 'FAQ',
+    promotion: 'Promotions',
+    paymentMethodsTitle: 'Payment Methods',
+    downloadAppTitle: 'Download our app',
+    appStore: 'App Store',
+    googlePlay: 'Google Play',
+    copyright: '© 2024 SkyPlan. All rights reserved.'
   },
 
   zh: {
@@ -157,7 +209,33 @@ const verifyBookingTranslations = {
     blockchainExplanation: '区块链是一种去中心化的数据记录技术。您的预订状态存储在Sepolia测试网上，以确保安全性和透明度。',
 
     whatIsHash: '什么是区块链哈希？',
-    hashExplanation: '哈希是由您的预订数据生成的唯一字符串。如果任何信息更改，哈希将完全不同，有助于检测篡改。'
+    hashExplanation: '哈希是由您的预订数据生成的唯一字符串。如果任何信息更改，哈希将完全不同，有助于检测篡改。',
+
+    // Shared Header/Footer Translations
+    helpText: '帮助',
+    myTripsText: '我的行程',
+    signInText: '登录',
+    signUpText: '注册',
+    profileText: '个人资料',
+    logoutText: '登出',
+    // Footer shared
+    footerDesc: '您值得信赖的旅行伙伴，提供最优惠的航班和难忘的旅程。',
+    quickLinksTitle: '快速链接',
+    aboutUs: '关于我们',
+    contact: '联系我们',
+    privacyPolicy: '隐私政策',
+    termsOfService: '服务条款',
+    supportTitle: '支持',
+    helpCenter: '帮助中心',
+    customerService: '客户服务',
+    bookingHelp: '预订帮助',
+    faq: '常见问题',
+    promotion: '优惠',
+    paymentMethodsTitle: '支付方式',
+    downloadAppTitle: '下载我们的应用',
+    appStore: '应用商店',
+    googlePlay: 'Google Play',
+    copyright: '© 2024 SkyPlan。版权所有。'
   },
 
   ja: {
@@ -210,7 +288,33 @@ const verifyBookingTranslations = {
     blockchainExplanation: 'ブロックチェーンは分散型データ記録技術です。ご予約のステータスはセキュリティと透明性を確保するためにSepoliaテストネットに保存されます。',
 
     whatIsHash: 'ブロックチェーンハッシュとは？',
-    hashExplanation: 'ハッシュは予約データから生成された一意の文字列です。情報が変更されると、ハッシュは完全に異なり、改ざんを検出するのに役立ちます。'
+    hashExplanation: 'ハッシュは予約データから生成された一意の文字列です。情報が変更されると、ハッシュは完全に異なり、改ざんを検出するのに役立ちます。',
+
+    // Shared Header/Footer Translations
+    helpText: 'ヘルプ',
+    myTripsText: '私の旅行',
+    signInText: 'サインイン',
+    signUpText: 'サインアップ',
+    profileText: 'プロフィール',
+    logoutText: 'ログアウト',
+    // Footer shared
+    footerDesc: 'あなたの信頼できる旅のパートナー。最高のフライトディールと忘れられない旅。',
+    quickLinksTitle: 'クイックリンク',
+    aboutUs: 'について',
+    contact: 'お問い合わせ',
+    privacyPolicy: 'プライバシーポリシー',
+    termsOfService: '利用規約',
+    supportTitle: 'サポート',
+    helpCenter: 'ヘルプセンター',
+    customerService: 'カスタマーサービス',
+    bookingHelp: '予約ヘルプ',
+    faq: 'よくある質問',
+    promotion: 'プロモーション',
+    paymentMethodsTitle: '支払い方法',
+    downloadAppTitle: 'アプリをダウンロード',
+    appStore: 'App Store',
+    googlePlay: 'Google Play',
+    copyright: '© 2024 SkyPlan. すべての権利を保有しています。'
   }
 };
 
