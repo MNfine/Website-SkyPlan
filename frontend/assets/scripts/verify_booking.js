@@ -180,6 +180,11 @@ function initializeElements() {
  * Attach event listeners
  */
 function attachEventListeners() {
+  if (!elements.verifyForm) {
+    console.error('Form not found! verifyForm is:', elements.verifyForm);
+    return;
+  }
+  
   elements.verifyForm.addEventListener('submit', handleFormSubmit);
   elements.copyTxHashBtn.addEventListener('click', () => copyToClipboard(elements.resultTransactionHash.textContent));
   elements.verifyAgainBtn.addEventListener('click', resetForm);
@@ -203,9 +208,12 @@ function attachEventListeners() {
  */
 async function handleFormSubmit(e) {
   e.preventDefault();
+  console.log('Form submitted - validation starting');
 
   const bookingCode = elements.bookingCodeInput.value.trim();
   const inputHint = document.querySelector('.input-hint');
+
+  console.log('Booking code:', bookingCode, 'Length:', bookingCode.length);
 
   // Reset error state
   elements.bookingCodeInput.classList.remove('error');
@@ -217,6 +225,7 @@ async function handleFormSubmit(e) {
 
   // Validate input
   if (!bookingCode) {
+    console.log('Validation failed: empty booking code');
     elements.bookingCodeInput.classList.add('error');
     elements.bookingCodeInput.style.borderColor = '#ef4444';
     if (inputHint) {
@@ -228,6 +237,7 @@ async function handleFormSubmit(e) {
   }
 
   if (bookingCode.length < 5) {
+    console.log('Validation failed: booking code too short');
     elements.bookingCodeInput.classList.add('error');
     elements.bookingCodeInput.style.borderColor = '#ef4444';
     if (inputHint) {
