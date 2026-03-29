@@ -74,7 +74,7 @@ backend/
   ```
 
   Ghi chú:
-  - `backend/models/db.py` có fallback sang SQLite nếu `DATABASE_URL` không được đặt. Để nhanh, bạn có thể dùng `sqlite:///skyplan.db`.
+  - Backend hiện đang đọc `.env` ở **root repo** (cùng cấp với `frontend/` và `backend/`).
   - Không commit `.env` lên git.
 
   ## Tạo & import dữ liệu

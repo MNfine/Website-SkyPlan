@@ -30,8 +30,8 @@ pip install --upgrade pip
 pip install -r backend/requirements.txt
 
 # 3. Tạo file cấu hình .env (copy từ template nếu có)
-copy backend\.env.example backend\.env
-# Sửa backend\.env để thiết lập DATABASE_URL, SECRET_KEY, VNPAY_*...
+copy .env.example .env
+# Sửa `.env` (ở root repo) để thiết lập DATABASE_URL, SECRET_KEY, VNPAY_*...
 
 # 4. (Tuỳ chọn) Import dữ liệu demo và tạo ghế
 python backend/db/import_flights.py
@@ -44,13 +44,14 @@ python backend/app.py
 ```
 
 Ghi chú:
-- Nếu không có PostgreSQL, bạn có thể dùng SQLite bằng cách đặt `DATABASE_URL=sqlite:///skyplan_local.db` trong `backend/.env`.
+- Backend hiện đọc `.env` ở **root repo**. Tối thiểu bạn cần đặt `DATABASE_URL` trong `.env`.
+- Lưu ý: `backend/models/db.py` hiện đang validate `DATABASE_URL` theo PostgreSQL. Nếu muốn dùng SQLite, cần nới logic này trong code.
 - Frontend tĩnh cũng có thể mở trực tiếp file HTML, nhưng để gọi API bạn nên chạy backend server.
 
 ## Biến môi trường quan trọng
 
 - `SECRET_KEY` — Khóa bí mật của Flask
-- `DATABASE_URL` — DSN của SQLAlchemy (vd: `postgresql+psycopg2://user:pass@localhost:5432/skyplan` hoặc `sqlite:///skyplan.db`)
+- `DATABASE_URL` — DSN của SQLAlchemy (vd: `postgresql+psycopg2://user:pass@localhost:5432/skyplan`)
 - `VNPAY_TMN_CODE`, `VNPAY_HASH_SECRET`, `VNPAY_RETURN_URL` — Cấu hình VNPay (demo)
 - Cấu hình mail nếu muốn gửi email xác nhận
 

@@ -78,7 +78,7 @@ class BlockchainConfig:
     """Blockchain configuration for Sepolia testnet"""
     
     # Sepolia RPC URL (Alchemy, Infura, or other provider)
-    SEPOLIA_RPC_URL = os.environ.get('SEPOLIA_RPC_URL') or 'https://eth-sepolia.g.alchemy.com/v2/demo'
+    SEPOLIA_RPC_URL = os.environ.get('SEPOLIA_RPC_URL')
     
     # BookingRegistry contract address (deployed on Sepolia)
     BOOKING_REGISTRY_ADDRESS = os.environ.get('BOOKING_REGISTRY_ADDRESS')
