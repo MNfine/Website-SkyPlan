@@ -78,13 +78,17 @@ class BlockchainConfig:
     """Blockchain configuration for Sepolia testnet"""
     
     # Sepolia RPC URL (Alchemy, Infura, or other provider)
-    SEPOLIA_RPC_URL = os.environ.get('SEPOLIA_RPC_URL') or 'https://eth-sepolia.g.alchemy.com/v2/demo'
+    SEPOLIA_RPC_URL = (
+        os.environ.get('SEPOLIA_RPC_URL')
+        or os.environ.get('BLOCKCHAIN_SEPOLIA_RPC')
+        or 'https://eth-sepolia.g.alchemy.com/v2/demo'
+    )
     
     # BookingRegistry contract address (deployed on Sepolia)
     BOOKING_REGISTRY_ADDRESS = os.environ.get('BOOKING_REGISTRY_ADDRESS')
     TICKET_NFT_ADDRESS = os.environ.get('TICKET_NFT_ADDRESS')
     SKY_TOKEN_ADDRESS = os.environ.get('SKY_TOKEN_ADDRESS')
-    PRIVATE_KEY = os.environ.get('PRIVATE_KEY')
+    PRIVATE_KEY = os.environ.get('PRIVATE_KEY') or os.environ.get('CONTRACT_PRIVATE_KEY')
     SKY_REWARD_AMOUNT = os.environ.get('SKY_REWARD_AMOUNT') or '100'
     
     @classmethod

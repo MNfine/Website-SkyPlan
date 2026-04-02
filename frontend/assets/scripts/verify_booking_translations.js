@@ -53,6 +53,12 @@ const verifyBookingTranslations = {
     whatIsHash: 'Hash Blockchain là gì?',
     hashExplanation: 'Hash là một chuỗi ký tự duy nhất được tạo từ dữ liệu đặt chỗ. Nếu bất kỳ thông tin nào thay đổi, hash sẽ hoàn toàn khác, giúp phát hiện sự giả mạo.',
 
+    // Quick guidance
+    whereToFindBookingCode: 'Lấy mã đặt chỗ ở đâu?',
+    findCodeStep1: 'Sau khi thanh toán thành công, mã đặt chỗ hiển thị ở trang xác nhận.',
+    findCodeStep2: 'Bạn có thể xem lại trong mục Chuyến đi của tôi.',
+    findCodeStep3: 'Mã thường có dạng BK + dãy số/chữ.',
+
     // Shared Header/Footer Translations
     helpText: 'Trợ giúp',
     myTripsText: 'Chuyến đi của tôi',
@@ -131,6 +137,12 @@ const verifyBookingTranslations = {
 
     whatIsHash: 'What is Blockchain Hash?',
     hashExplanation: 'A hash is a unique string of characters created from your booking data. If any information changes, the hash will be completely different, helping detect tampering.',
+
+    // Quick guidance
+    whereToFindBookingCode: 'Where can I find my booking code?',
+    findCodeStep1: 'After successful payment, your booking code appears on the confirmation page.',
+    findCodeStep2: 'You can also find it in My Trips.',
+    findCodeStep3: 'The code usually looks like BK followed by numbers/letters.',
 
     // Shared Header/Footer Translations
     helpText: 'Help',
@@ -211,6 +223,12 @@ const verifyBookingTranslations = {
     whatIsHash: '什么是区块链哈希？',
     hashExplanation: '哈希是由您的预订数据生成的唯一字符串。如果任何信息更改，哈希将完全不同，有助于检测篡改。',
 
+    // Quick guidance
+    whereToFindBookingCode: '在哪里可以找到预订代码？',
+    findCodeStep1: '支付成功后，预订代码会显示在确认页面。',
+    findCodeStep2: '您也可以在“我的行程”中查看。',
+    findCodeStep3: '代码通常是 BK 加上一串数字/字母。',
+
     // Shared Header/Footer Translations
     helpText: '帮助',
     myTripsText: '我的行程',
@@ -289,6 +307,12 @@ const verifyBookingTranslations = {
 
     whatIsHash: 'ブロックチェーンハッシュとは？',
     hashExplanation: 'ハッシュは予約データから生成された一意の文字列です。情報が変更されると、ハッシュは完全に異なり、改ざんを検出するのに役立ちます。',
+
+    // Quick guidance
+    whereToFindBookingCode: '予約コードはどこで確認できますか？',
+    findCodeStep1: '支払い完了後、確認ページに予約コードが表示されます。',
+    findCodeStep2: '「マイトリップ」からも確認できます。',
+    findCodeStep3: '通常、BK + 英数字の形式です。',
 
     // Shared Header/Footer Translations
     helpText: 'ヘルプ',
