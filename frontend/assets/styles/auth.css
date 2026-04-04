@@ -1,0 +1,63 @@
+/* Simple styles for authentication components */
+/* These don't modify existing header styles, just add what's needed */
+
+/* User greeting when logged in */
+.user-greeting {
+  margin-right: 10px;
+  font-weight: 500;
+  color: var(--text-color, #333);
+}
+
+/* Style for logout button is inherited from existing btn styles */
+
+/* Auth spinner for login/register buttons */
+
+.user-greeting {
+  font-weight: 500;
+  margin-right: 8px;
+  color: #555;
+}
+
+#logoutButton {
+  border: 1px solid #e0e0e0;
+}
+
+#logoutButton:hover {
+  background-color: #f8f8f8;
+}
+
+@media (max-width: 768px) {
+  .auth-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+  
+  .nav-button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .user-greeting {
+    text-align: center;
+    margin-bottom: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+  }
+}
+
+/* Spinner for login/register buttons */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.8s ease-in-out infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

@@ -1,0 +1,483 @@
+/* GENERAL & LAYOUT STYLES                       */
+.container.flow {
+  padding-top: calc(var(--header-height, 80px) + 20px);
+}
+[hidden] {
+  display: none !important;
+}
+.steps .progress::before {
+  width: 80%;
+}
+/* EXTRAS SELECTION GRID  */
+.extras-grid {
+  display: grid;
+  /*create 3 columns of equal width. */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 16px;
+}
+.extra-card {
+  /* --- Card Layout & Box Model --- */
+  background: var(--light-color);
+  border: 2px solid var(--primary-color);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: var(--box-shadow);
+
+  /* --- Flexbox Layout --- */
+  display: flex;
+  flex-direction: column;
+}
+.extra-card__img {
+  /* This is a flex container to center the image perfectly. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 160px;
+  margin-bottom: 10px;
+}
+.extra-card__img img {
+  /* Ensures the image never exceeds a certain height and fits well. */
+  max-height: 140px;
+  object-fit: contain;
+}
+.extra-card__title {
+  /* --- Typography & Color --- */
+  font-size: 18px;
+  margin: 6px 0 4px;
+  color: var(--dark-color);
+  font-weight: 700;
+}
+.extra-card__desc {
+  /* --- Typography & Color --- */
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+.extra-card__btn {
+  margin-top: auto;
+
+  /* --- Button Appearance --- */
+  padding: 12px 16px;
+  border-radius: 30px;
+  border: none;
+  background: var(--primary-color);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color var(--transition-speed, 0.3s) ease,
+    transform 0.2s ease;
+}
+.extra-card__btn:hover {
+  background: #097f85;
+  transform: translateY(-1px);
+}
+.extra-card__btn:active {
+  /* When the button is clicked, it moves down a bit to simulate a press. */
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+}
+.extras-actions {
+  /* --- Layout for Action Buttons --- */
+  margin-top: 28px;
+  margin-bottom: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.next-btn {
+  /* --- Layout & Appearance --- */
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--primary-color);
+  color: #fff;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: background-color var(--transition-speed, 0.3s) ease,
+    transform 0.2s ease;
+}
+.next-btn:hover {
+  background: #097f85;
+  transform: translateY(-2px);
+}
+.next-btn:focus-visible {
+  outline: 3px solid rgba(10, 150, 157, 0.35);
+  outline-offset: 2px;
+}
+.next-btn:active {
+  transform: translateY(-1px);
+}
+
+/* EXTRAS DRAWER (SIDE PANEL)                    */
+
+.extras-backdrop {
+  /* --- Layout & Positioning --- */
+  /* This creates a full-screen, semi-transparent background behind the drawer. */
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  /* Adds a slight blur effect to the content behind the backdrop. */
+  backdrop-filter: blur(1px);
+  z-index: 900;
+}
+.extras-drawer {
+  /* --- Layout & Positioning --- */
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 480px;
+  max-width: 95%;
+  background: var(--light-color);
+  box-shadow: -2px 0 16px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  z-index: 901;
+}
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee;
+}
+.drawer-close {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #444;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+}
+.drawer-close:hover {
+  background: #f4f5f6;
+}
+.drawer-content {
+  flex: 1;
+  /* Allows scrolling if the content is too long to fit. */
+  overflow: auto;
+  padding: 14px 16px;
+}
+
+.drawer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #eee;
+  padding: 12px 16px;
+  background: #fff;
+}
+.drawer-total span {
+  color: #666;
+  margin-right: 8px;
+}
+.drawer-total strong {
+  font-weight: 700;
+}
+
+/* MEAL LIST (Inside Drawer)                     */
+/* Styles for the list of selected meals.        */
+
+.meal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.meal-row {
+  display: grid;
+  grid-template-columns: auto 1fr max-content max-content;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed #eee;
+}
+.meal-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  background: #fff;
+}
+.meal-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.meal-desc {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.3;
+}
+
+.meal-name {
+  font-weight: 600;
+  color: var(--dark-color);
+}
+.meal-price {
+  color: #111;
+  font-weight: 600;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.meal-qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.meal-qty button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+  cursor: pointer;
+}
+.meal-qty button:hover {
+  background: #f1f1f1;
+}
+.meal-qty .qty-val {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* BAGGAGE LIST (Inside Drawer)                  */
+/* Styles for the baggage selection options.     */
+
+.baggage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.baggage-card {
+  display: grid;
+  grid-template-columns: auto 1fr max-content max-content;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px dashed #eee;
+}
+.baggage-thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  background: #fff;
+}
+.baggage-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.baggage-title {
+  font-weight: 600;
+  color: var(--dark-color);
+}
+.baggage-desc {
+  font-size: 13px;
+  color: #666;
+}
+.baggage-price {
+  font-weight: 700;
+  color: #111;
+  white-space: nowrap;
+}
+.baggage-choose {
+  border: 1px solid var(--primary-color);
+  color: #fff;
+  background: var(--primary-color);
+  border-radius: 9999px;
+  padding: 6px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.baggage-choose.on {
+  background: #e8f5f4;
+  color: var(--primary-color);
+}
+.baggage-card.active {
+  background: #fafefe;
+}
+
+.baggage-included {
+  font-size: 14px;
+  color: #3a7c3a;
+  background: #e9f5ea;
+  border: 1px solid #d4e9d6;
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.baggage-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.baggage-opt {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fafafa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.baggage-opt:hover {
+  border-color: var(--primary-color);
+}
+.baggage-opt.active {
+  border-color: var(--primary-color);
+  background: #e8f5f4;
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+/* SERVICES LIST (Inside Drawer)                 */
+/* Styles for other services like insurance, etc.*/
+
+.services-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.service-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px dashed #eee;
+}
+.service-thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  background: #fff;
+}
+.service-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.service-title {
+  font-weight: 600;
+  color: var(--dark-color);
+}
+.service-desc {
+  font-size: 13px;
+  color: #666;
+}
+
+.service-price {
+  font-weight: 700;
+  color: #111;
+  white-space: nowrap;
+}
+.service-add {
+  border: 1px solid var(--primary-color);
+  color: #fff;
+  background: var(--primary-color);
+  border-radius: 9999px;
+  padding: 6px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.service-add:hover {
+  filter: brightness(0.95);
+}
+.service-add.on {
+  background: #e8f5f4;
+  color: var(--primary-color);
+}
+.service-card.selected {
+  background: #fafefe;
+}
+
+/* RESPONSIVE DESIGN                             */
+/* These are media queries that adjust styles    */
+/* for different screen sizes (mobile, tablet).  */
+
+@media (max-width: 420px) {
+  .meal-thumb {
+    width: 60px;
+    height: 60px;
+  }
+  .meal-name {
+    font-size: 15px;
+  }
+  .meal-price {
+    font-size: 14px;
+  }
+  .baggage-thumb {
+    width: 40px;
+    height: 40px;
+  }
+  .baggage-title {
+    font-size: 15px;
+  }
+  .baggage-price {
+    font-size: 14px;
+  }
+  .service-thumb {
+    width: 40px;
+    height: 40px;
+  }
+  .service-title {
+    font-size: 15px;
+  }
+  .service-price {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 1080px) {
+  /* On screens smaller than 1080px (like tablets), change the grid to 2 columns. */
+  .extras-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 630px) {
+  /* On small screens (mobile phones), stack the cards in a single column. */
+  .extras-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .next-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .extras-actions {
+    margin-bottom: 32px;
+  }
+  /* Make the drawer a bit wider on mobile to use more screen space. */
+  .extras-drawer {
+    width: 90%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .extras-drawer {
+    width: 500px;
+  }
+}
+@media (min-width: 1440px) {
+  .extras-drawer {
+    width: 560px;
+  }
+}

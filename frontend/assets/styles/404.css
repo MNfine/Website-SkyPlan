@@ -1,0 +1,108 @@
+:root {
+    --404-bg: #f4f8f8;
+    --404-ink: #1f2937;
+    --404-muted: #6b7280;
+    --404-primary: #0A969D;
+    --404-line: #e5e7eb;
+}
+
+.sp404-surface {
+    padding: 88px 16px 56px;
+    background: var(--404-bg);
+}
+
+.sp404-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    align-items: center;
+    gap: 24px;
+    min-height: 520px;
+}
+
+.sp404-left {
+    padding: 12px 8px;
+}
+
+.sp404-badge {
+    display: inline-block;
+    padding: 10px 12px;
+    border-radius: 4px;
+    background: #374151;
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 18px;
+}
+
+.sp404-title {
+    margin: 0 0 12px;
+    color: var(--404-ink);
+    font-size: clamp(22px, 2.2vw + 8px, 36px);
+    line-height: 1.2;
+}
+
+.sp404-desc {
+    margin: 0 22px 22px 0;
+    color: var(--404-muted);
+    font-size: clamp(14px, 1vw + 10px, 17px);
+}
+
+.sp404-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.sp404-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--404-primary);
+    color: #fff;
+    text-decoration: none;
+    border: 1px solid color-mix(in oklab, var(--404-primary), #000 12%);
+    box-shadow: 0 2px 6px #20B2AA;
+    transition: transform .08s ease;
+}
+
+.sp404-btn:hover {
+    transform: translateY(-1px);
+}
+
+.sp404-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+}
+
+.sp404-img {
+    width: 100%;
+    max-width: 820px;
+    height: auto;
+    object-fit: contain;
+}
+
+
+/* responsive */
+
+@media (max-width: 992px) {
+    .sp404-grid {
+        grid-template-columns: 1fr;
+        min-height: 0;
+    }
+    .sp404-right {
+        order: -1;
+    }
+}
+
+@media (max-width: 520px) {
+    .sp404-btn {
+        width: 100%;
+    }
+}
