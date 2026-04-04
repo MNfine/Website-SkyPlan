@@ -177,12 +177,12 @@ function _$(sel, ctx) { return (ctx || document).querySelector(sel); }
 
 function _$all(sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); }
 
-// Áp dụng dịch cho trang search
+// Apply translations for search page
 function applySearchTranslations(lang) {
     const dict = _t(lang);
     const aside = _$('.sp-filters') || document;
 
-    // 1) data-i18n (nếu bạn có gắn)
+    // 1) data-i18n (if you have it attached)
     _$all('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         const val = dict[key];
@@ -193,7 +193,7 @@ function applySearchTranslations(lang) {
         else el.textContent = val;
     });
 
-    // 2) Form & filters (không cần data-i18n)
+    // 2) Form & filters (no need for data-i18n)
     const setText = (sel, v, ctx) => { const el = _$(sel, ctx); if (el) el.textContent = v; };
     setText('.sp-title', dict.searchTitle, aside);
     // Trip type labels
@@ -258,7 +258,7 @@ function applySearchTranslations(lang) {
     const modal = _$('#spModal');
     if (modal) {
         const setM = (sel, v) => { const el = _$(sel, modal); if (el) el.textContent = v; };
-        setM('#spModalTitle', dict.modalTitle || ''); // có thể không có key thì để trống
+        setM('#spModalTitle', dict.modalTitle || ''); // may not have key then leave empty
 
         _$all('.sp-leg__title', modal).forEach(tEl => {
             const span = tEl.querySelector('span');
@@ -320,7 +320,7 @@ function applySearchTranslations(lang) {
     document.documentElement.lang = (lang === 'vi' ? 'vi' : 'en');
 }
 
-// Đổi ngôn ngữ (public API cho trang search)
+// Change language (public API for search page)
 function changeSearchLanguage(lang) {
     const next = (lang === 'en' || lang === 'vi') ? lang : 'vi';
     try { localStorage.setItem('preferredLanguage', next); } catch (_) {}
@@ -338,16 +338,16 @@ function changeSearchLanguage(lang) {
     }
 }
 
-// Expose cho common.js & fallback
+// Expose for common.js & fallback
 window.changeSearchLanguage = changeSearchLanguage;
-window.changeLanguage = changeSearchLanguage; // alias thường dùng
+window.changeLanguage = changeSearchLanguage; // commonly used alias
 
-// Mặc định VI lần đầu
+// Default to VI on first load
 if (!localStorage.getItem('preferredLanguage')) {
     localStorage.setItem('preferredLanguage', 'vi');
 }
 
-// Function để init translations sau khi components đã load
+// Function to init translations after components are loaded
 function initSearchTranslations() {
     const qLang = new URLSearchParams(location.search).get('lang');
     const storedLang = localStorage.getItem('preferredLanguage');
@@ -358,7 +358,7 @@ function initSearchTranslations() {
 
     applySearchTranslations(lang);
 
-    // Fallback click .lang-option nếu không dùng common.js
+    // Fallback click .lang-option if not using common.js
     if (!window.__search_lang_bound) {
         document.addEventListener('click', (e) => {
             const btn = e.target.closest && e.target.closest('.lang-option');

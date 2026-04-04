@@ -1,0 +1,35 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_24-3b6cbc370f9c25ab062d92e2569178d706c83da5",
+  "solcVersion": "0.8.24",
+  "solcLongVersion": "0.8.24+commit.e11b9ed9",
+  "userSourceNameMap": {
+    "contracts/BookingRegistry.sol": "project/contracts/BookingRegistry.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "shanghai",
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers",
+            "metadata"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/BookingRegistry.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.24;\r\n\r\ncontract BookingRegistry {\r\n    enum Status { NONE, RECORDED, CANCELLED }\r\n\r\n    struct Booking {\r\n        bytes32 bookingHash;\r\n        address owner;\r\n        uint64  timestamp;\r\n        Status  status;\r\n    }\r\n\r\n    mapping(string => Booking) private bookings;\r\n\r\n    event BookingRecorded(\r\n        string bookingCode,\r\n        bytes32 bookingHash,\r\n        address indexed owner,\r\n        uint64 timestamp\r\n    );\r\n\r\n    event BookingCancelled(\r\n        string bookingCode,\r\n        address indexed owner,\r\n        uint64 timestamp\r\n    );\r\n\r\n    function recordBooking(string calldata bookingCode, bytes32 bookingHash) external {\r\n        Booking storage b = bookings[bookingCode];\r\n        require(b.status == Status.NONE, \"Booking exists\");\r\n        require(bookingHash != bytes32(0), \"Invalid hash\");\r\n\r\n        uint64 ts = uint64(block.timestamp);\r\n        bookings[bookingCode] = Booking({\r\n            bookingHash: bookingHash,\r\n            owner: msg.sender,\r\n            timestamp: ts,\r\n            status: Status.RECORDED\r\n        });\r\n\r\n        emit BookingRecorded(bookingCode, bookingHash, msg.sender, ts);\r\n    }\r\n\r\n    function cancelBooking(string calldata bookingCode) external {\r\n        Booking storage b = bookings[bookingCode];\r\n        require(b.status == Status.RECORDED, \"Not cancellable\");\r\n        require(b.owner == msg.sender, \"Not owner\");\r\n\r\n        b.status = Status.CANCELLED;\r\n        emit BookingCancelled(bookingCode, msg.sender, uint64(block.timestamp));\r\n    }\r\n\r\n    function getBooking(string calldata bookingCode)\r\n        external\r\n        view\r\n        returns (bytes32 bookingHash, address owner, uint64 timestamp, Status status)\r\n    {\r\n        Booking storage b = bookings[bookingCode];\r\n        return (b.bookingHash, b.owner, b.timestamp, b.status);\r\n    }\r\n}"
+      }
+    }
+  }
+}

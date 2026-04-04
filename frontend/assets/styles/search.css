@@ -213,7 +213,7 @@ select.sp-input {
 }
 
 
-/* Radios — vòng tròn xanh ngọc */
+/* Radios — turquoise circle */
 
 .sp-choice {
     display: flex;
@@ -678,7 +678,7 @@ body.modal-open {
 }
 
 
-/* Ẩn card khi không khớp filter */
+/* Hide card when not matching filter */
 
 .is-hidden {
     display: none !important;

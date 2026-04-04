@@ -512,11 +512,11 @@
     </script>
     <script src="assets/scripts/loader.js"></script>
     <script>
-      // Import loader HTML vào DOM càng sớm càng tốt
+      // Import loader HTML into DOM as early as possible
       fetch('components/loader.html').then(r => r.text()).then(html => {
         document.body.insertAdjacentHTML('beforeend', html);
       });
-      // Gắn sự kiện submit form: chỉ show loader và chuyển trang nếu validateForm() trả về true
+      // Attach form submit event: only show loader and navigate if validateForm() returns true
       document.addEventListener('DOMContentLoaded', function() {
         var form = document.getElementById('passengerForm');
         if (form) {
@@ -529,7 +529,7 @@
                 window.location.href = 'extras.html?' + currentParams.toString();
               }, 1200);
             }
-            // Nếu không hợp lệ, chỉ hiện lỗi, không show loader, không chuyển trang
+            // If not valid, only show error, don't show loader, don't navigate
           });
         }
       });

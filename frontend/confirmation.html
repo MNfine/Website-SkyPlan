@@ -58,12 +58,12 @@
       const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
       if (typeof applyConfirmationTranslations === 'function') applyConfirmationTranslations(lang);
     });
-    // Lấy thông tin từ query string
+    // Get information from query string
     function getQueryParam(name) {
       const url = new URL(window.location.href);
       return url.searchParams.get(name);
     }
-    // Nếu không có trên URL, lấy từ localStorage (lưu từ payment.js)
+    // If not on URL, get from localStorage (saved from payment.js)
     let txnRef = getQueryParam('txnRef');
     let amount = getQueryParam('amount');
     if (!txnRef || !amount) {
@@ -72,7 +72,7 @@
     }
     document.getElementById('txnRef').textContent = txnRef;
     document.getElementById('amount').textContent = amount !== 'None' ? Number(amount).toLocaleString('vi-VN') + ' VND' : 'None';
-    // Lấy mã vé từ localStorage (ưu tiên), hoặc từ URL nếu có
+    // Get booking code from localStorage (priority), or from URL if available
     let bookingCode = getQueryParam('bookingCode');
     if (!bookingCode) {
       bookingCode = localStorage.getItem('lastTxnRef') || 'None';
@@ -83,7 +83,7 @@
       const lang = localStorage.getItem('preferredLanguage') || 'vi';
       if (typeof applyConfirmationTranslations === 'function') applyConfirmationTranslations(lang);
       
-      // Thêm loader cho các link navigation
+      // Add loader for navigation links
       const links = document.querySelectorAll('.confirmation-actions a');
       links.forEach(function(link) {
         link.addEventListener('click', function(e) {
@@ -105,24 +105,24 @@
   <!-- Loader component (JS) -->
   <script src="assets/scripts/loader.js"></script>
   <script>
-    // Import loader HTML vào DOM càng sớm càng tốt
+    // Import loader HTML into DOM as early as possible
     fetch('components/loader.html').then(r => r.text()).then(html => {
       document.body.insertAdjacentHTML('afterbegin', html);
-      // Show loader ngay khi vừa insert vào DOM (cho F5/reload)
+      // Show loader immediately after inserting into DOM (for F5/reload)
       if (window.Loader) {
         window.Loader.show();
         document.body.style.overflow = 'hidden';
       }
     });
     
-    // Ẩn loader khi tất cả resources đã load xong (window.load)
+    // Hide loader when all resources are loaded (window.load)
     window.addEventListener('load', function() {
       setTimeout(function() {
         if (window.Loader) {
           window.Loader.hide();
           document.body.style.overflow = '';
         }
-      }, 500); // Delay 500ms để smooth
+      }, 500); // Delay 500ms for smoothness
     });
   </script>
 </body>

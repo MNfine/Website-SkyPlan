@@ -309,7 +309,7 @@
     }
     window.getLocalizedItem = getLocalizedItem;
 
-    // ===== 4. APPLY i18n FOR PROMOTION PAGE (promotion.js gọi hàm này) =====
+    // ===== 4. APPLY i18n FOR PROMOTION PAGE (promotion.js calls this function) =====
     function applyPromotionI18n(lang) {
         lang = lang || getLang();
 
