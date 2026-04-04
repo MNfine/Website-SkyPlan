@@ -803,36 +803,10 @@ def get_booking_onchain_hash():
 		if not success:
 			return jsonify({'success': False, 'message': message}), 400
 
-		# Get block_number and confirmations from tx receipt if tx_hash exists
-		block_number = None
-		confirmations = 0
-		
-		tx_hash = booking.onchain_record_tx_hash
-		if tx_hash and tx_hash.startswith('0x'):
-			receipt_success, _, receipt = verify_transaction_receipt(tx_hash)
-			if receipt_success and receipt:
-				from backend.utils.blockchain_verifier import get_web3_connection
-				try:
-					w3 = get_web3_connection()
-					block_number = receipt.get('blockNumber')
-					current_block = w3.eth.block_number
-					confirmations = (current_block - block_number) if block_number else 0
-				except Exception as e:
-					current_app.logger.warning(f"Failed to calculate confirmations: {e}")
-
-		# Add block_number and confirmations to onchain_data
-		if onchain_data:
-			onchain_data['block_number'] = block_number
-			onchain_data['confirmations'] = confirmations
-
 		return jsonify({
 			'success': True,
 			'booking_code': booking_code,
 			'off_chain_hash': booking.booking_hash,
-			'tx_hash': booking.onchain_record_tx_hash,
-			'booking': {
-				'tx_hash': booking.onchain_record_tx_hash,
-			},
 			'on_chain': onchain_data,
 		}), 200
 

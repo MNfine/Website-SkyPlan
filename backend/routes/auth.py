@@ -115,7 +115,7 @@ def register():
 def login():
     """Login a user and return an authentication token."""
     # Get JSON data from request
-    data = request.json
+    data = request.json or {}
     
     # Validate required fields
     if not all(key in data for key in ['email', 'password']):
@@ -125,12 +125,17 @@ def login():
         }), 400
     
     try:
+        # Normalize email input to match stored format
+        email = str(data.get('email', '')).strip().lower()
+        password = str(data.get('password', ''))
+
         # Get user from database
         session = get_session()
-        user = session.query(User).filter_by(email=data['email']).first()
+        user = session.query(User).filter_by(email=email).first()
         
-        # Check if user exists and password matches
-        if user is None or not user.check_password(data['password']):
+        # Check if user exists and has a password-based account.
+        # Some users may be wallet-only and have no password hash.
+        if user is None or not user.password_hash or not user.check_password(password):
             return jsonify({
                 'success': False,
                 'message': 'Invalid email or password'

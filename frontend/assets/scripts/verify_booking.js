@@ -1,6 +1,4 @@
 // Verify Booking page functionality
-// ENABLE DEBUG MODE FOR DEVELOPMENT
-window.SKYPLAN_DEBUG = true;
 
 
 // Quiet mode: suppress non-essential console output unless debugging flag is enabled
@@ -15,14 +13,20 @@ window.SKYPLAN_DEBUG = true;
 
 // Configuration
 const VERIFY_CONFIG = {
-  apiBaseUrl: '/api/bookings/blockchain',
+  apiBaseUrl: `${window.SkyPlanConfig?.apiBaseUrl || ''}/api/bookings/blockchain`,
   explorerBaseUrl: 'https://sepolia.etherscan.io',
   chainName: 'Sepolia',
-  networkId: 11155111
+  networkId: 11155111,
+  requestTimeoutMs: 12000,
+  cacheTtlMs: 60000
 };
 
 // DOM elements
 let elements = {};
+let isVerifying = false;
+let verifyTimeoutHandle = null;
+
+const VERIFY_CACHE_PREFIX = 'verify_booking_cache_';
 
 document.addEventListener('DOMContentLoaded', function () {
   loadCommonComponents().finally(() => {
@@ -183,33 +187,20 @@ function initializeElements() {
  * Attach event listeners
  */
 function attachEventListeners() {
-  console.log('attachEventListeners called');
-  console.log('Elements:', {
-    form: !!elements.verifyForm,
-    input: !!elements.bookingCodeInput,
-    formId: elements.verifyForm?.id
-  });
-  
   if (!elements.verifyForm) {
-    console.error('❌ Form not found! verifyForm is:', elements.verifyForm);
+    console.error('Form not found:', elements.verifyForm);
     return;
   }
-  
-  console.log('✅ Form found, attaching submit listener');
-  elements.verifyForm.addEventListener('submit', function(e) {
-    console.log('📝 Form submit event fired!', e);
-    handleFormSubmit(e);
-  });
+
+  elements.verifyForm.addEventListener('submit', handleFormSubmit);
   
   elements.copyTxHashBtn?.addEventListener('click', () => copyToClipboard(elements.resultTransactionHash.textContent));
   elements.verifyAgainBtn?.addEventListener('click', resetForm);
   elements.retryBtn?.addEventListener('click', resetForm);
   elements.notFoundRetryBtn?.addEventListener('click', resetForm);
   
-  // Clear error state when user focuses on input
-  // Clear error state when user starts typing
+  // Clear validation error when user starts typing
   elements.bookingCodeInput.addEventListener('input', function() {
-    console.log('Input typed - clearing error');
     // Remove inline error styles
     this.style.border = '';
     this.style.backgroundColor = '';
@@ -223,7 +214,6 @@ function attachEventListeners() {
       inputHint.style.fontSize = '';
       inputHint.style.marginTop = '';
       inputHint.style.display = '';
-      inputHint.textContent = '';
       inputHint.classList.remove('error');
       inputHint.textContent = '';
     }
@@ -234,66 +224,58 @@ function attachEventListeners() {
  * Handle form submission
  */
 async function handleFormSubmit(e) {
-  console.log('🔥 handleFormSubmit called');
   e.preventDefault();
-  console.log('✅ preventDefault() called');
 
-  const bookingCode = elements.bookingCodeInput.value.trim();
+  if (isVerifying) {
+    notifyToast('Yêu cầu đang được xử lý, vui lòng chờ giây lát.', 'info', 2200);
+    return;
+  }
+
+  const bookingCode = elements.bookingCodeInput.value.trim().toUpperCase();
   const inputHint = document.querySelector('.input-hint');
-
-  console.log('📋 Form data:', {
-    code: bookingCode,
-    length: bookingCode.length,
-    isEmpty: !bookingCode,
-    inputElement: !!elements.bookingCodeInput,
-    hintElement: !!inputHint
-  });
 
   // Helper function to show validation error
   function showValidationError(message) {
-    console.log('❌ VALIDATION ERROR:', message);
-    
-    // DIRECT INLINE STYLES - No CSS class override possible
+    // Apply error state and force red styling
     const input = elements.bookingCodeInput;
-    input.style.border = '2px solid #ef4444 !important';
+    input.classList.add('error');
+    input.style.setProperty('border-color', '#ef4444', 'important');
+    input.style.setProperty('border-width', '2px', 'important');
+    input.style.setProperty('border-style', 'solid', 'important');
     input.style.backgroundColor = 'rgba(239, 68, 68, 0.08)';
-    input.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.3)';
+    input.style.boxShadow = 'none';
     input.style.outline = 'none';
     
     // Show error message
     if (inputHint) {
       inputHint.style.display = 'block';
       inputHint.style.color = '#ef4444';
-      inputHint.style.fontWeight = '700';
-      inputHint.style.fontSize = '14px';
+      inputHint.style.fontWeight = '400';
+      inputHint.style.fontSize = '12px';
       inputHint.style.marginTop = '8px';
       inputHint.textContent = message;
     }
-    
+
     input.focus();
-    console.log('✅ Error state applied:', {
-      borderStyle: input.style.border,
-      bgColor: input.style.backgroundColor,
-      message: inputHint?.textContent
-    });
   }
 
   // Validate input - EMPTY CHECK
   if (!bookingCode || bookingCode.length === 0) {
-    showValidationError('⚠️ Vui lòng nhập mã đặt chỗ');
+    showValidationError('Vui lòng nhập mã đặt chỗ');
     return;
   }
 
   // Validate input - LENGTH CHECK
   if (bookingCode.length < 5) {
-    showValidationError('⚠️ Mã đặt chỗ không hợp lệ (tối thiểu 5 ký tự)');
+    showValidationError('Mã đặt chỗ không hợp lệ (tối thiểu 5 ký tự)');
     return;
   }
 
-  console.log('✅ VALIDATION PASSED: Proceeding with API call');
+  elements.bookingCodeInput.value = bookingCode;
 
   // Show loading state
   showLoadingState();
+  setVerifyPending(true);
 
   try {
     // Call API to verify booking
@@ -311,10 +293,18 @@ async function handleFormSubmit(e) {
     }
   } catch (error) {
     console.error('Verification error:', error);
+    const errMsg = (error && error.message ? error.message : '').toLowerCase();
+    if (errMsg.includes('not found') || errMsg.includes('không tìm thấy')) {
+      showNotFoundState();
+      notifyToast('Không tìm thấy mã đặt chỗ. Vui lòng kiểm tra lại.', 'info', 3500);
+      return;
+    }
     showError(
       'verificationError',
       error.message || 'Có lỗi xảy ra khi kiểm tra'
     );
+  } finally {
+    setVerifyPending(false);
   }
 }
 
@@ -322,13 +312,26 @@ async function handleFormSubmit(e) {
  * Call API to verify booking on blockchain
  */
 async function verifyBookingOnBlockchain(bookingCode) {
+  const cachedResult = readCachedVerification(bookingCode);
+  if (cachedResult) {
+    return cachedResult;
+  }
+
+  const authToken = getAuthToken();
+  const controller = new AbortController();
+
+  verifyTimeoutHandle = window.setTimeout(() => {
+    controller.abort();
+  }, VERIFY_CONFIG.requestTimeoutMs);
+
   try {
     const response = await fetch(`${VERIFY_CONFIG.apiBaseUrl}/onchain-hash`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${getAuthToken()}`
+        'Authorization': `Bearer ${authToken}`
       },
+      signal: controller.signal,
       body: JSON.stringify({
         booking_code: bookingCode
       })
@@ -340,10 +343,61 @@ async function verifyBookingOnBlockchain(bookingCode) {
       throw new Error(data.message || 'Verification failed');
     }
 
+    writeCachedVerification(bookingCode, data);
     return data;
   } catch (error) {
+    if (error && error.name === 'AbortError') {
+      throw new Error('Yeu cau het thoi gian cho. Vui long thu lai.');
+    }
     console.error('API call failed:', error);
     throw error;
+  } finally {
+    if (verifyTimeoutHandle) {
+      clearTimeout(verifyTimeoutHandle);
+      verifyTimeoutHandle = null;
+    }
+  }
+}
+
+function getVerifyCacheKey(bookingCode) {
+  return `${VERIFY_CACHE_PREFIX}${bookingCode}`;
+}
+
+function readCachedVerification(bookingCode) {
+  try {
+    const raw = sessionStorage.getItem(getVerifyCacheKey(bookingCode));
+    if (!raw) {
+      return null;
+    }
+
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.ts || !parsed.payload) {
+      sessionStorage.removeItem(getVerifyCacheKey(bookingCode));
+      return null;
+    }
+
+    if (Date.now() - parsed.ts > VERIFY_CONFIG.cacheTtlMs) {
+      sessionStorage.removeItem(getVerifyCacheKey(bookingCode));
+      return null;
+    }
+
+    return parsed.payload;
+  } catch (error) {
+    return null;
+  }
+}
+
+function writeCachedVerification(bookingCode, payload) {
+  try {
+    sessionStorage.setItem(
+      getVerifyCacheKey(bookingCode),
+      JSON.stringify({
+        ts: Date.now(),
+        payload
+      })
+    );
+  } catch (error) {
+    // Ignore cache errors to avoid blocking primary flow.
   }
 }
 
@@ -427,10 +481,10 @@ async function copyToClipboard(text) {
 
   try {
     await navigator.clipboard.writeText(text);
-    showToast('Đã sao chép vào bộ nhớ tạm', 'success');
+    notifyToast('Đã sao chép vào bộ nhớ tạm', 'success');
   } catch (error) {
     console.error('Failed to copy:', error);
-    showToast('Sao chép thất bại', 'error');
+    notifyToast('Sao chép thất bại', 'error');
   }
 }
 
@@ -466,16 +520,17 @@ function showNotFoundState() {
  */
 function showError(titleKey, message) {
   resetResultsDisplay();
-  elements.verifyResults.classList.remove('hidden');
-  elements.errorState.classList.remove('hidden');
+  elements.verifyResults.classList.add('hidden');
+  const isUnauthorized = typeof message === 'string' && message.toLowerCase().includes('unauthorized');
 
-  elements.errorTitle.setAttribute('data-i18n', titleKey);
-  elements.errorMessage.textContent = message;
-
-  // Re-apply translations to error title
-  if (typeof applyVerifyBookingTranslations === 'function') {
-    const lang = localStorage.getItem('preferredLanguage') || 'vi';
-    applyVerifyBookingTranslations(lang);
+  if (isUnauthorized) {
+    const loginMsg = 'Bạn chưa đăng nhập. Vui lòng đăng nhập để kiểm tra mã đặt chỗ của bạn.';
+    notifyToast(loginMsg, 'error', 5000);
+    setTimeout(() => {
+      window.location.href = '/login?returnUrl=' + encodeURIComponent('/verify_booking');
+    }, 900);
+  } else {
+    notifyToast(message || 'Có lỗi xảy ra khi kiểm tra đặt chỗ', 'error', 4500);
   }
 }
 
@@ -497,14 +552,42 @@ function resetForm() {
   elements.bookingCodeInput.focus();
   elements.verifyResults.classList.add('hidden');
   resetResultsDisplay();
+  setVerifyPending(false);
+}
+
+function setVerifyPending(isPending) {
+  isVerifying = isPending;
+
+  if (!elements.verifyForm) {
+    return;
+  }
+
+  const submitButton = elements.verifyForm.querySelector('button[type="submit"]');
+  const buttonText = submitButton ? submitButton.querySelector('.button-text') : null;
+
+  if (submitButton) {
+    submitButton.disabled = isPending;
+    submitButton.setAttribute('aria-busy', isPending ? 'true' : 'false');
+    submitButton.classList.toggle('is-loading', isPending);
+  }
+
+  if (elements.bookingCodeInput) {
+    elements.bookingCodeInput.readOnly = isPending;
+  }
+
+  if (buttonText) {
+    buttonText.textContent = isPending ? 'Đang kiểm tra...' : 'Kiểm tra';
+  }
 }
 
 /**
- * Show toast notification
+ * Show toast notification using shared toast system
  */
-function showToast(message, type = 'info') {
-  if (typeof createToast === 'function') {
-    createToast(message, type);
+function notifyToast(message, type = 'info', duration = 3000) {
+  if (typeof window.showToast === 'function') {
+    window.showToast(message, { type, duration });
+  } else if (typeof window.notify === 'function') {
+    window.notify(message, type, duration, true);
   } else {
     alert(message);
   }

@@ -159,6 +159,8 @@
 
 .booking-code-input.error:focus {
   border-color: #ef4444 !important;
+  box-shadow: none !important;
+  background-color: rgba(239, 68, 68, 0.08) !important;
   outline: none !important;
 }
 .input-hint {
@@ -171,8 +173,8 @@
 
 .input-hint.error {
   color: #ef4444;
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 400;
+  font-size: 12px;
   margin-top: 8px;
   display: block;
   line-height: 1.4;
@@ -246,6 +248,10 @@
   gap: 20px;
   padding: 60px 40px;
   text-align: center;
+}
+
+#loadingState.hidden {
+  display: none !important;
 }
 
 .spinner {

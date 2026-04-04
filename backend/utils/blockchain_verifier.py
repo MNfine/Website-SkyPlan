@@ -29,7 +29,11 @@ BOOKING_STATUS_MAP = {
 def get_web3_connection() -> Web3:
     """Get Web3 connection to Sepolia testnet"""
     # Try to get RPC URL from environment
-    rpc_url = os.getenv('SEPOLIA_RPC_URL', 'https://eth-sepolia.g.alchemy.com/v2/demo')
+    rpc_url = (
+        os.getenv('SEPOLIA_RPC_URL')
+        or os.getenv('BLOCKCHAIN_SEPOLIA_RPC')
+        or 'https://eth-sepolia.g.alchemy.com/v2/demo'
+    )
     
     w3 = Web3(Web3.HTTPProvider(rpc_url))
     

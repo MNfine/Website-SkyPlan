@@ -74,6 +74,8 @@ def create_app():
     CORS(app, origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
         "http://localhost:8080",
         "http://127.0.0.1:8080",
         "https://c9883fb4dce6.ngrok-free.app"
@@ -234,6 +236,11 @@ def create_app():
     def cancel_page():
         """Booking cancellation page"""
         return send_from_directory(app.template_folder, 'cancel.html')
+    
+    @app.route('/verify_booking')
+    def verify_booking_page():
+        """Verify booking on blockchain page"""
+        return send_from_directory(app.template_folder, 'verify_booking.html')
     
     # Route chung cho các trang có đuôi .html
     @app.route('/<path:page>.html')

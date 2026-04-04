@@ -24,7 +24,7 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
 else:
-    print("[AI Chat] ⚠️ WARNING: Gemini API key not found!")
+    print("[AI Chat] WARNING: Gemini API key not found!")
 
 # Model configuration - try multiple models with fallback
 # Priority: stable models (non-exp/preview) first for better free tier quota
@@ -64,15 +64,15 @@ if GEMINI_API_KEY:
 				if preferred_model in model_names:
 					MODEL_NAME = preferred_model
 					break
-			
-			if not MODEL_NAME:
-				# Last resort: use first available model
-				if model_names:
-					MODEL_NAME = model_names[0]
-				else:
-					print("[AI Chat] ❌ No available models found!")
+		
+		if not MODEL_NAME:
+			# Last resort: use first available model
+			if model_names:
+				MODEL_NAME = model_names[0]
+			else:
+				print("[AI Chat] ERROR: No available models found!")
 	except Exception as e:
-		print(f"[AI Chat] ⚠️ Could not list models: {e}")
+		print(f"[AI Chat] WARNING: Could not list models: {e}")
 		# Fallback to default
 		MODEL_NAME = "gemini-2.5-flash"
 

@@ -8,6 +8,7 @@
   <!-- Favicon -->
   <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
   <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 
   <!-- Font Awesome CDN for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -43,7 +44,7 @@
           <input 
             type="text" 
             id="bookingCode" 
-            placeholder="VD: BK123456789" 
+            placeholder="BK123456789" 
             class="booking-code-input"
             autocomplete="off"
             maxlength="50"
@@ -165,10 +166,11 @@
   <div id="footer-container"></div>
 
   <!-- Scripts -->
-  <script src="assets/scripts/loader.js"></script>
-  <script src="assets/scripts/common.js"></script>
-  <script src="assets/scripts/config.js"></script>
-  <script src="assets/scripts/verify_booking_translations.js"></script>
-  <script src="assets/scripts/verify_booking.js"></script>
+  <script defer src="assets/scripts/loader.js"></script>
+  <script defer src="assets/scripts/toast.js"></script>
+  <script defer src="assets/scripts/common.js"></script>
+  <script defer src="assets/scripts/config.js"></script>
+  <script defer src="assets/scripts/verify_booking_translations.js"></script>
+  <script defer src="assets/scripts/verify_booking.js"></script>
 </body>
 </html>
