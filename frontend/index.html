@@ -8,6 +8,8 @@
   
   <!-- Favicon -->
   <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   
   <!-- Font Awesome CDN for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -17,7 +19,6 @@
   <link rel="stylesheet" href="assets/styles/index.css">
   <link rel="stylesheet" href="assets/styles/flags.css">
   <link rel="stylesheet" href="assets/styles/header.css">
-<link rel="stylesheet" href="assets/styles/wallet.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
@@ -27,7 +28,7 @@
 
   <!-- Hero Section -->
   <section class="hero">
-    <img src="assets/images/hero.jpg" alt="Airplane on runway" class="hero-image">
+    <img src="assets/images/hero.jpg" alt="Airplane on runway" class="hero-image" fetchpriority="high" decoding="async">
     <div class="hero-content">
       <div class="container">
         <h1 class="hero-title" data-i18n="heroTitle">Ưu đãi tốt nhất đang chờ đón bạn</h1>
@@ -76,7 +77,7 @@
       <h2 class="section-title" data-i18n="popularRoutesTitle">Điểm đến phổ biến</h2>
       <div class="routes-grid" id="routes-container">
         <div class="route-card" data-lang="en" style="display: none;">
-          <img src="assets/images/Ho_Chi_Minh.avif" alt="Ho Chi Minh" class="route-img" loading="lazy">
+          <img src="assets/images/Ho_Chi_Minh.avif" alt="Ho Chi Minh" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Ho Chi Minh</h3>
             <p class="route-price">From 799,000 VND</p>
@@ -84,7 +85,7 @@
         </div>
         
         <div class="route-card" data-lang="en" style="display: none;">
-          <img src="assets/images/Da_Nang.avif" alt="Da Nang" class="route-img" loading="lazy">
+          <img src="assets/images/Da_Nang.avif" alt="Da Nang" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Da Nang</h3>
             <p class="route-price">From 899,000 VND</p>
@@ -92,7 +93,7 @@
         </div>
         
         <div class="route-card" data-lang="en" style="display: none;">
-          <img src="assets/images/Phu_Quoc.jpg" alt="Phu Quoc" class="route-img" loading="lazy">
+          <img src="assets/images/Phu_Quoc.jpg" alt="Phu Quoc" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Phu Quoc</h3>
             <p class="route-price">From 1,399,000 VND</p>
@@ -100,7 +101,7 @@
         </div>
         
         <div class="route-card" data-lang="en" style="display: none;">
-          <img src="assets/images/Da_Lat.jpg" alt="Da Lat" class="route-img" loading="lazy">
+          <img src="assets/images/Da_Lat.jpg" alt="Da Lat" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Da Lat</h3>
             <p class="route-price">From 999,000 VND</p>
@@ -109,7 +110,7 @@
         
         <!-- Vietnamese routes (default display for domestic flights) -->
         <div class="route-card" data-lang="vi">
-          <img src="assets/images/Ho_Chi_Minh.avif" alt="Hồ Chí Minh" class="route-img" loading="lazy">
+          <img src="assets/images/Ho_Chi_Minh.avif" alt="Hồ Chí Minh" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Hồ Chí Minh</h3>
             <p class="route-price">Từ 799.000 VND</p>
@@ -117,7 +118,7 @@
         </div>
         
         <div class="route-card" data-lang="vi">
-          <img src="assets/images/Da_Nang.avif" alt="Đà Nẵng" class="route-img" loading="lazy">
+          <img src="assets/images/Da_Nang.avif" alt="Đà Nẵng" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Đà Nẵng</h3>
             <p class="route-price">Từ 899.000 VND</p>
@@ -125,7 +126,7 @@
         </div>
         
         <div class="route-card" data-lang="vi">
-          <img src="assets/images/Phu_Quoc.jpg" alt="Phú Quốc" class="route-img" loading="lazy">
+          <img src="assets/images/Phu_Quoc.jpg" alt="Phú Quốc" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Phú Quốc</h3>
             <p class="route-price">Từ 1.399.000 VND</p>
@@ -133,7 +134,7 @@
         </div>
         
         <div class="route-card" data-lang="vi">
-          <img src="assets/images/Da_Lat.jpg" alt="Đà Lạt" class="route-img" loading="lazy">
+          <img src="assets/images/Da_Lat.jpg" alt="Đà Lạt" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Đà Lạt</h3>
             <p class="route-price">Từ 999.000 VND</p>
@@ -192,14 +193,12 @@
   <div id="footer-container"></div>
 
   <!-- JavaScript -->
-  <script src="assets/scripts/auth-utils.js"></script>
-  <script src="assets/scripts/index_translations.js"></script>
-  <script src="assets/scripts/toast.js"></script>
-  <script src="assets/scripts/common.js"></script>
-<script src="assets/scripts/wallet_translations.js"></script>
-<script src="assets/scripts/metamask.js"></script>
-  <script src="assets/scripts/date_format_handler.js"></script>
-  <script src="assets/scripts/index.js"></script>
+  <script defer src="assets/scripts/auth-utils.js"></script>
+  <script defer src="assets/scripts/index_translations.js"></script>
+  <script defer src="assets/scripts/toast.js"></script>
+  <script defer src="assets/scripts/common.js"></script>
+  <script defer src="assets/scripts/date_format_handler.js"></script>
+  <script defer src="assets/scripts/index.js"></script>
 
   <!-- Load Components -->
   <script>
@@ -323,19 +322,19 @@
       initializeApp();
     });
   </script>
-  <!-- Loader component (JS) and logic to show loader on form submit -->
+  <!-- Loader component (JS) và logic show loader khi submit form -->
   <script src="assets/scripts/loader.js"></script>
   <script>
-    // Import loader HTML into DOM as early as possible
+    // Import loader HTML vào DOM càng sớm càng tốt
     fetch('components/loader.html').then(r => r.text()).then(html => {
       document.body.insertAdjacentHTML('afterbegin', html);
-      // ADDED: Show loader immediately after inserting into DOM (for F5/reload)
+      // THÊM: Show loader ngay khi vừa insert vào DOM (cho F5/reload)
       if (window.Loader) {
         window.Loader.show();
         document.body.style.overflow = 'hidden';
       }
     });
-    // Always attach form submit event and Loader logic when DOM ready
+    // Luôn gắn sự kiện submit form và logic Loader khi DOM ready
     document.addEventListener('DOMContentLoaded', function() {
       var form = document.querySelector('.search-box');
       if (form && window.Loader) {
@@ -349,14 +348,14 @@
       }
     });
     
-    // ADDED: Hide loader when all resources are loaded (window.load)
+    // THÊM: Ẩn loader khi tất cả resources đã load xong (window.load)
     window.addEventListener('load', function() {
       setTimeout(function() {
         if (window.Loader) {
           window.Loader.hide();
           document.body.style.overflow = '';
         }
-      }, 500); // Delay 500ms for smoothness
+      }, 500); // Delay 500ms để smooth
     });
   </script>
 </body>

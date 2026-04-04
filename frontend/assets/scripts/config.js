@@ -10,6 +10,25 @@ class Config {
     this.frontendUrl = this.getFrontendUrl();
   }
 
+  getRuntimeApiBaseUrl() {
+    const runtimeGlobal = (window.SKYPLAN_API_BASE_URL || '').trim();
+    if (runtimeGlobal) {
+      return runtimeGlobal.replace(/\/$/, '');
+    }
+
+    const runtimeStorage = (localStorage.getItem('skyplanApiBaseUrl') || '').trim();
+    if (runtimeStorage) {
+      return runtimeStorage.replace(/\/$/, '');
+    }
+
+    const meta = document.querySelector('meta[name="skyplan-api-base-url"]');
+    if (meta && meta.content && meta.content.trim()) {
+      return meta.content.trim().replace(/\/$/, '');
+    }
+
+    return '';
+  }
+
   getEnvironment() {
     // Check if we're in development
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
@@ -19,11 +38,16 @@ class Config {
   }
 
   getApiBaseUrl() {
+    const runtimeApiBase = this.getRuntimeApiBaseUrl();
+    if (runtimeApiBase) {
+      return runtimeApiBase;
+    }
+
     switch (this.environment) {
       case 'development':
         return 'http://localhost:5000';
       case 'production':
-        return 'https://85a4fc6a3ec6.ngrok-free.app'; // Đúng domain ngrok backend
+        return window.location.origin;
       default:
         return 'http://localhost:5000';
     }
@@ -34,7 +58,7 @@ class Config {
       case 'development':
         return 'http://localhost:5000';
       case 'production':
-        return 'https://85a4fc6a3ec6.ngrok-free.app'; // Đúng domain ngrok backend
+        return window.location.origin;
       default:
         return window.location.origin;
     }

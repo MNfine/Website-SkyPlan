@@ -19,7 +19,12 @@ class User(Base):
     email = Column(String(100), unique=True, nullable=False, index=True)
     # Phone should be stored but not necessarily unique across users
     phone = Column(String(20), nullable=False, index=True)
-    password_hash = Column(String(255), nullable=False)
+    password_hash = Column(String(255), nullable=True)  # Nullable for wallet-only users
+    
+    # Wallet authentication fields
+    wallet_address = Column(String(42), unique=True, nullable=True, index=True)  # Ethereum address (0x + 40 hex)
+    wallet_nonce = Column(String(64), nullable=True)  # Random nonce for signature verification
+    
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
@@ -70,6 +75,7 @@ class User(Base):
             "fullname": self.fullname,
             "email": self.email,
             "phone": self.phone,
+            "wallet_address": self.wallet_address,
             "is_active": self.is_active,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,

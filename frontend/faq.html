@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="Câu hỏi thường gặp về SkyPlan" />
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate icon" href="favicon.ico" type="image/x-icon" />
     <title>SkyPlan - Câu hỏi thường gặp</title>
 
     <link rel="stylesheet" href="assets/styles/reset.css" />
     <link rel="stylesheet" href="assets/styles/index.css" />
     <link rel="stylesheet" href="assets/styles/flags.css" />
     <link rel="stylesheet" href="assets/styles/header.css" />
-    <link rel="stylesheet" href="assets/styles/wallet.css">
     <link rel="stylesheet" href="assets/styles/footer.css" />
     <link rel="stylesheet" href="assets/styles/faq.css" />
     <link
@@ -22,7 +22,7 @@
   <body>
     <div id="header-container"></div>
     <main class="container faq-page">
-      <!-- Search bar -->
+      <!--Thanh tìm kiếm -->
       <section class="faq-header">
         <h1 class="faq-title" data-i18n="faqTitle">Câu hỏi thường gặp</h1>
         <form id="faqSearchForm" class="faq-search" role="search">
@@ -60,9 +60,9 @@
         </form>
       </section>
 
-      <!-- 2-column layout -->
+      <!-- Bố cục 2 cột -->
       <div class="faq-layout">
-        <!-- Category sidebar -->
+        <!-- Sidebar danh mục -->
         <aside class="faq-sidebar" aria-label="Danh mục FAQ">
           <nav class="faq-nav">
             <button
@@ -134,9 +134,9 @@
           </nav>
         </aside>
 
-        <!-- Content (JS render) -->
+        <!-- Nội dung (JS render) -->
         <section class="faq-content">
-          <!-- Search state -->
+          <!-- Trạng thái tìm kiếm -->
           <div
             id="faqSearchState"
             class="faq-search-state"
@@ -157,7 +157,7 @@
             </button>
           </div>
 
-          <!-- No results -->
+          <!--không có kết quả -->
           <div id="faqNoResults" class="faq-empty" hidden>
             <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
             <p data-i18n="noResults">Không tìm thấy kết quả phù hợp.</p>
@@ -166,14 +166,12 @@
       </div>
     </main>
 
-    <!-- Footer (loaded by JS) -->
+    <!-- Footer (nạp bằng JS) -->
     <div id="footer-container"></div>
 
     <!-- Scripts (defer) -->
     <script src="assets/scripts/index_translations.js" defer></script>
     <script src="assets/scripts/common.js" defer></script>
-    <script src="assets/scripts/wallet_translations.js"></script>
-    <script src="assets/scripts/metamask.js"></script>
     <script src="assets/scripts/faq_translations.js" defer></script>
     <script src="assets/scripts/faq.js" defer></script>
     <script src="assets/scripts/auth-utils.js"></script>

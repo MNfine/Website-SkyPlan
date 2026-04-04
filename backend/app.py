@@ -28,6 +28,7 @@ from backend.routes.ai_chat import ai_chat_bp
 from backend.routes.contact import contact_bp
 from backend.models.db import init_db
 from backend.utils.email_service import init_mail
+from backend.config import BlockchainConfig
 
 # Import all models to ensure they are registered
 from backend.models.user import User
@@ -82,6 +83,14 @@ def create_app():
     app.config['SECRET_KEY'] = 'skyplan-secret-key-2025'
     app.config['DEBUG'] = True
     
+    # Blockchain configuration
+    app.config['SEPOLIA_RPC_URL'] = BlockchainConfig.SEPOLIA_RPC_URL
+    app.config['BOOKING_REGISTRY_ADDRESS'] = BlockchainConfig.BOOKING_REGISTRY_ADDRESS
+    app.config['TICKET_NFT_ADDRESS'] = BlockchainConfig.TICKET_NFT_ADDRESS
+    app.config['SKY_TOKEN_ADDRESS'] = BlockchainConfig.SKY_TOKEN_ADDRESS
+    app.config['PRIVATE_KEY'] = BlockchainConfig.PRIVATE_KEY
+    app.config['SKY_REWARD_AMOUNT'] = BlockchainConfig.SKY_REWARD_AMOUNT
+    
     # Initialize database tables
     with app.app_context():
         try:
@@ -107,8 +116,9 @@ def create_app():
     app.register_blueprint(ai_chat_bp, url_prefix='/api/ai')  # AI Chat API (Gemini)
     app.register_blueprint(contact_bp, url_prefix='/api/contact')  # Contact form API
     # Initialize SocketIO (exposed at module level)
+    # Use threading async_mode for Python 3.13 compatibility
     global socketio
-    socketio = SocketIO(app, cors_allowed_origins="*")
+    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
     # Socket.IO event handlers for support chat
     @socketio.on('connect')

@@ -7,6 +7,7 @@
   
   <!-- Favicon -->
   <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
   
   <!-- Font Awesome CDN for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -16,7 +17,6 @@
   <link rel="stylesheet" href="assets/styles/index.css">
   <link rel="stylesheet" href="assets/styles/flags.css">
   <link rel="stylesheet" href="assets/styles/header.css">
-<link rel="stylesheet" href="assets/styles/wallet.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/my_trips.css">
 </head>
@@ -32,38 +32,6 @@
         <h1 data-i18n="myTripsPageTitle">Chuyến đi của tôi</h1>
         <p data-i18n="myTripsSubtitle">Quản lý và theo dõi các chuyến đi của bạn</p>
       </div>
-
-      <section class="wallet-link-panel">
-        <div class="wallet-link-header">
-          <h2 data-i18n="walletLinkedTitle">Booking lien ket voi vi</h2>
-        </div>
-        <div class="wallet-filter-row">
-          <label for="walletFilterSelect" data-i18n="walletFilterLabel">Loc theo vi</label>
-          <select id="walletFilterSelect" aria-label="Wallet filter"></select>
-        </div>
-        <div class="wallet-summary-grid">
-          <article class="wallet-summary-card">
-            <span class="summary-label" data-i18n="walletLinkedLabel">Vi lien ket</span>
-            <strong id="summaryWalletAddressValue" class="summary-value">-</strong>
-          </article>
-          <article class="wallet-summary-card">
-            <span class="summary-label" data-i18n="verifiedBookingsCount">Booking da verify</span>
-            <strong id="summaryVerifiedBookingsValue" class="summary-value">0</strong>
-          </article>
-          <article class="wallet-summary-card">
-            <span class="summary-label" data-i18n="nftTicketsCount">NFT ve da mint</span>
-            <strong id="summaryNftTicketsValue" class="summary-value">0</strong>
-          </article>
-          <article class="wallet-summary-card">
-            <span class="summary-label" data-i18n="skyBalanceLabel">So du SKY</span>
-            <strong id="summarySkyBalanceValue" class="summary-value">0 SKY</strong>
-          </article>
-          <article class="wallet-summary-card">
-            <span class="summary-label" data-i18n="skyRewardTotalLabel">Token thuong tu booking</span>
-            <strong id="summarySkyRewardValue" class="summary-value">0 SKY</strong>
-          </article>
-        </div>
-      </section>
 
       <!-- Tabs Filter -->
       <div class="trips-tabs">
@@ -818,8 +786,7 @@
   <!-- JavaScript -->
   <script src="assets/scripts/toast.js"></script>
   <script src="assets/scripts/common.js"></script>
-<script src="assets/scripts/wallet_translations.js"></script>
-<script src="assets/scripts/metamask.js"></script>
+  <script src="assets/scripts/auth-utils.js"></script>
   <script src="assets/scripts/my_trips_translations.js"></script>
   <script src="assets/scripts/my_trips.js"></script>
 

@@ -9,6 +9,13 @@ from backend.models.passenger import Passenger
 from backend.models.booking import Booking, BookingPassenger, BookingStatus, TripType, FareClass
 from sqlalchemy.orm import joinedload
 from backend.models.flights import Flight
+from backend.utils.blockchain import generate_booking_hash_simple
+from backend.utils.blockchain_verifier import (
+	verify_transaction_receipt,
+	check_booking_recorded,
+	read_onchain_booking,
+	compare_offchain_onchain_hash,
+)
 
 bookings_bp = Blueprint('bookings', __name__)
 
@@ -439,6 +446,16 @@ def create_booking():
 			print(f"❌ Failed to generate unique booking code after {max_retries} attempts")
 			return jsonify({'success': False, 'message': 'Failed to generate unique booking code'}), 500
 
+		# Extract wallet address if provided (optional)
+		wallet_address = data.get('wallet_address') or data.get('walletAddress') or None
+		if wallet_address and not wallet_address.startswith('0x'):
+			# Invalid format - must start with 0x
+			wallet_address = None
+		
+		# Generate blockchain hash from booking code
+		booking_hash = generate_booking_hash_simple(booking_code)
+		print(f"✅ Generated booking_hash: {booking_hash}")
+
 		# Create booking
 		booking = Booking(
 			booking_code=booking_code,
@@ -448,7 +465,9 @@ def create_booking():
 			fare_class=fare_class,
 			outbound_flight_id=outbound_flight_id,
 			inbound_flight_id=inbound_flight_id,
-			total_amount=final_total
+			total_amount=final_total,
+			booking_hash=booking_hash,
+			wallet_address=wallet_address
 		)
 		session.add(booking)
 		session.flush()  # Get booking ID
@@ -499,7 +518,9 @@ def create_booking():
 			'success': True, 
 			'booking': booking.as_dict(),
 			'booking_code': booking.booking_code,
-			'booking_id': booking.id
+			'booking_id': booking.id,
+			'booking_hash': booking.booking_hash,
+			'wallet_address': booking.wallet_address
 		}), 201
 	except Exception as e:
 		print(f"❌ Unexpected error in create_booking: {str(e)}")
@@ -706,3 +727,230 @@ def get_booking_status(booking_code):
 			'success': True,
 			'booking': booking.as_dict()
 		}), 200
+
+
+@bookings_bp.route('/blockchain/record', methods=['POST'])
+def record_booking_on_blockchain():
+	"""Record a booking on the blockchain (Sepolia testnet).
+	
+	Request JSON:
+	- booking_code: The booking code to record
+	
+	Requires:
+	- BOOKING_REGISTRY_ADDRESS in .env (deployed contract address)
+	- User's MetaMask wallet to sign transaction (frontend responsibility)
+	
+	This endpoint returns the booking_hash and booking_code that should be
+	used to call the smart contract's recordBooking() function.
+	"""
+	user_id = _get_user_id_from_bearer()
+	if not user_id:
+		return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+
+	data = request.get_json(silent=True) or {}
+	booking_code = data.get('booking_code')
+	
+	if not booking_code:
+		return jsonify({'success': False, 'message': 'Missing booking_code'}), 400
+
+	with session_scope() as session:
+		booking = session.query(Booking).filter_by(
+			booking_code=booking_code,
+			user_id=user_id
+		).first()
+
+		if not booking:
+			return jsonify({'success': False, 'message': 'Booking not found'}), 404
+
+		# Return booking data needed for blockchain recording
+		return jsonify({
+			'success': True,
+			'booking_code': booking.booking_code,
+			'booking_hash': booking.booking_hash,
+			'wallet_address': booking.wallet_address,
+			'message': 'Use these values to call BookingRegistry.recordBooking() from your wallet'
+		}), 200
+
+
+@bookings_bp.route('/blockchain/onchain-hash', methods=['POST'])
+def get_booking_onchain_hash():
+	"""Read booking hash from BookingRegistry.getBooking and return to frontend."""
+	user_id = _get_user_id_from_bearer()
+	if not user_id:
+		return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+
+	data = request.get_json(silent=True) or {}
+	booking_code = data.get('booking_code')
+	if not booking_code:
+		return jsonify({'success': False, 'message': 'Missing booking_code'}), 400
+
+	contract_address = current_app.config.get('BOOKING_REGISTRY_ADDRESS')
+	if not contract_address:
+		return jsonify({'success': False, 'message': 'BOOKING_REGISTRY_ADDRESS is not configured'}), 500
+
+	with session_scope() as session:
+		booking = session.query(Booking).filter_by(
+			booking_code=booking_code,
+			user_id=user_id
+		).first()
+		if not booking:
+			return jsonify({'success': False, 'message': 'Booking not found'}), 404
+
+		success, message, onchain_data = read_onchain_booking(
+			booking_code=booking_code,
+			contract_address=contract_address
+		)
+		if not success:
+			return jsonify({'success': False, 'message': message}), 400
+
+		return jsonify({
+			'success': True,
+			'booking_code': booking_code,
+			'off_chain_hash': booking.booking_hash,
+			'on_chain': onchain_data,
+		}), 200
+
+
+@bookings_bp.route('/blockchain/verify-hash', methods=['POST'])
+def verify_booking_hash_onchain():
+	"""Compare off-chain booking hash with on-chain BookingRegistry hash and update status."""
+	user_id = _get_user_id_from_bearer()
+	if not user_id:
+		return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+
+	data = request.get_json(silent=True) or {}
+	booking_code = data.get('booking_code')
+	if not booking_code:
+		return jsonify({'success': False, 'message': 'Missing booking_code'}), 400
+
+	contract_address = current_app.config.get('BOOKING_REGISTRY_ADDRESS')
+	if not contract_address:
+		return jsonify({'success': False, 'message': 'BOOKING_REGISTRY_ADDRESS is not configured'}), 500
+
+	with session_scope() as session:
+		booking = session.query(Booking).filter_by(
+			booking_code=booking_code,
+			user_id=user_id
+		).first()
+
+		if not booking:
+			return jsonify({'success': False, 'message': 'Booking not found'}), 404
+		if not booking.booking_hash:
+			return jsonify({'success': False, 'message': 'Missing off-chain booking_hash in database'}), 400
+
+		is_match, message, compare_result = compare_offchain_onchain_hash(
+			offchain_hash=booking.booking_hash,
+			booking_code=booking_code,
+			contract_address=contract_address,
+		)
+
+		if is_match:
+			booking.status = BookingStatus.CONFIRMED
+			booking.confirmed_at = datetime.utcnow()
+			session.commit()
+			return jsonify({
+				'success': True,
+				'message': 'Booking hash verified successfully',
+				'verification': compare_result,
+				'booking_status': 'CONFIRMED',
+				'booking': booking.as_dict(),
+			}), 200
+
+		booking.status = BookingStatus.PAYMENT_FAILED
+		session.commit()
+		return jsonify({
+			'success': False,
+			'message': message,
+			'verification': compare_result,
+			'booking_status': 'PAYMENT_FAILED',
+			'booking': booking.as_dict(),
+		}), 400
+
+
+@bookings_bp.route('/blockchain/verify', methods=['POST'])
+def verify_blockchain_transaction():
+	"""Verify a blockchain transaction and update booking status.
+	
+	Request JSON:
+	- booking_code: The booking code
+	- tx_hash: Transaction hash from blockchain (0x...)
+	
+	This endpoint:
+	1. Receives tx_hash from frontend
+	2. Checks transaction receipt on blockchain
+	3. Updates booking status to CONFIRMED (verified) or PAYMENT_FAILED (failed)
+	"""
+	user_id = _get_user_id_from_bearer()
+	if not user_id:
+		return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+
+	data = request.get_json(silent=True) or {}
+	booking_code = data.get('booking_code')
+	tx_hash = data.get('tx_hash')
+	
+	if not booking_code:
+		return jsonify({'success': False, 'message': 'Missing booking_code'}), 400
+	
+	if not tx_hash:
+		return jsonify({'success': False, 'message': 'Missing tx_hash'}), 400
+
+	with session_scope() as session:
+		# Find booking
+		booking = session.query(Booking).filter_by(
+			booking_code=booking_code,
+			user_id=user_id
+		).first()
+
+		if not booking:
+			return jsonify({'success': False, 'message': 'Booking not found'}), 404
+
+		# Verify transaction receipt
+		success, message, receipt = verify_transaction_receipt(
+			tx_hash=tx_hash,
+			expected_from_address=booking.wallet_address
+		)
+
+		if not success:
+			# Transaction failed - update booking status
+			booking.status = BookingStatus.PAYMENT_FAILED
+			session.commit()
+			
+			return jsonify({
+				'success': False,
+				'message': message,
+				'booking_status': 'PAYMENT_FAILED'
+			}), 400
+
+		# Get contract address from environment
+		contract_address = current_app.config.get('BOOKING_REGISTRY_ADDRESS')
+		
+		if contract_address:
+			# Verify booking was recorded in contract
+			contract_success, contract_message = check_booking_recorded(
+				tx_hash=tx_hash,
+				contract_address=contract_address
+			)
+			
+			if not contract_success:
+				booking.status = BookingStatus.PAYMENT_FAILED
+				session.commit()
+				
+				return jsonify({
+					'success': False,
+					'message': contract_message,
+					'booking_status': 'PAYMENT_FAILED'
+				}), 400
+
+		# Transaction verified successfully - update booking status
+		booking.status = BookingStatus.CONFIRMED
+		booking.confirmed_at = datetime.utcnow()
+		session.commit()
+
+		return jsonify({
+			'success': True,
+			'message': 'Booking verified and confirmed on blockchain',
+			'booking_status': 'CONFIRMED',
+			'tx_hash': tx_hash,
+			'booking': booking.as_dict()
+		}), 200
+

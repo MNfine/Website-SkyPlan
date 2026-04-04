@@ -15,21 +15,20 @@ sys.path.append(project_root)
 
 try:
     from backend.models.db import session_scope
-    # Import all models to ensure relationships are registered
-    from backend.models.seats import Seat
-    from backend.models.booking import Booking
-    from backend.models.passenger import Passenger
-    from backend.models.tickets import Ticket
+    # Import all models to ensure relationships are properly initialized
     from backend.models.user import User
-    from backend.models.payments import Payment
     from backend.models.flights import Flight
+    from backend.models.passenger import Passenger
+    from backend.models.booking import Booking, BookingPassenger
+    from backend.models.payments import Payment
+    from backend.models.seats import Seat
+    from backend.models.tickets import Ticket
 except ImportError as e:
     print(f"❌ Error importing models: {e}")
     print("Make sure you're running from the project root directory")
     sys.exit(1)
 
-# Use absolute path to CSV file based on script location
-CSV_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'demo_flights_vn_airport_names.csv')
+CSV_FILE = 'backend/db/demo_flights_vn_airport_names.csv'
 
 def parse_datetime(date_str, time_str):
     # date_str: '2025-10-01', time_str: '05:45'

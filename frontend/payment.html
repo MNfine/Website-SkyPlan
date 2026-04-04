@@ -7,6 +7,7 @@
 
   <!-- Favicon -->
   <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
 
   <!-- Font Awesome CDN for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -16,7 +17,6 @@
   <link rel="stylesheet" href="assets/styles/index.css">
   <link rel="stylesheet" href="assets/styles/flags.css">
   <link rel="stylesheet" href="assets/styles/header.css">
-<link rel="stylesheet" href="assets/styles/wallet.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/payment.css">
   <link rel="stylesheet" href="assets/styles/loader.css">
@@ -222,25 +222,30 @@
             <div class="price-breakdown">
               <div class="price-item">
                 <span data-i18n="ticketLabel">Vé máy bay (2 chiều)</span>
-                <span>1.398.000 VND</span>
+                <span id="baseAmount">0 VND</span>
               </div>
               <div class="price-item">
                 <span data-i18n="taxLabel">Thuế và phí</span>
-                <span>200.000 VND</span>
+                <span id="taxAmount">200.000 VND</span>
               </div>
               <div class="price-item total">
                 <span data-i18n="totalLabel">Tổng cộng</span>
-                <span id="totalAmount">1.598.000 VND</span>
+                <span id="totalAmount">0 VND</span>
               </div>
             </div>
 
             <!-- Voucher Section -->
             <div class="voucher-section">
-              <div class="voucher-input">
-                <input type="text" id="voucherInput" placeholder="Nhập mã giảm giá" data-i18n="voucherPlaceholder">
-                <button type="button" id="applyVoucherBtn" data-i18n="applyVoucher">Áp dụng</button>
+              <h4 data-i18n="voucherTitle">Mã giảm giá</h4>
+              <div class="voucher-input-group">
+                <input type="text" id="voucherCode" placeholder="Nhập mã voucher" data-i18n="voucherPlaceholder">
+                <button type="button" id="applyVoucher" class="voucher-btn" data-i18n="applyVoucher">Áp dụng</button>
               </div>
-              <div class="voucher-message" id="voucherMessage"></div>
+              <div id="voucherMessage" class="voucher-message"></div>
+              <div class="available-vouchers">
+                <small data-i18n="availableVouchers">Mã khả dụng: XMAS10, NOEL200, EARLY200</small>
+              </div>
+              
               <div class="voucher-discount hidden" id="voucherDiscount">
                 <div class="price-item discount">
                   <span data-i18n="discountLabel">Giảm giá</span>
@@ -248,7 +253,7 @@
                 </div>
                 <div class="price-item final-total">
                   <span data-i18n="finalTotalLabel">Tổng thanh toán</span>
-                  <span id="finalAmount">1.598.000 VND</span>
+                  <span id="finalAmount">0 VND</span>
                 </div>
               </div>
             </div>
@@ -277,10 +282,10 @@
 
   <!-- JavaScript -->
   <script src="assets/scripts/common.js"></script>
-<script src="assets/scripts/wallet_translations.js"></script>
-<script src="assets/scripts/metamask.js"></script>
+  <script src="assets/scripts/overview_translations.js"></script>
   <script src="assets/scripts/payment_translations.js"></script>
   <script src="assets/scripts/payment_order.js"></script>
+  <script src="assets/scripts/auth-utils.js"></script>
   <script>
     // Tự động dịch khi trang load
     document.addEventListener('DOMContentLoaded', function() {
@@ -288,6 +293,13 @@
       if (typeof applyPaymentTranslations === 'function') {
         applyPaymentTranslations(lang);
       }
+      
+      // Chạy payment order render sau khi translations đã xong
+      setTimeout(() => {
+        if (typeof window.renderPaymentOrder === 'function') {
+          window.renderPaymentOrder();
+        }
+      }, 200);
     });
   </script>
   <script src="assets/scripts/config.js"></script>
@@ -447,5 +459,54 @@
       }, 500); // Delay 500ms để smooth
     });
   </script>
+
+  <!-- Debug script for payment page -->
+  <script>
+    // Auto-create sample data if missing
+    document.addEventListener('DOMContentLoaded', function() {
+      const keys = ['skyplan_trip_selection', 'skyplan_fare_selection', 'skyplan_extras_v2', 'searchData'];
+      let needsData = false;
+      
+      keys.forEach(key => {
+        if (!localStorage.getItem(key)) needsData = true;
+      });
+      
+      if (needsData) {
+        console.log('🔧 Creating sample data...');
+        
+        const sampleTrip = {
+          fromCode: 'DaNang', toCode: 'HoChiMinh', 
+          departDateISO: '2025-11-18', returnDateISO: '2025-11-25',
+          tripType: 'round-trip',
+          outboundDepartTime: '14:45', outboundArriveTime: '16:10',
+          inboundDepartTime: '18:20', inboundArriveTime: '20:30',
+          segments: [
+            { direction: 'outbound', departTime: '14:45', arriveTime: '16:10' },
+            { direction: 'inbound', departTime: '18:20', arriveTime: '20:30' }
+          ]
+        };
+        
+        const sampleFare = { fareClass: 'premium-economy', priceVND: 800000 };
+        const sampleExtras = { total: 800000 };
+        const sampleSearchData = { trip_type: 'round-trip', depart_date: '2025-11-18', return_date: '2025-11-25' };
+        
+        localStorage.setItem('skyplan_trip_selection', JSON.stringify(sampleTrip));
+        localStorage.setItem('skyplan_fare_selection', JSON.stringify(sampleFare));
+        localStorage.setItem('skyplan_extras_v2', JSON.stringify(sampleExtras));
+        localStorage.setItem('searchData', JSON.stringify(sampleSearchData));
+        
+        // Add URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        if (!urlParams.has('trip_type')) {
+          urlParams.set('trip_type', 'round-trip');
+          urlParams.set('booking_code', 'SP202545224');
+          history.replaceState(null, '', window.location.pathname + '?' + urlParams.toString());
+        }
+        
+        setTimeout(() => window.location.reload(), 500);
+      }
+    });
+  </script>
+
 </body>
 </html>

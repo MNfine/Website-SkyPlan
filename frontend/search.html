@@ -7,12 +7,12 @@
     <title>SkyPlane – Search Results</title>
     <link rel="stylesheet" href="assets/styles/search.css">
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="assets/styles/reset.css">
     <link rel="stylesheet" href="assets/styles/index.css">
     <link rel="stylesheet" href="assets/styles/flags.css">
     <link rel="stylesheet" href="assets/styles/header.css">
-<link rel="stylesheet" href="assets/styles/wallet.css">
     <link rel="stylesheet" href="assets/styles/footer.css">
     <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
@@ -46,7 +46,19 @@
                     </div>
                 </div>
 
-                <button class="sp-btn sp-btn-secondary" type="submit">
+                <!-- Trip Type Selection - moved below dates -->
+                <div class="sp-row sp-field-group">
+                    <label class="sp-trip-option">
+                        <input type="radio" name="tripType" value="round-trip" checked>
+                        <span data-i18n="search.roundTrip">Khứ hồi</span>
+                    </label>
+                    <label class="sp-trip-option">
+                        <input type="radio" name="tripType" value="one-way">
+                        <span data-i18n="search.oneWay">Một chiều</span>
+                    </label>
+                </div>
+
+                <button class="sp-btn sp-btn-secondary" type="button" id="searchButton">
                     <i class="fa-solid fa-magnifying-glass"></i>
                     Tìm kiếm
                 </button>
@@ -91,7 +103,7 @@
                 <!-- OUTBOUND -->
                 <section class="sp-leg" aria-labelledby="outbound-heading">
                     <h3 id="outbound-heading" class="sr-only">Chiều đi</h3>
-                    <div class="sp-leg__title">To <span data-to-city>—</span></div>
+                    <div class="sp-leg__title"><span data-i18n="legTo">To</span> <span data-to-city>—</span></div>
                     <div class="sp-leg__panel">
                         <div class="sp-leg__grid">
                             <div class="sp-leg__date">
@@ -161,6 +173,12 @@
 
     <div id="footer-container"></div>
 
+    <script src="assets/scripts/auth-utils.js"></script>
+    <script src="assets/scripts/search.js"></script>
+    <script src="assets/scripts/common.js"></script>
+    <script src="assets/scripts/search_translations.js"></script>
+    <script src="assets/scripts/search_filter.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const loadComponent = async (id, file) => {
@@ -234,11 +252,6 @@
             }
         })();
     </script>
-    <script src="assets/scripts/common.js"></script>
-<script src="assets/scripts/wallet_translations.js"></script>
-<script src="assets/scripts/metamask.js"></script>
-    <script src="assets/scripts/search_translations.js"></script>
-    <script src="assets/scripts/search_filter.js"></script>
 
 
     <script>
@@ -336,6 +349,13 @@
         // Initialize when DOM is ready
         document.addEventListener('DOMContentLoaded', function () {
             initializeApp();
+            
+            // Tự động tải dữ liệu chuyến bay khi trang được tải
+            setTimeout(function() {
+                if (typeof fetchFlights === 'function') {
+                    fetchFlights();
+                }
+            }, 500);
         });
     </script>
 
@@ -504,27 +524,43 @@
                     return iso || '';
                 };
 
-                // Always work with ISO values and let date_format_handler render UI and constraints
-                if (depart) {
-                    const depISO = parseToISO(state.depart) || depart.dataset.isoValue || depart.value || '';
+                // Initialize date handler first, but skip if we have URL params to preserve
+                const hasDateParams = state.depart || state.ret;
+                
+                if (window.dateFormatHandler && !hasDateParams) {
+                    // Only call ensureTodayAndMins if we don't have URL params
+                    window.dateFormatHandler.ensureTodayAndMins();
+                } else if (window.dateFormatHandler) {
+                    // Just set minimum dates without overriding values
+                    const today = new Date().toISOString().slice(0, 10);
+                    if (depart) depart.min = today;
+                    if (ret) ret.min = depart ? (depart.value || today) : today;
+                }
+
+                // Apply URL parameter values
+                if (depart && state.depart) {
+                    const depISO = parseToISO(state.depart);
                     if (depISO) {
                         depart.dataset.isoValue = depISO;
                         depart.value = depISO;
+                        if (ret) ret.min = depISO; // Update return minimum
                     }
                 }
 
-                if (ret) {
-                    const retISO = parseToISO(state.ret) || ret.dataset.isoValue || ret.value || '';
+                if (ret && state.ret) {
+                    const retISO = parseToISO(state.ret);
                     if (retISO) {
                         ret.dataset.isoValue = retISO;
                         ret.value = retISO;
                     }
                 }
 
+                // Finally update UI formatting and constraints
                 if (window.dateFormatHandler) {
-                    window.dateFormatHandler.ensureTodayAndMins();
                     window.dateFormatHandler.updateDateInputsByLang(lang);
-                    window.dateFormatHandler.enforceReturnAfterDeparture();
+                    if (!hasDateParams) {
+                        window.dateFormatHandler.enforceReturnAfterDeparture();
+                    }
                 }
             }
 
@@ -741,6 +777,35 @@
                 return dict[code] || code;
             }
 
+            // Format airport with city name and airport name
+            function formatAirport(cityCode, lang) {
+                // Use the same logic as in search.js
+                const cityDict = CITY_LABELS[lang] || CITY_LABELS.vi || {};
+                const cityName = cityDict[cityCode] || cityCode;
+                
+                // Airport names mapping
+                const AIRPORTS = {
+                    'hanoi': { vi: 'Sân bay Nội Bài', en: 'Noi Bai Airport' },
+                    'ho-chi-minh': { vi: 'Sân bay Tân Sơn Nhất', en: 'Tan Son Nhat Airport' },
+                    'da-nang': { vi: 'Sân bay Đà Nẵng', en: 'Da Nang Airport' },
+                    'hai-phong': { vi: 'Sân bay Cát Bi', en: 'Cat Bi Airport' },
+                    'hue': { vi: 'Sân bay Phú Bài', en: 'Phu Bai Airport' },
+                    'nha-trang': { vi: 'Sân bay Cam Ranh', en: 'Cam Ranh Airport' },
+                    'da-lat': { vi: 'Sân bay Liên Khương', en: 'Lien Khuong Airport' },
+                    'phu-quoc': { vi: 'Sân bay Phú Quốc', en: 'Phu Quoc Airport' },
+                    'can-tho': { vi: 'Sân bay Cần Thơ', en: 'Can Tho Airport' },
+                    'quy-nhon': { vi: 'Sân bay Phù Cát', en: 'Phu Cat Airport' }
+                };
+                
+                const airportInfo = AIRPORTS[cityCode];
+                const airportName = airportInfo ? (airportInfo[lang] || airportInfo.vi) : '';
+                
+                if (airportName) {
+                    return `${cityName} - ${airportName}`;
+                }
+                return cityName;
+            }
+
             function ensureModalHandlers() {
                 const modal = document.getElementById('spModal');
                 if (!modal || modal.dataset.closeBound === '1') return;
@@ -803,6 +868,32 @@
                                     { direction: 'inbound', departTime: inDep, arriveTime: inArr, departIATA: toIATA, arriveIATA: fromIATA, durationMin: diffMin(inDep,inArr) }
                                 ]
                             };
+                            // If modal selection stored a more complete flight object, merge flight ids and numbers
+                            try {
+                                const sel = window.currentFlightSelection;
+                                if (sel && sel.outbound) {
+                                    const out = sel.outbound;
+                                    trip.outbound_flight_id = out.id || out.flight_id || out.flightId || out._id || '';
+                                    trip.outbound_flight_number = out.flight_number || out.flightNumber || '';
+                                    trip.outbound_departure_time = out.departure_time || '';
+                                    trip.outbound_arrival_time = out.arrival_time || '';
+                                    trip.outbound_departure_airport = out.departure_airport || '';
+                                    trip.outbound_arrival_airport = out.arrival_airport || '';
+                                    trip.outbound_price = Number(out.price) || trip.priceVND || 0;
+                                }
+                                if (sel && sel.inbound) {
+                                    const inn = sel.inbound;
+                                    trip.inbound_flight_id = inn.id || inn.flight_id || inn.flightId || inn._id || '';
+                                    trip.inbound_flight_number = inn.flight_number || inn.flightNumber || '';
+                                    trip.inbound_departure_time = inn.departure_time || '';
+                                    trip.inbound_arrival_time = inn.arrival_time || '';
+                                    trip.inbound_departure_airport = inn.departure_airport || '';
+                                    trip.inbound_arrival_airport = inn.arrival_airport || '';
+                                    trip.inbound_price = Number(inn.price) || 0;
+                                }
+                            } catch (e) {
+                                // ignore merge errors
+                            }
                             try { localStorage.setItem('skyplan_trip_selection', JSON.stringify(trip)); } catch(_) {}
                             // Provide simple route hints for other pages
                             try {
@@ -837,8 +928,8 @@
                 if (!results) return;
                 const fromIATA = CITY_IATA[state.from] || 'XXX';
                 const toIATA = CITY_IATA[state.to] || 'YYY';
-                const fromName = labelFor(state.from, lang);
-                const toName = labelFor(state.to, lang);
+                const fromName = formatAirport(state.from, lang);
+                const toName = formatAirport(state.to, lang);
 
                 const flights = generateFlights(state);
                 const dict = (window.searchTranslations && (window.searchTranslations[lang] || window.searchTranslations.vi)) || {};
@@ -881,10 +972,13 @@
                         setText(modal, '[data-out-arr-time]', times[1]?.textContent || '');
                         setText(modal, '[data-in-dep-time]', times[2]?.textContent || '');
                         setText(modal, '[data-in-arr-time]', times[3]?.textContent || '');
-                        setText(modal, '[data-out-dep-airport]', `${fromName} (${fromIATA})`);
-                        setText(modal, '[data-out-arr-airport]', `${toName} (${toIATA})`);
-                        setText(modal, '[data-in-dep-airport]', `${toName} (${toIATA})`);
-                        setText(modal, '[data-in-arr-airport]', `${fromName} (${fromIATA})`);
+                        const currentLang = getLang();
+                        const currentFromName = formatAirport(readState().from, currentLang);
+                        const currentToName = formatAirport(readState().to, currentLang);
+                        setText(modal, '[data-out-dep-airport]', `${currentFromName.split(' - ')[0]} (${fromIATA})`);
+                        setText(modal, '[data-out-arr-airport]', `${currentToName.split(' - ')[0]} (${toIATA})`);
+                        setText(modal, '[data-in-dep-airport]', `${currentToName.split(' - ')[0]} (${toIATA})`);
+                        setText(modal, '[data-in-arr-airport]', `${currentFromName.split(' - ')[0]} (${fromIATA})`);
                         const price = card.querySelector('.sp-price')?.textContent.trim() || '';
                         const langNow = getLang();
                         const lbl = (window.MODAL_I18N && window.MODAL_I18N[langNow]) ? window.MODAL_I18N[langNow].bookPrefix : (langNow==='vi'?'Đặt ngay với giá ':'Book now for ');
@@ -903,9 +997,8 @@
                 ensureModalHandlers();
             }
 
-            // Render on load and on language change
+            // Render on load only - don't re-render on language change to preserve current flight data
             document.addEventListener('DOMContentLoaded', function(){ ensureModalHandlers(); renderResults(); });
-            document.addEventListener('languageChanged', () => setTimeout(renderResults, 0));
         })();
     </script>
 

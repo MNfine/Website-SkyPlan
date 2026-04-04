@@ -9,6 +9,7 @@ from backend.models.booking import Booking, BookingStatus
 from backend.models.user import User
 from backend.models.tickets import Ticket
 from backend.config import VNPayConfig
+from backend.utils.blockchain_admin import run_post_payment_blockchain_flow
 import urllib.parse
 import hashlib
 import hmac
@@ -17,6 +18,24 @@ import re
 
 
 payment_bp = Blueprint('payment', __name__)
+
+
+def _run_blockchain_post_payment(booking):
+	"""Run blockchain post-payment flow without breaking payment confirmation."""
+	try:
+		result = run_post_payment_blockchain_flow(booking)
+		if result.get('success'):
+			print(f"[blockchain] ✅ {booking.booking_code}: {result.get('message')}")
+		else:
+			print(f"[blockchain] ⚠️ {booking.booking_code}: {result.get('message')}")
+		return result
+	except Exception as exc:
+		print(f"[blockchain] ❌ Unexpected error for {booking.booking_code}: {exc}")
+		return {
+			'success': False,
+			'message': str(exc),
+			'steps': {}
+		}
 
 
 @payment_bp.route('/vnpay/create', methods=['POST'])
@@ -121,6 +140,7 @@ def vnpay_return():
 		if vnp_response_code == '00':
 			# Find and update payment record
 			with session_scope() as session:
+				blockchain_result = None
 				payment = session.query(Payment).filter_by(booking_code=vnp_txn_ref).first()
 				if payment:
 					payment.status = 'SUCCESS'
@@ -161,8 +181,14 @@ def vnpay_return():
 									seat.confirmed_booking_id = payment.booking.id
 									session.add(seat)
 
+						# Trigger blockchain flow (record -> mint NFT -> mint SKY)
+						blockchain_result = _run_blockchain_post_payment(payment.booking)
+						session.add(payment.booking)
+
 					session.commit()
 					print(f"[vnpay] Payment {vnp_txn_ref} confirmed successfully")
+					if blockchain_result:
+						print(f"[vnpay] Blockchain result: {blockchain_result.get('message')}")
 				else:
 					print(f"[vnpay] Payment record not found for txn_ref: {vnp_txn_ref}")
 
@@ -312,6 +338,7 @@ def confirm_payment():
 
 		# Update booking status based on payment result
 		tickets_generated = []
+		blockchain_result = None
 		if status == 'SUCCESS':
 			payment.booking.status = BookingStatus.CONFIRMED
 			payment.booking.confirmed_at = datetime.utcnow()
@@ -372,6 +399,9 @@ def confirm_payment():
 				# Don't fail the payment confirmation, just log the error
 				# Tickets can be generated manually later if needed
 
+			# Trigger blockchain flow (record -> mint NFT -> mint SKY)
+			blockchain_result = _run_blockchain_post_payment(payment.booking)
+
 		elif status == 'FAILED':
 			# Giữ booking để user có thể retry, không cancel luôn
 			payment.booking.status = BookingStatus.PAYMENT_FAILED
@@ -386,6 +416,7 @@ def confirm_payment():
 			'booking_status': payment.booking.status.value,
 			'booking_code': payment.booking.booking_code,
 			'tickets_generated': tickets_generated if status == 'SUCCESS' else [],
+			'blockchain': blockchain_result,
 			'can_retry': status == 'FAILED',  # Cho frontend biết có thể retry
 			'retry_count': len(payment.booking.payments)  # Số lần đã thử thanh toán
 		}), 200
@@ -442,6 +473,7 @@ def mark_paid():
 		booking = session.query(Booking).filter_by(booking_code=booking_code).first()
 		if not booking:
 			return jsonify({'success': False, 'message': 'Booking not found'}), 404
+		blockchain_result = None
 
 		# If caller provided an Authorization token, attach booking to that user (demo convenience)
 		caller_user = _get_user_id_from_bearer()
@@ -475,7 +507,11 @@ def mark_paid():
 		booking.confirmed_at = datetime.utcnow()
 		session.add(booking)
 
+		# Trigger blockchain flow (record -> mint NFT -> mint SKY)
+		blockchain_result = _run_blockchain_post_payment(booking)
+		session.add(booking)
+
 		session.commit()
 
-		return jsonify({'success': True, 'booking_code': booking.booking_code, 'payment': payment.as_dict()}), 200
+		return jsonify({'success': True, 'booking_code': booking.booking_code, 'payment': payment.as_dict(), 'blockchain': blockchain_result}), 200
 
