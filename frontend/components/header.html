@@ -41,36 +41,26 @@
         </div>
       </div>
       
-      <!-- Auth buttons (shown when not logged in) -->
-      <div class="auth-buttons">
-        <a href="login.html" class="btn btn-outline login-btn" data-i18n="signInText">Đăng nhập</a>
-        <a href="register.html" class="btn btn-primary login-btn" data-i18n="signUpText">Đăng ký</a>
+      <div class="wallet-section">
+        <button id="wallet-connect-btn" class="btn btn-wallet" data-connected="false" title="Connect MetaMask Wallet">
+          <i class="fas fa-wallet"></i>
+          <span data-i18n="connectWalletText">Connect Wallet</span>
+        </button>
+        
+        <div id="wallet-menu" class="wallet-menu">
+          <div class="wallet-info">
+            <span id="wallet-address" class="wallet-address"></span>
+          </div>
+          <button id="wallet-disconnect-btn" class="wallet-menu-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span data-i18n="disconnectText">Disconnect</span>
+          </button>
+        </div>
       </div>
       
-      <!-- User menu (shown when logged in) -->
-      <div class="user-menu" style="display: none;">
-        <div class="user-dropdown">
-          <button class="user-button">
-            <i class="fas fa-user-circle"></i>
-            <span class="user-name">User</span>
-            <i class="fas fa-chevron-down"></i>
-          </button>
-          <div class="user-dropdown-menu">
-            <a href="profile.html" class="dropdown-item">
-              <i class="fas fa-user"></i>
-              <span data-i18n="profileText">Hồ sơ cá nhân</span>
-            </a>
-            <a href="my_trips.html" class="dropdown-item">
-              <i class="fas fa-suitcase"></i>
-              <span data-i18n="myTripsText">Chuyến đi của tôi</span>
-            </a>
-            <hr class="dropdown-divider">
-            <button class="dropdown-item logout-btn">
-              <i class="fas fa-sign-out-alt"></i>
-              <span data-i18n="logoutText">Đăng xuất</span>
-            </button>
-          </div>
-        </div>
+      <div class="auth-buttons">
+        <a href="login.html" class="btn btn-outline" data-i18n="signInText">Đăng nhập</a>
+        <a href="register.html" class="btn btn-primary" data-i18n="signUpText">Đăng ký</a>
       </div>
     </div>
     
