@@ -14,7 +14,7 @@
 Yêu cầu:
 - Python 3.10+
 - Git
-- PostgreSQL 13+ (required)
+- (Tùy chọn) PostgreSQL 13+ cho môi trường gần production; SQLite có thể dùng cho chạy local nhanh.
 
 Các bước cơ bản:
 
@@ -30,8 +30,8 @@ pip install --upgrade pip
 pip install -r backend/requirements.txt
 
 # 3. Tạo file cấu hình .env (copy từ template nếu có)
-copy backend\.env.example backend\.env
-# Sửa backend\.env để thiết lập DATABASE_URL, SECRET_KEY, VNPAY_*...
+copy .env.example .env
+# Sửa `.env` (ở root repo) để thiết lập DATABASE_URL, SECRET_KEY, VNPAY_*...
 
 # 4. (Tuỳ chọn) Import dữ liệu demo và tạo ghế
 python backend/db/import_flights.py
@@ -44,7 +44,8 @@ python backend/app.py
 ```
 
 Ghi chú:
-- PostgreSQL là bắt buộc. Đảm bảo đã cài đặt và tạo database trước khi chạy.
+- Backend hiện đọc `.env` ở **root repo**. Tối thiểu bạn cần đặt `DATABASE_URL` trong `.env`.
+- Lưu ý: `backend/models/db.py` hiện đang validate `DATABASE_URL` theo PostgreSQL. Nếu muốn dùng SQLite, cần nới logic này trong code.
 - Frontend tĩnh cũng có thể mở trực tiếp file HTML, nhưng để gọi API bạn nên chạy backend server.
 
 ## Biến môi trường quan trọng

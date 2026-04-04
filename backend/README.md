@@ -9,14 +9,14 @@ Backend của SkyPlan xây dựng bằng Flask và SQLAlchemy. Cung cấp:
 ## Tổng quan
 - **Ngôn ngữ**: Python 3.10+
 - **Framework**: Flask với CORS support
-- **Database**: PostgreSQL 13+ (required)
+- **Database**: PostgreSQL 13+ (production) hoặc SQLite (chạy nhanh local)
 - **ORM**: SQLAlchemy 2.0+
 - **Payment**: VNPay integration (demo)
-- **Dependencies**: psycopg2-binary cho PostgreSQL
+- **Dependencies**: psycopg2-binary cho tester/CI
 
 ## Yêu cầu
 - Python 3.10+
-- PostgreSQL 13+ (required)
+- PostgreSQL 13+ (DB thật) hoặc SQLite (chạy nhanh local)
 - Pipenv/venv khuyến nghị
 
 ## Cấu trúc dự án
@@ -38,7 +38,7 @@ backend/
   - Python 3.10+
   - Flask
   - SQLAlchemy (ORM)
-  - PostgreSQL 13+ (required)
+  - PostgreSQL (khuyến nghị) hoặc SQLite (fallback cho local/dev)
 
   ## Cấu trúc thư mục (chung)
   ```
@@ -74,7 +74,7 @@ backend/
   ```
 
   Ghi chú:
-  - `DATABASE_URL` là bắt buộc và phải là PostgreSQL connection string.
+  - Backend hiện đang đọc `.env` ở **root repo** (cùng cấp với `frontend/` và `backend/`).
   - Không commit `.env` lên git.
 
   ## Tạo & import dữ liệu
