@@ -182,6 +182,9 @@ function initializePaymentValidation() {
         case 'ewallet':
           processEWalletPayment();
           break;
+        case 'blockchain':
+          processBlockchainPayment();
+          break;
       }
     });
   }
@@ -754,3 +757,44 @@ function initializeVoucher() {
     applyBtn.parentNode.appendChild(removeBtn);
   }
 }
+
+// ==================== BLOCKCHAIN/CRYPTO PAYMENT ====================
+
+/**
+ * Process blockchain (MetaMask) payment
+ */
+function processBlockchainPayment() {
+  const lang = localStorage.getItem('preferredLanguage') || 'vi';
+  
+  // Check if MetaMask is initialized and connected
+  if (typeof MetaMaskWallet === 'undefined') {
+    const msg = (lang === 'vi') ? 'Lỗi: MetaMask chưa được khởi tạo' : 'Error: MetaMask not initialized';
+    notify(msg, 'error', 5000);
+    return;
+  }
+  
+  if (!MetaMaskWallet.isConnected) {
+    const msg = (lang === 'vi') ? 'Vui lòng kết nối ví MetaMask trước tiên' : 'Please connect MetaMask wallet first';
+    notify(msg, 'warning', 5000);
+    return;
+  }
+  
+  // Show blockchain payment details
+  const cryptoPaymentDetails = document.getElementById('cryptoPaymentDetails');
+  const transactionStatusContainer = document.getElementById('transactionStatusContainer');
+  
+  if (cryptoPaymentDetails) {
+    cryptoPaymentDetails.style.display = 'block';
+  }
+  
+  // Call blockchain payment handler from blockchain-payment.js
+  if (typeof BlockchainPayment !== 'undefined' && typeof BlockchainPayment.initiatePayment === 'function') {
+    BlockchainPayment.initiatePayment();
+  } else {
+    const msg = (lang === 'vi') ? 'Lỗi: Module thanh toán blockchain chưa được tải' : 'Error: Blockchain payment module not loaded';
+    notify(msg, 'error', 5000);
+  }
+}
+
+// Export function globally
+window.processBlockchainPayment = processBlockchainPayment;

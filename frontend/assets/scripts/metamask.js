@@ -1,457 +1,419 @@
 /**
  * MetaMask Wallet Integration for SkyPlan
- * Features: Connect/Disconnect, Network Check, Sepolia Switch
+ * Handles wallet connection, account management, and network switching
  */
 
-const SEPOLIA_CHAIN_ID = '0xaa36a7';
-const SEPOLIA_CHAIN_ID_INT = 11155111;
+const MetaMaskWallet = (function () {
+  'use strict';
 
-function walletLang() {
-  if (typeof window.getWalletLanguage === 'function') {
-    return window.getWalletLanguage();
-  }
+  // State
+  let state = {
+    isConnected: false,
+    account: null,
+    chainId: null,
+    isCorrectNetwork: false,
+    provider: null,
+  };
 
-  const localStorageLang = localStorage.getItem('preferredLanguage') || localStorage.getItem('language');
-  const docLang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
-  const lang = (localStorageLang || docLang || 'vi').toLowerCase();
-  return lang === 'en' ? 'en' : 'vi';
-}
+  const SEPOLIA_CHAIN_ID = '11155111';
+  const SEPOLIA_CHAIN_ID_HEX = '0xaa36a7';
 
-function walletText(key, fallback) {
-  if (typeof window.getWalletTranslation === 'function') {
-    return window.getWalletTranslation(key, walletLang());
-  }
+  /**
+   * Initialize MetaMask
+   */
+  async function init() {
+    try {
+      // Check if MetaMask is installed
+      if (typeof window.ethereum === 'undefined') {
+        console.warn('MetaMask not detected');
+        return false;
+      }
 
-  return fallback || key;
-}
+      state.provider = window.ethereum;
 
-function walletTextWithParams(key, values, fallback) {
-  if (typeof window.formatWalletTranslation === 'function') {
-    return window.formatWalletTranslation(key, values, walletLang());
-  }
+      // Set up event listeners
+      setupEventListeners();
 
-  return fallback || key;
-}
+      // Try to restore previous connection
+      restoreConnection();
 
-function walletToast(key, fallback, type, values) {
-  if (typeof showToast !== 'function') return;
-  const message = values ? walletTextWithParams(key, values, fallback) : walletText(key, fallback);
-  showToast(message, { type: type || 'info' });
-}
+      return true;
 
-function getNetworkNameByChainId(chainId) {
-  if (!chainId) return 'Unknown';
-
-  const normalized = String(chainId).toLowerCase();
-  if (normalized === '0xaa36a7' || normalized === '11155111') return 'Sepolia';
-  if (normalized === '0x1' || normalized === '1') return 'Ethereum Mainnet';
-  if (normalized === '0x14a34' || normalized === '84532') return 'Base Sepolia';
-
-  if (normalized.startsWith('0x')) {
-    return 'Chain ' + parseInt(normalized, 16);
-  }
-
-  return 'Chain ' + normalized;
-}
-
-const MetaMaskWallet = {
-  isConnected: false,
-  account: null,
-  chainId: null,
-  isCorrectNetwork: false,
-  provider: null,
-
-  init: function() {
-    if (!this.detectMetaMask()) {
-      console.warn('[MetaMask] Not installed');
+    } catch (error) {
+      console.error('MetaMask init error:', error);
       return false;
     }
+  }
 
-    this.provider = window.ethereum;
+  /**
+   * Set up event listeners
+   */
+  function setupEventListeners() {
+    if (!state.provider) return;
 
-    // Listen for account changes
-    this.provider.on('accountsChanged', (accounts) => {
-      if (accounts.length === 0) {
-        this.disconnect();
+    // Account changed
+    state.provider.on('accountsChanged', (accounts) => {
+      if (accounts.length > 0) {
+        state.account = accounts[0];
+        updateWalletUI();
       } else {
-        this.account = accounts[0];
-        this.updateUI();
+        disconnect();
       }
     });
 
-    // Listen for network changes
-    this.provider.on('chainChanged', (chainId) => {
-      this.chainId = chainId;
-      this.isCorrectNetwork = this.isSepoliaNetwork();
-
-      if (!this.isCorrectNetwork) {
-        this.isConnected = false;
-        this.clearConnectionState();
-        this.updateUI();
-        this.showNetworkWarning();
-        return;
-      }
-
-      if (this.account) {
-        this.isConnected = true;
-        this.saveConnectionState();
-      }
-
-      this.updateUI();
+    // Chain changed
+    state.provider.on('chainChanged', (chainId) => {
+      state.chainId = chainId;
+      state.isCorrectNetwork = isSepoliaNetwork();
+      updateWalletUI();
     });
+  }
 
-    // Try to restore previous connection
-    this.restoreConnection();
-    return true;
-  },
-
-  detectMetaMask: function() {
-    return typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask;
-  },
-
-  refreshChainState: function() {
-    const self = this;
-
-    if (!this.provider) {
-      this.chainId = null;
-      this.isCorrectNetwork = false;
-      this.isConnected = false;
-      return Promise.resolve(false);
-    }
-
-    return this.provider.request({ method: 'eth_chainId' })
-      .then(function(chainId) {
-        self.chainId = chainId;
-        self.isCorrectNetwork = self.isSepoliaNetwork();
-
-        if (!self.isCorrectNetwork) {
-          self.isConnected = false;
-          self.clearConnectionState();
-        }
-
-        self.updateUI();
-        return self.isCorrectNetwork;
-      })
-      .catch(function(error) {
-        console.error('[MetaMask] Failed to get chainId:', error);
-        self.chainId = null;
-        self.isCorrectNetwork = false;
-        self.isConnected = false;
-        self.clearConnectionState();
-        self.updateUI();
+  /**
+   * Connect wallet
+   */
+  async function connect() {
+    try {
+      if (!state.provider) {
+        showNotification('MetaMask not detected. Please install MetaMask extension.', 'error');
         return false;
-      });
-  },
+      }
 
-  connect: function() {
-    if (!this.provider) {
-      return Promise.resolve({
-        success: false,
-        error: walletText('metamaskNotDetected', 'MetaMask not detected. Please install MetaMask.'),
-      });
-    }
-
-    const self = this;
-    
-    return this.provider
-      .request({
+      // Request account access
+      const accounts = await state.provider.request({
         method: 'eth_requestAccounts',
-      })
-      .then(function(accounts) {
-        if (accounts && accounts.length > 0) {
-          self.account = accounts[0];
-
-          return self.provider.request({
-            method: 'eth_chainId',
-          });
-        }
-        throw new Error('No accounts returned');
-      })
-      .then(function(chainId) {
-        self.chainId = chainId;
-        self.isCorrectNetwork = self.isSepoliaNetwork();
-
-        if (!self.isCorrectNetwork) {
-          return self.switchToSepolia().then(function(switched) {
-            if (!switched) {
-              throw new Error(walletText('sepoliaRequired', 'Cannot continue unless you switch to Sepolia network.'));
-            }
-            return self.provider.request({
-              method: 'eth_chainId',
-            }).then(function(updatedChainId) {
-              self.chainId = updatedChainId;
-              self.isCorrectNetwork = self.isSepoliaNetwork();
-
-              if (!self.isCorrectNetwork) {
-                throw new Error(walletText('sepoliaRequired', 'Cannot continue unless you switch to Sepolia network.'));
-              }
-
-              return true;
-            });
-          });
-        }
-        return true;
-      })
-      .then(function() {
-        self.isConnected = true;
-        self.saveConnectionState();
-        self.updateUI();
-        return { success: true, account: self.account };
-      })
-      .catch(function(error) {
-        console.error('[MetaMask] Connect failed:', error);
-        self.isConnected = false;
-        self.clearConnectionState();
-        self.updateUI();
-        const normalizedError = error && error.message
-          ? error.message
-          : walletText('unknownError', 'Unknown error');
-        return { success: false, error: normalizedError };
       });
-  },
 
-  disconnect: function() {
-    this.isConnected = false;
-    this.account = null;
-    this.chainId = null;
-    this.isCorrectNetwork = false;
+      if (accounts && accounts.length > 0) {
+        state.account = accounts[0];
+        state.isConnected = true;
 
-    localStorage.removeItem('walletConnected');
-    localStorage.removeItem('walletAddress');
+        // Get chain ID
+        const chainId = await state.provider.request({
+          method: 'eth_chainId',
+        });
+        state.chainId = chainId;
+        state.isCorrectNetwork = isSepoliaNetwork();
 
-    this.updateUI();
-  },
-
-  isSepoliaNetwork: function() {
-    if (!this.chainId) return false;
-    return (
-      this.chainId === SEPOLIA_CHAIN_ID ||
-      this.chainId === SEPOLIA_CHAIN_ID_INT ||
-      parseInt(this.chainId, 16) === SEPOLIA_CHAIN_ID_INT
-    );
-  },
-
-  switchToSepolia: function() {
-    if (!this.provider) return Promise.resolve(false);
-
-    const self = this;
-    
-    return this.provider
-      .request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: SEPOLIA_CHAIN_ID }],
-      })
-      .then(function() {
-        return true;
-      })
-      .catch(function(switchError) {
-        if (switchError.code === 4902) {
-          return self.addSepoliaNetwork();
-        }
-        console.error('[MetaMask] Switch failed:', switchError);
-        return false;
-      });
-  },
-
-  addSepoliaNetwork: function() {
-    const self = this;
-    
-    return this.provider
-      .request({
-        method: 'wallet_addEthereumChain',
-        params: [
-          {
-            chainId: SEPOLIA_CHAIN_ID,
-            chainName: 'Sepolia',
-            nativeCurrency: {
-              name: 'Ethereum',
-              symbol: 'ETH',
-              decimals: 18,
-            },
-            rpcUrls: [
-              'https://sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-              'https://rpc.sepolia.org',
-            ],
-            blockExplorerUrls: ['https://sepolia.etherscan.io'],
-          },
-        ],
-      })
-      .then(function() {
-        return true;
-      })
-      .catch(function(error) {
-        console.error('[MetaMask] Add Sepolia failed:', error);
-        return false;
-      });
-  },
-
-  getShortAddress: function() {
-    if (!this.account) return null;
-    return this.account.substring(0, 6) + '...' + this.account.substring(this.account.length - 4);
-  },
-
-  getConnectionInfo: function() {
-    return {
-      account: this.account,
-      shortAddress: this.getShortAddress(),
-      chainId: this.chainId,
-      networkName: getNetworkNameByChainId(this.chainId),
-      isConnected: this.isConnected,
-      isCorrectNetwork: this.isCorrectNetwork,
-      requiredNetwork: 'Sepolia',
-      requiredChainId: SEPOLIA_CHAIN_ID,
-    };
-  },
-
-  saveConnectionState: function() {
-    if (this.isConnected && this.account) {
-      localStorage.setItem('walletConnected', 'true');
-      localStorage.setItem('walletAddress', this.account);
-    }
-  },
-
-  clearConnectionState: function() {
-    localStorage.removeItem('walletConnected');
-    localStorage.removeItem('walletAddress');
-  },
-
-  restoreConnection: function() {
-    const wasConnected = localStorage.getItem('walletConnected') === 'true';
-    const savedAddress = localStorage.getItem('walletAddress');
-
-    if (!wasConnected || !savedAddress || !this.provider) {
-      return;
-    }
-
-    const self = this;
-    this.provider
-      .request({
-        method: 'eth_accounts',
-      })
-      .then(function(accounts) {
-        if (
-          accounts &&
-          accounts.length > 0 &&
-          accounts[0].toLowerCase() === savedAddress.toLowerCase()
-        ) {
-          self.account = accounts[0];
-
-          return self.provider.request({
-            method: 'eth_chainId',
-          });
-        }
-        return null;
-      })
-      .then(function(chainId) {
-        if (chainId) {
-          self.chainId = chainId;
-          self.isCorrectNetwork = self.isSepoliaNetwork();
-          self.isConnected = self.isCorrectNetwork;
-
-          if (!self.isCorrectNetwork) {
-            self.clearConnectionState();
+        // Check if on correct network
+        if (!state.isCorrectNetwork) {
+          const switched = await switchToSepolia();
+          if (!switched) {
+            showNotification('Please switch to Sepolia Testnet manually', 'warning');
           }
-
-          self.updateUI();
         }
-      })
-      .catch(function(error) {
-        console.warn('[MetaMask] Restore failed:', error);
-      });
-  },
 
-  updateUI: function() {
-    const walletBtn = document.getElementById('wallet-connect-btn');
-    if (!walletBtn) return;
-    
-    if (this.isConnected && this.account && this.isCorrectNetwork) {
-      walletBtn.classList.add('connected');
-      walletBtn.setAttribute('data-connected', 'true');
-      walletBtn.innerHTML =
-        '<i class="fas fa-wallet"></i><span class="wallet-address">' +
-        this.getShortAddress() +
-        '</span>';
-    } else {
-      walletBtn.classList.remove('connected');
-      walletBtn.setAttribute('data-connected', 'false');
-      walletBtn.innerHTML =
-        '<i class="fas fa-wallet"></i><span data-i18n="connectWalletText">' +
-        walletText('connectWalletText', 'Connect Wallet') +
-        '</span>';
+        // Save connection state
+        saveConnectionState();
+
+        // Update UI
+        updateWalletUI();
+
+        // Show success notification
+        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        const msg = (lang === 'vi') ? 'Ví MetaMask đã kết nối thành công!' : 'MetaMask wallet connected successfully!';
+        showNotification(msg, 'success');
+
+        return true;
+
+      } else {
+        showNotification('No accounts found. Please unlock MetaMask.', 'error');
+        return false;
+      }
+
+    } catch (error) {
+      console.error('Connect wallet error:', error);
+
+      // Handle specific errors
+      if (error.code === 4001) {
+        showNotification('Connection rejected by user', 'error');
+      } else if (error.code === -32603) {
+        showNotification('Internal error. Please try again.', 'error');
+      } else {
+        showNotification('Failed to connect wallet: ' + error.message, 'error');
+      }
+
+      return false;
     }
-  },
+  }
 
-  showNetworkWarning: function() {
-    walletToast('switchToSepolia', 'Please switch to Sepolia network', 'warning');
-  },
-};
+  /**
+   * Disconnect wallet
+   */
+  function disconnect() {
+    state.isConnected = false;
+    state.account = null;
+    state.chainId = null;
+    state.isCorrectNetwork = false;
 
-/**
- * Initialize when DOM is ready
- */
-document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(function() {
-    MetaMaskWallet.init();
-  }, 100);
-});
+    // Clear stored state
+    localStorage.removeItem('skyplan_wallet_connected');
+    localStorage.removeItem('skyplan_wallet_account');
 
-/**
- * Handle wallet button clicks
- */
-document.addEventListener('click', function(e) {
-  const walletBtn = e.target.closest('#wallet-connect-btn');
-  if (walletBtn) {
-    e.preventDefault();
+    updateWalletUI();
 
-    MetaMaskWallet.refreshChainState().then(function(onSepolia) {
-      if (MetaMaskWallet.isConnected && MetaMaskWallet.account && onSepolia) {
-        const menu = document.getElementById('wallet-menu');
-        if (menu) {
-          menu.classList.toggle('active');
+    const lang = localStorage.getItem('preferredLanguage') || 'vi';
+    const msg = (lang === 'vi') ? 'Ví đã ngắt kết nối' : 'Wallet disconnected';
+    showNotification(msg, 'info');
+  }
+
+  /**
+   * Check if connected to Sepolia network
+   */
+  function isSepoliaNetwork() {
+    return state.chainId === SEPOLIA_CHAIN_ID_HEX || state.chainId === SEPOLIA_CHAIN_ID;
+  }
+
+  /**
+   * Switch to Sepolia network
+   */
+  async function switchToSepolia() {
+    try {
+      if (!state.provider) return false;
+
+      // Try to switch to Sepolia
+      try {
+        await state.provider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: SEPOLIA_CHAIN_ID_HEX }],
+        });
+
+        state.chainId = SEPOLIA_CHAIN_ID_HEX;
+        state.isCorrectNetwork = true;
+        updateWalletUI();
+
+        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        const msg = (lang === 'vi') ? 'Đã chuyển sang mạng Sepolia' : 'Switched to Sepolia network';
+        showNotification(msg, 'success');
+
+        return true;
+
+      } catch (switchError) {
+        // Chain not added, try to add it
+        if (switchError.code === 4902) {
+          return await addSepoliaNetwork();
+        }
+        throw switchError;
+      }
+
+    } catch (error) {
+      console.error('Switch to Sepolia error:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Add Sepolia network to MetaMask
+   */
+  async function addSepoliaNetwork() {
+    try {
+      if (!state.provider) return false;
+
+      await state.provider.request({
+        method: 'wallet_addEthereumChain',
+        params: [{
+          chainId: SEPOLIA_CHAIN_ID_HEX,
+          chainName: 'Sepolia Testnet',
+          rpcUrls: ['https://sepolia.infura.io/v3/'],
+          blockExplorerUrls: ['https://sepolia.etherscan.io'],
+          nativeCurrency: {
+            name: 'Sepolia ETH',
+            symbol: 'ETH',
+            decimals: 18,
+          },
+        }],
+      });
+
+      state.chainId = SEPOLIA_CHAIN_ID_HEX;
+      state.isCorrectNetwork = true;
+      updateWalletUI();
+
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const msg = (lang === 'vi') ? 'Mạng Sepolia đã được thêm' : 'Sepolia network added';
+      showNotification(msg, 'success');
+
+      return true;
+
+    } catch (error) {
+      console.error('Add Sepolia network error:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Get connection info
+   */
+  function getConnectionInfo() {
+    return {
+      isConnected: state.isConnected,
+      account: state.account,
+      chainId: state.chainId,
+      isCorrectNetwork: state.isCorrectNetwork,
+    };
+  }
+
+  /**
+   * Save connection state to localStorage
+   */
+  function saveConnectionState() {
+    localStorage.setItem('skyplan_wallet_connected', 'true');
+    localStorage.setItem('skyplan_wallet_account', state.account);
+  }
+
+  /**
+   * Restore connection from localStorage
+   */
+  function restoreConnection() {
+    try {
+      const wasConnected = localStorage.getItem('skyplan_wallet_connected') === 'true';
+      if (wasConnected && state.provider) {
+        // Try to get accounts silently
+        state.provider.request({
+          method: 'eth_accounts',
+        }).then(accounts => {
+          if (accounts && accounts.length > 0) {
+            state.account = accounts[0];
+            state.isConnected = true;
+
+            // Get chain ID
+            state.provider.request({
+              method: 'eth_chainId',
+            }).then(chainId => {
+              state.chainId = chainId;
+              state.isCorrectNetwork = isSepoliaNetwork();
+              updateWalletUI();
+            });
+          }
+        }).catch(console.error);
+      }
+    } catch (error) {
+      console.error('Restore connection error:', error);
+    }
+  }
+
+  /**
+   * Update wallet UI
+   */
+  function updateWalletUI() {
+    try {
+      const walletStatus = document.getElementById('walletStatus');
+      const connectBtn = document.getElementById('connectWalletBtn');
+      const walletAddress = document.getElementById('walletAddress');
+      const demoConnectBtn = document.getElementById('demoConnectWalletBtn');
+
+      if (!walletStatus && !connectBtn) return;
+
+      // In UI demo mode, wallet visibility is controlled by blockchain-payment.js demo flow.
+      if (demoConnectBtn && !connectBtn) {
+        if (!state.isConnected && walletStatus) {
+          walletStatus.style.display = 'none';
         }
         return;
       }
 
-      if (!onSepolia && MetaMaskWallet.account) {
-        MetaMaskWallet.showNetworkWarning();
+      if (state.isConnected && state.account) {
+        // Show connected status
+        if (walletStatus) {
+          walletStatus.style.display = 'block';
+        }
+        if (connectBtn) {
+          const lang = localStorage.getItem('preferredLanguage') || 'vi';
+          connectBtn.textContent = (lang === 'vi') ? 'Ví đã kết nối' : 'Wallet connected';
+          connectBtn.disabled = true;
+          connectBtn.style.background = 'rgba(255, 255, 255, 0.92)';
+          connectBtn.style.color = '#0d9ca8';
+          connectBtn.style.boxShadow = 'none';
+        }
+
+        if (walletAddress) {
+          walletAddress.textContent = state.account;
+        }
+
+      } else {
+        // Show disconnected status
+        if (walletStatus) {
+          walletStatus.style.display = 'none';
+        }
+        if (connectBtn) {
+          connectBtn.textContent = '🔌 Connect Wallet';
+          connectBtn.disabled = false;
+          connectBtn.style.background = '';
+          connectBtn.style.color = '';
+          connectBtn.style.boxShadow = '';
+        }
       }
 
-      MetaMaskWallet.connect().then(function(result) {
-        if (!result.success) {
-          const errText = result.error || walletText('unknownError', 'Unknown error');
-          if (typeof showToast === 'function') {
-            showToast(
-              walletText('connectionFailed', 'Connection failed') + ': ' + errText,
-              { type: 'error' }
-            );
-          }
-        } else {
-          walletToast(
-            'connectedMessage',
-            'Wallet {address} connected',
-            'success',
-            { address: MetaMaskWallet.getShortAddress() }
-          );
-        }
-      });
+      // Show warning if wrong network
+      if (state.isConnected && !state.isCorrectNetwork) {
+        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        const msg = (lang === 'vi') ? 'Vui lòng chuyển sang mạng Sepolia' : 'Please switch to Sepolia network';
+        showNotification(msg, 'warning');
+      }
+
+    } catch (error) {
+      console.error('Update wallet UI error:', error);
+    }
+  }
+
+  /**
+   * Show notification
+   */
+  function showNotification(msg, type = 'info') {
+    try {
+      if (typeof window.notify === 'function') {
+        window.notify(msg, type, 4000);
+      } else if (typeof window.showToast === 'function') {
+        window.showToast(msg, { type: type, duration: 4000 });
+      } else {
+        console.log('[' + type.toUpperCase() + ']', msg);
+      }
+    } catch (error) {
+      console.error(msg);
+    }
+  }
+
+  // Initialize when DOM is ready
+  document.addEventListener('DOMContentLoaded', function () {
+    init();
+  });
+
+  // Fallback initialization
+  if (document.readyState === 'loaded' || document.readyState === 'complete') {
+    init();
+  }
+
+  // Public API
+  return {
+    init: init,
+    connect: connect,
+    disconnect: disconnect,
+    switchToSepolia: switchToSepolia,
+    addSepoliaNetwork: addSepoliaNetwork,
+    getConnectionInfo: getConnectionInfo,
+    isSepoliaNetwork: isSepoliaNetwork,
+    
+    // State getters
+    get isConnected() { return state.isConnected; },
+    get account() { return state.account; },
+    get chainId() { return state.chainId; },
+    get isCorrectNetwork() { return state.isCorrectNetwork; },
+    get provider() { return state.provider; },
+  };
+})();
+
+// Set up connect wallet button handler
+document.addEventListener('DOMContentLoaded', function () {
+  const connectBtn = document.getElementById('connectWalletBtn');
+  if (connectBtn) {
+    connectBtn.addEventListener('click', async function () {
+      if (MetaMaskWallet.isConnected) {
+        MetaMaskWallet.disconnect();
+      } else {
+        await MetaMaskWallet.connect();
+      }
     });
   }
-
-  // Handle disconnect
-  const disconnectBtn = e.target.closest('#wallet-disconnect-btn');
-  if (disconnectBtn) {
-    e.preventDefault();
-    MetaMaskWallet.disconnect();
-
-    const menu = document.getElementById('wallet-menu');
-    if (menu) menu.classList.remove('active');
-
-    walletToast('disconnectedMessage', 'Wallet disconnected', 'info');
-  }
-
-  // Close menu when clicking outside
-  if (!e.target.closest('.wallet-section')) {
-    const menu = document.getElementById('wallet-menu');
-    if (menu) menu.classList.remove('active');
-  }
 });
+
+// Export globally
+window.MetaMaskWallet = MetaMaskWallet;

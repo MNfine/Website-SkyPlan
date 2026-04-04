@@ -1,0 +1,521 @@
+/* Blockchain/Crypto Payment Styles for SkyPlan */
+
+.crypto-info {
+  padding: 24px;
+  background: #0a969d;
+  border-radius: 14px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(10, 150, 157, 0.2);
+}
+
+.crypto-info h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.3px;
+}
+
+.crypto-info p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 400;
+}
+
+.wallet-connection {
+  margin: 18px 0 0 0;
+  padding: 18px 0;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+}
+
+.wallet-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #0a969d;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.wallet-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  background: white;
+}
+
+.wallet-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+.wallet-status {
+  margin-top: 16px;
+  padding: 16px 18px;
+  background: white;
+  border: 2px solid #0a969d;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(10, 150, 157, 0.18);
+}
+
+.status-connected {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #333;
+  text-align: center;
+  position: relative;
+  font-weight: 500;
+}
+
+.wallet-address {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  word-break: break-all;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  max-width: 100%;
+  color: #0a969d;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  border: none;
+  line-height: 1.6;
+  display: inline-block;
+}
+
+.crypto-payment-details {
+  margin: 20px 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.crypto-payment-details h4 {
+  margin: 0 0 15px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+}
+
+.payment-details {
+  margin: 15px 0;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row strong {
+  color: white;
+  font-weight: 600;
+}
+
+.crypto-checkout-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: white;
+  color: #0a969d;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.crypto-checkout-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.crypto-checkout-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Transaction Status Container */
+.transaction-status-container {
+  margin: 20px 0;
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  display: none;
+}
+
+.status-header {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #ddd;
+}
+
+.status-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.status-box {
+  padding: 30px 20px;
+  border-radius: 8px;
+  text-align: center;
+  display: none;
+  border: 1px solid;
+}
+
+.status-box.pending {
+  background: #fff9e6;
+  border-color: #ffc107;
+  color: #2d2d2d;
+}
+
+.status-box.pending .status-text h5,
+.status-box.pending .status-text p {
+  color: #2d2d2d;
+}
+
+.status-box.success {
+  background: #e8f5e9;
+  border-color: #4CAF50;
+  color: #1b5e20;
+}
+
+.status-box.success .status-text h5,
+.status-box.success .status-text p {
+  color: #1b5e20;
+}
+
+.status-box.failed {
+  background: #ffebee;
+  border-color: #f44336;
+  color: #c62828;
+}
+
+.status-box.failed .status-text h5,
+.status-box.failed .status-text p {
+  color: #c62828;
+}
+
+.status-spinner {
+  display: none;
+}
+
+.status-icon {
+  display: none;
+}
+
+.status-spinner i {
+  animation: spin 1s linear infinite;
+  color: #ffc107;
+}
+
+.status-box.success .status-icon i {
+  color: #4CAF50;
+  animation: none;
+}
+
+.status-box.failed .status-icon i {
+  color: #f44336;
+  animation: none;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.status-text h5 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.status-text p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.tx-hash-display {
+  margin-top: 15px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  font-size: 12px;
+  word-break: break-all;
+  text-align: left;
+  font-family: 'Courier New', monospace;
+}
+
+.tx-hash-display a {
+  color: #0a969d;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.tx-hash-display a:hover {
+  text-decoration: underline;
+}
+
+.redirect-btn,
+.retry-btn {
+  margin-top: 15px;
+  padding: 12px 24px;
+  background: #0a969d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.redirect-btn:hover,
+.retry-btn:hover {
+  background: #0a969d;
+  opacity: 0.92;
+  transform: translateY(-2px);
+}
+
+.error-code {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  font-size: 13px;
+  color: #d32f2f;
+  font-family: 'Courier New', monospace;
+  text-align: left;
+}
+
+/* UI-only demo controls for reviewing status layout without real chain tx */
+.transaction-demo-panel {
+  margin: 14px 0 0;
+  padding: 14px;
+  border: 1px dashed rgba(255, 255, 255, 0.45);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.transaction-demo-title {
+  margin-bottom: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+}
+
+.transaction-demo-subtitle {
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.transaction-demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.demo-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  color: #0a969d;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.demo-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
+}
+
+.demo-btn:active {
+  transform: translateY(0);
+}
+
+.demo-run {
+  background: #ffffff;
+  color: #0a969d;
+  min-width: 170px;
+}
+
+.demo-connect {
+  background: #ffffff;
+  color: #0a969d;
+  min-width: 145px;
+}
+
+.demo-run.is-running {
+  background: #fff2cc;
+  color: #7a550e;
+}
+
+.demo-reset { background: #e8edf2; color: #304153; }
+
+/* State view buttons - for reviewing individual UI states */
+.transaction-demo-state-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.25);
+}
+
+.demo-state-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.demo-state-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.demo-state-btn:active {
+  transform: translateY(0);
+  opacity: 0.8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .crypto-info {
+    padding: 15px;
+  }
+
+  .wallet-btn,
+  .crypto-checkout-btn {
+    font-size: 14px;
+    padding: 12px 16px;
+  }
+
+  .wallet-address {
+    font-size: 10px;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 10px;
+  }
+
+  .detail-row {
+    font-size: 13px;
+    gap: 10px;
+  }
+
+  .detail-row span:last-child {
+    text-align: right;
+  }
+
+  .status-box {
+    padding: 20px 15px;
+  }
+
+  .transaction-demo-panel {
+    padding: 12px;
+  }
+
+  .demo-btn {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  .status-spinner,
+  .status-icon {
+    font-size: 36px;
+  }
+
+  .status-text h5 {
+    font-size: 16px;
+  }
+
+  .status-text p {
+    font-size: 13px;
+  }
+
+  .tx-hash-display {
+    font-size: 11px;
+  }
+
+  .redirect-btn,
+  .retry-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .crypto-info h4 {
+    font-size: 14px;
+  }
+
+  .crypto-info p {
+    font-size: 12px;
+  }
+
+  .wallet-btn,
+  .crypto-checkout-btn {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+
+  .detail-row {
+    font-size: 12px;
+    padding: 6px 0;
+  }
+
+  .tx-hash-display {
+    font-size: 10px;
+    word-break: break-word;
+  }
+}

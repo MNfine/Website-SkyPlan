@@ -113,6 +113,41 @@ const paymentTranslations = {
         // Confirm button
         toConfirmation: "Go to confirmation page",
         bankConfirm: "Go to confirmation page",
+        // Blockchain/Crypto Payment
+        cryptoPayment: "Pay with Crypto",
+        cryptoTitle: "Pay with MetaMask (Ethereum Sepolia)",
+        cryptoDesc: "Connect your MetaMask wallet to pay with cryptocurrency on the Sepolia testnet.",
+        connectWallet: "Connect Wallet",
+        walletConnected: "Wallet Connected:",
+        paymentDetails: "Payment Details:",
+        estimatedEth: "Estimated (ETH):",
+        sepoliaNetwork: "Sepolia (Testnet)",
+        transactionStatus: "Transaction Status:",
+        sendTransaction: "Send Transaction",
+        processing: "Processing...",
+        waitingConfirmation: "Waiting for confirmation...",
+        successTitle: "Success!",
+        successDesc: "Your transaction has been confirmed.",
+        failedTitle: "Failed",
+        failedDesc: "The transaction was not successful.",
+        txHash: "Hash:",
+        viewTicket: "View Ticket",
+        viewOnExplorer: "View on Explorer",
+        retryPayment: "Retry Payment",
+        // Demo UI
+        demoSimulationTitle: "Transaction Flow Simulation (no real transaction sent)",
+        demoSimSteps: "Step 1: Connect wallet. Step 2: Run transaction flow to simulate Pending -> final result.",
+        demoConnectBtn: "Connect Wallet",
+        demoRunBtn: "Run Transaction Flow",
+        demoResetBtn: "Reset",
+        demoViewStates: "View individual status UI:",
+        demoStatePending: "Pending",
+        demoStateSuccess: "Success",
+        demoStateReject: "Reject",
+        demoStateGas: "Insufficient Gas",
+        demoStateRpc: "RPC Error",
+        demoStateFail: "Failed",
+        demoConnectedMsg: "Wallet connected. Now you can run the transaction flow.",
         // ...add more as needed
     },
     vi: {
@@ -228,7 +263,41 @@ const paymentTranslations = {
         // Confirm button
         toConfirmation: "Đến trang xác nhận",
         bankConfirm: "Đến trang xác nhận",
-        // ...add more as needed
+        // Blockchain/Crypto Payment
+        cryptoPayment: "Thanh toán bằng Crypto",
+        cryptoTitle: "Thanh toán qua MetaMask (Ethereum Sepolia)",
+        cryptoDesc: "Kết nối ví MetaMask của bạn để thanh toán bằng cryptocurrency trên mạng Sepolia testnet.",
+        connectWallet: "Kết nối Ví",
+        walletConnected: "Ví đã kết nối:",
+        paymentDetails: "Chi tiết thanh toán:",
+        estimatedEth: "Ước tính (ETH):",
+        sepoliaNetwork: "Sepolia (Testnet)",
+        transactionStatus: "Trạng thái Giao dịch:",
+        sendTransaction: "Gửi Giao dịch",
+        processing: "Đang xử lý...",
+        waitingConfirmation: "Chờ xác nhận giao dịch...",
+        successTitle: "Thành công!",
+        successDesc: "Giao dịch của bạn đã được xác nhận.",
+        failedTitle: "Thất bại",
+        failedDesc: "Giao dịch không thành công.",
+        txHash: "Hash:",
+        viewTicket: "Xem Vé",
+        viewOnExplorer: "Xem trên Explorer",
+        retryPayment: "Thử lại",
+        // Demo UI
+        demoSimulationTitle: "Mô phỏng luồng giao dịch (không gửi giao dịch thật)",
+        demoSimSteps: "Bước 1: Kết nối ví. Bước 2: Chạy luồng giao dịch để mô phỏng Pending -> kết quả cuối.",
+        demoConnectBtn: "Kết nối ví",
+        demoRunBtn: "Chạy luồng giao dịch",
+        demoResetBtn: "Đặt lại",
+        demoViewStates: "Xem từng trạng thái UI:",
+        demoStatePending: "Pending",
+        demoStateSuccess: "Success",
+        demoStateReject: "Từ chối",
+        demoStateGas: "Thiếu gas",
+        demoStateRpc: "RPC lỗi",
+        demoStateFail: "Thất bại",
+        demoConnectedMsg: "Đã kết nối ví. Bây giờ bạn có thể chạy luồng giao dịch."
     }
 };
 
@@ -281,15 +350,6 @@ function getPaymentTranslation(key, lang) {
     return key;
 }
 
-// expose helpers for other scripts and debugging
-try {
-    window.getPaymentTranslation = getPaymentTranslation;
-    window.paymentTranslations = paymentTranslations;
-    window.applyPaymentTranslations = applyPaymentTranslations;
-} catch (e) {
-    // ignore in restricted environments
-}
-
 // Function to change language for payment page
 function changePaymentLanguage(lang) {
     if (__SKYPLAN_DEBUG__) console.debug('[i18n] changePaymentLanguage ->', lang);
@@ -302,7 +362,19 @@ function changePaymentLanguage(lang) {
     } catch (e) { /* ignore */ }
 }
 
-// Ensure Vietnamese is set as default on first visit
-if (!localStorage.getItem('preferredLanguage')) {
-    localStorage.setItem('preferredLanguage', 'vi');
+// expose helpers for other scripts and debugging (AFTER all functions are defined)
+try {
+    window.getPaymentTranslation = getPaymentTranslation;
+    window.paymentTranslations = paymentTranslations;
+    window.applyPaymentTranslations = applyPaymentTranslations;
+    window.changePaymentLanguage = changePaymentLanguage;
+} catch (e) {
+    // ignore in restricted environments
+}
+
+// Ensure Vietnamese is set as default on first visit (only in browser)
+if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    if (!localStorage.getItem('preferredLanguage')) {
+        localStorage.setItem('preferredLanguage', 'vi');
+    }
 }
