@@ -46,7 +46,7 @@ def generate_tickets():
             if not payment:
                 return jsonify({'success': False, 'message': 'Payment not found'}), 404
             
-            if payment.status != 'COMPLETED':
+            if payment.status != 'SUCCESS':
                 return jsonify({'success': False, 'message': 'Payment not completed'}), 400
             
             # Check if tickets already generated
