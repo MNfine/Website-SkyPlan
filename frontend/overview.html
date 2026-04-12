@@ -180,6 +180,7 @@
 
   <!-- JavaScript -->
   <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/wallet-ui.js"></script>
 <script src="assets/scripts/wallet_translations.js"></script>
 <script src="assets/scripts/metamask.js"></script>
   <script src="assets/scripts/overview_translations.js"></script>
@@ -213,6 +214,11 @@
         if (typeof initializeMobileMenu === 'function') {
           initializeMobileMenu();
         }
+        // Initialize wallet UI
+        if (typeof initWalletUI === 'function') {
+          initWalletUI();
+        }
+        document.dispatchEvent(new CustomEvent('header-loaded'));
         // Re-apply translations and sync header UI with saved language
         const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
         if (typeof applyOverviewTranslations === 'function') {
@@ -237,6 +243,7 @@
       })
       .then(data => {
         document.getElementById('footer-container').innerHTML = data;
+
         // Re-apply all translations to include footer
         const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
         if (typeof applyOverviewTranslations === 'function') {
@@ -246,6 +253,17 @@
       .catch(error => {
         handleComponentError('footer');
       });
+
+    // Re-translate footer when language changes
+    document.addEventListener('languageChanged', function(e) {
+      const lang = (e && e.detail && e.detail.lang) || localStorage.getItem('preferredLanguage') || 'vi';
+      // Force re-apply all translations including footer
+      if (typeof applyOverviewTranslations === 'function') {
+        setTimeout(() => {
+          applyOverviewTranslations(lang);
+        }, 50);
+      }
+    });
   </script>
 
   <script>

@@ -259,10 +259,19 @@
     try {
       const usp = new URLSearchParams(window.location.search || '');
       const outboundId = usp.get('outbound_flight_id') || usp.get('flight_id') || '';
+      const tripTypeParamRaw = (usp.get('trip_type') || usp.get('tripType') || '').toLowerCase().trim();
+      const tripType = tripTypeParamRaw === 'round-trip' ? 'round-trip' : 'one-way';
+
+      try {
+        localStorage.setItem('skyplan_trip_type', tripType);
+      } catch (_) {}
+
       if (outboundId) {
         let trip = null;
         try { trip = JSON.parse(localStorage.getItem('skyplan_trip_selection') || 'null'); } catch(_) { trip = null; }
         trip = trip || {};
+        trip.trip_type = tripType;
+        trip.tripType = tripType;
         // Overwrite or set outbound-related fields from URL params
         trip.outbound_flight_id = outboundId || trip.outbound_flight_id || '';
         trip.outbound_flight_number = usp.get('outbound_flight_number') || trip.outbound_flight_number || '';
@@ -273,7 +282,29 @@
         trip.outbound_price = usp.get('outbound_price') ? Number(usp.get('outbound_price')) : (trip.outbound_price || 0);
         // Dates
         trip.departDateISO = usp.get('depart_date') || trip.departDateISO || '';
-        if (usp.get('return_date')) trip.returnDateISO = usp.get('return_date');
+
+        if (tripType === 'round-trip' && usp.get('return_date')) {
+          trip.returnDateISO = usp.get('return_date');
+        }
+
+        // Prevent one-way flow from inheriting stale inbound data from previous sessions.
+        if (tripType === 'one-way') {
+          trip.returnDateISO = '';
+          trip.inbound_flight_id = null;
+          trip.returnFlightId = null;
+          trip.inbound_flight_number = '';
+          trip.inbound_departure_airport = '';
+          trip.inbound_arrival_airport = '';
+          trip.inbound_departure_time = '';
+          trip.inbound_arrival_time = '';
+          trip.inbound_price = 0;
+          if (Array.isArray(trip.segments)) {
+            trip.segments = trip.segments.filter(function(seg) {
+              return seg && seg.direction === 'outbound';
+            });
+          }
+        }
+
         try { localStorage.setItem('skyplan_trip_selection', JSON.stringify(trip)); console.log('[fare] Merged trip data into skyplan_trip_selection', trip); } catch(e) { console.warn('[fare] Failed saving trip merge', e); }
       }
     } catch (e) { /* ignore */ }

@@ -9,7 +9,11 @@ from dotenv import load_dotenv
 # Load environment variables from .env file in root directory
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 env_path = os.path.join(root_dir, '.env')
-load_dotenv(env_path)
+load_dotenv(env_path, encoding='utf-8-sig')
+
+# Also load blockchain workspace env for local dev fallback (does not override existing keys).
+blockchain_env_path = os.path.join(root_dir, 'skyplan-blockchain', '.env')
+load_dotenv(blockchain_env_path, override=False, encoding='utf-8-sig')
 
 class Config:
     """Base configuration class"""
@@ -86,7 +90,9 @@ class BlockchainConfig:
     
     # BookingRegistry contract address (deployed on Sepolia)
     BOOKING_REGISTRY_ADDRESS = os.environ.get('BOOKING_REGISTRY_ADDRESS')
-    TICKET_NFT_ADDRESS = os.environ.get('TICKET_NFT_ADDRESS')
+    TICKET_NFT_ADDRESS = (
+        os.environ.get('TICKET_NFT_ADDRESS')
+    )
     SKY_TOKEN_ADDRESS = os.environ.get('SKY_TOKEN_ADDRESS')
     PRIVATE_KEY = os.environ.get('PRIVATE_KEY') or os.environ.get('CONTRACT_PRIVATE_KEY')
     SKY_REWARD_AMOUNT = os.environ.get('SKY_REWARD_AMOUNT') or '100'

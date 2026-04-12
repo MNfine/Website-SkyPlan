@@ -395,7 +395,13 @@
                 </div>
               </div>
 
-              <button class="continue-btn" data-i18n="continue">Tiếp Tục</button>
+              <div class="button-group">
+                <button class="back-btn" onclick="goBackToFare()" id="backBtn">
+                  <i class="fas fa-arrow-left"></i>
+                  <span data-i18n="back"></span>
+                </button>
+                <button class="continue-btn" data-i18n="continue"></button>
+              </div>
             </div>
           </div>
         </div>
@@ -412,6 +418,7 @@
   <script src="assets/scripts/common.js"></script>
 <script src="assets/scripts/wallet_translations.js"></script>
 <script src="assets/scripts/metamask.js"></script>
+<script src="assets/scripts/wallet-ui.js"></script>
   <script src="assets/scripts/seat.js"></script>
   <script src="assets/scripts/auth-utils.js"></script>
 
@@ -442,6 +449,14 @@
             }
             // Initialize language functionality after header loads
             initializeLanguage();
+            
+            // Initialize wallet UI after header loads
+            if (typeof initWalletUI === 'function') {
+              initWalletUI();
+            }
+            
+            // Emit header-loaded event
+            document.dispatchEvent(new CustomEvent('header-loaded'));
             
             // Re-apply translations after header loads to ensure consistency
             setTimeout(() => {
@@ -747,7 +762,7 @@
       });
 
       // Continue button functionality (enhanced with toast)
-      continueBtn.addEventListener('click', function(e) {
+      continueBtn.addEventListener('click', async function(e) {
         if (selectedSeats.length === 0) {
           e.preventDefault();
           if (typeof SeatNotifications !== 'undefined') {
@@ -758,21 +773,131 @@
             alert(selectAtLeastOneMsg);
           }
         } else {
-          // Stop countdown when continuing
-          hideCountdown();
+          e.preventDefault();
           
-          // Save selected seats to localStorage for payment confirmation
-          const seatData = selectedSeats.map(seat => ({
-            seat_code: seat,
-            seat_class: new URLSearchParams(window.location.search).get('class') || 'economy'
-          }));
-          localStorage.setItem('selectedSeats', JSON.stringify(seatData));
+          // Get flight ID from URL or localStorage
+          const urlParams = new URLSearchParams(window.location.search);
+          let flightId = urlParams.get('flight_id') || urlParams.get('outbound_flight_id');
           
-          // Navigate to next page with current parameters
-          const currentParams = new URLSearchParams(window.location.search);
-          window.location.href = 'passenger.html?' + currentParams.toString();
+          if (!flightId) {
+            try {
+              const trip = JSON.parse(localStorage.getItem('skyplan_trip_selection') || 'null');
+              if (trip && (trip.outbound_flight_id || trip.flightId || trip.flight_id)) {
+                flightId = String(trip.outbound_flight_id || trip.flightId || trip.flight_id);
+              }
+            } catch (e) {}
+          }
+          
+          if (!flightId) {
+            if (typeof showToast === 'function') {
+              const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+              showToast(currentLang === 'vi' ? 'Không tìm thấy chuyến bay' : 'Flight not found', 'error');
+            }
+            return;
+          }
+          
+          // Get seat IDs from SeatManager (if available)
+          let seatIds = [];
+          if (typeof SeatManager !== 'undefined' && SeatManager.seatMap) {
+            selectedSeats.forEach(seatCode => {
+              const apiSeat = SeatManager.seatMap.get(seatCode);
+              if (apiSeat && apiSeat.id) {
+                seatIds.push(apiSeat.id);
+              }
+            });
+          }
+          
+          if (seatIds.length === 0) {
+            if (typeof showToast === 'function') {
+              const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+              showToast(currentLang === 'vi' ? 'Không thể lấy thông tin ghế' : 'Failed to get seat information', 'error');
+            }
+            return;
+          }
+          
+          // Call API to reserve seats
+          try {
+            const authToken = localStorage.getItem('authToken');
+            const headers = {
+              'Content-Type': 'application/json'
+            };
+            
+            // Only add Authorization header if we have a token
+            if (authToken) {
+              headers['Authorization'] = `Bearer ${authToken}`;
+            }
+            
+            const response = await fetch('/api/seats/reserve', {
+              method: 'POST',
+              headers: headers,
+              body: JSON.stringify({
+                flight_id: parseInt(flightId),
+                seat_ids: seatIds,
+                hold_minutes: 15
+              })
+            });
+            
+            if (!response.ok) {
+              throw new Error(`Failed to reserve seats: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            if (!result.success) {
+              throw new Error(result.message || 'Failed to reserve seats');
+            }
+            
+            // Stop countdown when continuing
+            hideCountdown();
+            
+            // Save selected seats to localStorage for payment confirmation
+            const seatData = selectedSeats.map(seat => ({
+              seat_code: seat,
+              seat_class: urlParams.get('class') || 'economy'
+            }));
+            localStorage.setItem('selectedSeats', JSON.stringify(seatData));
+            localStorage.setItem('seatReservationTime', result.reserved_until || new Date().toISOString());
+            
+            // Navigate to next page with current parameters
+            const currentParams = new URLSearchParams(window.location.search);
+            window.location.href = 'passenger.html?' + currentParams.toString();
+            
+          } catch (error) {
+            console.error('Error reserving seats:', error);
+            if (typeof showToast === 'function') {
+              const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+              const message = currentLang === 'vi' ? 
+                `Lỗi giữ chỗ: ${error.message}` : 
+                `Error reserving seats: ${error.message}`;
+              showToast(message, 'error');
+            }
+          }
         }
       });
+
+      // Back button to go to fare.html
+      window.goBackToFare = function() {
+        // Get the stored trip selection
+        const trip = (window.readJSON && window.readJSON('skyplan_trip_selection', null)) || {};
+        
+        if (trip && trip.departDateISO) {
+          // Build URL params for fare page
+          const params = new URLSearchParams({
+            from: trip.fromCode || 'HaNoi',
+            to: trip.toCode || 'HoChiMinh',
+            departure: trip.departDateISO,
+            return: trip.returnDateISO || '',
+            outbound_flight: trip.outbound_flight_id || '',
+            inbound_flight: trip.inbound_flight_id || ''
+          });
+          window.location.href = `fare.html?${params.toString()}`;
+        } else {
+          window.location.href = 'fare.html';
+        }
+      };
+
+      // Progress steps click handlers - REMOVED
+      // (Using global progress bar instead)
 
       // Initialize display
       updateSelectedDisplay();

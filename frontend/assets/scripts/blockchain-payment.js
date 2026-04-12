@@ -7,14 +7,47 @@
 const BlockchainPayment = (function () {
   'use strict';
 
-  // Configuration
-  const CONFIG = {
+  // Configuration - will be loaded from server
+  let CONFIG = {
     SEPOLIA_CHAIN_ID: '11155111',
     SEPOLIA_CHAIN_ID_HEX: '0xaa36a7',
-    PAYMENT_CONTRACT_ADDRESS: '0x0000000000000000000000000000000000000000', // Placeholder - update with actual contract
-    MIN_GAS_LIMIT: 21000, // Minimum gas for standard ETH transfer
-    GAS_PRICE_MULTIPLIER: 1.2, // Add 20% buffer to gas price
+    BOOKING_REGISTRY_ADDRESS: null,
+    TICKET_NFT_ADDRESS: null,
+    SKY_TOKEN_ADDRESS: null,
+    MIN_GAS_LIMIT: 21000,
+    GAS_PRICE_MULTIPLIER: 1.2,
   };
+
+  // Flag to track if config is loaded
+  let configLoaded = false;
+
+  // Initialize blockchain config from server
+  async function initializeBlockchainConfig() {
+    if (configLoaded) {
+      return CONFIG;
+    }
+
+    try {
+      if (window.SkyPlanConfig && typeof window.SkyPlanConfig.getBlockchainConfig === 'function') {
+        const blockchainConfig = await window.SkyPlanConfig.getBlockchainConfig();
+        if (blockchainConfig) {
+          CONFIG.BOOKING_REGISTRY_ADDRESS = blockchainConfig.bookingRegistryAddress;
+          CONFIG.TICKET_NFT_ADDRESS = blockchainConfig.ticketNFTAddress;
+          CONFIG.SKY_TOKEN_ADDRESS = blockchainConfig.skyTokenAddress;
+          CONFIG.SEPOLIA_CHAIN_ID = blockchainConfig.sepoliaChainId;
+          CONFIG.SEPOLIA_CHAIN_ID_HEX = blockchainConfig.sepoliaChainIdHex;
+          configLoaded = true;
+          console.log('✓ Blockchain config loaded from server', CONFIG);
+          return CONFIG;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to initialize blockchain config:', error);
+    }
+
+    console.warn('⚠️ Using fallback blockchain config (addresses may be unset)');
+    return CONFIG;
+  }
 
   // State management
   let currentTransaction = {
@@ -25,12 +58,6 @@ const BlockchainPayment = (function () {
     errorCode: null,
     errorMessage: null,
   };
-
-  // UI-only simulation sequence for realistic end-to-end visual testing.
-  const SIMULATION_SEQUENCE = ['success', 'reject', 'gas', 'rpc', 'fail'];
-  let simulationIndex = 0;
-  let simulationInProgress = false;
-  let demoWalletConnected = false;
 
   // Translation helper
   function getMessage(key, lang = 'vi') {
@@ -90,6 +117,9 @@ const BlockchainPayment = (function () {
     const lang = localStorage.getItem('preferredLanguage') || 'vi';
 
     try {
+      // Initialize blockchain config from server
+      await initializeBlockchainConfig();
+
       showDemoPanel();
 
       // Get booking and amount from localStorage/page
@@ -148,6 +178,9 @@ const BlockchainPayment = (function () {
     const lang = localStorage.getItem('preferredLanguage') || 'vi';
 
     try {
+      // Initialize blockchain config from server
+      await initializeBlockchainConfig();
+
       // Validate input
       if (!bookingCode || !amountVnd) {
         notify(getMessage('invalidAmount', lang), 'warning', 4000);
@@ -181,9 +214,9 @@ const BlockchainPayment = (function () {
       const fromAddress = window.MetaMaskWallet.account;
       // Use self-transfer in test mode when contract address is still placeholder.
       const toAddress =
-        CONFIG.PAYMENT_CONTRACT_ADDRESS === '0x0000000000000000000000000000000000000000'
+        CONFIG.BOOKING_REGISTRY_ADDRESS === '0x0000000000000000000000000000000000000000'
           ? fromAddress
-          : CONFIG.PAYMENT_CONTRACT_ADDRESS;
+          : CONFIG.BOOKING_REGISTRY_ADDRESS;
 
       // Prepare transaction parameters
       // Convert amount to Wei (1 ETH = 10^18 Wei)
@@ -423,269 +456,6 @@ const BlockchainPayment = (function () {
     }
   }
 
-  function buildMockTxHash() {
-    const partA = Math.random().toString(16).slice(2, 18);
-    const partB = Math.random().toString(16).slice(2, 18);
-    const partC = Date.now().toString(16).slice(-16);
-    return `0x${(partA + partB + partC).padEnd(64, '0').slice(0, 64)}`;
-  }
-
-  function showDemoPanel() {
-    const panel = document.getElementById('transactionDemoPanel');
-    if (panel) panel.style.display = 'block';
-  }
-
-  function ensureMockWalletStatus() {
-    const walletStatus = document.getElementById('walletStatus');
-    const walletAddress = document.getElementById('walletAddress');
-    if (!walletStatus || !walletAddress) return;
-
-    if (demoWalletConnected) {
-      const hasRealConnection = !!(window.MetaMaskWallet && window.MetaMaskWallet.isConnected && window.MetaMaskWallet.account);
-      walletStatus.style.display = 'block';
-      walletAddress.textContent = hasRealConnection ? window.MetaMaskWallet.account : '0xD3MO...UIF1OW';
-      return;
-    }
-
-    walletStatus.style.display = 'none';
-  }
-
-  function resetStatusUI() {
-    const container = document.getElementById('transactionStatusContainer');
-    const pending = document.getElementById('statusPending');
-    const success = document.getElementById('statusSuccess');
-    const failed = document.getElementById('statusFailed');
-    const errorMessage = document.getElementById('errorMessage');
-    const errorCodeDisplay = document.getElementById('errorCodeDisplay');
-    const txHashPending = document.getElementById('txHashPending');
-    const txHashSuccess = document.getElementById('txHashSuccess');
-
-    if (container) container.style.display = 'none';
-    if (pending) pending.style.display = 'none';
-    if (success) success.style.display = 'none';
-    if (failed) failed.style.display = 'none';
-    if (errorMessage) errorMessage.textContent = getMessage('transactionFailed', localStorage.getItem('preferredLanguage') || 'vi');
-    if (errorCodeDisplay) errorCodeDisplay.textContent = '';
-    if (txHashPending) txHashPending.textContent = '-';
-    if (txHashSuccess) txHashSuccess.textContent = '-';
-    updateSimulationHint('Bước 1: Kết nối ví. Bước 2: Chạy luồng giao dịch để mô phỏng Pending -> kết quả cuối.');
-    setSimulationButtonRunning(false);
-    ensureMockWalletStatus();
-  }
-
-  function updateSimulationHint(message) {
-    const hint = document.getElementById('simulationHint');
-    if (hint) hint.textContent = message;
-  }
-
-  function setSimulationButtonRunning(isRunning) {
-    const runBtn = document.getElementById('simulateFlowBtn');
-    if (!runBtn) return;
-
-    runBtn.disabled = !!isRunning;
-    runBtn.classList.toggle('is-running', !!isRunning);
-    runBtn.textContent = isRunning ? 'Đang xử lý...' : 'Chạy luồng giao dịch';
-  }
-
-  function getNextSimulationOutcome() {
-    const outcome = SIMULATION_SEQUENCE[simulationIndex % SIMULATION_SEQUENCE.length];
-    simulationIndex += 1;
-    return outcome;
-  }
-
-  function applySimulationResult(outcome, txHash, lang) {
-    if (outcome === 'success') {
-      showStatus('success', txHash);
-      notify(getMessage('transactionSuccess', lang), 'success', 3500);
-      updateSimulationHint('Kết quả lần này: Thành công. Lần chạy tiếp theo sẽ mô phỏng lỗi khác để bạn kiểm tra UI đầy đủ.');
-      return;
-    }
-
-    if (outcome === 'reject') {
-      showStatus('failed', null, 'user_rejected', getMessage('userRejected', lang));
-      notify(getMessage('userRejected', lang), 'warning', 3500);
-      updateSimulationHint('Kết quả lần này: User reject trong ví.');
-      return;
-    }
-
-    if (outcome === 'gas') {
-      showStatus('failed', null, 'insufficient_gas', getMessage('insufficientGas', lang));
-      notify(getMessage('insufficientGas', lang), 'warning', 3500);
-      updateSimulationHint('Kết quả lần này: Thiếu gas.');
-      return;
-    }
-
-    if (outcome === 'rpc') {
-      showStatus('failed', null, 'rpc_error', getMessage('rpcError', lang));
-      notify(getMessage('rpcError', lang), 'error', 3500);
-      updateSimulationHint('Kết quả lần này: RPC lỗi.');
-      return;
-    }
-
-    showStatus('failed', txHash, 'tx_reverted', getMessage('transactionFailed', lang));
-    notify(getMessage('transactionFailed', lang), 'error', 3500);
-    updateSimulationHint('Kết quả lần này: Fail do transaction reverted.');
-  }
-
-  function runDemoStatus(type) {
-    const lang = localStorage.getItem('preferredLanguage') || 'vi';
-    const mockTxHash = buildMockTxHash();
-
-    if (type === 'pending') {
-      showStatus('pending', mockTxHash);
-      notify(getMessage('transactionPending', lang), 'info', 3000);
-      return;
-    }
-
-    if (type === 'success') {
-      showStatus('success', mockTxHash);
-      notify(getMessage('transactionSuccess', lang), 'success', 3500);
-      return;
-    }
-
-    if (type === 'fail') {
-      showStatus('failed', mockTxHash, 'tx_reverted', getMessage('transactionFailed', lang));
-      notify(getMessage('transactionFailed', lang), 'error', 3500);
-      return;
-    }
-
-    if (type === 'reject') {
-      showStatus('failed', null, 'user_rejected', getMessage('userRejected', lang));
-      notify(getMessage('userRejected', lang), 'warning', 3500);
-      return;
-    }
-
-    if (type === 'gas') {
-      showStatus('failed', null, 'insufficient_gas', getMessage('insufficientGas', lang));
-      notify(getMessage('insufficientGas', lang), 'warning', 3500);
-      return;
-    }
-
-    if (type === 'rpc') {
-      showStatus('failed', null, 'rpc_error', getMessage('rpcError', lang));
-      notify(getMessage('rpcError', lang), 'error', 3500);
-    }
-  }
-
-  function runSimulatedTransactionFlow() {
-    if (simulationInProgress) return;
-
-    const hasRealConnection = !!(window.MetaMaskWallet && window.MetaMaskWallet.isConnected && window.MetaMaskWallet.account);
-    if (!hasRealConnection && !demoWalletConnected) {
-      updateSimulationHint('Vui lòng bấm "Kết nối ví" trước khi chạy luồng giao dịch.');
-      notify('Vui lòng kết nối ví trước', 'warning', 3000);
-      return;
-    }
-
-    const lang = localStorage.getItem('preferredLanguage') || 'vi';
-    const mockTxHash = buildMockTxHash();
-    const outcome = getNextSimulationOutcome();
-
-    simulationInProgress = true;
-    setSimulationButtonRunning(true);
-
-    showStatus('pending', mockTxHash);
-    notify(getMessage('processingTransaction', lang), 'info', 2200);
-    updateSimulationHint('Đang mô phỏng giao dịch: gửi tx -> chờ xác nhận on-chain...');
-
-    const delay = 2200 + Math.floor(Math.random() * 1600);
-    setTimeout(function () {
-      applySimulationResult(outcome, mockTxHash, lang);
-      simulationInProgress = false;
-      setSimulationButtonRunning(false);
-    }, delay);
-  }
-
-  function bindDemoButtons() {
-    const onDemoConnect = function () {
-      demoWalletConnected = true;
-      ensureMockWalletStatus();
-      updateSimulationHint('Đã kết nối ví. Bây giờ bạn có thể chạy luồng giao dịch.');
-      notify('Đã kết nối ví thành công', 'success', 2500);
-    };
-
-    const connectBtnInline = document.getElementById('demoConnectWalletBtn');
-    if (connectBtnInline) {
-      connectBtnInline.addEventListener('click', onDemoConnect);
-    }
-
-    const connectBtnPanel = document.getElementById('simulateConnectBtn');
-    if (connectBtnPanel) {
-      connectBtnPanel.addEventListener('click', onDemoConnect);
-    }
-
-    const runBtn = document.getElementById('simulateFlowBtn');
-    if (runBtn) {
-      runBtn.addEventListener('click', function () {
-        runSimulatedTransactionFlow();
-      });
-    }
-
-    const resetBtn = document.getElementById('demoResetBtn');
-    if (resetBtn) {
-      resetBtn.addEventListener('click', function () {
-        demoWalletConnected = false;
-        resetStatusUI();
-      });
-    }
-
-    // State view buttons for reviewing individual UI states
-    const mockTxHash = '0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t';
-
-    const showPendingBtn = document.getElementById('demoShowPending');
-    if (showPendingBtn) {
-      showPendingBtn.addEventListener('click', function () {
-        showStatus('pending', mockTxHash);
-      });
-    }
-
-    const showSuccessBtn = document.getElementById('demoShowSuccess');
-    if (showSuccessBtn) {
-      showSuccessBtn.addEventListener('click', function () {
-        showStatus('success', mockTxHash);
-      });
-    }
-
-    const showRejectBtn = document.getElementById('demoShowReject');
-    if (showRejectBtn) {
-      showRejectBtn.addEventListener('click', function () {
-        showStatus('failed', null, 'user_rejected', 'Bạn đã từ chối giao dịch');
-      });
-    }
-
-    const showGasBtn = document.getElementById('demoShowGas');
-    if (showGasBtn) {
-      showGasBtn.addEventListener('click', function () {
-        showStatus('failed', null, 'insufficient_gas', 'Không đủ ETH để thanh toán gas');
-      });
-    }
-
-    const showRpcBtn = document.getElementById('demoShowRpc');
-    if (showRpcBtn) {
-      showRpcBtn.addEventListener('click', function () {
-        showStatus('failed', null, 'rpc_error', 'Lỗi kết nối blockchain');
-      });
-    }
-
-    const showFailBtn = document.getElementById('demoShowFail');
-    if (showFailBtn) {
-      showFailBtn.addEventListener('click', function () {
-        showStatus('failed', null, 'transaction_failed', 'Giao dịch thất bại');
-      });
-    }
-  }
-
-  function initDemoUI() {
-    try {
-      resetStatusUI();
-      showDemoPanel();
-      ensureMockWalletStatus();
-      bindDemoButtons();
-    } catch (error) {
-      console.error('Blockchain demo UI init error:', error);
-    }
-  }
-
   /**
    * Show transaction status
    */
@@ -868,22 +638,14 @@ const BlockchainPayment = (function () {
 
   // Public API
   return {
+    initializeBlockchainConfig: initializeBlockchainConfig,
     initiatePayment: initiatePayment,
     sendTransaction: sendTransaction,
     showStatus: showStatus,
-    runDemoStatus: runDemoStatus,
-    runSimulatedTransactionFlow: runSimulatedTransactionFlow,
     resetStatusUI: resetStatusUI,
-    initDemoUI: initDemoUI,
     getMessage: getMessage,
   };
 })();
 
 // Export globally
 window.BlockchainPayment = BlockchainPayment;
-
-document.addEventListener('DOMContentLoaded', function () {
-  if (window.BlockchainPayment && typeof window.BlockchainPayment.initDemoUI === 'function') {
-    window.BlockchainPayment.initDemoUI();
-  }
-});

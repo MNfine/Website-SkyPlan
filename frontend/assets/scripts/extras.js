@@ -9,7 +9,7 @@
   } catch(e){}
 })();
 
-// Key lưu state extras
+// Key to save extras state
 const STORAGE_KEY = "skyplan_extras_v2";
 const DEFAULT_EXTRAS = {
   meals: [],

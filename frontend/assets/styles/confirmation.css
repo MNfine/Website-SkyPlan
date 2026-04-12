@@ -54,6 +54,82 @@ body {
 .confirmation-details strong {
   color: #0a969d;
 }
+
+.confirmation-upgrade {
+  margin: 0 0 22px;
+  padding: 16px;
+  border: 1px solid #cfe9ea;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f9ffff 0%, #edf8f8 100%);
+  text-align: left;
+}
+
+.confirmation-upgrade-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #103540;
+}
+
+.confirmation-upgrade-head i {
+  color: #0a969d;
+}
+
+.confirmation-upgrade-desc {
+  margin: 10px 0 10px;
+  color: #4b6670;
+  line-height: 1.45;
+  font-size: 0.95rem;
+}
+
+.confirmation-upgrade-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.confirmation-upgrade-pills span {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #b9dfe1;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #0f2b35;
+  background: #fff;
+}
+
+.confirmation-upgrade-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.confirmation-upgrade-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.86rem;
+  padding: 10px 12px;
+}
+
+.confirmation-upgrade-actions .upgrade-guide {
+  color: #103540;
+  background: #f4fbfb;
+  border: 1px solid #cfe9ea;
+}
+
+.confirmation-upgrade-actions .upgrade-now {
+  color: #fff;
+  background: linear-gradient(135deg, #0a969d 0%, #0c7f86 100%);
+  border: 1px solid #0a969d;
+}
 .confirmation-actions {
   margin-top: 18px;
   display: flex;
@@ -145,6 +221,16 @@ body {
     margin-bottom: 20px;
     font-size: 0.9rem;
   }
+
+  .confirmation-upgrade {
+    margin-bottom: 18px;
+    padding: 14px;
+  }
+
+  .confirmation-upgrade-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
   
   .confirmation-actions {
     margin-top: 16px;
@@ -197,6 +283,24 @@ body {
     margin-bottom: 18px;
     font-size: 0.85rem;
     line-height: 1.5;
+  }
+
+  .confirmation-upgrade {
+    margin-bottom: 16px;
+    padding: 12px;
+  }
+
+  .confirmation-upgrade-head {
+    font-size: 0.95rem;
+  }
+
+  .confirmation-upgrade-desc {
+    font-size: 0.82rem;
+  }
+
+  .confirmation-upgrade-actions a {
+    font-size: 0.78rem;
+    padding: 9px 10px;
   }
   
   .confirmation-actions {

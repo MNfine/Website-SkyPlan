@@ -92,6 +92,7 @@
     <div id="footer-container"></div>
 
     <script src="assets/scripts/common.js"></script>
+    <script src="assets/scripts/wallet-ui.js"></script>
 <script src="assets/scripts/wallet_translations.js"></script>
 <script src="assets/scripts/metamask.js"></script>
     <script src="assets/scripts/promotion_translations.js"></script>
@@ -106,8 +107,10 @@
                 document.getElementById('header-container').innerHTML = html;
                 if (typeof initializeLanguageSelector === 'function') initializeLanguageSelector();
                 if (typeof initializeMobileMenu === 'function') initializeMobileMenu();
+                if (typeof initWalletUI === 'function') initWalletUI();
                 if (typeof applyHeaderFooterI18n === 'function') applyHeaderFooterI18n(getLang());
                 if (typeof applyPromotionI18n === 'function') applyPromotionI18n(getLang());
+                document.dispatchEvent(new CustomEvent('header-loaded'));
                 document.dispatchEvent(new CustomEvent('componentsLoaded'));
             });
 

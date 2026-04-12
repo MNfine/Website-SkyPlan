@@ -521,6 +521,30 @@ body {
   box-shadow: 0 6px 16px rgba(30, 136, 229, 0.4);
 }
 
+.vnpay-back-btn {
+  width: 100%;
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  margin-top: 12px;
+}
+
+.vnpay-back-btn:hover {
+  background: #e8e8e8;
+  border-color: #999;
+  transform: translateY(-1px);
+}
+
 /* Order Summary */
 .order-summary {
   padding: 30px;
@@ -595,14 +619,14 @@ body {
   border: 1px solid #e1e5e9;
 }
 
-.voucher-input {
+.voucher-input-group {
   display: flex;
   gap: 12px;
   margin-bottom: 12px;
   align-items: center;
 }
 
-.voucher-input input {
+.voucher-input-group input {
   flex: 1;
   min-width: 0; /* Prevents overflow */
   padding: 12px 16px;
@@ -614,12 +638,12 @@ body {
   box-sizing: border-box;
 }
 
-.voucher-input input:focus {
+.voucher-input-group input:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(10, 150, 157, 0.1);
 }
 
-.voucher-input button {
+.voucher-input-group button {
   padding: 12px 20px;
   background: var(--primary-color);
   color: white;
@@ -635,12 +659,12 @@ body {
   box-sizing: border-box;
 }
 
-.voucher-input button:hover {
+.voucher-input-group button:hover {
   background: #088a91;
   transform: translateY(-1px);
 }
 
-.voucher-input button:active {
+.voucher-input-group button:active {
   transform: translateY(0);
 }
 

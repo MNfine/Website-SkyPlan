@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="metaMyNFTsTitle">SkyPlan - Vé NFT của tôi</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="./assets/styles/common.css">
+    <link rel="stylesheet" href="./assets/styles/nft-dashboard.css">
+    <link rel="stylesheet" href="./assets/styles/loader.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Translations -->
+    <script src="./assets/scripts/index_translations.js"></script>
+</head>
+<body>
+    <div id="loader" class="loader"></div>
+
+    <!-- Header component -->
+    <div id="headerContainer"></div>
+
+    <!-- Main content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page header -->
+            <div class="page-header">
+                <h1 class="page-title" data-i18n="myNFTs.pageTitle">Vé NFT của tôi</h1>
+                <p class="page-subtitle" data-i18n="myNFTs.pageSubtitle">
+                    Những vé máy bay NFT đã được mint trên blockchain
+                </p>
+            </div>
+
+            <!-- NFT Count Card -->
+            <div class="nft-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="nftCount">0</div>
+                        <div class="stat-label" data-i18n="myNFTs.totalNFTs">Tổng NFT</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="mintedCount">0</div>
+                        <div class="stat-label" data-i18n="myNFTs.mintedTickets">Đã mint</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="pendingCount">0</div>
+                        <div class="stat-label" data-i18n="myNFTs.pendingMint">Chờ mint</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NFTs List -->
+            <div class="nfts-container">
+                <!-- Loading state -->
+                <div id="loadingState" class="loading-skeleton">
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                </div>
+
+                <!-- Empty state -->
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h3 class="empty-title" data-i18n="myNFTs.noNFTs">Chưa có vé NFT</h3>
+                    <p class="empty-text" data-i18n="myNFTs.noNFTsDesc">
+                        Khi bạn hoàn tất thanh toán, các vé sẽ được tự động mint thành NFT trên blockchain.
+                    </p>
+                    <a href="search.html" class="btn-primary" data-i18n="myNFTs.bookFlight">
+                        Đặt chuyến bay ngay
+                    </a>
+                </div>
+
+                <!-- NFT Cards -->
+                <div id="nftsList" class="nfts-grid">
+                    <!-- NFT cards will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer component -->
+    <div id="footerContainer"></div>
+
+    <!-- NFT Detail Modal -->
+    <div id="nftModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div class="modal-body">
+                <h2 class="modal-title" id="modalTitle">Thông tin vé NFT</h2>
+
+                <!-- NFT Image -->
+                <div class="nft-detail-image">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+
+                <!-- NFT Details -->
+                <div class="nft-details">
+                    <div class="detail-group">
+                        <label class="detail-label">Booking Code:</label>
+                        <div class="detail-value" id="detailBookingCode">-</div>
+                    </div>
+
+                    <div class="detail-group">
+                        <label class="detail-label">Token ID:</label>
+                        <div class="detail-value" id="detailTokenId">-</div>
+                    </div>
+
+                    <div class="detail-group">
+                        <label class="detail-label">Contract:</label>
+                        <div class="detail-value detail-address" id="detailContract">-</div>
+                    </div>
+
+                    <div class="detail-group">
+                        <label class="detail-label">Status:</label>
+                        <div class="detail-value" id="detailStatus">-</div>
+                    </div>
+
+                    <div class="detail-group">
+                        <label class="detail-label">Mint Tx Hash:</label>
+                        <div class="detail-value detail-address" id="detailTxHash">-</div>
+                        <a id="explorerLink" target="_blank" class="explorer-link" style="display: none;">
+                            <i class="fas fa-external-link-alt"></i>
+                            View on Etherscan
+                        </a>
+                    </div>
+
+                    <div class="detail-group">
+                        <label class="detail-label">Flight Info:</label>
+                        <div id="flightInfo" class="flight-info">-</div>
+                    </div>
+                </div>
+
+                <!-- Integrate Button (if not minted) -->
+                <button id="mintNFTBtn" class="btn-primary" style="display: none;">
+                    <i class="fas fa-rocket"></i>
+                    Mint NFT ngay
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./assets/scripts/config.js"></script>
+    <script src="./assets/scripts/auth-utils.js"></script>
+    <script src="./assets/scripts/common.js"></script>
+    <script src="./assets/scripts/toast.js"></script>
+    <script src="./assets/scripts/loader.js"></script>
+    <script src="./assets/scripts/nft-dashboard.js"></script>
+</body>
+</html>

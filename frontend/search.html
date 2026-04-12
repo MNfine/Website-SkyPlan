@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="assets/styles/index.css">
     <link rel="stylesheet" href="assets/styles/flags.css">
     <link rel="stylesheet" href="assets/styles/header.css">
+    <link rel="stylesheet" href="assets/styles/wallet.css">
     <link rel="stylesheet" href="assets/styles/footer.css">
     <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
@@ -133,7 +134,7 @@
                 <!-- INBOUND -->
                 <section class="sp-leg" aria-labelledby="inbound-heading">
                     <h3 id="inbound-heading" class="sr-only">Chiều về</h3>
-                    <div class="sp-leg__title">To <span data-from-city>—</span></div>
+                    <div class="sp-leg__title"><span data-i18n="legTo">To</span> <span data-from-city>—</span></div>
                     <div class="sp-leg__panel">
                         <div class="sp-leg__grid">
                             <div class="sp-leg__date">
@@ -176,6 +177,9 @@
     <script src="assets/scripts/auth-utils.js"></script>
     <script src="assets/scripts/search.js"></script>
     <script src="assets/scripts/common.js"></script>
+    <script src="assets/scripts/wallet_translations.js"></script>
+    <script src="assets/scripts/metamask.js"></script>
+    <script src="assets/scripts/wallet-ui.js"></script>
     <script src="assets/scripts/search_translations.js"></script>
     <script src="assets/scripts/search_filter.js"></script>
     
@@ -194,6 +198,19 @@
             };
             await loadComponent('header-container', 'components/header.html');
             await loadComponent('footer-container', 'components/footer.html');
+            
+            // Emit header-loaded event so wallet-ui and menu can initialize
+            document.dispatchEvent(new CustomEvent('header-loaded'));
+            
+            // Initialize mobile menu after header loads
+            if (typeof initializeMobileMenu === 'function') {
+                initializeMobileMenu();
+            }
+            
+            // Initialize wallet UI after header loads
+            if (typeof initWalletUI === 'function') {
+                initWalletUI();
+            }
         });
     </script>
 
@@ -305,45 +322,12 @@
             }, 200);
         }
 
+        // *** NOTE: Header loading is already handled in DOMContentLoaded async block above ***
+        // This function kept for backwards compatibility but no longer needed
         function initializeApp() {
-            // Load header
-            fetch('components/header.html')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    document.getElementById('header-container').innerHTML = data;
-                    console.log('Header loaded successfully');
-
-                    // After header loads, initialize language functionality
-                    initializeLanguage();
-                })
-                .catch(error => {
-                    handleComponentError('header');
-                    console.error('Error loading header:', error);
-                    // Still initialize language even if header fails
-                    initializeLanguage();
-                });
-
-            // Load footer
-            fetch('components/footer.html')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    document.getElementById('footer-container').innerHTML = data;
-                    console.log('Footer loaded successfully');
-                })
-                .catch(error => {
-                    handleComponentError('footer');
-                    console.error('Error loading footer:', error);
-                });
+            // Language initialization
+            initializeLanguage();
+            // Footer is already loaded in DOMContentLoaded async block
         }
 
         // Initialize when DOM is ready
@@ -701,13 +685,22 @@
                 'Không có chuyến bay phù hợp với bộ lọc.' :
                 'No flights match your filters.';
 
-            // 5) Nút/CTA trong modal (nếu đang mở)
+            // 5) Nút/CTA trong modal + leg titles (nếu đang mở)
             if (window.MODAL_I18N && window.MODAL_I18N[lang]) {
                 const btn = document.getElementById('spBookBtn');
                 const storedPrice = btn && btn.dataset ? (btn.dataset.price || '') : '';
                 if (btn) btn.textContent = window.MODAL_I18N[lang].bookPrefix + storedPrice;
                 const titleEl = document.getElementById('spModalTitle');
                 if (titleEl) titleEl.textContent = window.MODAL_I18N[lang].title;
+            }
+
+            // 6) Update "Đến/To" trong modal leg titles
+            if (window.searchTranslations && window.searchTranslations[lang]) {
+                const legToSpans = document.querySelectorAll('.sp-leg__title [data-i18n="legTo"]');
+                const legToText = window.searchTranslations[lang].legTo || 'To';
+                legToSpans.forEach(span => {
+                    span.textContent = legToText;
+                });
             }
         });
 
@@ -848,6 +841,28 @@
 
                             const parseMin = (s) => { const m = /^([0-2]?\d):([0-5]\d)$/.exec(String(s)); return m ? (parseInt(m[1],10)*60 + parseInt(m[2],10)) : null; };
                             const diffMin = (a,b) => { const A=parseMin(a), B=parseMin(b); if (A==null||B==null) return null; let d=B-A; if (d<0) d+=1440; return d; };
+
+                            // Validate: if same day, return departure must be >= 2 hours after outbound arrival
+                            const departISO = state.depart || '';
+                            const returnISO = state.ret || '';
+                            if (departISO === returnISO) {
+                                const outArrMin = parseMin(outArr);
+                                const inDepMin = parseMin(inDep);
+                                if (outArrMin !== null && inDepMin !== null) {
+                                    const minGapRequired = 120; // 2 hours = 120 minutes
+                                    let minGap = inDepMin - outArrMin;
+                                    if (minGap < 0) minGap += 1440; // Handle day wrap (shouldn't happen for same-day)
+                                    
+                                    if (minGap < minGapRequired) {
+                                        const lang = getLang();
+                                        const msg = lang === 'vi' 
+                                            ? `Chuyến bay về phải khởi hành ít nhất 2 tiếng sau khi chuyến bay đi hạ cánh.\nChuyến đi hạ cánh: ${outArr}, Chuyến về khởi hành: ${inDep}` 
+                                            : `Return flight must depart at least 2 hours after outbound arrival.\nOutbound arrives: ${outArr}, Return departs: ${inDep}`;
+                                        alert(msg);
+                                        return; // Don't proceed
+                                    }
+                                }
+                            }
 
                             const priceLabel = (bookBtn.dataset && bookBtn.dataset.price) ? bookBtn.dataset.price : '';
                             const priceVND = priceLabel ? Number(priceLabel.replace(/[^0-9]/g,''))||0 : 0;

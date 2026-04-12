@@ -207,49 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   
-  async function performRegistration(userData) {
-    try {
-      if (submitButton) {
-        submitButton.disabled = true;
-        submitButton.innerHTML = '<span class="spinner"></span> Đang xử lý...';
-      }
-      
-      const response = await fetch(`${API_URL}/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(userData)
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Đăng ký thất bại');
-      }
-      
-  // Registration successful - do NOT auto-login. Redirect user to login page.
-  // Show success message then redirect to login so user can sign in.
-  alert('Đăng ký thành công!\n\nVui lòng đăng nhập bằng tài khoản mới.');
-  window.location.href = '/login.html?message=registration-success';
-      
-    } catch (error) {
-      if (error.message.includes('Email already registered')) {
-        showError('email', 'Email đã được đăng ký');
-      } else if (error.message.includes('Phone number already registered')) {
-        showError('phone', 'Số điện thoại đã được đăng ký');
-      } else {
-        alert('Đăng ký thất bại: ' + error.message);
-      }
-      console.error('Registration error:', error);
-    } finally {
-      if (submitButton) {
-        submitButton.disabled = false;
-        submitButton.textContent = 'Đăng ký';
-      }
-    }
-  }
-
   /* Registration API call */
   async function performRegistration(fullName, email, phone, password) {
     try {

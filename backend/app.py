@@ -26,6 +26,7 @@ from backend.routes.tickets import tickets_bp
 from backend.routes.support import support_bp
 from backend.routes.ai_chat import ai_chat_bp
 from backend.routes.contact import contact_bp
+from backend.routes.metadata import metadata_bp
 from backend.models.db import init_db
 from backend.utils.email_service import init_mail
 from backend.config import BlockchainConfig
@@ -117,7 +118,9 @@ def create_app():
     app.register_blueprint(support_bp, url_prefix='/api/support')  # Support chat API
     app.register_blueprint(ai_chat_bp, url_prefix='/api/ai')  # AI Chat API (Gemini)
     app.register_blueprint(contact_bp, url_prefix='/api/contact')  # Contact form API
-    # Initialize SocketIO (exposed at module level)
+    app.register_blueprint(metadata_bp, url_prefix='/api/metadata')  # NFT metadata
+
+    #  Initialize SocketIO (exposed at module level)
     # Use threading async_mode for Python 3.13 compatibility
     global socketio
     socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
@@ -335,7 +338,7 @@ if __name__ == '__main__':
     try:
         import eventlet  # noqa: F401
         print("Eventlet imported OK")  # <--- THÊM DÒNG NÀY
-        use_eventlet = True
+        use_eventlet = False  # Temporarily disable socketio to debug routing
     except Exception as e:
         print("Eventlet import failed:", e)
         use_eventlet = False
@@ -345,4 +348,4 @@ if __name__ == '__main__':
         # which may create a separate module instance when running as a script (.__main__).
         socketio.run(app, host='0.0.0.0', port=5000, debug=False)
     else:
-        app.run(host='0.0.0.0', port=5000, debug=True)
+        app.run(host='0.0.0.0', port=5000, debug=False)  # Disable debug mode

@@ -15,7 +15,7 @@ const overviewTranslations = {
         termsOfService: "Terms of Service",
         supportTitle: "Support",
         helpCenter: "Help Center",
-        customerService: "Customer Service",
+        blogLink: "Blog",
         bookingHelp: "Booking Help",
         faq: "FAQ",
         promotion: "Promotions",
@@ -107,7 +107,7 @@ const overviewTranslations = {
         termsOfService: "Điều khoản dịch vụ",
         supportTitle: "Hỗ trợ",
         helpCenter: "Trung tâm trợ giúp",
-        customerService: "Dịch vụ khách hàng",
+        blogLink: "Blog",
         bookingHelp: "Hỗ trợ đặt vé",
         faq: "Câu hỏi thường gặp",
         promotion: "Khuyến mãi",
@@ -194,12 +194,13 @@ if (typeof module !== 'undefined' && module.exports) {
 // Function to apply translations for overview page
 function applyOverviewTranslations(lang) {
     const elements = document.querySelectorAll('[data-i18n]');
+
     elements.forEach(element => {
         const key = element.getAttribute('data-i18n');
+
         if (overviewTranslations[lang] && overviewTranslations[lang][key]) {
             element.textContent = overviewTranslations[lang][key];
         } else {
-            // Log missing keys for easier debugging
             console.warn(`Missing translation for key: '${key}' in language: '${lang}'`);
         }
     });
@@ -328,11 +329,16 @@ function applyOverviewTranslations(lang) {
 function changeOverviewLanguage(lang) {
     localStorage.setItem('preferredLanguage', lang);
     document.documentElement.lang = lang;
+    // Apply translations for main content immediately
     applyOverviewTranslations(lang);
-    // Broadcast so header/footer or other modules can react immediately
+    // Broadcast so header/footer or other modules can react
     try {
         document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
     } catch { }
+    // Ensure translations are applied again after a short delay (for dynamically loaded footer)
+    setTimeout(() => {
+        applyOverviewTranslations(lang);
+    }, 100);
 }
 
 // Ensure Vietnamese is set as default on first visit

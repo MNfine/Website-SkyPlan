@@ -20,10 +20,10 @@ interface ISkyToken {
 
 /**
  * TicketNFT - Flight Ticket (ERC-721)
- * - Mỗi vé = 1 NFT
- * - Mint khi booking RECORDED
- * - Auto-allow user trong SkyToken khi mint
- * - Soulbound: không thể transfer (optional)
+ * - Each ticket = 1 NFT
+ * - Mint when booking RECORDED
+ * - Auto-allow user in SkyToken when minting
+ * - Soulbound: cannot be transferred (optional)
  */
 contract TicketNFT is ERC721URIStorage, Ownable, AccessControl {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -36,7 +36,7 @@ contract TicketNFT is ERC721URIStorage, Ownable, AccessControl {
     // tokenId -> bookingCode
     mapping(uint256 => string) private bookingCodeOfToken;
 
-    // bookingCodeHash -> tokenId (đảm bảo 1 bookingCode chỉ mint 1 lần)
+    // bookingCodeHash -> tokenId (ensures 1 bookingCode can only be minted once)
     mapping(bytes32 => uint256) private tokenIdOfBookingHash;
 
     // Track user's tickets count
@@ -81,8 +81,8 @@ contract TicketNFT is ERC721URIStorage, Ownable, AccessControl {
     }
 
     /**
-     * ✓ Mint ticket từ booking RECORDED
-     * ✓ Tự động add user vào SkyToken allowlist
+     * ✓ Mint ticket from RECORDED booking
+     * ✓ Automatically add user to SkyToken allowlist
      */
     function mintTicket(
         address to,
@@ -93,7 +93,7 @@ contract TicketNFT is ERC721URIStorage, Ownable, AccessControl {
         require(bytes(bookingCode).length > 0, "Invalid booking code");
         require(bytes(tokenURI_).length > 0, "Invalid token URI");
 
-        // ✓ Verify booking exists và có status = RECORDED
+        // ✓ Verify booking exists and has status = RECORDED
         (bytes32 bookingHash, address owner, , ) = registry.getBooking(bookingCode);
         require(owner == to, "Booking owner mismatch");
         require(bookingHash != bytes32(0), "Booking not found");
@@ -114,12 +114,12 @@ contract TicketNFT is ERC721URIStorage, Ownable, AccessControl {
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, tokenURI_);
 
-        // ✓ Auto-allow user trong SkyToken
+        // ✓ Auto-allow user in SkyToken
         if (address(skyToken) != address(0)) {
             try skyToken.setAllowed(to, true) {
                 // Success
             } catch {
-                // Log fail nhưng không revert - NFT vẫn được mint
+                // Log failure but don't revert - NFT still gets minted
             }
         }
 

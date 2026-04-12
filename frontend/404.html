@@ -48,6 +48,7 @@
     <div id="footer-container"></div>
 
     <script src="assets/scripts/common.js"></script>
+    <script src="assets/scripts/wallet-ui.js"></script>
 <script src="assets/scripts/wallet_translations.js"></script>
 <script src="assets/scripts/metamask.js"></script>
     <script src="assets/scripts/404.js"></script>
@@ -73,6 +74,10 @@
                     if (typeof initializeMobileMenu === 'function') {
                         initializeMobileMenu();
                     }
+                    if (typeof initWalletUI === 'function') {
+                        initWalletUI();
+                    }
+                    document.dispatchEvent(new CustomEvent('header-loaded'));
                 })
                 .catch(error => {
                     handleComponentError('header');

@@ -88,6 +88,10 @@ Một vài khóa `localStorage` thường dùng:
 - `currentBookingCode` / `lastBookingCode` — mã booking để hiển thị fallback
 - `selectedSeats` — danh sách ghế đã chọn
 
+Wallet login state:
+- Sau khi xác thực ví thành công, frontend phải lưu cả `authToken` và `currentUser` (qua `AuthState.setAuth`) để header nhận diện đúng trạng thái đăng nhập.
+- Nếu chỉ có `authToken` mà thiếu `currentUser`, header sẽ tiếp tục hiện nút `Sign In`/`Sign Up`.
+
 Nếu confirmation hiển thị code nhưng `my_trips` không tăng số booking, kiểm tra Network → `POST /api/bookings/create` có trả 201 không (nếu 400 thì booking không được commit).
 
 ## Chạy test (gợi ý)
@@ -107,6 +111,20 @@ pytest backend/tests/
 - Xem logs backend khi chạy `python backend/app.py` để biết lỗi
 - Dùng DevTools Network để kiểm tra payload gửi lên `/api/bookings/create` và `/api/payments/*`
 - Debug endpoint: `GET /api/bookings/debug/inspect` (gửi Bearer token) để xem số lượng booking của user
+- Trang confirmation:
+	- `bookingCode` chỉ được coi là hợp lệ khi match mẫu `SP...`; tránh lưu placeholder (`Đang cập nhật...`) vào localStorage.
+	- `amount` ưu tiên lấy từ `GET /api/bookings/status/<booking_code>` (authoritative từ backend), localStorage chỉ là fallback.
+- Trang payment (Order Summary):
+	- Ưu tiên `trip_type/tripType` để quyết định one-way vs round-trip; one-way phải ẩn block chuyến về ngay cả khi localStorage còn inbound data cũ.
+	- Nhãn vé (`Ticket`) phải đồng bộ theo logic trên: `(one way)` khi one-way, `(round trip)` khi round-trip.
+	- Luồng fare/overview lưu thêm `skyplan_trip_type` (`one-way` hoặc `round-trip`) và dọn inbound stale data khi là one-way để các trang sau không suy luận sai.
+	- Khi bấm xác nhận thanh toán, UI chuyển sang trạng thái processing (loader + lock button) để tránh người dùng bấm nhiều lần.
+	- Thêm guard chống tạo booking lặp do click/retry nhanh trên payment.
+
+- Backend logging / blockchain:
+	- Các log `print` bị lỗi mã hóa ở `bookings.create` đã thay bằng logger có prefix rõ ràng.
+	- Event parsing blockchain dùng chế độ discard mismatch ABI để giảm warning `MismatchedABI` không cần thiết.
+	- Blockchain flow lấy nonce mới trước mỗi tx để giảm lỗi `nonce too low` khi có giao dịch cạnh tranh.
 
 ## Tài liệu kiến trúc
 

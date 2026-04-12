@@ -46,7 +46,7 @@ const paymentTranslations = {
         termsOfService: "Terms of Service",
         supportTitle: "Support",
         helpCenter: "Help Center",
-        customerService: "Customer Service",
+        blogLink: "Blog",
         bookingHelp: "Booking Help",
         faq: "FAQ",
         promotion: "Promotions",
@@ -78,6 +78,7 @@ const paymentTranslations = {
         totalAmount: "Total Amount",
         confirmPayment: "Confirm Payment",
         backToOverview: "Back to Overview",
+        backButton: "Back",
         // Voucher
         voucherTitle: "Discount Code",
         voucherPlaceholder: "Enter voucher code",
@@ -214,7 +215,7 @@ const paymentTranslations = {
         termsOfService: "Điều khoản dịch vụ",
         supportTitle: "Hỗ trợ",
         helpCenter: "Trung tâm trợ giúp",
-        customerService: "Dịch vụ khách hàng",
+        blogLink: "Blog",
         bookingHelp: "Hỗ trợ đặt vé",
         faq: "Câu hỏi thường gặp",
         promotion: "Khuyến mãi",
@@ -246,6 +247,7 @@ const paymentTranslations = {
         totalAmount: "Tổng số tiền",
         confirmPayment: "Xác nhận thanh toán",
         backToOverview: "Quay lại tổng quan",
+        backButton: "Quay lại",
         vnpay: "VNPay",
         momo: "MoMo",
         cash: "Thanh toán tại quầy",
@@ -318,7 +320,15 @@ function applyPaymentTranslations(lang) {
         
         const key = element.getAttribute('data-i18n');
         if (paymentTranslations[lang] && paymentTranslations[lang][key]) {
-            element.textContent = paymentTranslations[lang][key];
+            const translated = paymentTranslations[lang][key];
+            const tag = (element.tagName || '').toLowerCase();
+            if ((tag === 'input' || tag === 'textarea') && element.hasAttribute('placeholder')) {
+                element.setAttribute('placeholder', translated);
+            } else if (tag === 'input' && (element.type === 'button' || element.type === 'submit' || element.type === 'reset')) {
+                element.value = translated;
+            } else {
+                element.textContent = translated;
+            }
         } else {
             // Only log missing keys when debug flag is on
             if (__SKYPLAN_DEBUG__) console.warn(`Missing translation for key: '${key}' in language: '${lang}'`);

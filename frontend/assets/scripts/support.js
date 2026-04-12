@@ -500,9 +500,14 @@ function addMessage(message, sender, options = {}) {
 
 function getCurrentLanguage() {
     try {
-        if (window.currentLanguage) return window.currentLanguage;
-        const stored = localStorage.getItem('skyplan_lang');
-        if (stored) return stored;
+        if (typeof window.getPersistedLanguage === 'function') {
+            return window.getPersistedLanguage();
+        }
+        if (window.currentLanguage) {
+            return window.currentLanguage === 'en' ? 'en' : 'vi';
+        }
+        const stored = (localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || localStorage.getItem('skyplan_lang') || '').toLowerCase();
+        if (stored === 'en' || stored === 'vi') return stored;
     } catch (_) { }
     return 'vi';
 }

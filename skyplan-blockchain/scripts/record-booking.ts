@@ -12,7 +12,7 @@ async function main() {
 
   const bookingCode = "SKY123";
 
-  // hash ví dụ (bạn có thể hash từ nhiều field hơn)
+  // Example hash (you can hash more fields)
   const bookingHash = ethers.keccak256(ethers.toUtf8Bytes(bookingCode));
 
   const provider = new ethers.JsonRpcProvider(rpcUrl);

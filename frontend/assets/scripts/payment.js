@@ -1,10 +1,271 @@
 // Payment page functionality
 
 document.addEventListener('DOMContentLoaded', function () {
+  bootstrapBookingCodeFromPending();
   initializePaymentMethods();
   initializeCardFormatting();
   initializePaymentValidation();
 });
+
+let paymentFlowInProgress = false;
+let bookingCreateInFlightPromise = null;
+
+function getPaymentLoadingMessage() {
+  const lang = localStorage.getItem('preferredLanguage') || 'vi';
+  return lang === 'en'
+    ? 'Processing payment and preparing confirmation...'
+    : 'Đang xác nhận thanh toán và chuẩn bị trang xác nhận...';
+}
+
+function setPayButtonLocked(locked) {
+  const btn = document.getElementById('mainPayBtn') || document.querySelector('.pay-btn');
+  if (!btn) return;
+  btn.disabled = !!locked;
+  btn.style.opacity = locked ? '0.75' : '';
+  btn.style.pointerEvents = locked ? 'none' : '';
+}
+
+function showPaymentProcessingUI() {
+  setPayButtonLocked(true);
+  if (window.Loader && typeof window.Loader.show === 'function') {
+    window.Loader.show();
+  }
+
+  let el = document.getElementById('paymentProcessingHint');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'paymentProcessingHint';
+    el.style.cssText = [
+      'position:fixed',
+      'left:50%',
+      'bottom:24px',
+      'transform:translateX(-50%)',
+      'z-index:100000',
+      'background:#0f172a',
+      'color:#fff',
+      'padding:10px 14px',
+      'border-radius:10px',
+      'font-size:13px',
+      'box-shadow:0 12px 30px rgba(2,6,23,.25)'
+    ].join(';');
+    document.body.appendChild(el);
+  }
+  el.textContent = getPaymentLoadingMessage();
+  el.style.display = 'block';
+}
+
+function hidePaymentProcessingUI() {
+  setPayButtonLocked(false);
+  if (window.Loader && typeof window.Loader.hide === 'function') {
+    window.Loader.hide();
+  }
+  const el = document.getElementById('paymentProcessingHint');
+  if (el) el.style.display = 'none';
+}
+
+function getAuthTokenForPayment() {
+  try {
+    if (window.AuthState && typeof window.AuthState.getToken === 'function') {
+      const token = window.AuthState.getToken();
+      if (token) return token;
+    }
+  } catch (_) { }
+  return localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || null;
+}
+
+function getBookingCreatePayload() {
+  try {
+    const pendingRaw = localStorage.getItem('pendingBookingPayload');
+    if (pendingRaw) {
+      return JSON.parse(pendingRaw);
+    }
+  } catch (_) { }
+
+  try {
+    const completeRaw = localStorage.getItem('completeBookingData');
+    if (completeRaw) {
+      return JSON.parse(completeRaw);
+    }
+  } catch (_) { }
+
+  return null;
+}
+
+async function createBackendBookingFromLocalData() {
+  if (bookingCreateInFlightPromise) {
+    return bookingCreateInFlightPromise;
+  }
+
+  bookingCreateInFlightPromise = (async function() {
+  const payload = getBookingCreatePayload();
+  if (!payload) return null;
+
+  const wallet = window.MetaMaskWallet && window.MetaMaskWallet.account;
+  if (wallet && !payload.wallet_address && !payload.walletAddress) {
+    payload.wallet_address = wallet;
+  }
+
+  const token = getAuthTokenForPayment();
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+  };
+
+  try {
+    const resp = await fetch('/api/bookings/create', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    });
+    const data = await resp.json();
+    if (!resp.ok || !data.success || !data.booking_code) return null;
+
+    localStorage.setItem('currentBookingCode', data.booking_code);
+    localStorage.setItem('lastBookingCode', data.booking_code);
+    try { localStorage.removeItem('pendingBookingPayload'); } catch (_) { }
+
+    const codeEl = document.getElementById('bookingCode');
+    if (codeEl) codeEl.textContent = data.booking_code;
+
+    return data.booking_code;
+  } catch (_) {
+    return null;
+  } finally {
+    bookingCreateInFlightPromise = null;
+  }
+  })();
+
+  return bookingCreateInFlightPromise;
+}
+
+async function bootstrapBookingCodeFromPending() {
+  try {
+    const hasPendingPayload = !!getBookingCreatePayload();
+
+    // New checkout flow must not reuse stale booking codes from older sessions.
+    if (hasPendingPayload) {
+      const existingCode = localStorage.getItem('currentBookingCode') || localStorage.getItem('lastBookingCode');
+      if (existingCode && /^SP\d+/i.test(existingCode)) {
+        const codeEl = document.getElementById('bookingCode');
+        if (codeEl) codeEl.textContent = existingCode;
+        return;
+      }
+
+      await createBackendBookingFromLocalData();
+      return;
+    }
+
+    const existingCode = localStorage.getItem('currentBookingCode');
+    if (existingCode && /^SP\d+/i.test(existingCode)) {
+      const codeEl = document.getElementById('bookingCode');
+      if (codeEl) codeEl.textContent = existingCode;
+      return;
+    }
+
+    await createBackendBookingFromLocalData();
+  } catch (_) {
+    // Non-fatal: page can still proceed with existing fallback behavior.
+  }
+}
+
+function parseVndNumber(text) {
+  const digits = String(text || '').replace(/[^0-9]/g, '');
+  return Number(digits || 0);
+}
+
+function getEffectivePaymentAmount() {
+  const finalAmountEl = document.getElementById('finalAmount');
+  if (finalAmountEl && parseVndNumber(finalAmountEl.textContent) > 0) {
+    return parseVndNumber(finalAmountEl.textContent);
+  }
+  const totalAmountEl = document.getElementById('totalAmount');
+  if (totalAmountEl && parseVndNumber(totalAmountEl.textContent) > 0) {
+    return parseVndNumber(totalAmountEl.textContent);
+  }
+  return Number(window.lastAmount || 0) || 1598000;
+}
+
+async function markBookingPaidOnBackend(provider) {
+  try {
+    await bootstrapBookingCodeFromPending();
+
+    const hasPendingPayload = !!getBookingCreatePayload();
+    let bookingCode =
+      localStorage.getItem('currentBookingCode') ||
+      document.getElementById('bookingCode')?.textContent ||
+      '';
+
+    if (!bookingCode && !hasPendingPayload) {
+      bookingCode = localStorage.getItem('lastBookingCode') || '';
+    }
+
+    if (!bookingCode || !/^SP\d+/i.test(bookingCode)) {
+      bookingCode = await createBackendBookingFromLocalData();
+      if (!bookingCode) return null;
+    }
+
+    const amount = getEffectivePaymentAmount();
+    const token = getAuthTokenForPayment();
+    const payload = {
+      booking_code: bookingCode,
+      amount: amount,
+      provider: provider || 'manual'
+    };
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
+
+    async function postMarkPaid(code) {
+      const candidates = ['/api/payment/mark-paid', '/api/payment/mark-paid/', '/api/payments/mark-paid'];
+      let lastResponse = null;
+      let lastBody = null;
+      for (const url of candidates) {
+        try {
+          const resp = await fetch(url, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ ...payload, booking_code: code })
+          });
+          const body = await resp.json().catch(() => ({}));
+          lastResponse = resp;
+          lastBody = body;
+          if (resp.ok && body && body.success) {
+            return { response: resp, result: body };
+          }
+          if (resp.status !== 404) {
+            return { response: resp, result: body };
+          }
+        } catch (_) {
+          // try next endpoint candidate
+        }
+      }
+      return { response: lastResponse, result: lastBody || {} };
+    }
+
+    let { response, result } = await postMarkPaid(bookingCode);
+
+    // If stored code is stale/fake, create a real booking and retry once.
+    if ((response && !response.ok && (response.status === 404 || response.status === 400)) || !result || !result.success) {
+      const recreated = await createBackendBookingFromLocalData();
+      if (recreated) {
+        bookingCode = recreated;
+        ({ response, result } = await postMarkPaid(bookingCode));
+      }
+    }
+
+    if (!response || !response.ok || !result || !result.success) return null;
+
+    const serverCode = result.booking_code || bookingCode;
+    localStorage.setItem('currentBookingCode', serverCode);
+    localStorage.setItem('lastBookingCode', serverCode);
+    window.lastAmount = amount;
+    window.lastTxnRef = serverCode;
+    return result;
+  } catch (_) {
+    return null;
+  }
+}
 
 // Small notification helper: prefer showToast; if it's not loaded, try to load toast.js dynamically once,
 // then use showToast. Falls back to alert() when toast is not available or fails to load.
@@ -161,6 +422,10 @@ function initializePaymentValidation() {
     payBtn.addEventListener('click', function (e) {
       e.preventDefault();
 
+      if (paymentFlowInProgress) {
+        return;
+      }
+
       const selectedPayment = document.querySelector('input[name="payment"]:checked');
 
       if (!selectedPayment) {
@@ -275,26 +540,24 @@ try { window.isCardFormValid = isCardFormValid; } catch (_) { }
 
 // Process card payment
 function processCardPayment() {
+  if (paymentFlowInProgress) return;
+  paymentFlowInProgress = true;
+  showPaymentProcessingUI();
   showLoadingState();
 
   // Simulate payment processing
-  setTimeout(() => {
+  setTimeout(async () => {
     hideLoadingState();
-    showPaymentSuccess();
+    await showPaymentSuccess('card');
   }, 2000);
 }
 
 // Process bank transfer
-function processBankTransfer() {
-  // Simulate received payment, redirect to confirmation page
-  if (window.Loader) {
-    window.Loader.show();
-    setTimeout(function() {
-      window.location.href = 'confirmation.html';
-    }, 1500);
-  } else {
-    window.location.href = 'confirmation.html';
-  }
+async function processBankTransfer() {
+  if (paymentFlowInProgress) return;
+  paymentFlowInProgress = true;
+  showPaymentProcessingUI();
+  await showPaymentSuccess('bank');
 }
 
 // Process e-wallet payment
@@ -349,17 +612,36 @@ function hideLoadingState() {
 }
 
 // Show payment success
-function showPaymentSuccess() {
+async function showPaymentSuccess(provider = 'manual') {
+  if (!paymentFlowInProgress) {
+    paymentFlowInProgress = true;
+    showPaymentProcessingUI();
+  }
+
+  const persisted = await markBookingPaidOnBackend(provider);
+  if (!persisted) {
+    const lang = localStorage.getItem('preferredLanguage') || 'vi';
+    const msg = (lang === 'vi')
+      ? 'Không thể xác nhận booking trên hệ thống. Vui lòng quay lại bước trước và thử lại.'
+      : 'Could not persist booking confirmation. Please go back and try again.';
+    notify(msg, 'error', 6000);
+    paymentFlowInProgress = false;
+    hidePaymentProcessingUI();
+    return;
+  }
+
   // Save successful payment status for each booking code
   // Get booking code (bookingCode) and amount
-  const bookingCode = document.getElementById('bookingCode')?.textContent || window.lastTxnRef || '';
-  const amount = window.lastAmount || 1598000;
+  const bookingCode = localStorage.getItem('currentBookingCode') || document.getElementById('bookingCode')?.textContent || window.lastTxnRef || '';
+  const amount = getEffectivePaymentAmount();
   if (bookingCode) {
     localStorage.setItem('paid_' + bookingCode, 'true');
     localStorage.setItem('amount_' + bookingCode, amount);
+    localStorage.setItem('lastBookingCode', bookingCode);
   }
   localStorage.setItem('lastTxnRef', bookingCode);
   localStorage.setItem('lastAmount', amount);
+  try { localStorage.removeItem('pendingBookingPayload'); } catch (_) {}
   
   // Show loader before redirect
   if (window.Loader) {

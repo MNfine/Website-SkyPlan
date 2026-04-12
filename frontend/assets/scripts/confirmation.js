@@ -3,6 +3,79 @@
 // Quiet mode: suppress non-essential console output unless debugging flag is enabled.
 // Set window.SKYPLAN_DEBUG = true in the console to re-enable logs.
 (function() {
+    function isValidBookingCode(value) {
+      const text = String(value || '').trim();
+      return /^SP\d{5,}$/i.test(text);
+    }
+
+    function isPlaceholderValue(value) {
+      const text = String(value || '').trim().toLowerCase();
+      return (
+        !text ||
+        text === 'n/a' ||
+        text === 'dang cap nhat...' ||
+        text === 'đang cập nhật...' ||
+        text === 'updating...'
+      );
+    }
+
+    function getConfirmationBookingCode() {
+      const urlParams = new URLSearchParams(window.location.search || '');
+      const fromUrl = (urlParams.get('vnp_TxnRef') || urlParams.get('txn_ref') || urlParams.get('booking_code') || '').trim();
+      if (isValidBookingCode(fromUrl)) return fromUrl.toUpperCase();
+
+      const fromDom = String(document.getElementById('bookingCode')?.textContent || '').trim();
+      if (!isPlaceholderValue(fromDom) && isValidBookingCode(fromDom)) return fromDom.toUpperCase();
+
+      const fromStorage = String(localStorage.getItem('lastBookingCode') || localStorage.getItem('currentBookingCode') || '').trim();
+      if (isValidBookingCode(fromStorage)) return fromStorage.toUpperCase();
+
+      return '';
+    }
+
+    function updateConfirmationLinksForBooking(bookingCode) {
+      const code = String(bookingCode || '').trim();
+      if (!isValidBookingCode(code)) return;
+
+      const normalizedCode = code.toUpperCase();
+
+      try {
+        localStorage.setItem('currentBookingCode', normalizedCode);
+        localStorage.setItem('lastBookingCode', normalizedCode);
+        localStorage.setItem('confirmationBookingCode', normalizedCode);
+      } catch (_) {}
+
+      try {
+        const upgradeNowLink = document.querySelector('.confirmation-upgrade-actions .upgrade-now');
+        if (upgradeNowLink) {
+          upgradeNowLink.href = 'my_trips.html?booking_code=' + encodeURIComponent(normalizedCode) + '&action=integrate';
+
+          if (!upgradeNowLink.dataset.popupBound) {
+            upgradeNowLink.addEventListener('click', async function(e) {
+              if (typeof window.showBlockchainIntegrationPopup !== 'function') return;
+              e.preventDefault();
+              const choice = await window.showBlockchainIntegrationPopup();
+              if (choice === 'guide') {
+                window.location.href = 'support.html#blockchain-ticket-guide';
+                return;
+              }
+              if (choice === 'integrate') {
+                window.location.href = 'my_trips.html?booking_code=' + encodeURIComponent(normalizedCode) + '&action=integrate';
+              }
+            });
+            upgradeNowLink.dataset.popupBound = '1';
+          }
+        }
+      } catch (_) {}
+
+      try {
+        const viewMyTicketLink = document.getElementById('viewMyTicketLink');
+        if (viewMyTicketLink) {
+          viewMyTicketLink.href = 'overview.html?tripId=' + encodeURIComponent(normalizedCode);
+        }
+      } catch (_) {}
+    }
+
   try {
     if (!window.SKYPLAN_DEBUG) {
       console._orig = console._orig || {};
@@ -27,23 +100,32 @@
 
       // Try server lookup first: prefer authoritative booking data when txnRef is actually a booking_code
       try {
-        const statusResp = await fetch(`/api/bookings/status/${encodeURIComponent(txnRef)}`);
+        const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        const statusResp = await fetch(`/api/bookings/status/${encodeURIComponent(txnRef)}`, {
+          headers: authToken ? { 'Authorization': `Bearer ${authToken}` } : {}
+        });
         if (statusResp.ok) {
           const statusData = await statusResp.json();
           if (statusData && statusData.success && statusData.booking) {
             // Use server-provided booking info as authoritative
             const booking = statusData.booking;
+            const serverAmount = booking.total_amount || booking.amount;
+            const amountFromVnp = vnpAmount ? (parseInt(vnpAmount, 10) / 100) : undefined;
+
             const paymentObj = {
               booking_code: booking.booking_code,
               transaction_id: vnpTransactionId || booking.transaction_id || 'N/A',
-              amount: booking.total_amount || booking.amount || (vnpAmount ? (parseInt(vnpAmount) / 100) : undefined)
+              amount: serverAmount || amountFromVnp
             };
 
             if (vnpResponseCode === '00') {
               showSuccessConfirmation(paymentObj, vnpAmount);
               localStorage.setItem('lastBookingCode', paymentObj.booking_code);
               if (vnpTransactionId) localStorage.setItem('lastTxnRef', vnpTransactionId);
-              if (paymentObj.amount !== undefined) localStorage.setItem('lastAmount', String(paymentObj.amount));
+              if (paymentObj.amount !== undefined) {
+                localStorage.setItem('lastAmount', String(paymentObj.amount));
+                localStorage.setItem('amount_' + paymentObj.booking_code, String(paymentObj.amount));
+              }
             } else {
               showPaymentFailure(vnpTransactionId || 'N/A', vnpAmount);
             }
@@ -77,7 +159,7 @@
     }
 
     // Load existing confirmation data from localStorage if no VNPay params
-    loadConfirmationData();
+      await loadConfirmationData();
   }
 
   // Handle VNPay payment callback
@@ -142,18 +224,24 @@
     const amountEl = document.getElementById('amount');
     
     if (bookingCodeEl) {
-      bookingCodeEl.textContent = payment.booking_code;
+      bookingCodeEl.textContent = isValidBookingCode(payment.booking_code) ? String(payment.booking_code).toUpperCase() : (payment.booking_code || 'N/A');
     }
     
     if (txnRefEl) {
-      // Nếu backend không trả về transaction_id, giữ nguyên giá trị đã có (từ query string)
+      // If backend doesn't return transaction_id, keep existing value (from query string)
       txnRefEl.textContent = payment.transaction_id && payment.transaction_id !== 'N/A' ? payment.transaction_id : txnRefEl.textContent || 'N/A';
     }
     
     if (amountEl) {
-      const displayAmount = amount ? (parseInt(amount) / 100) : payment.amount;
+      const parsedAmount = Number(payment.amount || 0);
+      const displayAmount = Number.isFinite(parsedAmount) && parsedAmount > 0
+        ? parsedAmount
+        : (amount ? (parseInt(amount, 10) / 100) : 0);
       amountEl.textContent = Number(displayAmount).toLocaleString('vi-VN') + ' VND';
     }
+
+    // Keep links targeting the exact booking shown on confirmation.
+    updateConfirmationLinksForBooking(payment && payment.booking_code);
 
     // Update page title and messages
     const titleEl = document.querySelector('.success-title, h1');
@@ -243,6 +331,10 @@
 
     // Add action buttons
     const actionsEl = document.querySelector('.confirmation-actions');
+    const upgradeCta = document.getElementById('confirmationUpgradeCta');
+    if (upgradeCta) {
+      upgradeCta.style.display = 'none';
+    }
     if (actionsEl && canRetry) {
       const bookingCode = localStorage.getItem('currentBookingCode');
       
@@ -261,38 +353,56 @@
   }
 
   // Load existing confirmation data (fallback)
-  function loadConfirmationData() {
-    const bookingCode = localStorage.getItem('lastBookingCode') || 
-                       localStorage.getItem('currentBookingCode') || 
-                       'N/A';
+  async function loadConfirmationData() {
+    let bookingCode = getConfirmationBookingCode();
+    if (!isValidBookingCode(bookingCode)) {
+      bookingCode = 'N/A';
+    }
+
     const txnRef = localStorage.getItem('lastTxnRef') || 'N/A';
+
+    function parseAmountValue(value) {
+      if (value === null || value === undefined) return 0;
+      if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+      const cleaned = String(value).replace(/[^\d.]/g, '');
+      const num = parseFloat(cleaned);
+      return Number.isFinite(num) ? num : 0;
+    }
     
     // Debug: check all possible amount sources
     const finalPaymentAmount = localStorage.getItem('finalPaymentAmount'); // After voucher discount
+    const amountByBooking = bookingCode && bookingCode !== 'N/A' ? localStorage.getItem('amount_' + bookingCode) : null;
     const lastAmount = localStorage.getItem('lastAmount');
     const bookingTotal = localStorage.getItem('bookingTotal'); // Before voucher discount
     const windowLastAmount = window.lastAmount;
     
     console.log('💰 Confirmation amount sources:', {
       finalPaymentAmount,
+      amountByBooking,
       bookingTotal,
       lastAmount,
       windowLastAmount
     });
-    
-    // Use the most reliable source - prioritize finalPaymentAmount (after voucher)
-    let amount = finalPaymentAmount || bookingTotal || lastAmount || '0';
-    
-    // Parse amount correctly - it might be a string with commas or already a number
+
+    // Prefer non-zero sources in priority order.
+    const amountCandidates = [
+      finalPaymentAmount,
+      amountByBooking,
+      bookingTotal,
+      lastAmount,
+      windowLastAmount
+    ];
+
     let parsedAmount = 0;
-    if (typeof amount === 'string') {
-      // Remove all non-digit characters except decimal point
-      parsedAmount = parseFloat(amount.replace(/[^\d.]/g, '')) || 0;
-    } else {
-      parsedAmount = Number(amount) || 0;
+    for (const candidate of amountCandidates) {
+      const val = parseAmountValue(candidate);
+      if (val > 0) {
+        parsedAmount = val;
+        break;
+      }
     }
     
-    console.log('💰 Parsed amount:', { original: amount, parsed: parsedAmount });
+    console.log('💰 Parsed amount:', { candidates: amountCandidates, parsed: parsedAmount });
     
     // If still 0 or invalid, try to get from current booking
     if (parsedAmount === 0) {
@@ -315,6 +425,8 @@
       bookingCodeEl.textContent = bookingCode;
       console.log('📋 Display booking code:', bookingCode);
     }
+
+    updateConfirmationLinksForBooking(bookingCode);
     
     if (txnRefEl) {
       txnRefEl.textContent = txnRef;
@@ -324,6 +436,34 @@
       const formattedAmount = parsedAmount.toLocaleString('vi-VN') + ' VND';
       amountEl.textContent = formattedAmount;
       console.log('💰 Display amount:', formattedAmount);
+    }
+
+    // Prefer server-side booking amount when booking code is known.
+    if (isValidBookingCode(bookingCode)) {
+      try {
+        const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        const resp = await fetch(`/api/bookings/status/${encodeURIComponent(bookingCode)}`, {
+          headers: authToken ? { 'Authorization': `Bearer ${authToken}` } : {}
+        });
+        const data = await resp.json().catch(() => null);
+
+        if (resp.ok && data && data.success && data.booking) {
+          const serverAmount = Number(data.booking.total_amount || 0);
+          if (Number.isFinite(serverAmount) && serverAmount > 0 && amountEl) {
+            amountEl.textContent = serverAmount.toLocaleString('vi-VN') + ' VND';
+            localStorage.setItem('lastAmount', String(serverAmount));
+            localStorage.setItem('amount_' + bookingCode, String(serverAmount));
+          }
+
+          if (bookingCodeEl && isValidBookingCode(data.booking.booking_code)) {
+            bookingCodeEl.textContent = String(data.booking.booking_code).toUpperCase();
+          }
+
+          updateConfirmationLinksForBooking(data.booking.booking_code || bookingCode);
+        }
+      } catch (_) {
+        // non-fatal fallback remains from localStorage
+      }
     }
   }
 
@@ -481,14 +621,8 @@ mã vé tại quầy check-in sân bay.
     if (txnRef) document.getElementById('bookingCode').textContent = txnRef;
     if (transactionNo) document.getElementById('txnRef').textContent = transactionNo;
     
-    // Update "Xem vé của tôi" link to include tripId parameter
-    const viewMyTicketLink = document.getElementById('viewMyTicketLink');
-    if (viewMyTicketLink) {
-      const bookingCode = txnRef || localStorage.getItem('lastBookingCode') || localStorage.getItem('currentBookingCode');
-      if (bookingCode) {
-        viewMyTicketLink.href = `overview.html?tripId=${encodeURIComponent(bookingCode)}`;
-      }
-    }
+    // Ensure links always bind to the exact booking in this confirmation context.
+    updateConfirmationLinksForBooking(getConfirmationBookingCode());
     
     confirmPaymentStatus();
     

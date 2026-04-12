@@ -13,6 +13,8 @@ const MetaMaskWallet = (function () {
     chainId: null,
     isCorrectNetwork: false,
     provider: null,
+    initialized: false, // Guard against multiple initializations
+    connecting: false, // Guard against multiple simultaneous connection attempts
   };
 
   const SEPOLIA_CHAIN_ID = '11155111';
@@ -23,6 +25,12 @@ const MetaMaskWallet = (function () {
    */
   async function init() {
     try {
+      // Guard against multiple initializations
+      if (state.initialized) {
+        console.log('MetaMask already initialized, skipping...');
+        return true;
+      }
+
       // Check if MetaMask is installed
       if (typeof window.ethereum === 'undefined') {
         console.warn('MetaMask not detected');
@@ -30,6 +38,7 @@ const MetaMaskWallet = (function () {
       }
 
       state.provider = window.ethereum;
+      state.initialized = true;
 
       // Set up event listeners
       setupEventListeners();
@@ -74,10 +83,19 @@ const MetaMaskWallet = (function () {
    */
   async function connect() {
     try {
+      // Guard against multiple simultaneous connection attempts
+      if (state.connecting) {
+        console.warn('Connection already in progress, please wait...');
+        showNotification('Connection already in progress. Please wait...', 'warning');
+        return false;
+      }
+
       if (!state.provider) {
         showNotification('MetaMask not detected. Please install MetaMask extension.', 'error');
         return false;
       }
+
+      state.connecting = true;
 
       // Request account access
       const accounts = await state.provider.request({
@@ -110,25 +128,30 @@ const MetaMaskWallet = (function () {
         updateWalletUI();
 
         // Show success notification
-        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        const lang = window.getPersistedLanguage();
         const msg = (lang === 'vi') ? 'Ví MetaMask đã kết nối thành công!' : 'MetaMask wallet connected successfully!';
         showNotification(msg, 'success');
 
+        state.connecting = false;
         return true;
 
       } else {
         showNotification('No accounts found. Please unlock MetaMask.', 'error');
+        state.connecting = false;
         return false;
       }
 
     } catch (error) {
       console.error('Connect wallet error:', error);
+      state.connecting = false;
 
       // Handle specific errors
       if (error.code === 4001) {
         showNotification('Connection rejected by user', 'error');
       } else if (error.code === -32603) {
         showNotification('Internal error. Please try again.', 'error');
+      } else if (error.message && error.message.includes('already pending')) {
+        showNotification('Connection request already pending. Please wait...', 'warning');
       } else {
         showNotification('Failed to connect wallet: ' + error.message, 'error');
       }
@@ -152,7 +175,7 @@ const MetaMaskWallet = (function () {
 
     updateWalletUI();
 
-    const lang = localStorage.getItem('preferredLanguage') || 'vi';
+    const lang = window.getPersistedLanguage();
     const msg = (lang === 'vi') ? 'Ví đã ngắt kết nối' : 'Wallet disconnected';
     showNotification(msg, 'info');
   }
@@ -182,7 +205,7 @@ const MetaMaskWallet = (function () {
         state.isCorrectNetwork = true;
         updateWalletUI();
 
-        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        const lang = window.getPersistedLanguage();
         const msg = (lang === 'vi') ? 'Đã chuyển sang mạng Sepolia' : 'Switched to Sepolia network';
         showNotification(msg, 'success');
 
@@ -228,7 +251,7 @@ const MetaMaskWallet = (function () {
       state.isCorrectNetwork = true;
       updateWalletUI();
 
-      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const lang = window.getPersistedLanguage();
       const msg = (lang === 'vi') ? 'Mạng Sepolia đã được thêm' : 'Sepolia network added';
       showNotification(msg, 'success');
 
@@ -317,7 +340,7 @@ const MetaMaskWallet = (function () {
           walletStatus.style.display = 'block';
         }
         if (connectBtn) {
-          const lang = localStorage.getItem('preferredLanguage') || 'vi';
+          const lang = window.getPersistedLanguage();
           connectBtn.textContent = (lang === 'vi') ? 'Ví đã kết nối' : 'Wallet connected';
           connectBtn.disabled = true;
           connectBtn.style.background = 'rgba(255, 255, 255, 0.92)';
@@ -345,7 +368,7 @@ const MetaMaskWallet = (function () {
 
       // Show warning if wrong network
       if (state.isConnected && !state.isCorrectNetwork) {
-        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        const lang = window.getPersistedLanguage();
         const msg = (lang === 'vi') ? 'Vui lòng chuyển sang mạng Sepolia' : 'Please switch to Sepolia network';
         showNotification(msg, 'warning');
       }
@@ -372,16 +395,6 @@ const MetaMaskWallet = (function () {
     }
   }
 
-  // Initialize when DOM is ready
-  document.addEventListener('DOMContentLoaded', function () {
-    init();
-  });
-
-  // Fallback initialization
-  if (document.readyState === 'loaded' || document.readyState === 'complete') {
-    init();
-  }
-
   // Public API
   return {
     init: init,
@@ -401,19 +414,25 @@ const MetaMaskWallet = (function () {
   };
 })();
 
-// Set up connect wallet button handler
+// Expose globally so other scripts can reliably use window.MetaMaskWallet.
+try {
+  window.MetaMaskWallet = MetaMaskWallet;
+} catch (_) {}
+
+// Initialize when DOM is ready (only once)
+let mmInitAttempted = false;
 document.addEventListener('DOMContentLoaded', function () {
-  const connectBtn = document.getElementById('connectWalletBtn');
-  if (connectBtn) {
-    connectBtn.addEventListener('click', async function () {
-      if (MetaMaskWallet.isConnected) {
-        MetaMaskWallet.disconnect();
-      } else {
-        await MetaMaskWallet.connect();
-      }
-    });
+  if (!mmInitAttempted) {
+    mmInitAttempted = true;
+    MetaMaskWallet.init();
   }
 });
 
-// Export globally
-window.MetaMaskWallet = MetaMaskWallet;
+// Fallback initialization if DOMContentLoaded already fired
+if (document.readyState === 'loaded' || document.readyState === 'complete') {
+  if (!mmInitAttempted) {
+    mmInitAttempted = true;
+    MetaMaskWallet.init();
+  }
+}
+

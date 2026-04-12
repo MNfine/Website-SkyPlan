@@ -47,6 +47,11 @@
       quickPayment: "Payment",
       quickBaggage: "Baggage"
       ,
+      // Blockchain guide
+      blockchainGuideTitle: "Blockchain Ticket Guide",
+      blockchainGuideDesc: "Just connect your wallet to receive an NFT ticket and SKY rewards. No gas fees required.",
+      blockchainGuideVideoPlaceholder: "Guide video will be updated soon.",
+
       // Ticket form
       ticketFormTitle: "Create Support Request",
       categoryLabel: "Category",
@@ -83,7 +88,7 @@
       termsOfService: "Terms of Service",
       supportTitle: "Support",
       helpCenter: "Help Center",
-      customerService: "Customer Service",
+      blogLink: "Blog",
       bookingHelp: "Booking Help",
       faq: "FAQ",
       promotion: "Promotions",
@@ -138,6 +143,11 @@
       quickPayment: "Thanh toán",
       quickBaggage: "Hành lý"
       ,
+      // Blockchain guide
+      blockchainGuideTitle: "Hướng dẫn tích hợp vé Blockchain",
+      blockchainGuideDesc: "Chỉ cần kết nối ví để nhận vé NFT và ưu đãi. Bạn không cần trả gas.",
+      blockchainGuideVideoPlaceholder: "Video hướng dẫn sẽ được cập nhật.",
+
       // Ticket form
       ticketFormTitle: "Tạo yêu cầu hỗ trợ",
       categoryLabel: "Danh mục",
@@ -174,7 +184,7 @@
       termsOfService: "Điều khoản dịch vụ",
       supportTitle: "Hỗ trợ",
       helpCenter: "Trung tâm trợ giúp",
-      customerService: "Dịch vụ khách hàng",
+      blogLink: "Blog",
       bookingHelp: "Hỗ trợ đặt vé",
       faq: "Câu hỏi thường gặp",
       promotion: "Khuyến mãi",

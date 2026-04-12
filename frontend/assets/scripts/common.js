@@ -1,5 +1,180 @@
 // Common JS for SkyPlan: shared UI logic (menu, language selector, authentication, etc.)
 
+// ====== GLOBAL LANGUAGE HELPER - used by ALL scripts ======
+window.getPersistedLanguage = function() {
+    const prefRaw = (localStorage.getItem('preferredLanguage') || '').toLowerCase();
+    const langRaw = (localStorage.getItem('language') || '').toLowerCase();
+    const pref = prefRaw === 'en' ? 'en' : (prefRaw === 'vi' ? 'vi' : '');
+    const lang = langRaw === 'en' ? 'en' : (langRaw === 'vi' ? 'vi' : '');
+    const docLang = (document.documentElement.lang || '').toLowerCase() === 'en' ? 'en' : 'vi';
+
+    // Canonical choice: prefer `language` key when present, then legacy `preferredLanguage`.
+    // This also heals stale mismatches like preferredLanguage=vi while language=en.
+    const chosen = lang || pref || docLang || 'vi';
+
+    try {
+        if (pref !== chosen || lang !== chosen) {
+            localStorage.setItem('preferredLanguage', chosen);
+            localStorage.setItem('language', chosen);
+        }
+    } catch (_) {}
+
+    return chosen;
+};
+
+// ====== GLOBAL BLOCKCHAIN INTEGRATION POPUP ======
+window.showBlockchainIntegrationPopup = function(options) {
+    const opts = options || {};
+    const lang = (typeof window.getPersistedLanguage === 'function' ? window.getPersistedLanguage() : 'vi') === 'en' ? 'en' : 'vi';
+
+    const i18nSources = [
+        (window.translations && window.translations[lang]) || null,
+        (window.confirmationTranslations && window.confirmationTranslations[lang]) || null,
+        (window.myTripsTranslations && window.myTripsTranslations[lang]) || null,
+        (window.supportTranslations && window.supportTranslations[lang]) || null,
+        (window.walletTranslations && window.walletTranslations[lang]) || null
+    ].filter(Boolean);
+
+    function pick(keys, fallback) {
+        for (const src of i18nSources) {
+            for (const key of keys) {
+                if (src && src[key]) return src[key];
+            }
+        }
+        return fallback;
+    }
+
+    const text = {
+        title: pick(['ticketUpgradeModalTitle'], lang === 'vi' ? 'Tích hợp vé Blockchain' : 'Blockchain Ticket Integration'),
+        message: pick(['ticketUpgradeModalDesc'], lang === 'vi' ? 'Bạn muốn tích hợp ngay hay xem hướng dẫn trước?' : 'Do you want to integrate now or view the guide first?'),
+        integrate: pick(['ticketUpgradeIntegrate'], lang === 'vi' ? 'Tích hợp ngay' : 'Integrate now'),
+        guide: pick(['ticketUpgradeGuide'], lang === 'vi' ? 'Xem hướng dẫn' : 'View guide'),
+        close: pick(['closeText'], lang === 'vi' ? 'Đóng' : 'Close')
+    };
+
+    let overlay = document.getElementById('global-blockchain-integration-popup');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'global-blockchain-integration-popup';
+        overlay.style.cssText = [
+            'position:fixed',
+            'inset:0',
+            'display:none',
+            'align-items:center',
+            'justify-content:center',
+            'background:rgba(15,23,42,.45)',
+            'z-index:99999'
+        ].join(';');
+
+        overlay.innerHTML = [
+            '<div role="dialog" aria-modal="true" style="width:min(92vw,480px);background:#fff;border-radius:14px;box-shadow:0 20px 50px rgba(2,6,23,.25);padding:18px 18px 14px 18px;font-family:inherit;">',
+            '  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">',
+            '    <h3 id="global-blockchain-popup-title" style="margin:0;font-size:1.1rem;color:#0f172a;"></h3>',
+            '    <button id="global-blockchain-popup-close" aria-label="close" style="border:none;background:transparent;font-size:1.2rem;cursor:pointer;color:#64748b;">x</button>',
+            '  </div>',
+            '  <p id="global-blockchain-popup-message" style="margin:10px 0 16px 0;color:#334155;line-height:1.5;"></p>',
+            '  <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;">',
+            '    <button id="global-blockchain-popup-guide" style="padding:9px 14px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#0f172a;cursor:pointer;"></button>',
+            '    <button id="global-blockchain-popup-integrate" style="padding:9px 14px;border-radius:10px;border:1px solid #0ea5e9;background:#0ea5e9;color:#fff;cursor:pointer;"></button>',
+            '  </div>',
+            '</div>'
+        ].join('');
+
+        document.body.appendChild(overlay);
+    }
+
+    const titleEl = document.getElementById('global-blockchain-popup-title');
+    const messageEl = document.getElementById('global-blockchain-popup-message');
+    const integrateBtn = document.getElementById('global-blockchain-popup-integrate');
+    const guideBtn = document.getElementById('global-blockchain-popup-guide');
+    const closeBtn = document.getElementById('global-blockchain-popup-close');
+
+    if (titleEl) titleEl.textContent = opts.title || text.title;
+    if (messageEl) messageEl.textContent = opts.message || text.message;
+    if (integrateBtn) integrateBtn.textContent = opts.integrateLabel || text.integrate;
+    if (guideBtn) guideBtn.textContent = opts.guideLabel || text.guide;
+    if (closeBtn) closeBtn.title = text.close;
+
+    return new Promise(function(resolve) {
+        function cleanup(result) {
+            overlay.style.display = 'none';
+            overlay.removeEventListener('click', onOverlayClick);
+            document.removeEventListener('keydown', onEsc);
+            if (integrateBtn) integrateBtn.onclick = null;
+            if (guideBtn) guideBtn.onclick = null;
+            if (closeBtn) closeBtn.onclick = null;
+            resolve(result);
+        }
+
+        function onOverlayClick(e) {
+            if (e.target === overlay) cleanup('cancel');
+        }
+        function onEsc(e) {
+            if (e.key === 'Escape') cleanup('cancel');
+        }
+
+        if (integrateBtn) integrateBtn.onclick = function() { cleanup('integrate'); };
+        if (guideBtn) guideBtn.onclick = function() { cleanup('guide'); };
+        if (closeBtn) closeBtn.onclick = function() { cleanup('cancel'); };
+
+        overlay.style.display = 'flex';
+        overlay.addEventListener('click', onOverlayClick);
+        document.addEventListener('keydown', onEsc);
+    });
+};
+
+// ====== SHARED HEADER TRANSLATIONS ======
+// Some pages inject the header after their page-level translations run.
+// This helper ensures the header (including the user dropdown) always matches the current language.
+window.applyHeaderTranslations = function(lang) {
+    const normalizedLang = String(lang || '').toLowerCase() === 'en' ? 'en' : 'vi';
+    const dict = {
+        en: {
+            helpText: 'Help',
+            myTripsText: 'My Trips',
+            profileText: 'Profile',
+            logoutText: 'Logout',
+            signInText: 'Sign In',
+            signUpText: 'Sign Up',
+            connectWalletText: 'Connect Wallet',
+            disconnectText: 'Disconnect'
+        },
+        vi: {
+            helpText: 'Trợ giúp',
+            myTripsText: 'Chuyến đi của tôi',
+            profileText: 'Hồ sơ cá nhân',
+            logoutText: 'Đăng xuất',
+            signInText: 'Đăng nhập',
+            signUpText: 'Đăng ký',
+            connectWalletText: 'Kết nối Ví',
+            disconnectText: 'Ngắt kết nối'
+        }
+    };
+
+    const headerRoot = document.querySelector('#header-container') ||
+        document.querySelector('#header-placeholder') ||
+        document.querySelector('header.header');
+    if (!headerRoot) return;
+
+    const headerDict = dict[normalizedLang];
+    headerRoot.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n');
+        if (!key || !(key in headerDict)) return;
+        el.textContent = headerDict[key];
+    });
+};
+
+// When pages manually inject the header, they usually dispatch `header-loaded`.
+// Re-apply header translations then to avoid stuck VI labels.
+document.addEventListener('header-loaded', function() {
+    try {
+        const lang = window.getPersistedLanguage ? window.getPersistedLanguage() : 'vi';
+        if (typeof window.applyHeaderTranslations === 'function') {
+            window.applyHeaderTranslations(lang);
+        }
+    } catch (_) {}
+});
+
 // Retry init user dropdown when header loads late
 let userDropdownInitAttempts = 0;
 const MAX_USER_DROPDOWN_INIT_ATTEMPTS = 20; // ~5s if each retry is 250ms
@@ -17,6 +192,19 @@ function loadHeaderFooter() {
                     headerContainer.innerHTML = html;
                     if (typeof initializeMobileMenu === 'function') initializeMobileMenu();
                     if (typeof initializeLanguageSelector === 'function') initializeLanguageSelector();
+
+                    // Re-apply saved language immediately after header injection so reload
+                    // does not fall back to static VI labels in header.html.
+                    const lang = getCurrentLanguage();
+                    if (typeof window.applyHeaderTranslations === 'function') {
+                        window.applyHeaderTranslations(lang);
+                    }
+                    if (typeof updateSelectedLanguage === 'function') {
+                        updateSelectedLanguage(lang);
+                    }
+                    if (typeof window.broadcastLanguageChange === 'function') {
+                        window.broadcastLanguageChange(lang);
+                    }
                     resolve();
                 })
                 .catch(() => resolve());
@@ -31,6 +219,18 @@ function loadHeaderFooter() {
                 .then(r => r.ok ? r.text() : Promise.reject())
                 .then(html => {
                     footerContainer.innerHTML = html;
+                    // Re-apply current language after async footer injection.
+                    // This prevents untranslated footer text when another script reloads components.
+                    const lang = getCurrentLanguage();
+                    if (typeof window.broadcastLanguageChange === 'function') {
+                        window.broadcastLanguageChange(lang);
+                    } else {
+                        try {
+                            document.dispatchEvent(new CustomEvent('languageChanged', {
+                                detail: { language: lang, lang: lang }
+                            }));
+                        } catch (_) {}
+                    }
                 })
                 .catch(() => {});
         }
@@ -39,7 +239,11 @@ function loadHeaderFooter() {
 
 // Get current language
 function getCurrentLanguage() {
-    return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+    if (typeof window.getPersistedLanguage === 'function') {
+        return window.getPersistedLanguage();
+    }
+    const saved = (localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi').toLowerCase();
+    return saved === 'en' ? 'en' : 'vi';
 }
 
 // Read JSON from localStorage safely
@@ -92,7 +296,7 @@ function initializeLanguageSelector() {
     setTimeout(() => {
         const langOptions = document.querySelectorAll('.lang-option');
         const selectedLang = document.querySelector('.selected-lang');
-        const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
+        const currentLang = getCurrentLanguage();
         langOptions.forEach(option => {
             if (option.dataset.bound === '1') return;
             option.addEventListener('click', function(e) {
@@ -275,7 +479,7 @@ function enableSmoothScrolling() {
         THD: 'ThanhHoa'
     };
 
-    function getLang() { return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi'; }
+    function getLang() { return window.getPersistedLanguage(); }
 
     function resolveCityLabel(raw, langOverride) {
         if (!raw) return '';
@@ -337,16 +541,29 @@ function initializeUserDropdown() {
 
     console.debug('[initializeUserDropdown] Adding event listeners');
 
-    // Toggle dropdown on button click
+    // Toggle dropdown on button click (works on both mobile and desktop)
     userButton.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        userDropdown.classList.toggle('active');
-        console.debug('[initializeUserDropdown] Toggled dropdown, state:', userDropdown.classList.contains('active'));
+        
+        // On mobile, just provide visual feedback (no actual dropdown toggle needed since logout is always visible)
+        // On desktop, toggle the dropdown
+        if (window.innerWidth > 1024) {
+            userDropdown.classList.toggle('active');
+            console.debug('[initializeUserDropdown] Toggled dropdown, state:', userDropdown.classList.contains('active'));
+        } else {
+            // Mobile: add a brief visual effect
+            userButton.style.opacity = '0.7';
+            setTimeout(() => {
+                userButton.style.opacity = '1';
+            }, 100);
+        }
     });
 
-    // Close dropdown when clicking outside
+    // Close dropdown when clicking outside (only on desktop)
     document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 1024) return; // Skip on mobile
+        
         if (!userDropdown.contains(e.target) && !userButton.contains(e.target)) {
             if (userDropdown.classList.contains('active')) {
                 userDropdown.classList.remove('active');
@@ -355,8 +572,10 @@ function initializeUserDropdown() {
         }
     });
 
-    // Close on ESC
+    // Close on ESC (only on desktop)
     document.addEventListener('keydown', function(e) {
+        if (window.innerWidth <= 1024) return; // Skip on mobile
+        
         if (e.key === 'Escape' && userDropdown.classList.contains('active')) {
             userDropdown.classList.remove('active');
             console.debug('[initializeUserDropdown] Closed dropdown by ESC');
@@ -371,6 +590,19 @@ function initializeUserDropdown() {
 // Initialize all common functionality
 document.addEventListener('DOMContentLoaded', function() {
     initializeUserDropdown();
+
+    // Reconcile and broadcast persisted language once after DOM is ready.
+    // This helps prevent late-loaded components from showing the default VI text.
+    try {
+        const lang = window.getPersistedLanguage ? window.getPersistedLanguage() : 'vi';
+        if (typeof window.broadcastLanguageChange === 'function') {
+            window.broadcastLanguageChange(lang);
+        } else {
+            localStorage.setItem('preferredLanguage', lang);
+            localStorage.setItem('language', lang);
+            document.documentElement.lang = lang;
+        }
+    } catch (_) {}
     
     // Update header auth state when page loads (with delay)
     setTimeout(() => {
@@ -382,21 +614,69 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Global language change broadcaster
 window.broadcastLanguageChange = function(lang) {
+    const normalizedLang = (lang || '').toLowerCase() === 'en' ? 'en' : 'vi';
+
     // Store in localStorage
-    localStorage.setItem('preferredLanguage', lang);
+    localStorage.setItem('preferredLanguage', normalizedLang);
+    localStorage.setItem('language', normalizedLang);
     
     // Update document lang
-    document.documentElement.lang = lang;
+    document.documentElement.lang = normalizedLang;
+
+    // Keep selector UI in sync after reload/injected header
+    if (typeof updateSelectedLanguage === 'function') {
+        updateSelectedLanguage(normalizedLang);
+    }
+
+    // Always keep header (including user dropdown) translated
+    if (typeof window.applyHeaderTranslations === 'function') {
+        window.applyHeaderTranslations(normalizedLang);
+    }
     
     // Dispatch event for all pages to listen
     try {
         window.dispatchEvent(new CustomEvent('languageChanged', { 
-            detail: { language: lang, lang: lang } 
+            detail: { language: normalizedLang, lang: normalizedLang } 
         }));
         document.dispatchEvent(new CustomEvent('languageChanged', { 
-            detail: { language: lang, lang: lang } 
+            detail: { language: normalizedLang, lang: normalizedLang } 
         }));
     } catch(e) {
         console.warn('Language change event dispatch failed:', e);
     }
 };
+
+// Page-scoped translation applier (currently used by support.js)
+window.applyTranslationsForPage = function(pageKey, lang) {
+    const key = String(pageKey || '').toLowerCase();
+    const normalizedLang = (lang || window.getPersistedLanguage && window.getPersistedLanguage() || 'vi').toLowerCase() === 'en' ? 'en' : 'vi';
+
+    let dict = null;
+    if (key === 'support') {
+        dict = window.supportTranslations && window.supportTranslations[normalizedLang];
+    }
+    if (!dict) return;
+
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        const k = el.getAttribute('data-i18n');
+        if (!k || !dict[k]) return;
+        const tag = (el.tagName || '').toUpperCase();
+        if (tag === 'INPUT' || tag === 'TEXTAREA') {
+            el.setAttribute('placeholder', dict[k]);
+        } else {
+            el.textContent = dict[k];
+        }
+    });
+};
+
+// Auto-apply Support translations when language changes
+document.addEventListener('languageChanged', function(e) {
+    try {
+        const path = String(window.location && window.location.pathname || '');
+        if (!path.includes('support')) return;
+        const lang = e && e.detail && (e.detail.lang || e.detail.language);
+        if (typeof window.applyTranslationsForPage === 'function') {
+            window.applyTranslationsForPage('support', lang);
+        }
+    } catch (_) {}
+});

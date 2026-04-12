@@ -23,6 +23,23 @@ def test_seats():
     return jsonify({'success': True, 'message': 'Seats API is working!'})
 
 
+@seats_bp.route('/debug-auth', methods=['POST'])
+def debug_auth():
+    """Debug endpoint to check auth extraction."""
+    print("[DEBUG] POST /api/seats/debug-auth called")
+    auth_header = request.headers.get('Authorization')
+    print(f"[DEBUG] Authorization header: {auth_header}")
+    
+    user_id = _get_user_id_from_bearer()
+    print(f"[DEBUG] user_id extracted: {user_id}")
+    
+    return jsonify({
+        'success': True,
+        'auth_header': auth_header,
+        'user_id': user_id
+    })
+
+
 def _get_user_id_from_bearer() -> int | None:
     """Extract user ID from Bearer token."""
     auth_header = request.headers.get('Authorization')
@@ -123,17 +140,16 @@ def get_flight_seats(flight_id):
 
 @seats_bp.route('/reserve', methods=['POST'])
 def reserve_seats():
-    """Temporarily reserve seats for user."""
+    """Temporarily reserve seats for user (guest or authenticated)."""
     user_id = _get_user_id_from_bearer()
-    if not user_id:
-        return jsonify({'success': False, 'message': 'Authentication required'}), 401
     
     data = request.get_json(silent=True) or {}
     seat_ids = data.get('seat_ids', [])
+    flight_id = data.get('flight_id')
     hold_minutes = min(data.get('hold_minutes', 5), 15)  # Max 15 minutes
     
-    if not seat_ids:
-        return jsonify({'success': False, 'message': 'seat_ids required'}), 400
+    if not seat_ids or not flight_id:
+        return jsonify({'success': False, 'message': 'seat_ids and flight_id required'}), 400
     
     with session_scope() as session:
         # Get seats and check availability
@@ -142,22 +158,21 @@ def reserve_seats():
         if len(seats) != len(seat_ids):
             return jsonify({'success': False, 'message': 'Some seats not found'}), 404
         
-        # Check if all seats are available for this user
-        unavailable_seats = []
-        for seat in seats:
-            if not seat.is_available_for_user(user_id):
-                unavailable_seats.append(seat.seat_number)
-        
-        if unavailable_seats:
-            return jsonify({
-                'success': False,
-                'message': f'Seats not available: {", ".join(unavailable_seats)}',
-                'unavailable_seats': unavailable_seats
-            }), 409
-        
-        # Release any existing reservations by this user on this flight
-        flight_id = seats[0].flight_id if seats else None
-        if flight_id:
+        # For authenticated users: check if seats are available for them
+        if user_id:
+            unavailable_seats = []
+            for seat in seats:
+                if not seat.is_available_for_user(user_id):
+                    unavailable_seats.append(seat.seat_number)
+            
+            if unavailable_seats:
+                return jsonify({
+                    'success': False,
+                    'message': f'Seats not available: {", ".join(unavailable_seats)}',
+                    'unavailable_seats': unavailable_seats
+                }), 409
+            
+            # Release any existing reservations by this user on this flight
             existing_reservations = session.query(Seat).filter(
                 Seat.flight_id == flight_id,
                 Seat.reserved_by == user_id,
@@ -167,6 +182,19 @@ def reserve_seats():
             for existing_seat in existing_reservations:
                 if existing_seat.id not in seat_ids:  # Don't release seats being re-selected
                     existing_seat.release_reservation()
+        else:
+            # For guest users: just check if seats are available (not reserved/occupied)
+            unavailable_seats = []
+            for seat in seats:
+                if seat.status == SeatStatus.CONFIRMED.value or seat.status == SeatStatus.TEMPORARILY_RESERVED.value:
+                    unavailable_seats.append(seat.seat_number)
+            
+            if unavailable_seats:
+                return jsonify({
+                    'success': False,
+                    'message': f'Seats not available: {", ".join(unavailable_seats)}',
+                    'unavailable_seats': unavailable_seats
+                }), 409
         
         # Reserve the new seats
         for seat in seats:

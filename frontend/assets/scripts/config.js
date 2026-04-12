@@ -76,8 +76,43 @@ class Config {
       vnpayCreate: `${this.apiBaseUrl}/api/payment/vnpay/create`,
       vnpayReturn: `${this.apiBaseUrl}/api/payment/vnpay/return`,
       vnpayConfig: `${this.apiBaseUrl}/api/payment/config`,
-      health: `${this.apiBaseUrl}/health`
+      health: `${this.apiBaseUrl}/health`,
+      blockchainConfig: `${this.apiBaseUrl}/api/metadata/blockchain-config`
     };
+  }
+
+  // Blockchain configuration - fetch and cache from server
+  async getBlockchainConfig() {
+    // Check if we already have cached config
+    const cached = sessionStorage.getItem('skyplan_blockchain_config');
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch (e) {
+        // Invalid cache, fetch fresh
+      }
+    }
+
+    try {
+      const response = await fetch(this.getApiEndpoints().blockchainConfig);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const result = await response.json();
+      if (result.success && result.data) {
+        // Cache for session
+        sessionStorage.setItem('skyplan_blockchain_config', JSON.stringify(result.data));
+        return result.data;
+      }
+      
+      console.error('Blockchain config fetch failed:', result);
+      throw new Error('Invalid blockchain config response');
+    } catch (error) {
+      console.error('Failed to fetch blockchain config:', error);
+      // Return defaults/falsy values - caller should handle this
+      return null;
+    }
   }
 
   // Debug info

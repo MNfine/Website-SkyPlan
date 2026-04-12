@@ -461,7 +461,11 @@ def mark_paid():
 	This endpoint is intentionally permissive to allow demo flows (card/bank local simulation).
 	"""
 	data = request.get_json(silent=True) or {}
-	booking_code = data.get('booking_code')
+	booking_code = str(data.get('booking_code') or '').strip()
+	# Normalize values like "Booking code: SP2026..." or accidental whitespace/newlines.
+	match = re.search(r'(SP\d+)', booking_code, re.IGNORECASE)
+	if match:
+		booking_code = match.group(1).upper()
 	amount = data.get('amount')
 	transaction_id = data.get('transaction_id')
 	provider = data.get('provider', 'manual')
@@ -471,6 +475,8 @@ def mark_paid():
 
 	with session_scope() as session:
 		booking = session.query(Booking).filter_by(booking_code=booking_code).first()
+		if not booking:
+			booking = session.query(Booking).filter(Booking.booking_code.ilike(booking_code)).first()
 		if not booking:
 			return jsonify({'success': False, 'message': 'Booking not found'}), 404
 		blockchain_result = None

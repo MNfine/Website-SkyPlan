@@ -96,6 +96,17 @@ backend/
   - `POST /api/auth/register` - Đăng ký
   - `POST /api/auth/login` - Đăng nhập (trả token)
   - `GET /api/auth/profile` - Thông tin user (Bearer token)
+  - `POST /api/auth/wallet/nonce` - Tạo nonce để ký ví (wallet login)
+  - `POST /api/auth/wallet/verify` - Xác thực chữ ký ví và trả token
+  - `POST /api/auth/wallet/connect` - Gắn wallet vào tài khoản đã đăng nhập
+
+  Ghi chú wallet auth:
+  - `wallet/nonce` và `wallet/verify` trả cả trường top-level (`token`, `nonce`, ...) và trường `data` để tương thích frontend hiện tại.
+  - Route wallet đã được harden session handling để tránh lỗi rollback/close khi session chưa khởi tạo.
+  - Wallet routes chấp nhận cả key `wallet_address` và `walletAddress`, đồng thời parse an toàn qua `request.get_json(silent=True)` để tránh lỗi `BadRequest` ngầm.
+  - `wallet/verify` hỗ trợ payload có `nonce` từ client như lớp tương thích, nhưng vẫn kiểm tra nonce trong message đã ký.
+  - Chuẩn hóa địa chỉ ví trong utility bằng `Web3.to_checksum_address` để tương thích `eth-account` mới, tránh lỗi `Account.to_checksum_address` không tồn tại.
+  - Khi tạo tài khoản wallet mới, backend lưu một `password_hash` placeholder để tương thích các database schema cũ còn ràng buộc `NOT NULL` cho cột này.
 
   Flights
   - `GET /api/flights` - Tìm chuyến

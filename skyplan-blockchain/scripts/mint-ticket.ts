@@ -10,7 +10,7 @@ async function main() {
   const pk = process.env.PRIVATE_KEY!;
   const ticketAddress = process.env.TICKET_NFT_ADDRESS!;
 
-  const bookingCode = "SKY123"; // booking đã record trước đó
+  const bookingCode = "SKY123"; // previously recorded booking
   const tokenURI = "https://example.com/metadata.json";
 
   const provider = new ethers.JsonRpcProvider(rpcUrl);

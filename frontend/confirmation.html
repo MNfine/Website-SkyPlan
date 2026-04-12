@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="assets/scripts/auth-utils.js"></script>
   <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/wallet-ui.js"></script>
 <script src="assets/scripts/wallet_translations.js"></script>
 <script src="assets/scripts/metamask.js"></script>
   <script src="assets/scripts/confirmation_translations.js"></script>
@@ -33,10 +34,28 @@
       <span data-i18n="thanksLine2">Thông tin đặt vé của bạn đã được xác nhận.</span>
     </div>
     <div class="confirmation-details" id="confirmationDetails">
-      <div><strong data-i18n="bookingCodeLabel">Mã vé:</strong> <span id="bookingCode" data-i18n="bookingCodeValue">Đang cập nhật...</span></div>
-      <div><strong data-i18n="txnRefLabel">Mã giao dịch:</strong> <span id="txnRef" data-i18n="txnRefValue">Đang cập nhật...</span></div>
-      <div><strong data-i18n="amountLabel">Số tiền:</strong> <span id="amount" data-i18n="amountValue">Đang cập nhật...</span></div>
+      <div><strong data-i18n="bookingCodeLabel">Mã vé:</strong> <span id="bookingCode">Đang cập nhật...</span></div>
+      <div><strong data-i18n="txnRefLabel">Mã giao dịch:</strong> <span id="txnRef">Đang cập nhật...</span></div>
+      <div><strong data-i18n="amountLabel">Số tiền:</strong> <span id="amount">Đang cập nhật...</span></div>
     </div>
+
+    <div class="confirmation-upgrade" id="confirmationUpgradeCta">
+      <div class="confirmation-upgrade-head">
+        <i class="fas fa-shield-halved" aria-hidden="true"></i>
+        <span data-i18n="upgradeTitle">Nâng cấp vé thành Blockchain Ticket</span>
+      </div>
+      <p class="confirmation-upgrade-desc" data-i18n="upgradeDesc">Minh bạch, an toàn, thao tác nhanh chóng. Nhận vé NFT và ưu đãi SKY, không cần trả gas.</p>
+      <div class="confirmation-upgrade-pills">
+        <span data-i18n="upgradePillar1">Minh bạch</span>
+        <span data-i18n="upgradePillar2">An toàn</span>
+        <span data-i18n="upgradePillar3">Nhanh chóng</span>
+      </div>
+      <div class="confirmation-upgrade-actions">
+        <a href="support.html#blockchain-ticket-guide" class="upgrade-guide" data-i18n="upgradeGuide">Xem hướng dẫn</a>
+        <a href="my_trips.html" class="upgrade-now" data-i18n="upgradeNow">Tích hợp ngay</a>
+      </div>
+    </div>
+
     <div class="confirmation-actions">
       <button id="downloadTicketBtn" class="download-btn"><i class="fas fa-download"></i> <span data-i18n="downloadTicket">Tải vé</span></button>
       <a href="index.html"><i class="fas fa-home"></i> <span data-i18n="backHome">Về trang chủ</span></a>
@@ -52,6 +71,8 @@
       document.getElementById('header-container').innerHTML = html;
       if (typeof initializeLanguageSelector === 'function') initializeLanguageSelector();
       if (typeof initializeMobileMenu === 'function') initializeMobileMenu();
+      if (typeof initWalletUI === 'function') initWalletUI();
+      document.dispatchEvent(new CustomEvent('header-loaded'));
       const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
       if (typeof applyConfirmationTranslations === 'function') applyConfirmationTranslations(lang);
       if (typeof updateSelectedLanguage === 'function') updateSelectedLanguage(lang);
@@ -61,26 +82,6 @@
       const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
       if (typeof applyConfirmationTranslations === 'function') applyConfirmationTranslations(lang);
     });
-    // Get information from query string
-    function getQueryParam(name) {
-      const url = new URL(window.location.href);
-      return url.searchParams.get(name);
-    }
-    // If not on URL, get from localStorage (saved from payment.js)
-    let txnRef = getQueryParam('txnRef');
-    let amount = getQueryParam('amount');
-    if (!txnRef || !amount) {
-      txnRef = localStorage.getItem('lastTxnRef') || 'None';
-      amount = localStorage.getItem('lastAmount') || 'None';
-    }
-    document.getElementById('txnRef').textContent = txnRef;
-    document.getElementById('amount').textContent = amount !== 'None' ? Number(amount).toLocaleString('vi-VN') + ' VND' : 'None';
-    // Get booking code from localStorage (priority), or from URL if available
-    let bookingCode = getQueryParam('bookingCode');
-    if (!bookingCode) {
-      bookingCode = localStorage.getItem('lastTxnRef') || 'None';
-    }
-    document.getElementById('bookingCode').textContent = bookingCode;
     // Apply i18n on initial load
     document.addEventListener('DOMContentLoaded', function() {
       const lang = localStorage.getItem('preferredLanguage') || 'vi';

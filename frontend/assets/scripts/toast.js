@@ -45,7 +45,15 @@
         border-radius: 6px;
         font-size: 18px;
       }
-      .skyplan-toast .toast-body { flex: 1; font-size: 14px; line-height: 1.25; }
+      .skyplan-toast .toast-body {
+        flex: 1;
+        min-width: 0;
+        font-size: 14px;
+        line-height: 1.35;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
       .skyplan-toast .toast-close { margin-left: 8px; background: transparent; border: none; cursor: pointer; padding: 6px; border-radius: 6px; }
       .skyplan-toast.type-info { border-left-color: #2196f3; }
       .skyplan-toast.type-success { border-left-color: #2e7d32; }

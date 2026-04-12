@@ -1,14 +1,13 @@
 """Authentication routes for user registration and login."""
-from flask import Blueprint, request, jsonify, current_app, g
+from flask import Blueprint, request, jsonify, current_app
 import re
 import jwt
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
+from werkzeug.security import generate_password_hash
 
 from backend.models.user import User
-from backend.models.db import get_session
+from backend.models.db import session_scope, get_session
 from backend.utils.wallet_auth import (
     generate_nonce,
     create_signin_message,
@@ -58,32 +57,35 @@ def register():
         }), 400
     
     try:
-        # Create a new user
-        session = get_session()
-        new_user = User(
-            email=data['email'].strip().lower(),
-            fullname=data['fullname'],
-            phone=data['phone']
-        )
-        new_user.set_password(data['password'])
+        # Create a new user using session_scope for proper transaction handling
+        with session_scope() as session:
+            new_user = User(
+                email=data['email'].strip().lower(),
+                fullname=data['fullname'],
+                phone=data['phone']
+            )
+            new_user.set_password(data['password'])
+            
+            # Add user to database
+            session.add(new_user)
+            session.flush()  # Get the user ID
+            user_id = new_user.id
         
-        # Add user to database
-        session.add(new_user)
-        session.commit()
-        
-        # Generate authentication token
-        token = new_user.generate_auth_token()
-        
-        # Return success with user info and token
-        return jsonify({
-            'success': True,
-            'message': 'User registered successfully',
-            'user': new_user.as_dict(),
-            'token': token
-        }), 201
+        # Retrieve user after session closes to ensure it's attached to a new session
+        with session_scope() as session:
+            new_user = session.query(User).filter_by(id=user_id).first()
+            # Generate authentication token
+            token = new_user.generate_auth_token()
+            
+            # Return success with user info and token
+            return jsonify({
+                'success': True,
+                'message': 'User registered successfully',
+                'user': new_user.as_dict(),
+                'token': token
+            }), 201
         
     except IntegrityError as e:
-        session.rollback()
         # Check if error is due to duplicate email or phone
         error_info = str(e).lower()
         if 'unique constraint' in error_info:
@@ -102,14 +104,12 @@ def register():
         }), 409
         
     except Exception as e:
-        session.rollback()
         current_app.logger.error(f"Registration error: {str(e)}")
         return jsonify({
             'success': False,
             'message': 'An error occurred during registration'
         }), 500
-    finally:
-        session.close()
+
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
@@ -129,35 +129,35 @@ def login():
         email = str(data.get('email', '')).strip().lower()
         password = str(data.get('password', ''))
 
-        # Get user from database
-        session = get_session()
-        user = session.query(User).filter_by(email=email).first()
-        
-        # Check if user exists and has a password-based account.
-        # Some users may be wallet-only and have no password hash.
-        if user is None or not user.password_hash or not user.check_password(password):
-            return jsonify({
-                'success': False,
-                'message': 'Invalid email or password'
-            }), 401
-        
-        # Check if user account is active
-        if not user.is_active:
-            return jsonify({
-                'success': False,
-                'message': 'Account is deactivated'
-            }), 403
+        # Get user from database using session_scope
+        with session_scope() as session:
+            user = session.query(User).filter_by(email=email).first()
             
-        # Generate authentication token
-        token = user.generate_auth_token()
-        
-        # Return success with user info and token
-        return jsonify({
-            'success': True,
-            'message': 'Login successful',
-            'user': user.as_dict(),
-            'token': token
-        }), 200
+            # Check if user exists and has a password-based account.
+            # Some users may be wallet-only and have no password hash.
+            if user is None or not user.password_hash or not user.check_password(password):
+                return jsonify({
+                    'success': False,
+                    'message': 'Invalid email or password'
+                }), 401
+            
+            # Check if user account is active
+            if not user.is_active:
+                return jsonify({
+                    'success': False,
+                    'message': 'Account is deactivated'
+                }), 403
+            
+            # Generate authentication token
+            token = user.generate_auth_token()
+            
+            # Return success with user info and token
+            return jsonify({
+                'success': True,
+                'message': 'Login successful',
+                'user': user.as_dict(),
+                'token': token
+            }), 200
         
     except Exception as e:
         current_app.logger.error(f"Login error: {str(e)}")
@@ -165,8 +165,7 @@ def login():
             'success': False,
             'message': 'An error occurred during login'
         }), 500
-    finally:
-        session.close()
+
 
 @auth_bp.route('/profile', methods=['GET'])
 def get_profile():
@@ -191,13 +190,13 @@ def get_profile():
         }), 401
     
     try:
-        # Get user from database
-        session = get_session()
-        user = session.query(User).filter_by(id=user_id).first()
-        
-        if not user:
-            return jsonify({
-                'success': False,
+        # Get user from database using session_scope
+        with session_scope() as session:
+            user = session.query(User).filter_by(id=user_id).first()
+            
+            if not user:
+                return jsonify({
+                    'success': False,
                 'message': 'User not found'
             }), 404
             
@@ -213,8 +212,6 @@ def get_profile():
             'success': False,
             'message': 'An error occurred while retrieving profile'
         }), 500
-    finally:
-        session.close()
 
 @auth_bp.route('/update', methods=['PUT'])
 def update_profile():
@@ -247,9 +244,9 @@ def update_profile():
         }), 400
     
     try:
-        # Get user from database
-        session = get_session()
-        user = session.query(User).filter_by(id=user_id).first()
+        # Get user from database using session_scope
+        with session_scope() as session:
+            user = session.query(User).filter_by(id=user_id).first()
         
         if not user:
             return jsonify({
@@ -357,15 +354,19 @@ def get_wallet_nonce():
             "wallet_address": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
         }
     """
-    data = request.json
+    data = request.get_json(silent=True) or {}
+    if isinstance(data.get('data'), dict):
+        payload = dict(data['data'])
+        payload.update({k: v for k, v in data.items() if k != 'data'})
+        data = payload
     
-    if not data or 'wallet_address' not in data:
+    wallet_address = data.get('wallet_address') or data.get('walletAddress')
+
+    if not wallet_address:
         return jsonify({
             'success': False,
             'message': 'wallet_address is required'
         }), 400
-    
-    wallet_address = data['wallet_address']
     
     # Validate Ethereum address format
     if not is_valid_ethereum_address(wallet_address):
@@ -377,8 +378,10 @@ def get_wallet_nonce():
     # Normalize address to checksum format
     wallet_address = normalize_address(wallet_address)
     
+    session = None
     try:
         session = get_session()
+        is_new_user = False
         
         # Find or create user with this wallet address
         user = session.query(User).filter_by(wallet_address=wallet_address).first()
@@ -397,9 +400,12 @@ def get_wallet_nonce():
                 phone="0000000000",  # Temporary phone
                 wallet_address=wallet_address,
                 wallet_nonce=nonce,
-                password_hash=None  # No password for wallet users
+                # Keep a placeholder hash for compatibility with legacy DB schemas
+                # where password_hash may still be NOT NULL.
+                password_hash=generate_password_hash(generate_nonce())
             )
             session.add(user)
+            is_new_user = True
         
         session.commit()
         
@@ -411,18 +417,26 @@ def get_wallet_nonce():
             'nonce': user.wallet_nonce,
             'message': message,
             'wallet_address': wallet_address,
-            'is_new_user': user.id is None or user.email.endswith('@wallet.skyplan.local')
+            'is_new_user': is_new_user,
+            'data': {
+                'nonce': user.wallet_nonce,
+                'message': message,
+                'wallet_address': wallet_address,
+                'is_new_user': is_new_user,
+            },
         }), 200
         
     except Exception as e:
-        session.rollback()
+        if session is not None:
+            session.rollback()
         current_app.logger.error(f"Wallet nonce error: {str(e)}")
         return jsonify({
             'success': False,
             'message': 'Failed to generate nonce'
         }), 500
     finally:
-        session.close()
+        if session is not None:
+            session.close()
 
 
 @auth_bp.route('/wallet/verify', methods=['POST'])
@@ -444,19 +458,31 @@ def verify_wallet_signature():
             "message": "Login successful"
         }
     """
-    data = request.json
+    data = request.get_json(silent=True) or {}
+    if isinstance(data.get('data'), dict):
+        payload = dict(data['data'])
+        payload.update({k: v for k, v in data.items() if k != 'data'})
+        data = payload
+
+    wallet_address = data.get('wallet_address') or data.get('walletAddress')
+    signature = data.get('signature')
+    message = data.get('message')
+    nonce = data.get('nonce')
     
     # Validate required fields
-    required_fields = ['wallet_address', 'signature', 'message']
-    if not all(field in data for field in required_fields):
+    missing_fields = []
+    if not wallet_address:
+        missing_fields.append('wallet_address')
+    if not signature:
+        missing_fields.append('signature')
+    if not message:
+        missing_fields.append('message')
+
+    if missing_fields:
         return jsonify({
             'success': False,
-            'message': f'Missing required fields: {", ".join(required_fields)}'
+            'message': f'Missing required fields: {", ".join(missing_fields)}'
         }), 400
-    
-    wallet_address = data['wallet_address']
-    signature = data['signature']
-    message = data['message']
     
     # Validate Ethereum address
     if not is_valid_ethereum_address(wallet_address):
@@ -467,6 +493,7 @@ def verify_wallet_signature():
     
     wallet_address = normalize_address(wallet_address)
     
+    session = None
     try:
         session = get_session()
         
@@ -480,10 +507,20 @@ def verify_wallet_signature():
             }), 404
         
         if not user.wallet_nonce:
+            if nonce and nonce in message:
+                # Fallback for compatibility with clients that include nonce in verify payload.
+                user.wallet_nonce = nonce
+            else:
+                return jsonify({
+                    'success': False,
+                    'message': 'No nonce found. Please request a new nonce.'
+                }), 400
+
+        if user.wallet_nonce and user.wallet_nonce not in message:
             return jsonify({
                 'success': False,
-                'message': 'No nonce found. Please request a new nonce.'
-            }), 400
+                'message': 'Message nonce mismatch. Please request a new nonce.'
+            }), 401
         
         # Verify the signature
         is_valid = verify_signature(message, signature, wallet_address)
@@ -492,13 +529,6 @@ def verify_wallet_signature():
             return jsonify({
                 'success': False,
                 'message': 'Invalid signature. Authentication failed.'
-            }), 401
-        
-        # Verify message contains the correct nonce
-        if user.wallet_nonce not in message:
-            return jsonify({
-                'success': False,
-                'message': 'Message nonce mismatch. Please request a new nonce.'
             }), 401
         
         # Check if user account is active
@@ -521,18 +551,25 @@ def verify_wallet_signature():
             'message': 'Wallet authentication successful',
             'token': token,
             'user': user.as_dict(),
-            'needs_profile_update': user.email.endswith('@wallet.skyplan.local')
+            'needs_profile_update': user.email.endswith('@wallet.skyplan.local'),
+            'data': {
+                'token': token,
+                'user': user.as_dict(),
+                'needs_profile_update': user.email.endswith('@wallet.skyplan.local'),
+            },
         }), 200
         
     except Exception as e:
-        session.rollback()
+        if session is not None:
+            session.rollback()
         current_app.logger.error(f"Wallet verification error: {str(e)}")
         return jsonify({
             'success': False,
             'message': 'Authentication failed'
         }), 500
     finally:
-        session.close()
+        if session is not None:
+            session.close()
 
 
 @auth_bp.route('/wallet/connect', methods=['POST'])
@@ -571,15 +608,19 @@ def connect_wallet_to_existing_user():
             'message': 'Invalid or expired token'
         }), 401
     
-    data = request.json
+    data = request.get_json(silent=True) or {}
+    if isinstance(data.get('data'), dict):
+        payload = dict(data['data'])
+        payload.update({k: v for k, v in data.items() if k != 'data'})
+        data = payload
     
-    if not data or 'wallet_address' not in data:
+    wallet_address = data.get('wallet_address') or data.get('walletAddress')
+
+    if not wallet_address:
         return jsonify({
             'success': False,
             'message': 'wallet_address is required'
         }), 400
-    
-    wallet_address = data['wallet_address']
     
     # Validate address
     if not is_valid_ethereum_address(wallet_address):
@@ -590,6 +631,7 @@ def connect_wallet_to_existing_user():
     
     wallet_address = normalize_address(wallet_address)
     
+    session = None
     try:
         session = get_session()
         
@@ -623,17 +665,20 @@ def connect_wallet_to_existing_user():
         }), 200
         
     except IntegrityError:
-        session.rollback()
+        if session is not None:
+            session.rollback()
         return jsonify({
             'success': False,
             'message': 'Wallet address already in use'
         }), 409
     except Exception as e:
-        session.rollback()
+        if session is not None:
+            session.rollback()
         current_app.logger.error(f"Wallet connect error: {str(e)}")
         return jsonify({
             'success': False,
             'message': 'Failed to connect wallet'
         }), 500
     finally:
-        session.close()
+        if session is not None:
+            session.close()

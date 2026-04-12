@@ -14,7 +14,7 @@ const seatTranslations = {
         termsOfService: "Terms of Service",
         supportTitle: "Support",
         helpCenter: "Help Center",
-        customerService: "Customer Service",
+        blogLink: "Blog",
         bookingHelp: "Booking Help",
         faq: "FAQ",
         paymentMethodsTitle: "Payment Methods",
@@ -42,6 +42,7 @@ const seatTranslations = {
         occupied: "Occupied",
         selecting: "Selecting",
         notAvailable: "Not Available",
+        back: "Back",
         continue: "Continue",
         
         // Fare classes
@@ -74,7 +75,7 @@ const seatTranslations = {
         termsOfService: "Điều khoản dịch vụ",
         supportTitle: "Hỗ trợ",
         helpCenter: "Trung tâm trợ giúp",
-        customerService: "Dịch vụ khách hàng",
+        blogLink: "Blog",
         bookingHelp: "Hỗ trợ đặt vé",
         faq: "Câu hỏi thường gặp",
         paymentMethodsTitle: "Phương thức thanh toán",
@@ -97,6 +98,7 @@ const seatTranslations = {
         occupied: "Đã có người",
         selecting: "Đang chọn",
         notAvailable: "Không khả dụng",
+        back: "Quay lại",
         continue: "Tiếp tục",
         
         // Fare classes

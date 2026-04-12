@@ -1,5 +1,22 @@
 // Authentication utilities for SkyPlan frontend
 
+function getPersistedLanguage() {
+  const prefRaw = (localStorage.getItem('preferredLanguage') || '').toLowerCase();
+  const langRaw = (localStorage.getItem('language') || '').toLowerCase();
+  const pref = prefRaw === 'en' ? 'en' : (prefRaw === 'vi' ? 'vi' : '');
+  const lang = langRaw === 'en' ? 'en' : (langRaw === 'vi' ? 'vi' : '');
+  const chosen = lang || pref || ((document.documentElement.lang || '').toLowerCase() === 'en' ? 'en' : 'vi');
+
+  try {
+    if (pref !== chosen || lang !== chosen) {
+      localStorage.setItem('preferredLanguage', chosen);
+      localStorage.setItem('language', chosen);
+    }
+  } catch (_) {}
+
+  return chosen;
+}
+
 // AuthState - Centralized authentication management
 const AuthState = {
   // Get current authentication token
@@ -19,6 +36,13 @@ const AuthState = {
     for (const key of keys) {
       token = localStorage.getItem(key) || sessionStorage.getItem(key);
       if (token) {
+        // Heal legacy token keys so all pages read a canonical key.
+        try {
+          if (!localStorage.getItem('authToken') && !sessionStorage.getItem('authToken')) {
+            const fromLocal = localStorage.getItem(key);
+            (fromLocal ? localStorage : sessionStorage).setItem('authToken', token);
+          }
+        } catch (_) {}
         console.debug(`[AuthState.getToken] Retrieved from key ${key}:`, token); // Debug log
         return token;
       }
@@ -35,6 +59,18 @@ const AuthState = {
       
       user = sessionStorage.getItem('currentUser');
       if (user) return JSON.parse(user);
+
+      // Legacy key fallback + canonical healing
+      const legacyLocal = localStorage.getItem('user');
+      if (legacyLocal) {
+        localStorage.setItem('currentUser', legacyLocal);
+        return JSON.parse(legacyLocal);
+      }
+      const legacySession = sessionStorage.getItem('user');
+      if (legacySession) {
+        sessionStorage.setItem('currentUser', legacySession);
+        return JSON.parse(legacySession);
+      }
       
       return null;
     } catch {
@@ -60,6 +96,9 @@ const AuthState = {
     const otherStorage = remember ? sessionStorage : localStorage;
     otherStorage.removeItem('authToken');
     otherStorage.removeItem('currentUser');
+    
+    // Emit login event for wallet button UI to update
+    window.dispatchEvent(new CustomEvent('auth-login', { detail: { user, remember } }));
   },
   
   // Clear authentication data
@@ -91,6 +130,9 @@ const AuthState = {
       localStorage.removeItem('skyplan_trip_selection');
     } catch {}
     
+    // Emit logout event for wallet button UI to update
+    window.dispatchEvent(new CustomEvent('auth-logout'));
+    
     // Redirect to login page
     window.location.href = 'login.html';
   },
@@ -116,7 +158,8 @@ const AuthState = {
   
   // Redirect to login if not authenticated
   requireAuth: function(returnUrl = null) {
-    if (!this.isAuthenticated() || !this.isTokenValid()) {
+    // Do not hard-fail on client-side exp parsing; backend 401 is authoritative.
+    if (!this.isAuthenticated()) {
       const url = returnUrl || window.location.pathname + window.location.search;
       this.clearAuth();
       window.location.href = `login.html?returnUrl=${encodeURIComponent(url)}`;
@@ -179,9 +222,20 @@ function updateHeaderUserInfo() {
     if (authButtons) authButtons.style.display = 'none';
     if (userMenu) userMenu.style.display = 'block';
     
+    // On desktop (>1024px), hide nav-links-main to avoid duplication
+    // On mobile, keep it visible as separate menu items
+    const navLinksMain = document.querySelector('.nav-links-main');
+    if (navLinksMain) {
+      if (window.innerWidth > 1024) {
+        navLinksMain.style.display = 'none';
+      } else {
+        navLinksMain.style.display = 'flex'; // Show on mobile for clean menu
+      }
+    }
+    
     // Apply translations to user dropdown after showing it
     if (typeof applyTranslations === 'function') {
-      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const lang = getPersistedLanguage();
       applyTranslations(lang);
     }
     
@@ -191,6 +245,10 @@ function updateHeaderUserInfo() {
     // Show auth buttons, hide user menu  
     if (authButtons) authButtons.style.display = 'flex';
     if (userMenu) userMenu.style.display = 'none';
+    
+    // Show nav-links-main when logged out
+    const navLinksMain = document.querySelector('.nav-links-main');
+    if (navLinksMain) navLinksMain.style.display = 'flex';
   }
 }
 
@@ -218,6 +276,20 @@ document.addEventListener('DOMContentLoaded', function() {
 window.addEventListener('storage', function(e) {
   if (e.key === 'authToken' || e.key === 'currentUser') {
     updateHeaderUserInfo();
+  }
+});
+
+// Listen for window resize to update nav-links-main visibility on mobile/desktop toggle
+window.addEventListener('resize', function() {
+  const user = AuthState.getUser();
+  const navLinksMain = document.querySelector('.nav-links-main');
+  
+  if (user && AuthState.isAuthenticated() && navLinksMain) {
+    if (window.innerWidth > 1024) {
+      navLinksMain.style.display = 'none'; // Hide on desktop
+    } else {
+      navLinksMain.style.display = 'flex'; // Show on mobile
+    }
   }
 });
 

@@ -39,7 +39,7 @@ async function main() {
   console.log("BookingCode:", bookingCode);
   console.log("Amount:", amountHuman, "SKY");
 
-  // mint reward cho booking đã record (user sẽ được auto-allow trong mintForBooking)
+  // Mint reward for recorded booking (user will be auto-allowed in mintForBooking)
   const tx = await sky.mintForBooking(user, bookingCode, amount);
   console.log("mintForBooking tx:", tx.hash);
   await tx.wait();

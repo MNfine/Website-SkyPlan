@@ -12,7 +12,7 @@
 /**
  * Wallet Button - Base Styles
  */
-.btn-wallet {
+.wallet-connect-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -30,25 +30,25 @@
   height: 40px;
 }
 
-.btn-wallet:hover:not(.connected) {
+.wallet-connect-btn:hover:not(.connected) {
   background-color: #0a969d;
   color: #fff;
   box-shadow: 0 4px 12px rgba(10, 150, 157, 0.3);
 }
 
-.btn-wallet.connected {
+.wallet-connect-btn.connected {
   background-color: #0a969d;
   color: #fff;
   border-color: #0a969d;
 }
 
-.btn-wallet.connected:hover {
+.wallet-connect-btn.connected:hover {
   background-color: #088a90;
   border-color: #088a90;
   box-shadow: 0 4px 12px rgba(10, 150, 157, 0.4);
 }
 
-.btn-wallet i {
+.wallet-connect-btn i {
   font-size: 16px;
   width: 16px;
 }
@@ -128,7 +128,7 @@
  * Tablet (768px - 1024px)
  */
 @media (max-width: 1024px) {
-  .btn-wallet {
+  .wallet-connect-btn {
     padding: 8px 14px;
     font-size: 13px;
     gap: 6px;
@@ -151,7 +151,7 @@
     margin: 0 4px;
   }
 
-  .btn-wallet {
+  .wallet-connect-btn {
     width: 40px;
     height: 40px;
     padding: 0;
@@ -161,11 +161,11 @@
     flex-shrink: 0;
   }
 
-  .btn-wallet span {
+  .wallet-connect-btn span {
     display: none;
   }
 
-  .btn-wallet i {
+  .wallet-connect-btn i {
     font-size: 16px;
     margin: 0;
   }
@@ -177,18 +177,18 @@
 }
 
 /* Wallet button in mobile menu - show text */
-.nav-links .btn-wallet {
+.nav-links .wallet-connect-btn {
   width: 100% !important;
   height: auto;
   padding: 0.6rem 0.75rem !important;
   justify-content: center;
 }
 
-.nav-links .btn-wallet span {
+.nav-links .wallet-connect-btn span {
   display: inline !important;
 }
 
-.nav-links .btn-wallet i {
+.nav-links .wallet-connect-btn i {
   font-size: 0.9rem;
   margin-right: 0.6rem;
 }
@@ -219,14 +219,14 @@
     margin: 0;
   }
 
-  .btn-wallet {
+  .wallet-connect-btn {
     width: 40px;
     height: 40px;
     padding: 0;
     flex-shrink: 0;
   }
 
-  .btn-wallet:active {
+  .wallet-connect-btn:active {
     background-color: rgba(10, 150, 157, 0.1);
   }
 

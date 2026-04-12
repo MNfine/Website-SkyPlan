@@ -44,6 +44,22 @@
         return dict[fareClass || 'economy'] || dict['economy'];
     }
 
+    function normalizeTripType(trip) {
+        const raw = String(
+            (trip && (trip.trip_type || trip.tripType || trip.type || trip.journeyType)) ||
+            localStorage.getItem('skyplan_trip_type') ||
+            ''
+        ).toLowerCase().trim();
+
+        if (raw === 'round-trip' || raw === 'roundtrip' || raw === 'return') return 'round-trip';
+        if (raw === 'one-way' || raw === 'oneway') return 'one-way';
+        return '';
+    }
+
+    function hasValue(v) {
+        return v !== null && v !== undefined && String(v).trim() !== '';
+    }
+
     function render() {
         const lang = getLang();
         const trip = readJSON(TRIP_KEY, null);
@@ -57,6 +73,11 @@
         const toName = resolveCity(toCode, lang);
         const segOut = trip && Array.isArray(trip.segments) ? trip.segments.find(s => s.direction === 'outbound') : null;
         const segIn = trip && Array.isArray(trip.segments) ? trip.segments.find(s => s.direction === 'inbound') : null;
+        const tripType = normalizeTripType(trip);
+        const hasInboundData = !!(segIn && (hasValue(segIn.departTime) || hasValue(segIn.arriveTime) || hasValue(segIn.flight_number) || hasValue(segIn.flightNumber)));
+        const shouldShowInbound = tripType === 'round-trip'
+            ? true
+            : (tripType === 'one-way' ? false : hasInboundData);
 
         // Update booking details (route titles and times)
         const route1 = document.querySelector('.booking-details .flight-summary:nth-of-type(1)');
@@ -70,7 +91,11 @@
             if (pTime) { pTime.textContent = `${dateLabel} - ${(segOut && segOut.departTime) || ''} → ${(segOut && segOut.arriveTime) || ''}`; pTime.removeAttribute('data-i18n'); }
             if (pClass) { pClass.textContent = `${fareClassLabel(fare && fare.fareClass, lang)} • 1 ${lang === 'vi' ? 'hành khách' : 'passenger'}`; pClass.removeAttribute('data-i18n'); }
         }
-        if (segIn) {
+        if (shouldShowInbound && route2) {
+            route2.style.display = '';
+        }
+
+        if (shouldShowInbound && segIn) {
             if (route2) {
                 const h4 = route2.querySelector('h4');
                 const pTime = route2.querySelector('p:nth-of-type(1)');
@@ -101,7 +126,7 @@
 
         if (ticketLabelEl) {
         const ot = getOT(lang) || {};
-        const legs = segIn ? (ot.ticketRoundTripSuffix || (lang === 'vi' ? '(2 chiều)' : '(round trip)')) : (ot.ticketOneWaySuffix || (lang === 'vi' ? '(1 chiều)' : '(one way)'));
+        const legs = shouldShowInbound ? (ot.ticketRoundTripSuffix || (lang === 'vi' ? '(2 chiều)' : '(round trip)')) : (ot.ticketOneWaySuffix || (lang === 'vi' ? '(1 chiều)' : '(one way)'));
         // always own the label and prevent future overrides
         ticketLabelEl.removeAttribute('data-i18n');
         const base = ot.ticketLabelBase || (lang === 'vi' ? 'Vé máy bay' : 'Ticket');

@@ -1,0 +1,1201 @@
+flight_number,airline,from,from_name,from_province,to,to_name,to_province,date,depart_time_local,arrive_time_local,price,currency
+VJ5034,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-22,11:45,14:55,2205378,VND
+VN2463,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-20,13:00,14:10,2407167,VND
+QH7788,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-01,12:45,14:05,2722662,VND
+VN3661,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-19,10:45,11:05,1104582,VND
+VN5937,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-28,10:15,13:45,2619023,VND
+VN4510,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-11,18:30,20:00,3035734,VND
+VJ9586,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-27,06:15,09:45,1809582,VND
+VN9646,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-07,19:00,22:20,2329319,VND
+VJ6154,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-28,14:15,17:45,3036599,VND
+QH7814,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-03,17:45,20:15,997420,VND
+QH8149,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-21,19:15,22:45,2666052,VND
+QH3237,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-08,17:30,18:30,3359523,VND
+VJ2894,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-06,05:00,06:10,3361381,VND
+VN9376,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-01,10:45,12:55,2615639,VND
+QH1047,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-23,10:30,13:00,2167394,VND
+VN8743,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-28,06:45,09:45,1210843,VND
+QH3519,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-16,08:00,11:10,3243144,VND
+VN8019,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-26,07:30,08:50,1734706,VND
+QH1754,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-13,15:00,16:20,1521497,VND
+QH6560,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-21,15:00,16:20,2232385,VND
+QH9798,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-04-19,14:30,17:00,2948932,VND
+QH3498,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-15,17:30,19:40,2339972,VND
+VN2820,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-22,10:45,13:55,1306739,VND
+VN6992,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-21,09:15,12:45,2045629,VND
+VJ4520,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-15,08:00,11:10,3382535,VND
+QH2113,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-10,12:00,14:10,1121940,VND
+VN8888,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-04,11:00,13:20,2444326,VND
+VJ5237,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-24,13:00,14:20,3098272,VND
+VJ6508,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-07,06:45,07:15,1878311,VND
+QH3301,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-17,12:30,13:00,2018475,VND
+VJ1473,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-08,14:45,15:55,1983405,VND
+QH3800,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-15,05:00,06:00,2339116,VND
+QH1583,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-26,13:45,14:05,2286190,VND
+QH2803,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-31,19:30,21:30,3405829,VND
+QH3816,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-13,16:15,19:45,1198048,VND
+VJ6771,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-01,06:30,09:40,2914123,VND
+VJ4814,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-28,14:45,16:55,1023086,VND
+QH2129,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-18,10:45,13:15,2375480,VND
+VN2692,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-05,11:45,13:45,1826301,VND
+QH8607,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-22,07:00,10:20,2062375,VND
+QH9375,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-05,15:00,16:10,3222954,VND
+VJ7398,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-27,07:15,10:15,2183614,VND
+VN8183,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-26,11:15,14:45,3148908,VND
+VN1454,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-14,18:45,19:45,2058027,VND
+QH8345,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-21,06:15,07:15,3075006,VND
+VJ3533,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-13,05:45,08:45,2923321,VND
+VN8766,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-12,05:00,08:20,3343456,VND
+VJ4264,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-05-06,07:00,09:30,1774929,VND
+VJ8188,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-07,17:15,19:35,3348951,VND
+QH4906,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-19,07:00,09:30,2814618,VND
+QH4210,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-30,16:00,18:20,1750852,VND
+QH8460,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-05,07:15,10:35,2933782,VND
+VJ8254,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-05,14:00,15:20,1255084,VND
+VN4526,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-06-01,10:45,11:55,2200861,VND
+VN3819,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-19,10:00,13:20,2058633,VND
+VJ9124,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-12,19:30,21:40,1268979,VND
+QH3716,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-15,15:45,17:55,1159157,VND
+VN9388,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-27,14:45,15:45,2725967,VND
+QH6397,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-22,08:15,11:25,1214294,VND
+QH8159,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-15,16:00,18:20,2618604,VND
+VJ3982,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-21,16:30,19:00,2030276,VND
+VN2834,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-29,19:45,22:05,2525979,VND
+QH1088,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-24,05:30,06:40,2792189,VND
+QH1464,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-03,05:00,07:00,2736923,VND
+VN2786,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-05,15:15,17:15,2850589,VND
+VN1276,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-14,09:00,11:30,1426338,VND
+VJ5208,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-17,10:00,11:10,2154887,VND
+QH4734,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-12,15:45,18:15,2350500,VND
+QH6858,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-02,18:15,20:15,2589998,VND
+VN1444,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-11,14:00,15:30,3395867,VND
+VN6464,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-12,08:45,11:05,2444839,VND
+VJ1240,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-12,13:45,16:15,2961396,VND
+VJ9085,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-26,06:30,07:50,2973251,VND
+VN6496,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-13,10:15,12:25,2637373,VND
+VN8359,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-12,16:45,17:55,1453106,VND
+VN6925,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-01,15:45,17:55,1834226,VND
+VN2748,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-10,07:30,08:40,1745866,VND
+VN5822,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-16,05:15,06:35,1350223,VND
+QH8644,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VII,Sân bay Vinh,Nghệ An,2026-04-18,09:30,11:00,1107913,VND
+VN8264,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-26,15:00,17:30,2208206,VND
+QH7603,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-09,17:00,20:00,2438080,VND
+VJ3697,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-29,09:15,12:15,2425221,VND
+QH9200,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-16,17:45,20:55,3099396,VND
+QH7724,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-09,08:00,10:10,2726098,VND
+VN1657,Vietjet Air,VII,Sân bay Vinh,Nghệ An,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-26,10:15,11:35,2701227,VND
+QH2109,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-19,20:30,21:50,1759194,VND
+VJ8059,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-11,17:00,19:00,2364601,VND
+QH9844,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-10,06:00,07:00,956104,VND
+QH3885,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-29,13:45,16:15,1768175,VND
+VJ1434,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-28,11:45,12:05,3007304,VND
+QH9731,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-16,17:00,18:00,1127011,VND
+QH2423,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-11,08:15,09:45,2349460,VND
+VJ8157,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-29,11:45,14:05,1143353,VND
+QH9466,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-26,14:30,16:50,2560131,VND
+VN4953,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-19,11:45,13:55,962761,VND
+VJ6212,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-02,06:15,07:45,2823319,VND
+QH5650,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-12,18:45,21:15,3099412,VND
+VN3797,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-26,10:30,13:00,2460720,VND
+VN8715,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-08,17:15,18:35,3366078,VND
+QH7049,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-05,19:00,20:00,1717649,VND
+QH6677,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-24,16:45,17:45,1970355,VND
+VJ4986,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-27,17:00,18:10,3065771,VND
+VJ7984,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-17,17:45,18:55,1949892,VND
+VN3058,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-25,18:30,20:00,1357834,VND
+VN2076,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,HUI,Sân bay quốc tế Phú Bài,Huế,2026-04-16,10:45,12:55,2938183,VND
+VJ2566,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-16,07:30,10:40,3221896,VND
+VJ9025,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-20,06:00,09:30,1202691,VND
+QH3039,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-06-05,13:45,16:45,2842131,VND
+QH1016,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-11,13:30,15:30,1919661,VND
+QH3965,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-20,18:45,20:15,2723878,VND
+QH5067,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,VII,Sân bay Vinh,Nghệ An,2026-05-13,06:00,07:00,2523643,VND
+QH8441,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-06,12:45,13:55,1074136,VND
+VN9561,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-20,07:30,08:50,2223227,VND
+VJ7418,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-14,08:45,09:45,1115773,VND
+VN1976,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-07,16:30,17:50,3112207,VND
+QH8264,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-28,05:00,08:30,2578465,VND
+VN6955,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-11,07:30,10:40,3427286,VND
+VN6327,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-11,17:30,19:50,2679944,VND
+QH4170,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-12,18:45,19:45,2184314,VND
+QH3947,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-26,07:45,08:45,2094267,VND
+VN3626,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-09,20:15,22:25,2105527,VND
+VJ1162,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-14,13:15,16:15,1738864,VND
+VJ1353,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-26,07:30,09:40,3218677,VND
+QH3050,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-13,16:15,18:45,2585790,VND
+QH8786,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-14,11:15,12:25,929067,VND
+VJ9902,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-06,05:30,08:40,1197676,VND
+VN9932,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-13,05:15,08:35,3146499,VND
+QH8781,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-11,09:30,12:50,3068924,VND
+VN2473,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-02,05:30,08:40,1441354,VND
+VJ6635,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-06-04,07:15,09:15,3024996,VND
+QH1465,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-26,05:45,07:55,3361765,VND
+QH5619,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-20,15:15,18:45,2778253,VND
+VJ3382,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-20,13:45,16:55,1230235,VND
+QH7881,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-23,07:15,09:45,1212926,VND
+QH3462,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-06-01,13:45,16:05,1424513,VND
+VJ2219,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-30,13:30,14:40,1074749,VND
+VJ5171,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-04,20:30,22:50,3375357,VND
+QH9176,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-02,09:15,12:25,1448331,VND
+VJ5868,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-26,15:45,18:05,1630898,VND
+VJ6111,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-22,15:00,16:00,2297521,VND
+VN1067,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-18,12:30,15:50,3008939,VND
+VJ7269,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-08,09:30,11:50,1429978,VND
+VN2692,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-15,05:15,06:45,2414072,VND
+QH3628,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-05,10:15,12:35,1027826,VND
+VJ1872,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-10,20:00,21:20,1955896,VND
+QH3025,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-12,11:45,14:45,1193156,VND
+VN2680,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-28,10:15,12:35,2851642,VND
+QH2820,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-04,12:15,13:35,2124629,VND
+QH9136,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-22,19:30,20:00,1808230,VND
+VN2912,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-04,08:45,09:15,2302059,VND
+VN1551,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-20,06:15,08:15,2031550,VND
+VN6016,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-08,17:00,20:30,3307213,VND
+VJ4825,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-01,06:45,09:15,1480983,VND
+VN2535,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-11,10:00,12:00,1472132,VND
+VN7317,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-15,16:30,19:50,3180924,VND
+VN3759,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-26,15:45,18:15,3398778,VND
+QH8565,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-13,12:30,15:50,1005569,VND
+VN1077,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-04,08:45,10:55,1400339,VND
+VJ4069,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-13,19:30,21:30,1672160,VND
+VJ5860,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-05,09:30,10:50,974205,VND
+VN1207,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-06-02,06:30,09:30,3494765,VND
+VN6483,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-27,16:45,19:55,2520418,VND
+VJ9874,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-21,13:45,14:15,1731656,VND
+VN4498,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-06-01,20:30,21:40,3216090,VND
+VJ5585,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-05,10:30,11:40,1016108,VND
+QH1037,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-18,05:30,08:40,3017662,VND
+QH8351,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-28,16:00,19:30,1668022,VND
+VJ1151,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-03,19:15,22:25,3094323,VND
+VN1129,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-11,18:45,20:45,1830036,VND
+VN9298,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-14,09:00,10:00,1315537,VND
+VJ1537,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-14,11:30,14:30,1282549,VND
+QH3562,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-06,14:45,16:45,2119004,VND
+QH9448,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-09,06:30,09:00,2592319,VND
+VJ5225,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-10,07:30,08:30,1964777,VND
+VJ4577,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-03,12:00,15:10,1520473,VND
+VN5506,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-19,07:15,08:45,1420277,VND
+VJ2128,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-02,19:15,20:15,953139,VND
+QH6355,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-14,14:15,16:15,1852184,VND
+VJ2695,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-20,20:00,22:20,2290348,VND
+QH9097,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-12,07:30,10:40,2487861,VND
+VJ5500,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-28,19:15,22:15,2039960,VND
+QH7649,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-02,08:45,10:55,2639399,VND
+QH3987,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VII,Sân bay Vinh,Nghệ An,2026-04-08,11:15,14:25,3071637,VND
+VN2061,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-03,17:00,20:20,1413252,VND
+VN7811,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-12,09:00,11:10,2067228,VND
+QH9311,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-14,14:30,15:50,2871804,VND
+VN8679,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-21,09:30,12:40,2860102,VND
+VN2854,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-07,11:30,12:50,1365833,VND
+QH8292,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-20,17:15,20:35,1527343,VND
+QH7535,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-16,20:00,23:00,2687816,VND
+VJ7830,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-25,15:45,18:45,2234258,VND
+VN1521,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-31,19:45,21:45,3046626,VND
+QH6829,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-06-03,13:15,15:35,2522795,VND
+VN4464,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-27,13:45,14:15,1178589,VND
+VN7982,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,HUI,Sân bay quốc tế Phú Bài,Huế,2026-04-16,06:00,08:20,2488493,VND
+QH1758,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-03,08:30,11:40,1219587,VND
+QH2138,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-09,15:30,18:00,1038291,VND
+QH4952,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-11,12:15,15:35,2956640,VND
+VJ1349,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-10,05:45,07:45,2516050,VND
+VN8927,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-08,06:30,07:30,1782772,VND
+VN8192,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-10,06:15,08:25,3265120,VND
+VJ3132,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-08,06:45,08:15,2115163,VND
+VJ7359,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-19,06:00,07:30,2381165,VND
+VN1153,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-18,05:45,08:05,1376217,VND
+VJ2962,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-09,15:15,16:25,3116811,VND
+VN2746,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-22,18:00,21:30,1975768,VND
+QH7724,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-28,07:15,09:35,1450325,VND
+VN5518,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VII,Sân bay Vinh,Nghệ An,2026-05-07,07:45,08:05,2214142,VND
+VJ6230,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-09,12:15,15:45,3047344,VND
+VN5796,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-25,06:00,07:10,2497578,VND
+VN4341,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-17,09:30,12:30,1320376,VND
+VN7976,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-14,17:00,18:10,2338233,VND
+VJ3412,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-19,14:00,16:00,3127686,VND
+VJ9777,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-12,19:30,20:00,2169238,VND
+VN4454,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-17,07:15,10:15,2273375,VND
+VN2022,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-05-16,09:45,10:55,1247204,VND
+VJ3217,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-06,12:45,14:05,2141177,VND
+VJ6523,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-13,06:45,08:45,2498613,VND
+QH5058,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-30,20:45,22:45,1900665,VND
+VJ4186,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-08,06:15,08:25,1419709,VND
+VN2297,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VII,Sân bay Vinh,Nghệ An,2026-05-29,13:45,15:55,2203950,VND
+QH6729,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-06,14:00,16:00,2323982,VND
+VJ5422,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-20,05:30,07:30,2976368,VND
+VJ6358,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-08,05:15,06:45,1989500,VND
+QH7313,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-02,06:30,08:30,2727903,VND
+VN2856,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-14,14:00,15:30,1476392,VND
+VJ1753,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-17,09:15,11:45,1083903,VND
+QH5038,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-23,20:30,23:00,2686037,VND
+VN2717,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-11,20:00,23:10,2473663,VND
+VN2829,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-24,12:00,15:20,2602021,VND
+QH4183,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-07,08:00,09:10,1658319,VND
+VN8617,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-01,14:00,15:20,2589769,VND
+VJ9959,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-22,15:15,17:15,1521471,VND
+QH9363,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-24,13:45,15:55,1641855,VND
+QH3340,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-22,17:15,18:15,3304224,VND
+VJ8825,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-16,09:00,12:10,2548034,VND
+VN3455,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-10,20:15,23:15,2201153,VND
+VN8137,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-30,18:45,19:55,1566708,VND
+QH7433,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-27,13:15,14:45,1206849,VND
+VJ7233,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-08,11:30,14:50,949364,VND
+QH6018,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-01,16:00,17:10,1999061,VND
+VN5947,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-05,18:45,19:55,2364554,VND
+QH6935,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-09,07:30,09:30,3020187,VND
+QH8925,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-05-07,06:00,07:10,2916242,VND
+VN8853,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-04,09:00,10:00,1067507,VND
+QH9603,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-15,14:15,16:45,1940906,VND
+QH5931,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-07,18:15,20:35,3066448,VND
+QH7634,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-30,12:00,14:10,3321792,VND
+QH9369,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-17,19:15,22:15,1366648,VND
+VN4070,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-05,13:15,16:45,2722184,VND
+QH1341,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-30,17:15,18:15,3452589,VND
+VJ1003,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-25,16:45,18:45,1385500,VND
+VN9609,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-22,15:15,17:45,3446285,VND
+VN8922,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-02,09:30,12:30,3216693,VND
+QH2016,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-25,10:15,12:25,2343096,VND
+VJ3684,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-29,17:45,18:05,1280036,VND
+VN3482,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-05-12,15:00,17:00,1034797,VND
+VN6755,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-27,15:15,18:15,2679668,VND
+QH4526,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VII,Sân bay Vinh,Nghệ An,2026-04-11,17:15,18:35,1758243,VND
+VN3782,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-05-28,05:30,06:00,939722,VND
+VJ8175,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-10,18:30,20:50,2223695,VND
+QH9898,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VII,Sân bay Vinh,Nghệ An,2026-06-01,19:15,22:15,2695907,VND
+VJ1329,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HUI,Sân bay quốc tế Phú Bài,Huế,2026-06-03,20:30,22:40,2627404,VND
+VN7929,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VII,Sân bay Vinh,Nghệ An,2026-05-06,16:00,19:00,2568517,VND
+VN2786,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-08,11:45,13:45,987223,VND
+QH3334,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-08,13:45,15:15,2187007,VND
+VJ1251,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-15,05:45,06:45,1133279,VND
+QH1019,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-25,08:30,10:00,1023111,VND
+VJ1809,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-31,12:30,13:40,1478834,VND
+QH6917,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-05,09:30,10:50,1087066,VND
+VJ5723,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-20,12:30,13:00,1453155,VND
+QH5675,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-24,14:15,16:15,2748176,VND
+VN2488,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-14,14:30,16:50,2878830,VND
+QH4046,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VII,Sân bay Vinh,Nghệ An,2026-05-22,05:15,08:15,1680471,VND
+VN1123,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-13,18:45,19:55,1880267,VND
+VN8214,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-11,06:30,08:30,1689734,VND
+VJ9712,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-25,08:15,10:45,3248124,VND
+VN4635,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-30,13:15,15:15,2727446,VND
+VN7867,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-06-03,13:00,14:20,2678426,VND
+VJ1649,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-12,17:30,20:40,3360485,VND
+VN4515,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-05,19:45,22:15,1138807,VND
+VJ2453,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-30,05:45,07:55,1938549,VND
+QH9660,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-23,13:00,14:20,3118085,VND
+VN6971,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-05,19:45,20:05,1102733,VND
+VJ5506,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-02,07:30,08:30,2086198,VND
+VJ1697,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-27,08:00,11:00,3492142,VND
+VN3232,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-28,18:00,21:10,1686006,VND
+QH3530,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-18,18:15,21:25,2495062,VND
+VN2207,Vietjet Air,VII,Sân bay Vinh,Nghệ An,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-07,19:00,21:10,1660398,VND
+VJ8062,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-02,12:45,14:55,3142397,VND
+QH4006,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-04,15:15,17:45,970329,VND
+VN5618,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VII,Sân bay Vinh,Nghệ An,2026-06-02,20:30,23:00,1903053,VND
+QH4688,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-13,09:15,10:25,1058544,VND
+VN6269,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-28,13:30,16:30,3320016,VND
+VJ1888,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-01,07:30,08:00,1124157,VND
+VJ6895,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-04-08,19:45,22:05,1760932,VND
+VN9741,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-06-04,11:45,14:05,2513761,VND
+QH8092,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-24,08:30,09:50,2166711,VND
+VJ4585,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-23,14:15,17:15,1425267,VND
+VN3331,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-21,09:15,11:35,1332681,VND
+VN3644,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-02,17:45,19:55,3143040,VND
+VJ7644,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-04,12:45,15:15,1927404,VND
+QH3304,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-05,07:00,09:00,901829,VND
+VJ9725,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-06-02,13:00,14:00,2119645,VND
+QH3477,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-06,09:45,10:05,1695549,VND
+QH6353,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-11,11:15,14:15,2701451,VND
+QH3738,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-25,16:00,17:00,2701508,VND
+QH4382,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-21,18:00,21:20,2715835,VND
+VJ6958,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-07,06:15,09:45,1808956,VND
+VJ8873,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-08,14:45,17:55,2398631,VND
+VN1198,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-11,14:30,17:30,1847320,VND
+VN8300,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VII,Sân bay Vinh,Nghệ An,2026-05-14,18:45,19:05,2686251,VND
+QH5624,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-27,09:00,10:30,931355,VND
+QH9103,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-01,15:00,17:00,1837439,VND
+VN8395,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-04,12:00,13:20,2078501,VND
+VN2593,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-16,08:00,09:00,2044984,VND
+QH5345,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-23,17:45,19:55,1563786,VND
+VJ5115,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-13,13:30,15:30,2402692,VND
+VN6630,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-12,06:15,07:15,3109097,VND
+QH3048,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-20,20:45,22:05,1747537,VND
+VN4400,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-29,20:00,22:20,2665970,VND
+QH4602,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-05-11,13:15,16:45,2127038,VND
+VJ9439,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-19,15:30,17:30,1855136,VND
+VN4904,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-16,11:45,13:05,2736895,VND
+VJ5164,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-26,05:15,06:15,1296767,VND
+VN2256,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-13,19:15,22:35,2589154,VND
+VJ4371,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-10,12:45,15:45,1887436,VND
+VJ6237,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-03,19:00,20:30,2390906,VND
+QH1445,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-04,06:15,07:45,2132679,VND
+QH4222,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-12,09:00,12:20,1702311,VND
+VJ4349,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-22,07:15,10:35,1080621,VND
+QH2768,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-23,08:30,10:50,2869631,VND
+QH5700,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-16,16:45,19:45,2293027,VND
+VJ4701,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-06,16:00,17:00,2386759,VND
+VJ4115,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-02,13:45,14:05,3405015,VND
+VJ6603,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-27,16:45,18:45,3198182,VND
+VN3351,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-19,19:00,21:30,3347300,VND
+QH1949,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-05,16:45,17:15,3337885,VND
+QH4861,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-13,15:15,18:15,1689400,VND
+VN3498,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-27,09:00,10:20,3193872,VND
+VN2867,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-09,10:30,12:50,1759545,VND
+VN2350,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-29,19:00,20:20,1136345,VND
+VJ2059,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-12,12:30,14:30,3400582,VND
+VN1193,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-22,14:00,16:20,3300493,VND
+QH6363,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-11,13:45,16:55,2406710,VND
+VJ6715,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-21,07:00,10:10,2686028,VND
+VN5012,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-06-04,10:45,12:45,3239585,VND
+VN5435,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-01,19:15,21:45,2605933,VND
+VJ7126,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-24,12:15,15:45,1975541,VND
+QH2017,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,VII,Sân bay Vinh,Nghệ An,2026-05-15,15:30,17:40,1180519,VND
+QH7027,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-15,18:00,20:00,1292896,VND
+VJ9128,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-01,10:30,12:00,2469110,VND
+VJ3647,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-20,14:15,17:25,2365481,VND
+VJ1710,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-05,09:00,10:00,3486901,VND
+VJ7971,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-08,19:15,21:25,3010421,VND
+QH6826,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-26,19:00,20:00,1054366,VND
+VN2877,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-23,19:00,20:30,1061255,VND
+VN6948,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-05,08:30,10:50,1068193,VND
+VN7204,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-23,11:30,13:50,1086572,VND
+QH6593,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-19,06:00,07:10,1137714,VND
+QH3946,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-27,11:45,14:15,2169920,VND
+QH4583,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-07,16:45,19:15,1534724,VND
+VN9791,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-22,09:45,11:55,2289562,VND
+VJ4933,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-17,18:30,20:00,2563322,VND
+VN2595,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-29,05:00,07:10,3184488,VND
+VN9095,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-06,19:15,21:45,1286277,VND
+VJ1333,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-12,10:00,11:30,3435135,VND
+VJ7357,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-29,05:00,08:20,1628254,VND
+QH4831,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-06-04,16:00,18:00,3105074,VND
+QH3703,Vietjet Air,VII,Sân bay Vinh,Nghệ An,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-20,19:45,21:45,2621306,VND
+QH4014,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-12,06:00,07:20,2515334,VND
+QH7083,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-05-08,16:45,19:55,3433146,VND
+VN5317,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-25,08:45,10:05,3435047,VND
+VJ5209,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-11,07:00,09:20,2782118,VND
+VN6450,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VII,Sân bay Vinh,Nghệ An,2026-05-15,09:45,11:15,1182671,VND
+VN2329,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,VII,Sân bay Vinh,Nghệ An,2026-04-16,05:15,08:35,1588961,VND
+QH4312,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-10,10:15,12:25,950429,VND
+VN7045,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-27,06:45,07:45,3260484,VND
+QH3610,Vietjet Air,VII,Sân bay Vinh,Nghệ An,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-25,15:45,16:15,3219868,VND
+VN7674,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-06,16:00,17:00,2529193,VND
+VN5565,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-02,14:45,16:05,1731220,VND
+VJ9585,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-30,05:15,06:25,1206120,VND
+QH1078,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-13,17:15,20:15,1342740,VND
+VJ5276,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-14,09:15,10:35,1494258,VND
+VJ1930,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-29,19:00,22:30,2228919,VND
+QH1385,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-08,09:15,12:45,921312,VND
+VN6468,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-15,06:45,09:55,2426092,VND
+QH9658,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-19,12:00,14:10,1242953,VND
+VJ5111,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-19,17:30,18:40,2902881,VND
+VJ9836,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-09,20:30,22:40,1276422,VND
+VJ3372,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-14,18:45,19:55,2579211,VND
+VN8440,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-13,14:30,15:40,1570114,VND
+QH5502,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-11,13:30,16:50,1745821,VND
+VN9166,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-14,06:00,09:00,3074945,VND
+QH7180,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-06,09:30,12:40,1167763,VND
+QH1371,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-18,07:45,08:05,1358919,VND
+VJ7264,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-23,16:00,17:20,1961417,VND
+VN5152,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-21,19:00,20:00,2588254,VND
+VN8476,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-11,17:45,19:45,3301033,VND
+QH7013,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-08,17:15,18:15,2529731,VND
+QH9330,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-22,08:00,09:00,2814911,VND
+VN3315,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-31,07:45,10:05,1985414,VND
+VN6505,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-23,07:30,09:50,2180830,VND
+QH4741,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-12,07:45,10:55,3189822,VND
+VJ8924,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-20,14:15,17:35,1222199,VND
+VJ4654,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-28,08:30,11:50,1101172,VND
+QH5232,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-22,06:00,08:20,3306824,VND
+QH1522,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-20,17:45,20:15,2274196,VND
+QH8576,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-18,10:00,12:30,3319020,VND
+VN8406,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-17,06:30,08:00,953914,VND
+VJ2457,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-26,10:00,13:30,3234434,VND
+VJ4873,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VII,Sân bay Vinh,Nghệ An,2026-06-03,10:45,11:55,1118940,VND
+QH3965,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-08,07:45,08:55,3231153,VND
+VJ2503,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-07,06:15,07:25,2439389,VND
+VJ9379,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-11,07:15,08:45,1731371,VND
+VN2201,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-05,14:45,15:15,2480313,VND
+QH9241,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-01,17:15,18:45,2658876,VND
+VN5683,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-15,09:45,11:55,2909393,VND
+QH5212,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-02,17:45,18:45,2352071,VND
+VN7854,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-10,06:30,08:40,2656299,VND
+VJ5687,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-07,12:15,15:15,3262269,VND
+VN3605,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-28,10:30,11:40,3250710,VND
+VJ4090,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-08,18:00,20:10,3326696,VND
+QH6693,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-30,10:30,12:50,1072025,VND
+VN1232,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HUI,Sân bay quốc tế Phú Bài,Huế,2026-04-20,11:15,12:35,1643335,VND
+VJ2420,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-16,18:30,21:40,2693928,VND
+VJ7725,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-28,07:15,10:25,2940457,VND
+QH4029,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-10,18:45,20:05,1276507,VND
+VN9917,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-31,10:45,12:45,2517758,VND
+QH9731,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-08,07:00,10:30,3319122,VND
+VN6653,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-14,19:00,22:20,2988797,VND
+VJ5483,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-15,07:30,10:40,1682607,VND
+QH2501,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-07,19:00,22:20,3385480,VND
+QH1962,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-02,12:30,13:50,2908800,VND
+VJ6665,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-22,05:15,06:45,3079880,VND
+VJ2887,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-17,14:00,17:00,2893596,VND
+VN7370,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-30,20:00,22:20,2589342,VND
+QH2994,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-06,05:45,08:05,1792282,VND
+VJ7148,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-26,17:30,18:40,2092291,VND
+VJ9278,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-09,06:00,07:20,2930478,VND
+VN1853,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-29,15:00,16:20,2056089,VND
+VN6959,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-28,17:15,19:15,2930408,VND
+QH2185,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-17,09:45,11:05,1938953,VND
+VJ3284,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-17,11:15,12:35,2400999,VND
+VN1889,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-03,18:00,21:20,1254295,VND
+VN4567,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-06,20:00,23:00,1450019,VND
+VN7388,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-21,13:30,16:40,1190005,VND
+VN7053,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-18,08:45,11:45,2071466,VND
+VJ4097,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-22,20:15,21:35,3282545,VND
+VJ8087,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-23,06:30,07:30,1042380,VND
+VJ4298,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-12,05:30,07:30,966053,VND
+VJ8662,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-19,20:30,23:00,1048332,VND
+QH8998,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-23,05:15,07:35,2826203,VND
+VN1701,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-20,05:00,07:10,2752462,VND
+QH1476,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-28,14:30,15:30,1419793,VND
+VJ6783,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-16,09:30,10:50,3391064,VND
+QH4492,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-29,05:45,06:45,1759009,VND
+VN3260,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-27,11:00,13:00,1084657,VND
+VN3875,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-14,08:45,11:45,3162734,VND
+VN5328,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-11,15:00,17:10,2620378,VND
+QH7776,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-06,09:00,11:10,3039950,VND
+VN9414,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-14,06:00,07:10,1345215,VND
+VN5777,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-04,10:30,13:30,2493377,VND
+VN9688,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-11,10:15,11:25,2421730,VND
+QH6044,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-03,16:45,18:55,3388191,VND
+VN7288,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-06,10:00,12:00,2210481,VND
+VN2951,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-27,06:15,08:25,3485335,VND
+VN5584,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-06,09:00,11:10,3096598,VND
+VN6442,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-27,15:15,17:35,2887967,VND
+QH6734,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-09,08:30,11:00,3118903,VND
+VJ2998,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-07,18:00,20:30,1131787,VND
+QH4886,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-24,09:15,11:15,1389236,VND
+VJ1005,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-06-02,10:00,11:00,3492528,VND
+VJ2341,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-06-04,15:15,16:45,3408207,VND
+VJ5103,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-13,16:45,17:15,2665755,VND
+VJ3158,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-24,19:30,21:00,2867504,VND
+QH9923,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-01,07:30,09:30,1530131,VND
+QH2765,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-08,15:00,16:10,1656586,VND
+QH2040,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-08,16:45,18:05,2555313,VND
+QH9493,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VII,Sân bay Vinh,Nghệ An,2026-05-27,14:45,17:55,3322744,VND
+VN1468,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-13,20:45,22:45,1316288,VND
+VJ5563,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-05,20:15,23:25,1795075,VND
+VN1499,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-07,19:30,22:30,2511198,VND
+VJ7317,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-12,09:15,10:45,1667961,VND
+QH2095,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-08,07:30,08:00,3051239,VND
+VN5644,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-08,19:30,22:40,1990329,VND
+VN3569,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-05,19:15,22:35,2194333,VND
+QH5643,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-30,17:15,20:25,1419725,VND
+VN1359,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-04-18,11:30,14:50,2923657,VND
+VN3287,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-11,17:30,18:50,2352998,VND
+QH6877,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-05-20,07:30,08:50,1550364,VND
+QH1078,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-07,07:15,10:45,3118692,VND
+VJ5955,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-11,08:00,09:30,2610060,VND
+VJ4225,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-30,09:00,12:30,1947983,VND
+QH7229,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-04-13,11:30,14:40,2218900,VND
+QH4555,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-12,07:15,09:15,3447574,VND
+VJ1952,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-22,17:30,18:30,2084400,VND
+VJ6062,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-06,07:00,09:10,1811118,VND
+VJ1329,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-09,20:30,22:50,1252732,VND
+QH9467,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-12,12:00,13:30,3051622,VND
+VJ1317,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-09,16:15,17:45,3487806,VND
+VJ9857,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-12,07:00,09:30,1606797,VND
+QH9055,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-12,16:15,17:45,1964336,VND
+VJ4187,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-02,16:45,18:55,1960813,VND
+VN2984,Vietjet Air,VII,Sân bay Vinh,Nghệ An,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-08,15:45,17:15,2652495,VND
+VN9684,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-07,20:00,22:10,3143889,VND
+VJ4779,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-16,16:00,18:30,2081904,VND
+VN5476,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-17,13:00,16:10,1310598,VND
+VJ6074,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-25,14:30,15:30,1005484,VND
+VJ7054,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-07,15:30,16:30,1936256,VND
+VJ6740,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-19,10:30,13:00,2333774,VND
+QH1443,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-01,20:30,22:50,2993396,VND
+QH5843,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-09,09:30,11:30,2418690,VND
+QH8159,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-06-01,11:45,14:45,3311698,VND
+QH3098,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-02,08:00,11:00,2983341,VND
+VJ8797,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-15,12:30,13:00,1593999,VND
+VJ7553,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-22,11:15,13:15,3256131,VND
+VN1455,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-03,06:15,08:15,2199302,VND
+VJ9177,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-05,16:30,18:00,1007104,VND
+VN8703,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-19,15:15,16:25,2703793,VND
+VJ3724,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-06,15:15,16:25,1059642,VND
+VJ1993,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-14,18:15,20:45,3145749,VND
+QH1561,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-26,07:15,08:15,1562699,VND
+QH3795,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-18,09:00,12:20,3091309,VND
+VJ9273,Vietjet Air,VII,Sân bay Vinh,Nghệ An,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-04,16:45,19:15,1956905,VND
+QH6109,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-22,15:30,16:50,1309151,VND
+VJ3827,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-15,18:15,20:35,1148315,VND
+QH3172,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-15,05:00,08:30,1777597,VND
+VN2916,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-16,11:15,12:15,1959690,VND
+VJ1500,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-04-26,13:45,14:55,1452177,VND
+VJ4744,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-28,05:45,06:45,1089360,VND
+VN7903,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-18,06:15,08:15,3282305,VND
+VN8135,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-13,07:45,08:45,2272195,VND
+VJ1980,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-05,14:45,17:45,1909375,VND
+QH5304,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-17,11:45,13:55,2350612,VND
+VJ2627,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-20,06:00,09:20,2910018,VND
+VN5194,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-22,13:00,14:10,980141,VND
+VN1541,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-04,09:30,11:40,2156552,VND
+QH8882,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VII,Sân bay Vinh,Nghệ An,2026-05-06,05:30,06:00,3477895,VND
+QH6031,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-26,05:15,06:35,3386421,VND
+VN5479,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-18,09:00,11:30,2100376,VND
+VN3390,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-03,16:45,18:55,2259255,VND
+QH6581,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-18,09:30,10:00,1094677,VND
+VN7975,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-04-23,05:30,06:50,3256952,VND
+VJ4443,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-15,08:15,10:35,2722937,VND
+QH9672,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HUI,Sân bay quốc tế Phú Bài,Huế,2026-04-25,17:00,19:00,1031376,VND
+QH7173,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-25,17:30,20:00,1526071,VND
+VJ3413,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-18,15:45,17:15,2232164,VND
+QH1247,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-27,08:45,10:15,3220167,VND
+VJ9288,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-19,16:45,17:55,3207634,VND
+VN9389,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-15,20:15,23:15,3006117,VND
+VN1152,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-06-06,06:00,09:20,2690147,VND
+VN9534,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-05,11:15,14:35,968250,VND
+VJ6075,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-21,12:45,14:55,1444653,VND
+VJ3016,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-17,11:30,12:00,3009484,VND
+QH4612,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-11,20:00,23:00,2455624,VND
+VN4552,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-02,19:00,20:10,2740469,VND
+VN5495,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-19,12:30,13:40,3087402,VND
+VJ4216,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-11,11:00,13:30,1022857,VND
+QH7347,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-01,13:15,14:15,1870787,VND
+QH8525,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-01,19:00,22:10,2062290,VND
+VJ3083,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-27,15:30,17:40,2549058,VND
+VJ4517,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VII,Sân bay Vinh,Nghệ An,2026-05-07,09:30,11:00,1908078,VND
+VN6301,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-08,07:45,10:55,2440168,VND
+QH2394,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-04,20:30,23:50,2727543,VND
+QH8154,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-29,08:45,10:15,2605024,VND
+QH2485,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-13,15:45,18:55,3106074,VND
+QH8602,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-10,09:00,11:00,2542391,VND
+VN6582,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-16,18:45,19:05,2991585,VND
+QH7733,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-07,19:30,22:40,1128759,VND
+VN3089,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-22,08:00,10:00,2468856,VND
+QH4270,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-06-02,19:30,20:00,1288952,VND
+VJ8456,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-05-16,19:00,22:20,1514537,VND
+VN2264,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-04-24,16:00,17:10,1334243,VND
+VJ7030,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-31,15:45,18:05,1613599,VND
+VN7718,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-30,09:15,11:25,2086424,VND
+VJ5043,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-06,09:45,12:55,2751038,VND
+VJ1073,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-11,08:45,09:55,2077191,VND
+VJ6644,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-07,07:15,09:45,1421027,VND
+VN9119,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-23,15:30,17:50,1410926,VND
+VN8650,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-29,16:00,18:10,2897499,VND
+VN7413,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-23,08:00,11:20,2734347,VND
+QH1428,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-09,09:15,10:15,2608031,VND
+VJ8862,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-11,14:45,15:05,2830950,VND
+VJ7653,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-09,10:45,12:05,980456,VND
+QH1773,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-28,12:30,15:40,2398312,VND
+QH4758,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-22,09:45,11:05,1316632,VND
+VN2344,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-20,14:15,17:35,3279932,VND
+VJ1171,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-24,07:15,08:35,1506266,VND
+VJ3291,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-24,18:30,21:30,2784001,VND
+QH9818,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-06,06:45,08:45,2708454,VND
+QH1025,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-05,12:30,14:40,2238808,VND
+QH5325,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-11,13:30,15:50,1807840,VND
+VJ2291,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-09,18:00,21:30,2522200,VND
+VN9631,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-31,17:45,18:55,3320987,VND
+VJ9113,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-17,07:30,10:40,2639189,VND
+VN3518,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-06-02,16:15,17:15,958067,VND
+QH9968,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-22,06:45,08:45,1467173,VND
+VJ6024,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-26,05:30,08:40,3352730,VND
+QH2403,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-11,13:45,14:05,1955665,VND
+QH7573,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-07,18:15,19:45,2204572,VND
+VN9117,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-14,17:00,20:10,2023113,VND
+VN7514,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-28,11:30,14:50,2499338,VND
+QH2488,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-06-03,10:15,11:45,1263722,VND
+VJ5053,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-09,10:45,11:45,2681332,VND
+QH3610,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-29,13:45,16:45,3303414,VND
+QH8144,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-04-24,11:30,13:50,1689335,VND
+QH2108,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,VII,Sân bay Vinh,Nghệ An,2026-05-02,17:15,19:45,2365613,VND
+QH5056,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-26,11:00,14:30,3448854,VND
+VN9470,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-24,18:45,19:15,2037173,VND
+VJ9226,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-16,19:15,22:45,3429768,VND
+VN8809,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-08,08:00,10:20,1387798,VND
+VJ7336,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-10,08:15,10:25,954368,VND
+VJ6312,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-16,12:45,14:45,3128838,VND
+QH1082,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-30,06:30,07:00,2425759,VND
+VJ1195,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-10,11:00,14:30,1566457,VND
+VJ2941,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-22,08:45,11:15,3465540,VND
+VJ7901,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-29,13:30,14:30,1263303,VND
+QH9453,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-30,11:30,14:50,1786880,VND
+QH8488,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-03,15:00,16:30,3069211,VND
+VJ2511,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-21,10:15,12:45,1360835,VND
+VJ2727,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-18,13:30,14:40,2065093,VND
+VJ3897,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-28,20:15,22:15,2903299,VND
+VJ2853,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-01,09:45,10:05,960652,VND
+QH3738,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-16,15:30,16:00,2853062,VND
+VJ3563,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-28,06:30,07:30,3451005,VND
+VN8748,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-30,07:45,10:05,3218239,VND
+QH3840,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-02,07:45,10:45,1331727,VND
+VN4036,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-20,13:30,15:50,3418480,VND
+VJ2008,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-06,15:30,18:40,3340105,VND
+VJ8262,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-07,14:45,16:15,1166136,VND
+VJ5375,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-31,17:15,18:25,2450257,VND
+QH5886,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-27,08:30,09:50,1550648,VND
+QH5484,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-25,12:45,15:15,3227073,VND
+QH1808,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-03,12:45,13:15,1276367,VND
+VJ4413,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-07,09:45,10:55,1170193,VND
+VN4723,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-15,15:30,18:50,2207342,VND
+QH3478,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-17,16:45,18:45,2365625,VND
+QH1126,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-20,07:00,10:20,2401329,VND
+QH9398,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-25,09:30,11:40,1277696,VND
+QH2980,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-02,09:15,12:15,3181040,VND
+VJ3890,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-07,07:45,10:15,3064711,VND
+QH5037,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-10,08:30,11:40,3380043,VND
+QH4705,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-12,13:00,14:00,1353188,VND
+VJ7639,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-25,16:15,17:25,2166404,VND
+VN3574,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-09,05:30,08:30,1345746,VND
+QH1210,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-01,05:00,08:20,1132813,VND
+VN4525,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-12,13:00,15:00,3432073,VND
+VJ4465,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-25,13:15,14:35,1763618,VND
+VN9665,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-20,15:45,17:55,1405868,VND
+VN9606,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-08,07:45,09:15,3239050,VND
+VJ3656,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-11,09:15,12:15,2163052,VND
+VJ8545,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-24,05:00,06:20,1432293,VND
+VJ3963,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-19,09:15,11:15,2337989,VND
+QH8330,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-05,14:15,17:15,1145389,VND
+VN5626,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-07,20:30,23:00,1723818,VND
+QH3201,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-21,18:45,21:05,3491861,VND
+VJ7997,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-05-09,19:30,20:30,2907089,VND
+VJ8720,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-16,15:00,16:30,2638079,VND
+VJ3528,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-03,16:00,19:30,1178747,VND
+VN5465,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-17,10:15,11:15,1061549,VND
+VJ8899,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-06,05:45,06:45,1673323,VND
+QH6692,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-14,11:00,13:00,1595140,VND
+QH7154,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-04,10:45,13:15,2546665,VND
+VJ7523,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-18,17:45,19:45,2636641,VND
+QH4233,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-31,16:45,18:45,1471070,VND
+VN9851,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-06-02,12:15,14:15,2016288,VND
+VN4025,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-06-01,19:45,20:45,3109727,VND
+QH1397,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-24,19:30,22:40,2195039,VND
+QH4173,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-01,20:00,23:20,3146089,VND
+VJ4914,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-28,06:15,07:35,1542022,VND
+VJ4306,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-28,11:45,14:45,923407,VND
+VN7941,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-01,19:45,22:55,2758887,VND
+QH5525,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-01,07:30,10:40,2493525,VND
+VN2938,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-07,12:15,13:15,1337205,VND
+QH2922,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-02,17:00,19:30,1311160,VND
+VN1880,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VII,Sân bay Vinh,Nghệ An,2026-05-08,14:00,16:00,2963013,VND
+VN8309,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-05-21,17:00,20:20,3113098,VND
+VJ7247,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-29,10:00,12:30,2812618,VND
+QH4582,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-27,12:30,13:40,1060276,VND
+QH6585,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-29,12:30,15:50,1180836,VND
+VJ8628,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-22,11:45,12:55,2989138,VND
+VN1384,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-14,19:00,22:20,2075564,VND
+QH2846,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-11,10:00,13:00,2241601,VND
+VJ1967,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-23,20:30,23:40,2827757,VND
+VJ6893,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-05,16:15,18:15,3470830,VND
+VJ8600,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-24,08:00,09:10,2048446,VND
+VJ6305,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-29,07:00,10:00,1249083,VND
+VJ9111,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-13,09:15,11:15,2012661,VND
+QH4843,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-24,20:00,21:10,2550243,VND
+VJ3568,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-09,10:00,11:30,3222839,VND
+VJ1142,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-19,08:30,10:50,1553323,VND
+VJ5232,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-25,11:45,12:55,1968986,VND
+VN8473,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-03,05:15,07:15,1655753,VND
+VN4848,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-17,07:00,10:30,3286721,VND
+VJ8306,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-07,08:45,09:05,2705392,VND
+VJ8874,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-06,08:30,10:00,2692404,VND
+VJ2330,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-26,20:45,22:15,1916579,VND
+VN6863,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-01,15:45,16:15,2951828,VND
+VJ9112,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-02,07:30,09:40,1337329,VND
+VN9746,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-04-10,05:30,07:00,3207169,VND
+QH8175,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-22,11:45,14:15,2633378,VND
+VJ9380,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-12,19:45,20:45,2769841,VND
+VN6855,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-02,05:45,07:45,3475562,VND
+VN5081,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-27,16:30,18:00,1625519,VND
+VN2910,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-06,14:00,17:30,1222461,VND
+VN4673,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-14,11:15,14:15,2130219,VND
+QH5096,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-09,15:45,16:45,3485049,VND
+VJ3754,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-02,11:30,14:30,1164377,VND
+VN4193,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-11,14:30,15:40,2455756,VND
+VJ1218,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-01,09:00,10:00,2034209,VND
+VN5843,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-05,10:00,13:20,1218108,VND
+QH3913,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VII,Sân bay Vinh,Nghệ An,2026-04-08,20:30,21:40,2667039,VND
+QH3451,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-17,09:30,11:50,3455632,VND
+VN6410,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-30,11:45,13:05,1168191,VND
+QH2722,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-08,07:15,09:35,989832,VND
+VN6328,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-27,18:00,21:00,2986564,VND
+QH3224,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-17,12:15,13:15,946075,VND
+VJ6365,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-25,20:45,21:55,1993136,VND
+VJ8545,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-24,15:00,18:00,1214348,VND
+QH8591,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-10,11:45,13:15,911019,VND
+VN1539,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-21,13:30,16:00,3273193,VND
+QH4200,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-25,12:30,15:30,2830710,VND
+VN1530,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-05,10:15,11:35,1274016,VND
+VN5821,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-04,20:45,21:55,1449098,VND
+VN2224,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-23,06:15,07:45,1353947,VND
+VJ8846,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-18,12:30,13:50,1978147,VND
+QH4081,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-22,14:15,15:25,971361,VND
+VJ1848,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-19,09:30,12:40,2710050,VND
+VJ2608,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-22,15:30,17:30,2391337,VND
+VN2020,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-16,10:00,13:20,2080041,VND
+VJ4080,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-15,11:30,12:00,2379954,VND
+VJ1928,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-03,16:45,18:55,3066455,VND
+QH7520,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-06,05:45,08:05,2945484,VND
+VN9945,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-24,19:00,21:20,3075255,VND
+VN1497,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VII,Sân bay Vinh,Nghệ An,2026-05-15,09:15,10:15,3382300,VND
+VN4130,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-21,08:15,10:35,2634371,VND
+VJ5319,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-11,17:30,18:50,2646387,VND
+VJ6869,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-06-01,11:45,13:05,1915705,VND
+QH6238,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-04,15:45,17:15,2464560,VND
+VN2649,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-04-07,07:45,09:55,3365207,VND
+VJ2845,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-10,06:45,08:15,2650527,VND
+VN6781,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-11,20:45,23:15,3486165,VND
+VN6183,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-01,14:45,17:45,2251716,VND
+VN2656,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-25,16:15,19:35,2372702,VND
+QH3287,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-10,06:15,07:15,2824691,VND
+QH5446,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-12,18:30,21:40,1636029,VND
+VJ5195,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,VII,Sân bay Vinh,Nghệ An,2026-04-07,15:45,17:05,1250405,VND
+VN5755,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-30,12:00,14:20,1483798,VND
+QH9892,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-08,14:30,16:00,2206224,VND
+VN4448,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-08,16:30,17:40,3395717,VND
+QH1197,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-19,17:30,18:50,3466075,VND
+VN5482,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-01,13:00,14:00,1009703,VND
+QH9230,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-20,11:00,12:20,3239983,VND
+VJ7031,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-20,08:45,10:45,900606,VND
+VN4384,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-06-03,15:00,16:30,1229614,VND
+VJ5153,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-09,20:30,23:40,1803927,VND
+VJ5253,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-30,07:00,10:30,2646495,VND
+QH5401,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-04-25,13:30,16:00,3231188,VND
+VN9925,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-10,07:30,09:50,1877983,VND
+VJ1767,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-21,14:00,17:20,1018816,VND
+VJ8213,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-26,10:00,13:30,2822433,VND
+VJ6519,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-06-06,10:00,12:20,1193757,VND
+VN9452,Vietjet Air,VII,Sân bay Vinh,Nghệ An,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-09,18:45,21:05,1774348,VND
+VJ7434,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-15,08:45,11:55,1344931,VND
+VJ4227,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-20,16:15,19:15,1691488,VND
+VJ5198,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-04,18:00,19:30,3366643,VND
+VN9879,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-02,07:45,08:55,2156675,VND
+VN8351,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-17,14:00,15:30,2491432,VND
+QH4481,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-18,19:15,20:25,1531522,VND
+QH4756,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-21,20:15,22:35,3317365,VND
+QH4020,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-06,12:30,15:30,2975914,VND
+VN9528,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-25,05:45,08:45,2837470,VND
+VN2193,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VII,Sân bay Vinh,Nghệ An,2026-05-03,15:45,16:15,1634991,VND
+QH2591,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2026-04-11,06:15,07:35,2675591,VND
+VJ1750,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-13,10:00,12:20,2800432,VND
+VJ8052,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-06-01,07:45,08:05,3045377,VND
+VJ3436,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-12,06:00,09:20,3282260,VND
+QH9081,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-23,18:00,19:20,3480715,VND
+QH9383,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-01,16:30,17:40,1830532,VND
+VN8635,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-21,07:45,08:45,2026288,VND
+QH7218,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-15,06:30,08:00,3466263,VND
+QH5125,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-27,05:00,08:20,2300033,VND
+VN9439,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-14,20:15,23:15,2067661,VND
+QH9804,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-10,19:30,22:50,1306326,VND
+VN6403,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-03,11:15,12:25,3468587,VND
+VN4570,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-17,11:00,12:10,1177861,VND
+VJ9076,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-24,08:15,11:15,3011122,VND
+QH8718,Vietjet Air,VII,Sân bay Vinh,Nghệ An,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-12,16:15,19:45,1351062,VND
+VJ6986,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-28,18:30,19:50,1062043,VND
+VJ7025,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VII,Sân bay Vinh,Nghệ An,2026-04-23,08:30,10:40,1981193,VND
+VN4814,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-08,10:00,13:10,2520648,VND
+QH3722,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-09,10:45,11:15,1840734,VND
+VN5851,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-12,15:15,16:25,1516174,VND
+VN6382,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HUI,Sân bay quốc tế Phú Bài,Huế,2026-04-08,08:45,11:05,1140497,VND
+VJ7597,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-12,16:15,17:35,3047596,VND
+QH2724,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-18,18:45,19:55,3160774,VND
+QH2128,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-17,12:00,14:20,3118596,VND
+VJ2086,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-06,10:15,13:45,2474091,VND
+VN6097,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-22,10:00,11:00,2238588,VND
+VN4657,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-06,15:15,16:25,2232304,VND
+VN4597,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-31,08:45,11:55,2756086,VND
+VJ5276,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-15,08:00,10:20,1507682,VND
+QH9456,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-09,18:00,20:30,1690045,VND
+VN6416,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-16,16:45,18:05,1156935,VND
+QH3629,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-17,13:15,16:15,2078260,VND
+VN4648,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-31,09:30,10:50,3317674,VND
+VJ9713,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-05,16:15,19:25,969745,VND
+VN9945,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-01,09:15,10:45,1401436,VND
+QH4638,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-05-24,07:45,09:05,3187980,VND
+QH1624,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-25,09:30,12:30,3336016,VND
+VJ9059,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-07,11:00,14:30,3202622,VND
+VJ1567,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-10,17:30,18:30,3305469,VND
+QH7666,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-07,15:30,18:30,1390912,VND
+VJ1719,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-16,05:00,08:20,1642134,VND
+VN8868,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-29,14:45,16:15,2944497,VND
+VN4562,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-14,05:30,06:00,3490903,VND
+QH3481,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-01,15:15,17:25,1111679,VND
+VN9811,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-14,07:45,09:55,2219218,VND
+QH6967,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-28,06:30,07:50,1820668,VND
+VN2497,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-09,08:15,09:35,1218614,VND
+QH4770,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-11,11:30,12:00,3337455,VND
+QH7971,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-08,14:15,15:45,2796933,VND
+QH1569,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-09,17:00,19:00,1295374,VND
+VJ7498,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-30,06:45,07:55,3348743,VND
+VJ2268,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-13,16:30,17:00,3426568,VND
+VN8235,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-23,06:45,08:55,3449232,VND
+QH7794,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-25,19:30,20:40,2637569,VND
+VN7570,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-31,18:15,19:45,2568919,VND
+QH3854,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-02,06:00,07:20,3340164,VND
+QH8427,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-15,20:45,22:55,2440549,VND
+QH4003,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-06,10:00,11:10,2700901,VND
+VJ4946,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-21,09:30,10:40,3475448,VND
+VJ6348,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-13,10:00,13:20,1641203,VND
+VJ7767,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-12,10:45,13:45,1884450,VND
+QH6359,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-23,12:00,14:00,1929803,VND
+VJ5229,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,VII,Sân bay Vinh,Nghệ An,2026-04-22,15:45,18:05,2520880,VND
+VJ5010,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VII,Sân bay Vinh,Nghệ An,2026-04-24,17:30,19:40,2089444,VND
+VN2781,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-21,14:45,15:45,1745678,VND
+QH2481,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-12,15:00,16:00,2809849,VND
+VN8588,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-28,20:45,23:55,2279953,VND
+QH6239,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-08,18:15,20:15,3142469,VND
+VJ3310,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-01,07:00,09:30,2690911,VND
+VN7040,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-31,18:15,19:15,3214558,VND
+VJ9526,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-13,16:45,19:45,951673,VND
+VJ4855,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-28,18:45,20:45,2288623,VND
+QH1106,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-08,11:45,14:55,2462908,VND
+VJ7758,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HUI,Sân bay quốc tế Phú Bài,Huế,2026-04-22,15:00,16:10,1922821,VND
+VJ7235,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-15,15:15,18:45,2394091,VND
+VJ6703,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-25,13:30,14:00,3263326,VND
+QH7041,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-12,20:00,23:20,2051678,VND
+QH9639,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-16,06:45,07:15,2969749,VND
+QH6642,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-27,12:45,14:15,1115267,VND
+VJ9056,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-18,12:00,15:20,2990054,VND
+VJ6823,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-27,18:15,19:15,2214021,VND
+VJ7733,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-29,20:30,21:00,2328367,VND
+QH6594,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-06,19:30,22:40,2137124,VND
+VN1914,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-11,12:15,14:15,916988,VND
+VN7448,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-28,07:00,09:30,1736687,VND
+QH5683,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-15,12:45,15:45,3332065,VND
+QH4053,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-13,05:45,07:05,903068,VND
+VN6339,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-11,13:30,14:50,2696661,VND
+VJ5964,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-06,15:15,17:35,1619234,VND
+VJ3051,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-03,12:45,14:55,1536756,VND
+VJ3944,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-21,10:30,12:30,2322707,VND
+QH5158,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-31,15:45,18:45,1836698,VND
+VN1746,Vietjet Air,VII,Sân bay Vinh,Nghệ An,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-30,08:15,11:45,2823738,VND
+VJ7565,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-06-02,15:30,17:30,3000445,VND
+VJ9611,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-21,07:30,10:30,2775715,VND
+VN8854,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-26,09:45,10:15,3267797,VND
+VJ3453,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-28,08:45,11:05,1090882,VND
+VJ4004,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-01,18:00,20:00,1998972,VND
+QH2107,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-10,07:45,08:05,2318193,VND
+VJ5673,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-25,09:15,11:25,3320928,VND
+VN2705,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VII,Sân bay Vinh,Nghệ An,2026-04-23,20:45,23:05,988836,VND
+VN7711,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-11,17:45,20:55,2689342,VND
+VN7235,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-09,10:15,12:45,2364675,VND
+QH2763,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-22,20:15,21:15,1194894,VND
+QH8517,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-22,09:45,12:55,2877530,VND
+QH6286,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-23,15:45,18:15,1016379,VND
+VJ3017,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-16,20:00,22:00,1694013,VND
+VN6797,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-26,08:45,09:05,993052,VND
+VN5414,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-20,11:45,13:15,1543029,VND
+VN6321,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-11,10:45,13:15,1013818,VND
+VJ9636,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-08,07:15,10:45,1262787,VND
+VN7981,Vietjet Air,VII,Sân bay Vinh,Nghệ An,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-05-14,17:30,18:30,3218136,VND
+VN9667,Vietjet Air,VII,Sân bay Vinh,Nghệ An,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-12,06:45,07:15,1085769,VND
+QH1625,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-22,16:00,19:30,2772681,VND
+VN8748,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HUI,Sân bay quốc tế Phú Bài,Huế,2026-04-09,16:15,19:15,1378483,VND
+QH8191,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-11,14:30,17:00,1827878,VND
+QH3573,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,VII,Sân bay Vinh,Nghệ An,2026-04-15,09:15,10:45,3082640,VND
+VJ9036,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-17,17:15,19:35,3096519,VND
+VJ7091,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-15,13:15,14:35,1650872,VND
+QH8809,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-18,17:30,20:50,2220500,VND
+QH6092,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-15,08:30,10:50,2140399,VND
+VN8702,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-29,19:30,20:50,2821278,VND
+VN2770,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-22,12:45,15:05,1514860,VND
+VJ4188,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-21,14:15,16:45,2583359,VND
+VN6537,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-28,15:15,18:25,972190,VND
+VN3752,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-29,18:45,19:15,2053400,VND
+QH1759,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-04,11:15,14:15,2235325,VND
+VJ9016,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-12,05:30,08:50,2079181,VND
+VJ3768,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-12,06:45,09:45,1991309,VND
+VJ5026,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-15,07:45,08:15,1209340,VND
+VJ7670,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-26,13:00,14:10,2323955,VND
+QH9449,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-07,16:45,18:15,1717965,VND
+VN2304,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-15,20:00,22:30,2976231,VND
+VJ8917,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-24,18:15,20:45,2265803,VND
+VJ7846,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-08,17:15,18:45,2085855,VND
+VN9519,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,VII,Sân bay Vinh,Nghệ An,2026-05-15,05:45,08:55,1838756,VND
+VN2918,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-21,12:30,13:40,1734604,VND
+VN2588,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-15,05:15,07:35,972018,VND
+QH7999,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-30,08:45,11:15,2914311,VND
+QH5342,Vietjet Air,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-02,13:00,14:30,1636579,VND
+QH3403,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-17,06:15,08:25,2975539,VND
+QH4543,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-09,13:00,16:00,2587286,VND
+VN8432,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-19,06:00,09:00,1556622,VND
+QH3273,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-04-16,05:15,06:45,2533192,VND
+QH3717,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-20,13:30,14:50,3381697,VND
+VJ6296,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-26,09:00,10:10,3331280,VND
+VJ2594,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-23,18:30,21:00,1093409,VND
+VN1057,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-31,16:15,19:35,1306709,VND
+VN4845,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-03,19:00,21:30,2834453,VND
+QH1576,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-29,17:15,18:35,2339587,VND
+VJ4819,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-21,15:45,18:45,1525895,VND
+VN9932,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-08,11:00,13:30,3041742,VND
+VJ2831,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-18,13:30,15:40,2352937,VND
+VN2896,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-28,07:45,09:45,2837496,VND
+QH3793,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-03,15:30,17:40,2015195,VND
+QH8092,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-31,05:45,08:45,3187680,VND
+VN7378,Vietjet Air,VII,Sân bay Vinh,Nghệ An,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-06-01,18:00,20:20,2992069,VND
+VJ5857,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-13,05:00,06:10,2473620,VND
+VN5512,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-16,09:45,12:45,2920176,VND
+QH1075,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-28,07:00,08:00,2923260,VND
+VN7949,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-17,17:00,19:20,1126373,VND
+VJ3109,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-02,16:15,17:25,2959709,VND
+VN4469,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-02,06:45,09:45,3049378,VND
+VN4650,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-23,13:45,15:15,1405330,VND
+VJ9355,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-16,05:00,07:30,3289632,VND
+QH1303,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-27,11:15,13:25,3430353,VND
+QH3604,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-01,05:00,06:30,3226311,VND
+QH5703,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-17,11:45,13:55,2246600,VND
+VN9500,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-28,09:30,11:40,951511,VND
+VJ4146,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-02,05:00,06:30,902149,VND
+QH1759,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-02,19:45,22:05,1813553,VND
+QH6457,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VII,Sân bay Vinh,Nghệ An,2026-05-05,18:00,21:20,2731322,VND
+VN6259,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-26,10:00,13:20,3498740,VND
+VN4252,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-19,10:00,13:00,3003761,VND
+VJ3476,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-03,18:15,20:45,2873387,VND
+VJ4563,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-29,15:30,18:30,1449978,VND
+QH4872,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-26,18:45,20:15,2832033,VND
+QH1631,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-13,11:30,14:30,1455305,VND
+QH2112,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-04-24,20:30,23:00,2838940,VND
+QH8574,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-24,07:00,08:20,2556370,VND
+QH1355,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-15,06:15,09:45,2630556,VND
+VJ1278,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-26,17:30,20:30,2469400,VND
+QH4678,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-30,07:45,10:05,1997860,VND
+QH2530,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-26,05:00,06:30,3173501,VND
+VN1376,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-23,15:45,17:45,1531164,VND
+VN2806,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-21,20:15,22:45,1185698,VND
+VJ6963,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-05,11:45,13:15,2263585,VND
+QH6069,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-31,16:00,18:10,2374350,VND
+VN6484,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-04-14,11:30,13:40,2380376,VND
+QH6176,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-17,06:30,08:40,2719246,VND
+QH8158,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-08,14:00,16:00,1184356,VND
+VN3491,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-04,08:30,10:40,2315692,VND
+QH7688,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-11,05:30,08:00,3327527,VND
+VN9236,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-05,18:00,19:30,2290235,VND
+VJ4182,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-28,19:15,20:45,982614,VND
+QH5263,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VII,Sân bay Vinh,Nghệ An,2026-04-16,20:00,22:00,1746641,VND
+VN3107,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-14,09:30,10:00,1926049,VND
+VN8968,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-15,07:15,10:25,2671029,VND
+VJ6794,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-05-23,11:30,12:50,1776605,VND
+VN1673,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-20,09:15,10:15,1977304,VND
+VJ6448,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-29,19:45,22:55,3439193,VND
+VJ1467,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-18,16:00,18:00,2647129,VND
+VN8884,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-10,20:00,21:20,1629740,VND
+QH1161,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-13,10:00,12:10,1607611,VND
+QH7302,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-21,05:45,06:45,2558625,VND
+VJ6178,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-28,20:30,23:00,1647845,VND
+VJ6789,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-12,17:15,20:15,2885086,VND
+VN1181,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-06,13:00,14:30,1450516,VND
+VJ2971,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-21,18:00,21:30,2669139,VND
+QH6812,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-24,16:00,19:00,1581957,VND
+VN2049,Vietnam Airlines,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-28,19:30,20:30,1682503,VND
+VJ6713,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-03,13:30,15:50,1969925,VND
+VN7785,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-13,10:30,11:50,1724100,VND
+QH8244,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-06-05,14:30,15:40,1657462,VND
+VJ9118,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-10,13:30,14:30,1120374,VND
+QH5745,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-22,15:15,17:35,1542380,VND
+VJ8895,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-15,19:30,22:00,1677741,VND
+QH3796,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-07,18:15,19:25,1211773,VND
+VN7217,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-24,20:00,23:30,2680566,VND
+QH8360,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-28,11:45,12:05,2547955,VND
+QH6172,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-03,07:00,10:20,2615643,VND
+VN3629,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-03,06:45,07:55,2480213,VND
+VJ6464,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-28,12:00,14:30,3097040,VND
+QH8684,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-11,16:00,17:00,3409053,VND
+QH5083,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-18,07:30,09:00,1234708,VND
+VN7955,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-15,06:15,08:45,3461671,VND
+VN2617,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,VII,Sân bay Vinh,Nghệ An,2026-05-25,06:45,07:05,2078894,VND
+VJ3756,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-03,13:15,15:15,3197115,VND
+VN5912,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-21,06:30,07:40,1372994,VND
+VJ4551,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-27,09:45,10:15,2991207,VND
+VN1960,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-21,10:30,12:00,1140513,VND
+QH8791,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-28,20:30,21:30,2976541,VND
+VJ7522,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-17,20:15,23:15,1851614,VND
+VJ4922,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-29,11:30,13:50,3478615,VND
+QH1817,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-27,13:30,16:40,2178315,VND
+VN8734,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-23,16:00,18:10,2603214,VND
+VJ2707,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-04,09:45,11:05,2986791,VND
+VJ4521,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-07,12:00,14:10,2720429,VND
+QH2409,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-03,17:00,19:10,2230317,VND
+VN8093,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-17,14:15,15:45,1565319,VND
+QH2402,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,VII,Sân bay Vinh,Nghệ An,2026-05-23,19:00,21:30,1834131,VND
+QH9403,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-20,10:00,12:10,1940240,VND
+QH9602,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-02,12:45,14:15,2827365,VND
+QH2741,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-03,20:00,23:30,1391709,VND
+VN2736,Vietnam Airlines,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-11,05:30,06:50,2542990,VND
+VN5348,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-05,15:00,16:00,1416959,VND
+QH5574,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-21,16:15,18:25,3191359,VND
+VN4206,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-22,15:15,16:25,1403553,VND
+QH4356,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-23,05:15,06:45,1378041,VND
+QH1409,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-19,10:15,11:35,2892237,VND
+QH3184,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-27,19:00,21:30,2106773,VND
+VJ9198,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-01,11:45,13:45,3028847,VND
+QH7438,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-09,06:00,07:30,1503315,VND
+VJ7845,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-03,15:45,18:45,2157977,VND
+QH3503,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-25,17:30,20:50,2992880,VND
+VJ7319,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-06,09:45,10:15,1610096,VND
+VN4341,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-17,10:45,11:05,2844312,VND
+VN2691,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-12,17:00,18:30,1611434,VND
+VN8775,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-19,19:30,21:00,1142850,VND
+VN8093,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-29,15:00,16:30,2948532,VND
+VJ3139,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-17,20:45,23:45,1954139,VND
+VJ2573,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-15,09:00,11:10,1406476,VND
+QH4652,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-24,10:00,13:10,2227374,VND
+VN9814,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-25,13:45,15:15,3059846,VND
+VJ3225,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-07,09:15,10:15,2693317,VND
+QH8496,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-30,08:30,09:40,1713275,VND
+QH7889,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VII,Sân bay Vinh,Nghệ An,2026-05-18,09:15,12:45,3208907,VND
+QH4034,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-25,10:30,13:30,1273220,VND
+QH9252,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-02,06:00,09:20,1356783,VND
+VJ9045,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-30,16:00,17:30,1027557,VND
+VJ9912,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-03,19:45,21:55,3020756,VND
+QH6721,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-05,20:30,23:50,2919240,VND
+VN8265,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-12,06:00,09:20,1407015,VND
+VN6809,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-06,17:45,18:05,2296230,VND
+VJ3988,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-30,10:45,12:05,1411828,VND
+VN7014,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-26,07:15,09:45,1864070,VND
+QH9503,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-21,06:00,08:00,1180140,VND
+VN9571,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-04,07:30,09:40,1981897,VND
+QH9342,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-07,15:15,18:15,1783436,VND
+QH4752,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-03,18:30,21:30,2460612,VND
+QH5385,Vietjet Air,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-14,12:45,14:45,3239475,VND
+VJ3986,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-02,19:15,22:15,1214289,VND
+VN6029,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-02,12:15,13:25,2505407,VND
+VJ3809,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-07,05:15,08:25,1424153,VND
+VN4986,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-05-14,06:15,09:45,3477300,VND
+QH4817,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-14,09:30,10:50,2341340,VND
+VN9880,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-15,09:30,11:00,3447769,VND
+VJ5766,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-02,16:45,18:05,2381860,VND
+QH7592,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-26,08:15,10:15,2853528,VND
+VN6688,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-23,08:45,11:55,2461841,VND
+VN1373,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-27,20:45,22:55,2355723,VND
+VJ8860,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-04-22,14:15,15:25,2030597,VND
+VN1611,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-20,07:30,08:00,2279845,VND
+VN7525,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-18,08:30,09:40,904797,VND
+VJ8943,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-17,07:30,09:50,3139506,VND
+VJ3831,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-31,08:30,09:30,1405333,VND
+VJ5500,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-26,11:00,12:30,2671912,VND
+QH5080,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-19,18:45,19:05,2791476,VND
+VJ2787,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-31,17:00,18:10,2979984,VND
+QH6339,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-04-14,05:45,06:05,1957022,VND
+VJ6445,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-15,19:15,20:15,1672772,VND
+VN2992,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-21,11:15,14:15,1201063,VND
+VJ2923,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-12,07:15,08:45,2187259,VND
+VN4201,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-25,17:00,18:30,3232065,VND
+VN4010,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VII,Sân bay Vinh,Nghệ An,2026-04-19,18:30,19:00,1849883,VND
+VJ2617,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-23,17:00,18:10,3484830,VND
+QH5574,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-19,17:45,18:55,1523432,VND
+VN7450,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-27,11:00,14:00,3490988,VND
+QH3905,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-23,16:15,19:45,2382341,VND
+QH8742,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-16,05:15,08:35,1412824,VND
+QH7371,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-27,20:15,22:35,1708572,VND
+VN7921,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-04,10:00,12:00,1176348,VND
+VJ4909,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-23,18:45,19:15,3183315,VND
+VJ7504,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-09,14:45,17:15,2336942,VND
+QH8608,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-07,06:00,07:10,2578160,VND
+QH9583,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-22,06:15,08:45,3105953,VND
+QH8782,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-02,18:30,20:50,2317413,VND
+QH5492,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-17,09:00,10:10,1783571,VND
+VJ5485,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-02,20:45,22:05,3098312,VND
+QH2565,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-24,09:00,11:20,1216995,VND
+VN5247,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-10,10:00,12:20,1161480,VND
+QH1154,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-10,11:15,13:45,3188958,VND
+QH9456,Bamboo Airways,VII,Sân bay Vinh,Nghệ An,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-25,08:30,11:30,2405274,VND
+VJ2448,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2026-05-31,12:45,15:55,2104429,VND
+VJ6947,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-11,17:15,18:45,3132947,VND
+VN7714,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-24,07:15,10:25,2086002,VND
+VN4819,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-14,14:00,16:20,2530556,VND
+QH4942,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-27,10:15,11:35,1643058,VND
+QH5758,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-06,12:00,14:00,2717874,VND
+VN8929,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-05-01,17:15,18:45,2021438,VND
+VN9657,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-29,07:30,08:40,3061810,VND
+VN8721,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-04,20:00,23:00,3319936,VND
+QH4663,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-10,17:00,20:10,2332295,VND
+QH1298,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-15,10:15,12:25,1395512,VND
+QH9641,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-10,12:00,15:10,2023253,VND
+VJ1942,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HUI,Sân bay quốc tế Phú Bài,Huế,2026-04-22,19:45,21:55,3222188,VND
+VJ1875,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-19,11:30,14:30,1957322,VND
+QH4121,Bamboo Airways,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-19,09:30,12:40,1166743,VND
+VJ6851,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-25,12:30,15:40,1336427,VND
+VJ2802,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-17,16:00,19:10,3376830,VND
+VN4481,Vietnam Airlines,VII,Sân bay Vinh,Nghệ An,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-21,07:15,08:45,2363944,VND
+VN7456,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-07,17:45,20:55,2450744,VND
+QH2262,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-10,17:45,18:05,2247987,VND
+QH7946,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-17,17:30,19:40,1600842,VND
+VJ5272,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-27,18:00,19:00,1607191,VND
+VN5082,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-04,12:30,13:40,1825901,VND
+VJ7788,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-17,19:15,22:45,3150499,VND
+VJ2316,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-21,11:00,13:30,1502051,VND
+QH1902,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-28,12:30,15:50,3144300,VND
+VN8572,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-15,12:00,13:10,1995945,VND
+QH9991,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-23,07:00,09:10,1421590,VND
+QH1233,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-18,06:15,09:35,3037964,VND
+QH2711,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-14,13:45,15:05,2163753,VND
+VN8284,Vietnam Airlines,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-29,16:45,19:45,2646811,VND
+QH8429,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-09,20:15,23:15,1124230,VND
+VJ6496,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-05,13:15,14:45,1683311,VND
+VJ7501,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-06-02,13:45,16:05,2706542,VND
+VJ2806,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-06,19:30,20:50,2086208,VND
+VJ9350,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-17,09:45,11:05,1469054,VND
+VN6138,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-16,15:15,17:45,2491967,VND
+QH8331,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-20,05:15,06:35,2240009,VND
+VJ8327,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-11,09:00,11:20,3464746,VND
+QH5900,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-29,17:45,20:55,2945686,VND
+VN4852,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-14,16:15,19:25,3414759,VND
+QH9863,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-06-03,13:15,15:45,2540889,VND
+VJ3745,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-27,17:00,19:20,1143244,VND
+VN7973,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-02,16:30,17:50,3019252,VND
+QH5239,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-23,20:45,22:45,1571032,VND
+VN6015,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,2026-06-01,05:15,06:25,1463300,VND
+VN9467,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-05-10,07:45,10:15,3482168,VND
+VJ5829,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-15,08:00,09:30,1617333,VND
+QH5464,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-29,17:00,19:20,1366451,VND
+VJ4253,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-17,07:30,09:40,3010633,VND
+VJ7756,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-16,05:15,07:45,1568739,VND
+VN2342,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-21,14:15,16:35,2658612,VND
+VJ3637,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-02,06:30,09:30,1465105,VND
+VN2150,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-07,07:45,08:55,1719552,VND
+QH3418,Vietnam Airlines,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-24,06:00,08:10,1143956,VND
+VJ6538,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-18,14:00,17:30,1921566,VND
+VN5294,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-06,08:30,11:00,2102092,VND
+VN2060,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-23,14:45,15:05,1748462,VND
+QH8250,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-08,13:45,14:05,1389357,VND
+QH1696,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-06-04,13:00,14:00,1335429,VND
+VN6622,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-12,11:15,12:45,1358321,VND
+QH3702,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-29,05:00,06:10,2258566,VND
+VJ9428,Bamboo Airways,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,HUI,Sân bay quốc tế Phú Bài,Huế,2026-04-30,15:00,18:20,1914593,VND
+QH6940,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-20,08:15,11:15,1407206,VND
+VN5448,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-15,15:30,17:30,2786299,VND
+VN4169,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HUI,Sân bay quốc tế Phú Bài,Huế,2026-06-04,11:15,14:35,2972091,VND
+QH2541,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-30,16:15,18:25,1117046,VND
+VN2589,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-29,16:30,19:00,1594839,VND
+VJ6296,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-26,18:45,19:05,1225968,VND
+QH6462,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-06,18:45,21:45,2739084,VND
+QH1294,Vietjet Air,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-30,16:00,17:10,1079529,VND
+QH9833,Bamboo Airways,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-08,18:00,19:20,1584781,VND
+VJ2934,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-13,19:30,20:40,1610164,VND
+VJ4652,Bamboo Airways,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-30,19:00,20:20,2063108,VND
+VJ8022,Vietjet Air,HUI,Sân bay quốc tế Phú Bài,Huế,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-15,11:45,12:05,3042330,VND
+VN7760,Bamboo Airways,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-17,09:30,11:30,2228276,VND
+QH8595,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-05-05,16:45,19:15,3383483,VND
+VN4111,Vietjet Air,DLI,Sân bay quốc tế Liên Khương,Lâm Đồng,CXR,Sân bay quốc tế Cam Ranh,Khánh Hòa,2026-04-07,16:00,18:00,2145558,VND
+VN9904,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-06-04,20:15,22:15,2044940,VND
+QH1539,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-05,13:00,14:30,1428719,VND
+VJ7863,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-27,12:45,14:55,1897981,VND
+QH5306,Bamboo Airways,HUI,Sân bay quốc tế Phú Bài,Huế,VII,Sân bay Vinh,Nghệ An,2026-05-22,08:00,10:30,2444209,VND
+QH7680,Vietjet Air,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-10,15:30,18:00,2870848,VND
+QH3325,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-02,12:30,15:50,3329265,VND
+QH7028,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-19,07:00,09:20,3103312,VND
+VJ8628,Vietnam Airlines,HUI,Sân bay quốc tế Phú Bài,Huế,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-26,12:00,13:30,2305259,VND
+QH5610,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-05-27,13:15,16:35,3088979,VND
+VN7739,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-06-06,06:00,09:00,2963148,VND
+VN7306,Vietjet Air,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-16,07:15,09:35,1221298,VND
+QH1693,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-08,17:30,19:00,1241217,VND
+VN5231,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-16,09:15,11:25,1416617,VND
+VJ3706,Vietnam Airlines,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-04-11,12:15,14:35,942989,VND
+VN8338,Bamboo Airways,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,2026-04-28,13:00,15:10,1334207,VND
+QH6221,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,2026-05-03,09:15,10:45,3482694,VND
+VN2098,Vietjet Air,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-04-18,16:15,19:15,3219531,VND
+VN9963,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,2026-04-17,08:30,11:50,1591333,VND
+VN7591,Bamboo Airways,DAD,Sân bay quốc tế Đà Nẵng,Đà Nẵng,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-14,17:30,18:50,1180149,VND
+VN2116,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HUI,Sân bay quốc tế Phú Bài,Huế,2026-06-01,14:15,17:45,2644262,VND
+QH5990,Vietnam Airlines,BMV,Sân bay Buôn Ma Thuột,Đắk Lắk,VII,Sân bay Vinh,Nghệ An,2026-05-05,14:45,15:55,1472205,VND
+QH7548,Vietjet Air,VCA,Sân bay quốc tế Cần Thơ,Cần Thơ,HUI,Sân bay quốc tế Phú Bài,Huế,2026-04-12,06:00,08:10,3269490,VND
+VJ4393,Vietnam Airlines,HAN,Sân bay quốc tế Nội Bài,Hà Nội,HPH,Sân bay quốc tế Cát Bi,Hải Phòng,2026-05-28,18:15,21:25,3495555,VND
+VN7845,Vietnam Airlines,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,HAN,Sân bay quốc tế Nội Bài,Hà Nội,2026-05-17,12:45,14:55,3378366,VND
+VN3679,Bamboo Airways,HAN,Sân bay quốc tế Nội Bài,Hà Nội,SGN,Sân bay quốc tế Tân Sơn Nhất,TP.HCM,2026-04-19,18:45,21:15,2646740,VND

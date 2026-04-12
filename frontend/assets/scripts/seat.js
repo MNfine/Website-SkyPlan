@@ -177,6 +177,78 @@ function showWelcomeMessage() {
   SeatNotifications.showWelcomeMessage(fareClass);
 }
 
+// Update flight information from real trip data
+function updateFlightInfo() {
+  try {
+    const trip = JSON.parse(localStorage.getItem('skyplan_trip_selection') || 'null');
+    if (!trip) return;
+
+    // Airport mapping with city and airport names
+    const airportData = {
+      'HAN': {
+        city: { vi: 'Hà Nội', en: 'Hanoi' },
+        airport: { vi: 'Sân bay Nội Bài', en: 'Noi Bai Airport' }
+      },
+      'SGN': {
+        city: { vi: 'Hồ Chí Minh', en: 'Ho Chi Minh' },
+        airport: { vi: 'Sân bay Tân Sơn Nhất', en: 'Tan Son Nhat Airport' }
+      },
+      'DAD': {
+        city: { vi: 'Đà Nẵng', en: 'Da Nang' },
+        airport: { vi: 'Sân bay Đà Nẵng', en: 'Da Nang Airport' }
+      },
+      'CXR': {
+        city: { vi: 'Nha Trang', en: 'Nha Trang' },
+        airport: { vi: 'Sân bay Cam Ranh', en: 'Cam Ranh Airport' }
+      },
+      'PQC': {
+        city: { vi: 'Phú Quốc', en: 'Phu Quoc' },
+        airport: { vi: 'Sân bay Phú Quốc', en: 'Phu Quoc Airport' }
+      },
+      'VCA': {
+        city: { vi: 'Cần Thơ', en: 'Can Tho' },
+        airport: { vi: 'Sân bay Cần Thơ', en: 'Can Tho Airport' }
+      },
+      'HUI': {
+        city: { vi: 'Huế', en: 'Hue' },
+        airport: { vi: 'Sân bay Phú Bài', en: 'Phu Bai Airport' }
+      },
+      'VII': {
+        city: { vi: 'Vinh', en: 'Vinh' },
+        airport: { vi: 'Sân bay Vinh', en: 'Vinh Airport' }
+      }
+    };
+
+    const lang = localStorage.getItem('preferredLanguage') || 'vi';
+    const flightNumber = trip.outbound_flight_number || trip.flight_number || '';
+    const depAirportCode = trip.outbound_departure_airport || trip.fromCode || '';
+    const arrAirportCode = trip.outbound_arrival_airport || trip.toCode || '';
+
+    if (!flightNumber || !depAirportCode || !arrAirportCode) return;
+
+    // Get city names from airport mapping
+    const depData = airportData[depAirportCode];
+    const arrData = airportData[arrAirportCode];
+    
+    const depCityName = depData ? (depData.city[lang] || depData.city.vi) : depAirportCode;
+    const arrCityName = arrData ? (arrData.city[lang] || arrData.city.vi) : arrAirportCode;
+
+    // Update flight info element
+    const flightInfoEl = document.querySelector('.flight-info');
+    if (flightInfoEl) {
+      if (lang === 'vi') {
+        flightInfoEl.textContent = `Chọn ghế cho chuyến bay ${flightNumber} từ ${depCityName} đến ${arrCityName}`;
+      } else {
+        flightInfoEl.textContent = `Select seats for flight ${flightNumber} from ${depCityName} to ${arrCityName}`;
+      }
+    }
+
+    console.log('Flight info updated:', { flightNumber, depCityName, arrCityName });
+  } catch (e) {
+    console.warn('Error updating flight info:', e);
+  }
+}
+
 // Enhance countdown timer with notifications
 function enhanceCountdownNotifications() {
   // Override the original timeout handler if it exists
@@ -225,6 +297,7 @@ function initializeSeatData() {
 function initializeSeatEnhancements() {
   // Wait for DOM and other scripts to load
   setTimeout(() => {
+    updateFlightInfo(); // Update flight info from real trip data
     showWelcomeMessage();
     enhanceCountdownNotifications();
     initializeSeatData(); // Load API data và update existing HTML
@@ -238,3 +311,8 @@ if (document.readyState === 'loading') {
 } else {
   initializeSeatEnhancements();
 }
+
+// Listen for language changes and update flight info
+document.addEventListener('languageChanged', function(e) {
+  updateFlightInfo();
+});

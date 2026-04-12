@@ -1,108 +1,100 @@
-// My Trips FE-only implementation with wallet-booking mapping, NFT ticket display,
-// and SKY token summary. Designed so backend can replace MOCK_TRIPS later.
-
 let currentTab = 'all';
-let selectedWallet = 'all';
-
-const WALLET_SKY_BALANCE = {
-  '0x2fD9B72e8dD5C8aA4f9E2402D8cD0f36C1A4A91f': 845,
-  '0xA1B2c3D4e5F60718293aB4Cd5E6F708192A3B4C5': 120,
-  '0x7D10f6e95A9fA1a4f66d0f4a2B76bA2fA4A0f991': 450
+let tripsData = [];
+let blockchainLoadingState = {
+  visible: false,
+  startedAt: 0,
+  timer: null,
 };
 
-const MOCK_TRIPS = [
-  {
-    id: 'TR001',
-    bookingCode: 'VJ123456',
-    status: 'upcoming',
-    route: 'Ha Noi -> Ho Chi Minh',
-    airline: 'VietJet Air - VJ165',
-    departureTime: '07:30',
-    arrivalTime: '09:45',
-    duration: '2h 15m',
-    flightDate: '15/11/2025',
-    passengerName: 'Nguyen Van A',
-    seat: '12A',
-    amountVnd: 2150000,
-    walletAddress: '0x2fD9B72e8dD5C8aA4f9E2402D8cD0f36C1A4A91f',
-    isVerified: true,
-    nft: {
-      minted: true,
-      tokenId: '1123',
-      contract: '0xTicketNFTSepolia000000000000000000000001'
-    },
-    rewardSky: 120
-  },
-  {
-    id: 'TR002',
-    bookingCode: 'VN789012',
-    status: 'upcoming',
-    route: 'Da Nang -> Ha Noi',
-    airline: 'Vietnam Airlines - VN1317',
-    departureTime: '14:25',
-    arrivalTime: '15:50',
-    duration: '1h 25m',
-    flightDate: '20/11/2025',
-    passengerName: 'Tran Van C',
-    seat: '8A',
-    amountVnd: 1850000,
-    walletAddress: '0x2fD9B72e8dD5C8aA4f9E2402D8cD0f36C1A4A91f',
-    isVerified: false,
-    nft: {
-      minted: false,
-      tokenId: null,
-      contract: '0xTicketNFTSepolia000000000000000000000001'
-    },
-    rewardSky: 0
-  },
-  {
-    id: 'TR003',
-    bookingCode: 'BB345678',
-    status: 'completed',
-    route: 'Ho Chi Minh -> Da Nang',
-    airline: 'Bamboo Airways - QH1234',
-    departureTime: '10:15',
-    arrivalTime: '11:35',
-    duration: '1h 20m',
-    flightDate: '28/10/2025',
-    passengerName: 'Le Thi D',
-    seat: '15C',
-    amountVnd: 1650000,
-    walletAddress: '0xA1B2c3D4e5F60718293aB4Cd5E6F708192A3B4C5',
-    isVerified: true,
-    nft: {
-      minted: true,
-      tokenId: '2078',
-      contract: '0xTicketNFTSepolia000000000000000000000001'
-    },
-    rewardSky: 95
-  },
-  {
-    id: 'TR004',
-    bookingCode: 'VJ987654',
-    status: 'cancelled',
-    route: 'Nha Trang -> Ha Noi',
-    airline: 'VietJet Air - VJ1567',
-    departureTime: '16:45',
-    arrivalTime: '18:55',
-    duration: '2h 10m',
-    flightDate: '10/11/2025',
-    passengerName: 'Pham Van F',
-    seat: '20A',
-    amountVnd: 1950000,
-    walletAddress: '0x7D10f6e95A9fA1a4f66d0f4a2B76bA2fA4A0f991',
-    isVerified: false,
-    nft: {
-      minted: false,
-      tokenId: null,
-      contract: '0xTicketNFTSepolia000000000000000000000001'
-    },
-    rewardSky: 0
+function ensureBlockchainLoadingOverlay() {
+  let overlay = document.getElementById('blockchain-loading-overlay');
+  if (overlay) return overlay;
+
+  overlay = document.createElement('div');
+  overlay.id = 'blockchain-loading-overlay';
+  overlay.className = 'blockchain-loading-overlay';
+  overlay.setAttribute('aria-hidden', 'true');
+  overlay.innerHTML = [
+    '<div class="blockchain-loading-card" role="status" aria-live="polite">',
+    '  <div class="blockchain-chain">',
+    '    <span></span><span></span><span></span>',
+    '  </div>',
+    '  <h3 class="blockchain-loading-title"></h3>',
+    '  <p class="blockchain-loading-desc"></p>',
+    '  <div class="blockchain-progress">',
+    '    <div class="blockchain-progress-bar"></div>',
+    '  </div>',
+    '  <p class="blockchain-loading-hint"></p>',
+    '</div>'
+  ].join('');
+
+  document.body.appendChild(overlay);
+  return overlay;
+}
+
+function setBlockchainLoadingText() {
+  const overlay = ensureBlockchainLoadingOverlay();
+  const titleEl = overlay.querySelector('.blockchain-loading-title');
+  const descEl = overlay.querySelector('.blockchain-loading-desc');
+  const hintEl = overlay.querySelector('.blockchain-loading-hint');
+  if (titleEl) titleEl.textContent = t('blockchainLoadingTitle');
+  if (descEl) descEl.textContent = t('blockchainLoadingDesc');
+  if (hintEl) hintEl.textContent = t('blockchainLoadingHint');
+}
+
+function showBlockchainLoading() {
+  const overlay = ensureBlockchainLoadingOverlay();
+  setBlockchainLoadingText();
+  overlay.classList.add('active');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('blockchain-loading-open');
+  blockchainLoadingState.visible = true;
+  blockchainLoadingState.startedAt = Date.now();
+}
+
+function hideBlockchainLoading() {
+  const overlay = document.getElementById('blockchain-loading-overlay');
+  if (!overlay) return;
+
+  if (blockchainLoadingState.timer) {
+    clearTimeout(blockchainLoadingState.timer);
+    blockchainLoadingState.timer = null;
   }
-];
+
+  overlay.classList.remove('active');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('blockchain-loading-open');
+  blockchainLoadingState.visible = false;
+}
+
+function hideBlockchainLoadingSafely() {
+  if (!blockchainLoadingState.visible) return;
+  const elapsed = Date.now() - (blockchainLoadingState.startedAt || Date.now());
+  const minVisibleMs = 900;
+  if (elapsed >= minVisibleMs) {
+    hideBlockchainLoading();
+    return;
+  }
+
+  const remaining = minVisibleMs - elapsed;
+  blockchainLoadingState.timer = setTimeout(hideBlockchainLoading, remaining);
+}
+
+function toFriendlyIntegrateError() {
+  return t('integrateNftFailedFriendly');
+}
+
+function getMetaMaskWallet() {
+  if (window.MetaMaskWallet) return window.MetaMaskWallet;
+  try {
+    if (typeof MetaMaskWallet !== 'undefined') return MetaMaskWallet;
+  } catch (_) {}
+  return null;
+}
 
 function getLang() {
-  return localStorage.getItem('preferredLanguage') || 'vi';
+  const raw = (localStorage.getItem('preferredLanguage') || localStorage.getItem('language') || 'vi').toLowerCase();
+  return raw === 'en' ? 'en' : 'vi';
 }
 
 function t(key) {
@@ -116,95 +108,233 @@ function formatVnd(amount) {
   return Number(amount || 0).toLocaleString('vi-VN') + ' VND';
 }
 
-function shortAddress(address) {
-  if (!address || address.length < 12) return address || '-';
-  return address.slice(0, 6) + '...' + address.slice(-4);
-}
-
 function statusLabel(status) {
   if (status === 'upcoming') return t('statusUpcoming');
   if (status === 'completed') return t('statusCompleted');
   return t('statusCancelled');
 }
 
-function getWallets() {
-  const map = new Map();
-  MOCK_TRIPS.forEach(function (trip) {
-    if (trip.walletAddress) map.set(trip.walletAddress, true);
-  });
-  return Array.from(map.keys());
+function escapeHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
-function getFilteredTrips() {
-  return MOCK_TRIPS.filter(function (trip) {
-    if (selectedWallet !== 'all' && trip.walletAddress !== selectedWallet) {
-      return false;
+function toDate(value) {
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function formatTime(value) {
+  const d = toDate(value);
+  if (!d) return '--:--';
+  return d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false });
+}
+
+function formatDate(value) {
+  const d = toDate(value);
+  if (!d) return '--/--/----';
+  return d.toLocaleDateString('vi-VN');
+}
+
+function formatDuration(start, end) {
+  const from = toDate(start);
+  const to = toDate(end);
+  if (!from || !to) return '--';
+  const diffMs = to.getTime() - from.getTime();
+  if (diffMs <= 0) return '--';
+  const totalMin = Math.floor(diffMs / 60000);
+  const hours = Math.floor(totalMin / 60);
+  const mins = totalMin % 60;
+  return hours + 'h ' + mins + 'm';
+}
+
+function mapStatus(rawStatus, departureIso) {
+  const status = String(rawStatus || '').toUpperCase();
+  if (status === 'CANCELLED' || status === 'EXPIRED' || status === 'PAYMENT_FAILED') {
+    return 'cancelled';
+  }
+  if (status === 'COMPLETED') {
+    return 'completed';
+  }
+
+  const departureDate = toDate(departureIso);
+  if (departureDate && departureDate.getTime() < Date.now()) {
+    return 'completed';
+  }
+
+  return 'upcoming';
+}
+
+function mapBookingToTrip(booking) {
+  const outbound = booking && booking.outbound_flight ? booking.outbound_flight : {};
+  const passengers = Array.isArray(booking && booking.passengers) ? booking.passengers : [];
+  const firstPassenger = passengers[0] || {};
+
+  const origin = outbound.origin_code || outbound.departure_airport || '---';
+  const destination = outbound.destination_code || outbound.arrival_airport || '---';
+  const departureIso = outbound.departure_time;
+  const arrivalIso = outbound.arrival_time;
+
+  const nftInfo = booking && booking.nft ? booking.nft : null;
+  const nftMintedFlag = !!(
+    (nftInfo && nftInfo.minted) ||
+    booking.nft_minted ||
+    booking.nft_mint_tx_hash
+  );
+
+  return {
+    id: booking.booking_code || String(booking.id || ''),
+    bookingCode: booking.booking_code || '',
+    status: mapStatus(booking.status, departureIso),
+    route: origin + ' -> ' + destination,
+    airline: [outbound.airline_name || outbound.airline || 'SkyPlan', outbound.flight_number].filter(Boolean).join(' - '),
+    departureTime: formatTime(departureIso),
+    arrivalTime: formatTime(arrivalIso),
+    duration: formatDuration(departureIso, arrivalIso),
+    flightDate: formatDate(departureIso),
+    passengerName: firstPassenger.full_name || firstPassenger.fullName || [firstPassenger.firstname, firstPassenger.lastname].filter(Boolean).join(' ') || '-',
+    seat: firstPassenger.seat_number || firstPassenger.seatNumber || '-',
+    amountVnd: Number(booking.total_amount || 0),
+    isVerified: !!(booking.isVerified || booking.onchain_recorded),
+    nft: {
+      minted: nftMintedFlag,
+      tokenId: (nftInfo && nftInfo.tokenId) || booking.nft_token_id || null,
+      contract: (nftInfo && nftInfo.contract) || booking.nft_contract || null,
+      txHash: booking.nft_mint_tx_hash || null
+    },
+    rewardSky: Number(booking.rewardSky || booking.sky_reward_amount || 0)
+  };
+}
+
+async function loadUserTrips() {
+  if (!window.AuthState || !AuthState.isAuthenticated()) {
+    tripsData = [];
+    if (window.AuthState && typeof AuthState.requireAuth === 'function') {
+      AuthState.requireAuth(window.location.pathname + window.location.search);
     }
-    if (currentTab !== 'all' && trip.status !== currentTab) {
-      return false;
+    return;
+  }
+
+  try {
+    const params = new URLSearchParams(window.location.search || '');
+    const codeFromUrl = (params.get('booking_code') || '').trim();
+    const codeFromStorage = String(localStorage.getItem('lastBookingCode') || localStorage.getItem('currentBookingCode') || '').trim();
+    const bookingCode = codeFromUrl || codeFromStorage;
+    const endpoint = bookingCode
+      ? '/api/bookings/my-trips?booking_code=' + encodeURIComponent(bookingCode)
+      : '/api/bookings/my-trips';
+
+    const resp = await AuthState.fetchWithAuth(endpoint, { method: 'GET' });
+    const payload = await resp.json().catch(function () { return {}; });
+
+    if (!resp.ok || !payload.success) {
+      throw new Error(payload.message || 'Failed to load trips');
     }
-    return true;
-  });
+
+    const bookings = Array.isArray(payload.bookings) ? payload.bookings : [];
+    tripsData = bookings.map(mapBookingToTrip);
+
+    // Fallback: if redirected with booking_code and list doesn't contain it yet,
+    // fetch that booking directly so users can see immediate result.
+    if (bookingCode && !tripsData.some(function (t) { return t.bookingCode === bookingCode; })) {
+      try {
+        const directResp = await AuthState.fetchWithAuth('/api/bookings/status/' + encodeURIComponent(bookingCode), { method: 'GET' });
+        const directPayload = await directResp.json().catch(function () { return {}; });
+        if (directResp.ok && directPayload && directPayload.success && directPayload.booking) {
+          tripsData.unshift(mapBookingToTrip(directPayload.booking));
+        } else if (directResp.status === 404) {
+          showNotification('Booking ' + bookingCode + ' khong thuoc tai khoan dang dang nhap.', 'warning', 3800);
+        }
+      } catch (_) {
+        // no-op
+      }
+    }
+
+    renderTrips();
+  } catch (error) {
+    console.error('Failed to load real my-trips data:', error);
+    tripsData = [];
+    renderTrips();
+    showNotification(error && error.message ? error.message : 'Khong the tai danh sach chuyen di', 'error', 2800);
+  }
 }
 
-function updateSummaryPanel() {
-  const scopeTrips = selectedWallet === 'all'
-    ? MOCK_TRIPS
-    : MOCK_TRIPS.filter(function (trip) { return trip.walletAddress === selectedWallet; });
+async function claimBookingFromContextIfNeeded() {
+  if (!window.AuthState || !AuthState.isAuthenticated()) return;
 
-  const verifiedCount = scopeTrips.filter(function (trip) { return trip.isVerified; }).length;
-  const nftCount = scopeTrips.filter(function (trip) { return trip.nft && trip.nft.minted; }).length;
-  const rewardSum = scopeTrips.reduce(function (sum, trip) { return sum + Number(trip.rewardSky || 0); }, 0);
-  const balance = selectedWallet === 'all'
-    ? Object.values(WALLET_SKY_BALANCE).reduce(function (sum, value) { return sum + Number(value || 0); }, 0)
-    : Number(WALLET_SKY_BALANCE[selectedWallet] || 0);
+  const params = new URLSearchParams(window.location.search || '');
+  const fromUrl = (params.get('booking_code') || '').trim();
+  const fromStorage = String(localStorage.getItem('lastBookingCode') || localStorage.getItem('currentBookingCode') || '').trim();
+  const bookingCode = fromUrl || fromStorage;
 
-  const walletValue = document.getElementById('summaryWalletAddressValue');
-  const verifiedValue = document.getElementById('summaryVerifiedBookingsValue');
-  const nftValue = document.getElementById('summaryNftTicketsValue');
-  const skyValue = document.getElementById('summarySkyBalanceValue');
-  const rewardValue = document.getElementById('summarySkyRewardValue');
+  if (!bookingCode) return;
 
-  if (walletValue) walletValue.textContent = selectedWallet === 'all' ? t('allWallets') : shortAddress(selectedWallet);
-  if (verifiedValue) verifiedValue.textContent = String(verifiedCount);
-  if (nftValue) nftValue.textContent = String(nftCount);
-  if (skyValue) skyValue.textContent = String(balance) + ' SKY';
-  if (rewardValue) rewardValue.textContent = String(rewardSum) + ' SKY';
+  try {
+    await AuthState.fetchWithAuth('/api/bookings/' + encodeURIComponent(bookingCode) + '/claim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch (_) {
+    // Ignore claim errors (already claimed / not found) and continue loading trips.
+  }
 }
 
-function renderWalletFilterOptions() {
-  const select = document.getElementById('walletFilterSelect');
-  if (!select) return;
+async function autoIntegrateFromRedirectIfNeeded() {
+  if (!window.AuthState || !AuthState.isAuthenticated()) return;
 
-  const wallets = getWallets();
-  const options = ['<option value="all">' + t('allWallets') + '</option>'];
-  wallets.forEach(function (wallet) {
-    options.push('<option value="' + wallet + '">' + shortAddress(wallet) + '</option>');
-  });
+  const params = new URLSearchParams(window.location.search || '');
+  const action = String(params.get('action') || '').trim().toLowerCase();
+  const codeFromUrl = String(params.get('booking_code') || '').trim();
+  if (action !== 'integrate' || !codeFromUrl) return;
 
-  select.innerHTML = options.join('');
-  select.value = selectedWallet;
+  const onceKey = 'autoIntegrateDone:' + codeFromUrl;
+  if (sessionStorage.getItem(onceKey) === '1') return;
+  sessionStorage.setItem(onceKey, '1');
+
+  const target = tripsData.find(function (trip) { return trip.bookingCode === codeFromUrl; });
+  if (!target) {
+    showNotification('Khong tim thay booking ' + codeFromUrl + ' trong tai khoan hien tai.', 'warning', 3200);
+    return;
+  }
+
+  if (target.nft && target.nft.minted) {
+    showNotification(getLang() === 'vi' ? 'Booking nay da duoc integrate truoc do.' : 'This booking is already integrated.', 'success', 2500);
+    return;
+  }
+
+  showNotification('Dang xu ly integrate cho booking ' + codeFromUrl + '...', 'info', 2200);
+  await integrateNftTicket(codeFromUrl);
 }
 
 function buildTripCard(trip) {
-  const verifiedClass = trip.isVerified ? 'verified-yes' : 'verified-no';
-  const verifiedText = trip.isVerified ? t('verifiedYes') : t('verifiedNo');
   const nftMinted = !!(trip.nft && trip.nft.minted);
-  const nftText = nftMinted
-    ? t('nftMinted') + ' #' + trip.nft.tokenId
-    : t('nftNotMinted');
+  const routeText = escapeHtml(trip.route || '--- -> ---');
+  const bookingCode = escapeHtml(trip.bookingCode || '-');
+  const airlineText = escapeHtml(trip.airline || 'SkyPlan');
+  const departureTime = escapeHtml(trip.departureTime || '--:--');
+  const arrivalTime = escapeHtml(trip.arrivalTime || '--:--');
+  const flightDate = escapeHtml(trip.flightDate || '--/--/----');
+  const passengerName = escapeHtml(trip.passengerName || '-');
+  const seatText = escapeHtml(trip.seat || '-');
+  const statusClass = escapeHtml(trip.status || 'upcoming');
+  const safeId = escapeHtml(trip.id || trip.bookingCode || '');
 
   const nftAction = nftMinted
-    ? '<button class="btn btn-outline" onclick="event.stopPropagation(); viewNftTicket(\'' + trip.id + '\')"><i class="fas fa-ticket"></i><span>' + t('viewNftTicket') + '</span></button>'
-    : '';
+    ? '<button class="btn btn-outline" onclick="event.stopPropagation(); viewNftTicket(\'' + safeId + '\')"><i class="fas fa-ticket"></i><span>' + t('viewNftTicket') + '</span></button>'
+    : '<button class="btn btn-outline" onclick="event.stopPropagation(); integrateNftTicket(\'' + bookingCode + '\')"><i class="fas fa-link"></i><span>' + t('integrateNft') + '</span></button>';
 
   return [
-    '<div class="trip-card" data-trip-id="' + trip.id + '" onclick="goToOverview(\'' + trip.id + '\')">',
-    '  <div class="trip-status ' + trip.status + '"><span>' + statusLabel(trip.status) + '</span></div>',
+    '<div class="trip-card" data-trip-id="' + safeId + '" onclick="goToOverview(\'' + bookingCode + '\')">',
+    '  <div class="trip-status ' + statusClass + '"><span>' + statusLabel(trip.status) + '</span></div>',
     '  <div class="trip-header">',
     '    <div class="route-info">',
-    '      <div class="route-title"><h3><span class="route-text">' + trip.route + '</span></h3></div>',
-    '      <p class="booking-ref">' + t('bookingCode') + ' <strong>' + trip.bookingCode + '</strong></p>',
+    '      <div class="route-title"><h3><span class="route-text">' + routeText + '</span></h3></div>',
+    '      <p class="booking-ref">' + t('bookingCode') + ' <strong>' + bookingCode + '</strong></p>',
     '    </div>',
     '    <div class="trip-price">',
     '      <span class="price">' + formatVnd(trip.amountVnd) + '</span>',
@@ -214,31 +344,102 @@ function buildTripCard(trip) {
     '  <div class="trip-details">',
     '    <div class="flight-segment">',
     '      <div class="flight-info">',
-    '        <div class="airline"><i class="fas fa-plane"></i><span>' + trip.airline + '</span></div>',
+    '        <div class="airline"><i class="fas fa-plane"></i><span>' + airlineText + '</span></div>',
     '        <div class="flight-time">',
-    '          <span class="departure"><strong>' + trip.departureTime + '</strong><small>' + t('flightDate') + ' ' + trip.flightDate + '</small></span>',
+    '          <span class="departure"><strong>' + departureTime + '</strong><small>' + t('flightDate') + ' ' + flightDate + '</small></span>',
     '          <div class="duration"><div class="line"></div><span>' + trip.duration + '</span></div>',
-    '          <span class="arrival"><strong>' + trip.arrivalTime + '</strong><small>' + t('passengerLabel') + ' ' + trip.passengerName + '</small></span>',
+    '          <span class="arrival"><strong>' + arrivalTime + '</strong><small>' + t('passengerLabel') + ' ' + passengerName + '</small></span>',
     '        </div>',
     '      </div>',
     '    </div>',
     '    <div class="booking-details">',
-    '      <div class="detail-item"><i class="fas fa-chair"></i><span>' + t('seat') + ' <strong>' + trip.seat + '</strong></span></div>',
-    '      <div class="detail-item"><i class="fas fa-link"></i><span>' + t('walletLinkedLabel') + ' <strong>' + shortAddress(trip.walletAddress) + '</strong></span></div>',
-    '      <div class="detail-item ' + verifiedClass + '"><i class="fas fa-check-double"></i><span>' + t('bookingVerifyLabel') + ' <strong>' + verifiedText + '</strong></span></div>',
-    '      <div class="detail-item"><i class="fas fa-receipt"></i><span>' + t('nftTicketLabel') + ' <strong>' + nftText + '</strong></span></div>',
-    '      <div class="detail-item"><i class="fas fa-coins"></i><span>' + t('tokenRewardLabel') + ' <strong>' + String(trip.rewardSky || 0) + ' SKY</strong></span></div>',
+    '      <div class="detail-item"><i class="fas fa-chair"></i><span>' + t('seat') + ' <strong>' + seatText + '</strong></span></div>',
     '    </div>',
     '  </div>',
     '  <div class="trip-actions">',
     '    <div class="trip-buttons">',
-    '      <button class="btn btn-outline" onclick="event.stopPropagation(); viewTicket(\'' + trip.id + '\')"><i class="fas fa-ticket-alt"></i><span>' + t('viewTicket') + '</span></button>',
+    '      <button class="btn btn-outline" onclick="event.stopPropagation(); viewTicket(\'' + bookingCode + '\')"><i class="fas fa-ticket-alt"></i><span>' + t('viewTicket') + '</span></button>',
     '      ' + nftAction,
-    '      <button class="btn btn-primary" onclick="event.stopPropagation(); goToOverview(\'' + trip.id + '\')"><i class="fas fa-eye"></i><span>' + t('tripDetails') + '</span></button>',
+    '      <button class="btn btn-primary" onclick="event.stopPropagation(); goToOverview(\'' + bookingCode + '\')"><i class="fas fa-eye"></i><span>' + t('tripDetails') + '</span></button>',
     '    </div>',
     '  </div>',
     '</div>'
   ].join('');
+}
+
+const _integratingBookings = new Set();
+
+async function integrateNftTicket(bookingCode) {
+  const code = String(bookingCode || '').trim();
+  if (!code) return;
+
+  // Unified UX: always confirm integration intent first.
+  if (typeof window.showBlockchainIntegrationPopup === 'function') {
+    const choice = await window.showBlockchainIntegrationPopup();
+    if (choice === 'guide') {
+      window.location.href = 'support.html#blockchain-ticket-guide';
+      return;
+    }
+    if (choice !== 'integrate') return;
+  }
+
+  if (!window.AuthState || !AuthState.isAuthenticated()) {
+    if (window.AuthState && typeof AuthState.requireAuth === 'function') {
+      AuthState.requireAuth('my_trips.html');
+    }
+    return;
+  }
+
+  if (_integratingBookings.has(code)) {
+    showNotification(t('integratingNft'), 'info', 2000);
+    return;
+  }
+
+  const walletApi = getMetaMaskWallet();
+  if (!walletApi) {
+    showNotification(t('walletUnavailable'), 'error', 3000);
+    return;
+  }
+
+  try {
+    _integratingBookings.add(code);
+
+    // Ensure wallet connected (no on-chain tx required)
+    if (!walletApi.isConnected) {
+      showNotification(t('connectWalletFirst'), 'info', 2500);
+      const ok = await walletApi.connect();
+      if (!ok) return;
+    }
+
+    const wallet = walletApi.account;
+    if (!wallet) {
+      showNotification(t('walletUnavailable'), 'error', 3000);
+      return;
+    }
+
+    showBlockchainLoading();
+    showNotification(t('integratingNft'), 'info', 2000);
+
+    const resp = await AuthState.fetchWithAuth('/api/bookings/blockchain/integrate-nft', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ booking_code: code, wallet_address: wallet })
+    });
+
+    const payload = await resp.json().catch(function () { return {}; });
+    if (!resp.ok || !payload.success) {
+      throw new Error(payload && payload.message ? payload.message : 'Integrate failed');
+    }
+
+    showNotification(t('integrateNftSuccess'), 'success', 3000);
+    await loadUserTrips();
+  } catch (err) {
+    console.warn('Integrate ticket failed:', err && err.message ? err.message : err);
+    showNotification(toFriendlyIntegrateError(), 'error', 3200);
+  } finally {
+    hideBlockchainLoadingSafely();
+    _integratingBookings.delete(code);
+  }
 }
 
 function renderTrips() {
@@ -248,10 +449,7 @@ function renderTrips() {
     const list = document.querySelector('#' + tab + '-content .trips-list');
     if (!list) return;
 
-    let trips = MOCK_TRIPS;
-    if (selectedWallet !== 'all') {
-      trips = trips.filter(function (trip) { return trip.walletAddress === selectedWallet; });
-    }
+    let trips = tripsData.slice();
     if (tab !== 'all') {
       trips = trips.filter(function (trip) { return trip.status === tab; });
     }
@@ -260,7 +458,6 @@ function renderTrips() {
   });
 
   checkEmptyState();
-  updateSummaryPanel();
 }
 
 function switchTab(status) {
@@ -301,22 +498,12 @@ function initializeTabs() {
   });
 }
 
-function initializeWalletFilter() {
-  const select = document.getElementById('walletFilterSelect');
-  if (!select) return;
-
-  select.addEventListener('change', function () {
-    selectedWallet = this.value;
-    renderTrips();
-  });
-}
-
 function applyMyTripsTranslations(lang) {
-  if (lang) {
-    localStorage.setItem('preferredLanguage', lang);
-  }
+  const normalized = (lang || getLang()).toLowerCase() === 'en' ? 'en' : 'vi';
+  // DON'T write to localStorage here - this function should only APPLY translations, not SAVE language preference
+  // Language should only be saved via initializeLanguage() or window.broadcastLanguageChange()
 
-  const currentLang = getLang();
+  const currentLang = normalized;
   const translations = (window.myTripsTranslations && window.myTripsTranslations[currentLang]) || {};
 
   if (translations.myTripsTitle) {
@@ -330,7 +517,8 @@ function applyMyTripsTranslations(lang) {
     }
   });
 
-  renderWalletFilterOptions();
+  setBlockchainLoadingText();
+
   renderTrips();
 }
 
@@ -348,38 +536,63 @@ function showNotification(message, type, duration) {
 function goToOverview(tripId) {
   showNotification(t('goingToOverview'), 'info', 1500);
   setTimeout(function () {
-    window.location.href = 'overview.html?tripId=' + encodeURIComponent(tripId || '');
+    window.location.href = 'overview.html?booking_code=' + encodeURIComponent(tripId || '');
   }, 700);
 }
 
 function viewTicket(tripId) {
-  showNotification(t('openingTicket'), 'info', 2200);
+  showNotification(t('openingTicket'), 'info', 1200);
+  setTimeout(function () {
+    window.location.href = 'overview.html?booking_code=' + encodeURIComponent(tripId || '');
+  }, 500);
 }
 
 function viewNftTicket(tripId) {
-  const trip = MOCK_TRIPS.find(function (item) { return item.id === tripId; });
+  const trip = tripsData.find(function (item) { return item.id === tripId; });
   if (!trip || !trip.nft || !trip.nft.minted) {
     showNotification(t('nftNotMinted'), 'warning', 2500);
     return;
   }
-  showNotification(t('nftOpenExplorerHint'), 'success', 2500);
-  window.open('https://sepolia.etherscan.io/token/' + trip.nft.contract + '?a=' + trip.nft.tokenId, '_blank');
-}
+  if (trip.nft.contract && trip.nft.tokenId) {
+    showNotification(t('nftOpenExplorerHint'), 'success', 2500);
+    window.open('https://sepolia.etherscan.io/token/' + trip.nft.contract + '?a=' + trip.nft.tokenId, '_blank');
+    return;
+  }
 
-function initializeLanguage() {
-  applyMyTripsTranslations(getLang());
+  if (trip.nft.txHash) {
+    showNotification(t('nftOpenTxHint'), 'info', 2600);
+    window.open('https://sepolia.etherscan.io/tx/' + trip.nft.txHash, '_blank');
+    return;
+  }
+
+  if (trip.nft.contract) {
+    showNotification(t('nftOpenContractHint'), 'info', 2600);
+    window.open('https://sepolia.etherscan.io/token/' + trip.nft.contract, '_blank');
+    return;
+  }
+
+  showNotification(t('nftDataPendingHint'), 'info', 2600);
 }
 
 window.applyMyTripsTranslations = applyMyTripsTranslations;
-window.initializeLanguage = initializeLanguage;
 window.goToOverview = goToOverview;
 window.viewTicket = viewTicket;
 window.viewNftTicket = viewNftTicket;
+window.integrateNftTicket = integrateNftTicket;
 
 // Keep old handlers as no-op compatible functions for existing inline attributes.
 window.downloadTicket = viewTicket;
 window.modifyTrip = function () { showNotification(t('modifyFeatureDev'), 'info', 2500); };
-window.cancelTrip = function () { showNotification(t('cancelFeatureDev'), 'info', 2500); };
+window.cancelTrip = function (bookingCode) {
+  showNotification(t('cancelFeatureDev'), 'info', 1200);
+  setTimeout(function () {
+    if (bookingCode) {
+      window.location.href = 'overview.html?booking_code=' + encodeURIComponent(bookingCode);
+      return;
+    }
+    window.location.href = 'overview.html';
+  }, 500);
+};
 window.downloadInvoice = function () { showNotification(t('downloadingInvoice'), 'info', 2200); };
 window.rebookTrip = function () { window.location.href = 'search.html'; };
 window.rebookSimilarTrip = function () { window.location.href = 'search.html'; };
@@ -389,8 +602,11 @@ window.confirmCancelTrip = function () {};
 
 // Initialize page
 window.addEventListener('DOMContentLoaded', function () {
+  ensureBlockchainLoadingOverlay();
   initializeTabs();
-  initializeWalletFilter();
-  renderWalletFilterOptions();
-  applyMyTripsTranslations(getLang());
+  claimBookingFromContextIfNeeded().finally(function () {
+    loadUserTrips().finally(function () {
+      autoIntegrateFromRedirectIfNeeded();
+    });
+  });
 });

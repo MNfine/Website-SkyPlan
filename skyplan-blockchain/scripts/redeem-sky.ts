@@ -1,8 +1,8 @@
-// Script này giả định:
+// This script assumes:
 
-// ví deployer/admin là người redeemer
+// e.g., deployer/admin is the redeemer
 
-// user sẽ approve cho admin được burn điểm
+// user will approve admin to burn points
 
 import { config as dotenvConfig } from "dotenv";
 dotenvConfig();
@@ -42,15 +42,15 @@ async function main() {
   console.log("User:", user);
   console.log("Redeem amount:", amountHuman, "SKY");
 
-  // IMPORTANT: user phải approve cho admin trước.
-  // Nếu user = chính admin thì approve bằng cùng private key được.
-  // Nếu user là ví khác thì cần chạy approve bằng private key của user (hoặc approve trên MetaMask).
+  // IMPORTANT: user must approve admin first.
+  // If user is the admin, approve with the same private key.
+  // If user is another wallet, run approve with that user's private key (or approve on MetaMask).
 
   console.log("⚠️ User must approve admin before redeemFrom()");
   console.log("Admin address to approve:", await admin.getAddress());
   console.log("Call approve(admin, amount) from user wallet, then run redeemFrom.");
 
-  // Redeem (burn từ user) - chỉ chạy sau khi user approve
+  // Redeem (burn from user) - only run after user approves
   const tx = await sky.redeemFrom(user, amount, rewardRef);
   console.log("redeemFrom tx:", tx.hash);
   await tx.wait();

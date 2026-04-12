@@ -31,3 +31,8 @@ pytest==7.4.2
 pytest-flask==1.2.0
 flask-socketio==5.6.0
 eventlet==0.40.4
+
+# Blockchain (custodial no-gas integration)
+web3==7.13.0
+eth-account==0.13.7
+pycryptodome==3.23.0

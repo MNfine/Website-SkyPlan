@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="assets/styles/index.css">
   <link rel="stylesheet" href="assets/styles/flags.css">
   <link rel="stylesheet" href="assets/styles/header.css">
+<link rel="stylesheet" href="assets/styles/wallet.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
@@ -68,6 +69,25 @@
           </svg>
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- Blockchain Ticket Upgrade (low-tech CTA) -->
+  <div class="container">
+    <div class="ticket-upgrade-banner" id="ticket-upgrade-banner" role="button" tabindex="0" aria-haspopup="dialog">
+      <div class="ticket-upgrade-mark" aria-hidden="true">
+        <i class="fas fa-shield-halved"></i>
+      </div>
+      <div class="ticket-upgrade-text">
+        <div class="ticket-upgrade-title" data-i18n="ticketUpgradeTitle">Nâng cấp vé thành vé Blockchain</div>
+        <div class="ticket-upgrade-desc" data-i18n="ticketUpgradeDesc">Minh bạch, an toàn, thao tác nhanh chóng. Nhận vé NFT và ưu đãi SKY mà không cần trả gas.</div>
+        <div class="ticket-upgrade-pillars">
+          <span class="ticket-pillar" data-i18n="ticketPillarTransparent">Minh bạch</span>
+          <span class="ticket-pillar" data-i18n="ticketPillarSafe">An toàn</span>
+          <span class="ticket-pillar" data-i18n="ticketPillarFast">Nhanh chóng</span>
+        </div>
+      </div>
+      <button class="ticket-upgrade-btn" id="ticket-upgrade-cta" type="button" data-i18n="ticketUpgradeCta">Tích hợp ngay</button>
     </div>
   </div>
 
@@ -192,7 +212,23 @@
   <!-- Footer -->
   <div id="footer-container"></div>
 
+  <!-- Ticket Upgrade Popup -->
+  <div class="ticket-upgrade-modal" id="ticket-upgrade-modal" aria-hidden="true">
+    <div class="ticket-upgrade-dialog" role="dialog" aria-modal="true" aria-labelledby="ticket-upgrade-title">
+      <button class="ticket-upgrade-close" id="ticket-upgrade-close" type="button" aria-label="Close">
+        <i class="fas fa-times"></i>
+      </button>
+      <h3 class="ticket-upgrade-modal-title" id="ticket-upgrade-title" data-i18n="ticketUpgradeModalTitle">Tích hợp vé Blockchain</h3>
+      <p class="ticket-upgrade-modal-desc" data-i18n="ticketUpgradeModalDesc">Bạn muốn tích hợp ngay hay xem hướng dẫn trước?</p>
+      <div class="ticket-upgrade-actions">
+        <button class="ticket-upgrade-primary" id="ticket-upgrade-integrate" type="button" data-i18n="ticketUpgradeIntegrate">Tích hợp ngay</button>
+        <button class="ticket-upgrade-secondary" id="ticket-upgrade-guide" type="button" data-i18n="ticketUpgradeGuide">Xem hướng dẫn</button>
+      </div>
+    </div>
+  </div>
+
   <!-- JavaScript -->
+
   <script defer src="assets/scripts/auth-utils.js"></script>
   <script defer src="assets/scripts/index_translations.js"></script>
   <script defer src="assets/scripts/toast.js"></script>
@@ -209,15 +245,9 @@
     
     // Wait for translations.js to load before using functions
     function initializeApp() {
-      // Debug logs
-      console.log("Initializing app...");
-      console.log("Current path:", window.location.pathname);
-      
       // Load header - Use absolute path to avoid issues
       const headerPath = window.location.pathname.endsWith('/') ? 
         'components/header.html' : './components/header.html';
-      
-      console.log("Fetching header from:", headerPath);
       
       fetch(headerPath)
         .then(response => {
@@ -228,28 +258,27 @@
         })
         .then(data => {
           document.getElementById('header-container').innerHTML = data;
-          console.log("Header loaded successfully");
           
-          // After header loads, initialize mobile menu with a delay
-          setTimeout(() => {
-            if (typeof initializeMobileMenu === 'function') {
-              console.log("Initializing mobile menu...");
-              initializeMobileMenu();
-            }
-            
-            // Update header for auth status using the new function
-            if (typeof handleHeaderLoaded === 'function') {
-              console.log("Handling header loaded...");
-              handleHeaderLoaded();
-            }
-          }, 100);
+          // Emit header-loaded event for wallet UI
+          document.dispatchEvent(new CustomEvent('header-loaded'));
           
-          // After header loads, initialize language functionality
-          initializeLanguage();
-          // Initialize mobile menu AFTER header is in DOM
+          // Initialize mobile menu after header loads
           if (typeof initializeMobileMenu === 'function') {
             initializeMobileMenu();
           }
+          
+          // Initialize wallet UI after header loads
+          if (typeof initWalletUI === 'function') {
+            initWalletUI();
+          }
+          
+          // Update header for auth status
+          if (typeof handleHeaderLoaded === 'function') {
+            handleHeaderLoaded();
+          }
+          
+          // After header loads, initialize language functionality
+          initializeLanguage();
         })
         .catch(error => {
           console.error("Header loading error:", error);
@@ -262,8 +291,6 @@
       const footerPath = window.location.pathname.endsWith('/') ? 
         'components/footer.html' : './components/footer.html';
       
-      console.log("Fetching footer from:", footerPath);
-      
       fetch(footerPath)
         .then(response => {
           if (!response.ok) {
@@ -275,7 +302,7 @@
           document.getElementById('footer-container').innerHTML = data;
           // Re-apply translations to include freshly injected footer
           try {
-            const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+            const lang = window.getPersistedLanguage ? window.getPersistedLanguage() : (localStorage.getItem('preferredLanguage') || 'vi');
             if (typeof applyTranslations === 'function') {
               applyTranslations(lang);
             }
@@ -289,12 +316,10 @@
     
     // Initialize language functionality
     function initializeLanguage() {
-      // Set Vietnamese as default language if not already set
-      let currentLang = localStorage.getItem('preferredLanguage');
-      if (!currentLang) {
-        currentLang = 'vi';
-        localStorage.setItem('preferredLanguage', 'vi');
-      }
+      // Restore persisted language via common canonical helper to heal key mismatches
+      let currentLang = window.getPersistedLanguage ? window.getPersistedLanguage() : ((localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi').toLowerCase() === 'en' ? 'en' : 'vi');
+      localStorage.setItem('preferredLanguage', currentLang);
+      localStorage.setItem('language', currentLang);
       
       document.documentElement.lang = currentLang;
       
@@ -303,8 +328,6 @@
         applyTranslations(currentLang);
         // emit a custom event so page parts can react
         try { document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang: currentLang } })); } catch (e) {}
-      } else {
-        console.error('applyTranslations function not found');
       }
       
       // Initialize language selector ONLY after header is loaded and language is set
@@ -321,9 +344,33 @@
     document.addEventListener('DOMContentLoaded', function() {
       initializeApp();
     });
+
+    // Final reconciliation after all assets load (guards against late overrides)
+    window.addEventListener('load', function() {
+      try {
+        const lang = window.getPersistedLanguage ? window.getPersistedLanguage() : ((localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi').toLowerCase() === 'en' ? 'en' : 'vi');
+        if (typeof applyTranslations === 'function') {
+          applyTranslations(lang);
+        }
+        if (typeof window.broadcastLanguageChange === 'function') {
+          window.broadcastLanguageChange(lang);
+        } else {
+          localStorage.setItem('preferredLanguage', lang);
+          localStorage.setItem('language', lang);
+          document.documentElement.lang = lang;
+        }
+        if (typeof updateSelectedLanguage === 'function') {
+          updateSelectedLanguage(lang);
+        }
+      } catch (e) {}
+    });
   </script>
   <!-- Loader component (JS) và logic show loader khi submit form -->
   <script src="assets/scripts/loader.js"></script>
+  <script src="assets/scripts/config.js"></script>
+  <script src="assets/scripts/metamask.js"></script>
+  <script src="assets/scripts/wallet_translations.js"></script>
+  <script src="assets/scripts/wallet-ui.js"></script>
   <script>
     // Import loader HTML vào DOM càng sớm càng tốt
     fetch('components/loader.html').then(r => r.text()).then(html => {

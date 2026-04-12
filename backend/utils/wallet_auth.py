@@ -1,8 +1,8 @@
 """Wallet authentication utilities for Ethereum signature verification"""
 import secrets
-import hashlib
 from eth_account.messages import encode_defunct
 from eth_account import Account
+from web3 import Web3
 from typing import Optional
 
 
@@ -48,7 +48,7 @@ def verify_signature(message: str, signature: str, expected_address: str) -> boo
     """
     try:
         # Normalize addresses to checksum format
-        expected_address = Account.to_checksum_address(expected_address)
+        expected_address = Web3.to_checksum_address(expected_address)
         
         # Encode message according to EIP-191
         encoded_message = encode_defunct(text=message)
@@ -103,7 +103,7 @@ def normalize_address(address: str) -> Optional[str]:
     """
     try:
         if is_valid_ethereum_address(address):
-            return Account.to_checksum_address(address)
+            return Web3.to_checksum_address(address)
         return None
     except Exception:
         return None

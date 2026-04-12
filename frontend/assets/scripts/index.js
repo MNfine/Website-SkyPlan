@@ -71,7 +71,7 @@
     // keep return >= departure
     if (!dep.dataset.boundChange) {
       dep.addEventListener('change', () => {
-        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        const lang = window.getPersistedLanguage();
         const isVietnamese = lang === 'vi';
         const d = (isVietnamese ? (dep.dataset.isoValue || dep.value) : dep.value);
         if (!d) return;
@@ -174,7 +174,7 @@
     if (!input || input.dataset.dateLocalizedBound === '1') return;
     
     // Get language state
-    const getLang = () => localStorage.getItem('preferredLanguage') || 'vi';
+    const getLang = () => window.getPersistedLanguage();
     const isVietnameseMode = () => getLang() === 'vi';
     
     // Vietnamese mode: show native date picker on focus, display DD/MM/YYYY on blur
@@ -299,7 +299,7 @@
       if (now - lastShown < 1500) return; // throttle
       lastShown = now;
       // resolve language at the moment of hover/click to reflect latest selection
-      const currentLang = (localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi');
+      const currentLang = window.getPersistedLanguage();
       const message = (window.translations && window.translations[currentLang] && window.translations[currentLang].appComingSoon)
         ? window.translations[currentLang].appComingSoon
         : (currentLang === 'vi' ? 'Sắp ra mắt' : 'Coming soon');
@@ -317,7 +317,7 @@
   }
 
   function initPageOnce() {
-    const lang = (localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi');
+    const lang = window.getPersistedLanguage();
     updateCityDropdowns(lang);
     
     // Initialize date handling
@@ -335,6 +335,7 @@
     enableSmoothScrolling();
     setupPopularRoutesHover();
     setupAppPromoToast(lang);
+    setupTicketUpgradeModal();
 
     // ensure on submit we convert back to ISO/date type for proper values
     const form = document.querySelector('.search-box');
@@ -371,6 +372,61 @@
     }
   }
 
+  function setupTicketUpgradeModal() {
+    const banner = document.getElementById('ticket-upgrade-banner');
+    const cta = document.getElementById('ticket-upgrade-cta');
+    const modal = document.getElementById('ticket-upgrade-modal');
+    const closeBtn = document.getElementById('ticket-upgrade-close');
+    const integrateBtn = document.getElementById('ticket-upgrade-integrate');
+    const guideBtn = document.getElementById('ticket-upgrade-guide');
+
+    if (!banner || !modal || banner.dataset.bound === '1') return;
+
+    const open = () => {
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+    };
+    const close = () => {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+    };
+
+    const onActivate = (e) => {
+      if (e) e.preventDefault();
+      open();
+    };
+
+    banner.addEventListener('click', onActivate);
+    banner.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') onActivate(e);
+    });
+    if (cta) cta.addEventListener('click', (e) => { e.stopPropagation(); onActivate(e); });
+    if (closeBtn) closeBtn.addEventListener('click', close);
+
+    // click outside dialog closes
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) close();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') close();
+    });
+
+    if (integrateBtn) {
+      integrateBtn.addEventListener('click', () => {
+        close();
+        window.location.href = 'my_trips.html';
+      });
+    }
+    if (guideBtn) {
+      guideBtn.addEventListener('click', () => {
+        close();
+        window.location.href = 'support.html#blockchain-ticket-guide';
+      });
+    }
+
+    banner.dataset.bound = '1';
+  }
+
   // Update UI on language change
   document.addEventListener('languageChanged', (e) => {
     const lang = e && e.detail && e.detail.lang ? e.detail.lang : (document.documentElement.lang || 'vi');
@@ -385,7 +441,7 @@
     
     // Force an immediate date format update to ensure proper display on page load
     if (window.dateFormatHandler) {
-      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const lang = window.getPersistedLanguage();
       setTimeout(() => window.dateFormatHandler.updateDateInputsByLang(lang), 0);
     }
   });

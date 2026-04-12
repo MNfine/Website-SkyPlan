@@ -268,12 +268,18 @@
   }
 
   function syncDatesFromURL() {
+    const flowEl = document.querySelector('.overview-flow');
+
     // Check URL parameters for booking code (tripId or booking_code) and load booking data if exists
     const urlParams = new URLSearchParams(window.location.search);
     const tripId = urlParams.get('tripId') || urlParams.get('booking_code');
     if (tripId) {
       localStorage.setItem('currentBookingCode', tripId);
       localStorage.setItem('overviewMode', 'existing-trip');
+      document.body.classList.add('overview-existing-trip');
+      if (flowEl) {
+        flowEl.style.display = 'none';
+      }
       console.log('🔍 Overview: Found tripId/booking_code in URL, saved to currentBookingCode:', tripId);
       // Load booking data from backend
       loadBookingData(tripId);
@@ -281,6 +287,11 @@
       // New booking flow - clear stale booking codes so confirm button stays visible
       localStorage.setItem('overviewMode', 'new-trip');
       localStorage.removeItem('currentBookingCode');
+      localStorage.removeItem('lastBookingCode');
+      document.body.classList.remove('overview-existing-trip');
+      if (flowEl) {
+        flowEl.style.display = '';
+      }
       console.log('🔍 Overview: New booking flow - cleared currentBookingCode');
       
       // FORCE show payment button for new booking
@@ -298,6 +309,36 @@
     // Check URL parameters and save to localStorage if found
     const departDate = urlParams.get('depart_date');
     const returnDate = urlParams.get('return_date');
+    const tripTypeRaw = (urlParams.get('trip_type') || urlParams.get('tripType') || '').toLowerCase().trim();
+    const tripType = tripTypeRaw === 'round-trip' ? 'round-trip' : (tripTypeRaw === 'one-way' ? 'one-way' : '');
+
+    if (tripType) {
+      try {
+        localStorage.setItem('skyplan_trip_type', tripType);
+      } catch (_) {}
+
+      try {
+        const tripRaw = localStorage.getItem(TRIP_KEY);
+        const trip = tripRaw ? JSON.parse(tripRaw) : null;
+        if (trip && typeof trip === 'object') {
+          trip.trip_type = tripType;
+          trip.tripType = tripType;
+
+          if (tripType === 'one-way') {
+            trip.returnDateISO = '';
+            trip.inbound_flight_id = null;
+            trip.returnFlightId = null;
+            if (Array.isArray(trip.segments)) {
+              trip.segments = trip.segments.filter(function(seg) {
+                return seg && seg.direction === 'outbound';
+              });
+            }
+          }
+
+          localStorage.setItem(TRIP_KEY, JSON.stringify(trip));
+        }
+      } catch (_) {}
+    }
     
     if (departDate || returnDate) {
       let searchData = JSON.parse(localStorage.getItem('searchData') || '{}');
@@ -329,8 +370,14 @@
     const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
     console.log('Today fallback:', today);
     
-    // Determine if this is a round-trip or one-way
-    const isRoundTrip = trip.returnDateISO && trip.returnDateISO !== trip.departDateISO && trip.returnDateISO.trim() !== '';
+    // Determine if this is a round-trip or one-way (explicit trip_type has highest priority)
+    const explicitTripType = String(
+      (urlParams.get('trip_type') || urlParams.get('tripType') || trip.trip_type || trip.tripType || localStorage.getItem('skyplan_trip_type') || '')
+    ).toLowerCase().trim();
+    const isRoundTripByType = explicitTripType === 'round-trip';
+    const isOneWayByType = explicitTripType === 'one-way';
+    const isRoundTripByDate = !!(trip.returnDateISO && trip.returnDateISO !== trip.departDateISO && trip.returnDateISO.trim() !== '');
+    const isRoundTrip = isOneWayByType ? false : (isRoundTripByType || isRoundTripByDate);
 
     // Check if inbound segment has valid data (not placeholder data)
     const hasValidInboundSegment = Array.isArray(trip.segments) && trip.segments.some(s =>
@@ -344,7 +391,7 @@
     // Show/hide inbound segment based on trip type
     const inboundSegment = document.querySelector('.flight-segment:nth-of-type(2)');
     if (inboundSegment) {
-      if (isRoundTrip || hasValidInboundSegment) {
+      if (isRoundTrip || (!isOneWayByType && hasValidInboundSegment)) {
         inboundSegment.style.display = 'block';
       } else {
         inboundSegment.style.display = 'none';
@@ -437,7 +484,7 @@
     let inboundData = null;
     
     // Only process inbound if this is a round-trip
-    if (isRoundTrip || hasValidInboundSegment) {
+    if (isRoundTrip || (!isOneWayByType && hasValidInboundSegment)) {
       // Try to get from segments array first
       if (Array.isArray(trip.segments)) {
         inboundData = trip.segments.find(s => s && s.direction === 'inbound');
@@ -1066,6 +1113,12 @@
   async function handleProceedToPayment(event) {
     event.preventDefault();
 
+    // New booking attempt: clear stale booking identifiers from previous sessions.
+    try {
+      localStorage.removeItem('currentBookingCode');
+      localStorage.removeItem('lastBookingCode');
+    } catch (_) { }
+
     // 1) Ghi dữ liệu để payment dùng, kể cả khi BE hỏng
     const data = OverviewState.getBookingData();
     try {
@@ -1104,6 +1157,15 @@
     try {
       const bookingCode = localStorage.getItem('currentBookingCode');
       const mode = localStorage.getItem('overviewMode') || 'new-trip';
+
+      // In view-ticket mode, never show confirm button.
+      if (mode === 'existing-trip') {
+        payBtn.style.display = 'none';
+        payBtn.style.visibility = 'hidden';
+        console.log('🔍 existing-trip mode, hiding confirm button');
+        return;
+      }
+
       const shouldCheckPaid = bookingCode && mode === 'existing-trip';
       const alreadyPaid = shouldCheckPaid ? await isBookingAlreadyPaid() : false;
       const lang = getLang();
@@ -1143,6 +1205,14 @@
   function initializeEventHandlers() {
     const payBtn = document.querySelector('.pay-btn');
     if (payBtn) {
+      const mode = localStorage.getItem('overviewMode') || 'new-trip';
+
+      if (mode === 'existing-trip') {
+        payBtn.style.display = 'none';
+        payBtn.style.visibility = 'hidden';
+        return;
+      }
+
       // Ensure button is visible and clickable
       payBtn.style.display = 'flex';
       payBtn.style.visibility = 'visible';

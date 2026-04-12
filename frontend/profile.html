@@ -131,6 +131,7 @@
   <script src="assets/scripts/common.js"></script>
 <script src="assets/scripts/wallet_translations.js"></script>
 <script src="assets/scripts/metamask.js"></script>
+  <script src="assets/scripts/wallet-ui.js"></script>
   <script src="assets/scripts/profile.js"></script>
   <script src="assets/scripts/auth-utils.js"></script>
 
@@ -159,6 +160,14 @@
             // slight delay to let any header scripts settle
             setTimeout(() => updateHeaderUserInfo(), 50);
           }
+
+          // Initialize wallet UI after header loads
+          if (typeof initWalletUI === 'function') {
+            initWalletUI();
+          }
+
+          // Emit header-loaded event
+          document.dispatchEvent(new CustomEvent('header-loaded'));
 
           // Apply translations to header using common.js
           if (typeof applyTranslations === 'function') {

@@ -4,8 +4,49 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
+  function getAuthToken() {
+    try {
+      if (window.AuthState && typeof window.AuthState.getToken === 'function') {
+        const token = window.AuthState.getToken();
+        if (token) return token;
+      }
+    } catch (_) { }
+    return localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || null;
+  }
+
+  async function ensureBackendBookingCode() {
+    const existing = localStorage.getItem('currentBookingCode') || localStorage.getItem('lastBookingCode');
+    if (existing && /^SP\d+/i.test(existing)) return existing;
+
+    const pending = localStorage.getItem('pendingBookingPayload');
+    if (!pending) return existing || null;
+
+    const payload = JSON.parse(pending);
+    const wallet = window.MetaMaskWallet && window.MetaMaskWallet.account;
+    if (wallet && !payload.wallet_address && !payload.walletAddress) {
+      payload.wallet_address = wallet;
+    }
+
+    const token = getAuthToken();
+    const res = await fetch('/api/bookings/create', {
+      method: 'POST',
+      headers: Object.assign({ 'Content-Type': 'application/json' }, (token ? { 'Authorization': `Bearer ${token}` } : {})),
+      body: JSON.stringify(payload)
+    });
+
+    const json = await res.json();
+    if (!res.ok || !json || !json.success || !json.booking_code) return existing || null;
+
+    const code = json.booking_code;
+    localStorage.setItem('currentBookingCode', code);
+    localStorage.setItem('lastBookingCode', code);
+    localStorage.setItem('bookingSource', 'backend');
+    try { localStorage.removeItem('pendingBookingPayload'); } catch (_) {}
+    return code;
+  }
+
   // VNPay Integration
-  function processVNPayPayment() {
+  async function processVNPayPayment(eventArg) {
     // Get final amount from DOM - check if voucher was applied
     let amount = 1598000; // Default fallback
     
@@ -36,45 +77,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const orderInfo = 'Ve may bay HAN-SGN';
 
     // Get booking code consistently with other payment methods
-    const bookingCodeFromStorage = localStorage.getItem('currentBookingCode') || localStorage.getItem('lastBookingCode');
+    const bookingCodeFromStorage = await ensureBackendBookingCode();
     const bookingCodeFromDOM = document.querySelector('.booking-code-text')?.textContent;
-    let bookingCode = bookingCodeFromDOM || bookingCodeFromStorage || `SP${new Date().getFullYear()}${String(Date.now()).slice(-5)}`;
-    
-    // Try to create a provisional booking on the server from pending payload so VNPay callback can reconcile
-    (async function(){
-      try {
-        const pending = localStorage.getItem('pendingBookingPayload');
-        if (pending) {
-          const payload = JSON.parse(pending);
-          const token = (window.AuthState && window.AuthState.getToken) ? window.AuthState.getToken() : null;
-          const res = await fetch('/api/bookings/create', {
-            method: 'POST',
-            headers: Object.assign({ 'Content-Type': 'application/json' }, (token ? { 'Authorization': `Bearer ${token}` } : {})),
-            body: JSON.stringify(payload)
-          });
-          if (res.ok) {
-            const json = await res.json();
-            if (json && json.success && json.booking_code) {
-              bookingCode = json.booking_code;
-              localStorage.setItem('currentBookingCode', bookingCode);
-              localStorage.setItem('lastBookingCode', bookingCode);
-              localStorage.setItem('backendBookingId', json.booking?.id || '');
-              localStorage.setItem('bookingSource', 'backend');
-              try { localStorage.removeItem('pendingBookingPayload'); } catch(_){}
-            }
-          }
-        }
-      } catch (e) {
-        console.warn('VNPay provisional booking create failed:', e);
-      }
-    })();
+    let bookingCode = bookingCodeFromDOM || bookingCodeFromStorage;
+    if (!bookingCode) {
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const msg = (lang === 'vi')
+        ? 'Không tạo được booking code từ hệ thống. Vui lòng quay lại bước trước và thử lại.'
+        : 'Could not create booking code from backend. Please go back and try again.';
+      notify(msg, 'error', 6000);
+      return;
+    }
 
     // Save booking code for confirmation page (ensure we have at least a client code stored)
     localStorage.setItem('currentBookingCode', bookingCode);
     localStorage.setItem('lastBookingCode', bookingCode);
     console.log('VNPay using booking code:', bookingCode);
 
-    const btnElement = event.target.closest('.vnpay-checkout-btn');
+    const btnElement = (eventArg && eventArg.target && eventArg.target.closest('.vnpay-checkout-btn'))
+      || document.querySelector('.vnpay-checkout-btn');
+    if (!btnElement) return;
     const originalContent = btnElement.innerHTML;
     try {
       const lang = localStorage.getItem('preferredLanguage') || 'vi';
@@ -95,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
     (async function createPaymentRecord() {
       try {
         const createUrl = (window.SkyPlanConfig?.getApiEndpoints().paymentCreate) || '/api/payment/create';
-        const token = (window.AuthState && window.AuthState.getToken) ? window.AuthState.getToken() : null;
+        const token = getAuthToken();
         const res = await fetch(createUrl, {
           method: 'POST',
           headers: {
@@ -150,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (vnpayBtn) {
     vnpayBtn.addEventListener('click', function(event) {
       event.preventDefault();
-      processVNPayPayment();
+      processVNPayPayment(event);
     });
   }
 });

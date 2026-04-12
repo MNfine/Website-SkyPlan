@@ -66,9 +66,50 @@ def session_scope() -> Iterator:
 
 
 def init_db():
-	"""Create all tables (used at startup)."""
+	"""Create all tables (used at startup) and apply migrations."""
 	from .payments import Payment  # noqa: F401  ensure models imported
 	from .flights import Flight  # noqa: F401
 	from .passenger import Passenger  # noqa: F401
 	Base.metadata.create_all(bind=engine)
+	
+	# Apply migrations/alter tables if needed
+	_apply_migrations()
+
+
+def _apply_migrations():
+	"""Apply database migrations/alterations."""
+	from sqlalchemy import text, inspect
+	
+	with engine.connect() as conn:
+		inspector = inspect(engine)
+		
+		# Check if users table exists
+		if 'users' in inspector.get_table_names():
+			users_columns = [col['name'] for col in inspector.get_columns('users')]
+			
+			# Add wallet_address column if missing
+			if 'wallet_address' not in users_columns:
+				try:
+					conn.execute(text("ALTER TABLE users ADD COLUMN wallet_address VARCHAR(42) UNIQUE"))
+					conn.commit()
+					print("[DB Migration] Added wallet_address column to users table")
+				except Exception as e:
+					print(f"[DB Migration] wallet_address column already exists or error: {e}")
+					try:
+						conn.rollback()
+					except:
+						pass
+			
+			# Add wallet_nonce column if missing
+			if 'wallet_nonce' not in users_columns:
+				try:
+					conn.execute(text("ALTER TABLE users ADD COLUMN wallet_nonce VARCHAR(64)"))
+					conn.commit()
+					print("[DB Migration] Added wallet_nonce column to users table")
+				except Exception as e:
+					print(f"[DB Migration] wallet_nonce column already exists or error: {e}")
+					try:
+						conn.rollback()
+					except:
+						pass
 

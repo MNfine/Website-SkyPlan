@@ -32,20 +32,18 @@ class Seat(Base):
     status = Column(String(20), nullable=False, default="AVAILABLE")
     price_modifier = Column(Numeric(10,2), default=0)  # Extra cost for premium seats
     
-    # Temporary reservation fields
-    reserved_by = Column(Integer, ForeignKey('users.id'), nullable=True)
+    # Temporary reservation fields (no FK to avoid circular dependencies)
+    reserved_by = Column(Integer, nullable=True)  # User ID (not ForeignKey)
     reserved_at = Column(DateTime, nullable=True)
     reserved_until = Column(DateTime, nullable=True)
     
-    # Final confirmation
-    confirmed_booking_id = Column(Integer, ForeignKey('bookings.id'), nullable=True)
+    # Final confirmation (no FK to avoid circular dependencies)
+    confirmed_booking_id = Column(Integer, nullable=True)  # Booking ID (not ForeignKey)
     
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     
-    # Relationships
-    flight = relationship("Flight", back_populates="seats")
-    reserved_user = relationship("User", foreign_keys=[reserved_by])
-    confirmed_booking = relationship("Booking", foreign_keys=[confirmed_booking_id])
+    # Relationships (use lazy loading to avoid circular imports)
+    flight = relationship("Flight", back_populates="seats", lazy="select")
     
     # Indexes and constraints
     __table_args__ = (

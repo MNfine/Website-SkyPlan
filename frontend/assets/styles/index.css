@@ -23,6 +23,203 @@
   padding: 0 15px;
 }
 
+/* Blockchain Ticket Upgrade CTA */
+.ticket-upgrade-banner {
+  margin: 20px 0 8px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, #ffffff 0%, #e9f7f7 100%);
+  border: 1px solid #cfe9ea;
+  border-radius: 14px;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.ticket-upgrade-banner[role="button"] {
+  cursor: pointer;
+}
+
+.ticket-upgrade-mark {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #0c7f86 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex: 0 0 auto;
+  box-shadow: none;
+}
+
+.ticket-upgrade-title {
+  font-weight: 700;
+  color: #0f2b35;
+  font-size: 21px;
+}
+
+.ticket-upgrade-desc {
+  margin-top: 4px;
+  color: #3c5560;
+  font-size: 16px;
+}
+
+.ticket-upgrade-pillars {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ticket-pillar {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #b9dfe1;
+  color: #0f2b35;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.ticket-upgrade-btn {
+  flex: 0 0 auto;
+  border: none;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #0c7f86 100%);
+  color: var(--light-color);
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  box-shadow: none;
+}
+
+.ticket-upgrade-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: none;
+}
+
+/* Upgrade modal */
+.ticket-upgrade-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 2000;
+}
+
+.ticket-upgrade-modal.is-open {
+  display: flex;
+}
+
+.ticket-upgrade-dialog {
+  width: 100%;
+  max-width: 520px;
+  background: var(--light-color);
+  border-radius: 16px;
+  padding: 20px 20px 18px;
+  box-shadow: none;
+  position: relative;
+}
+
+.ticket-upgrade-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--dark-color);
+  font-size: 18px;
+}
+
+.ticket-upgrade-modal-title {
+  margin: 0 26px 8px 0;
+  font-size: 22px;
+  color: #0f2b35;
+}
+
+.ticket-upgrade-modal-desc {
+  margin: 0 0 14px;
+  color: #4b6670;
+  line-height: 1.5;
+  font-size: 15px;
+}
+
+.ticket-upgrade-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+}
+
+.ticket-upgrade-actions .ticket-upgrade-primary {
+  order: 2;
+  margin-right: 0;
+}
+
+.ticket-upgrade-actions .ticket-upgrade-secondary {
+  order: 1;
+  margin-left: 0;
+}
+
+.ticket-upgrade-primary,
+.ticket-upgrade-secondary {
+  border: none;
+  cursor: pointer;
+  padding: 12px 15px;
+  border-radius: 11px;
+  font-weight: 700;
+}
+
+.ticket-upgrade-primary {
+  background: linear-gradient(135deg, var(--primary-color) 0%, #0c7f86 100%);
+  color: var(--light-color);
+  box-shadow: none;
+}
+
+.ticket-upgrade-secondary {
+  background: #f4fbfb;
+  color: #103540;
+  border: 1px solid #cfe9ea;
+}
+
+@media (max-width: 768px) {
+  .ticket-upgrade-banner {
+    padding: 14px;
+    align-items: flex-start;
+  }
+
+  .ticket-upgrade-mark {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    font-size: 20px;
+  }
+
+  .ticket-upgrade-title {
+    font-size: 18px;
+  }
+
+  .ticket-upgrade-desc {
+    font-size: 14px;
+  }
+
+  .ticket-upgrade-btn {
+    width: 100%;
+  }
+}
+
 /* Header */
 header {
   padding: 15px 0;

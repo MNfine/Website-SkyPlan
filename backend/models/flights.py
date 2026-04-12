@@ -18,6 +18,7 @@ class Flight(Base):
     arrival_time = Column(DateTime, nullable=False)
     price = Column(Numeric(12, 2), nullable=False)
     seats_available = Column(Integer, nullable=False, default=0)
+    aircraft_type = Column(String(20), nullable=False, default="A320")  # Aircraft type (A320, B777, etc.)
     
     # Relationships - use lazy loading to avoid initialization issues
     seats = relationship("Seat", back_populates="flight", cascade="all, delete-orphan", lazy="select")

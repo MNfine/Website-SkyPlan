@@ -28,7 +28,7 @@ except ImportError as e:
     print("Make sure you're running from the project root directory")
     sys.exit(1)
 
-CSV_FILE = 'backend/db/demo_flights_vn_airport_names.csv'
+CSV_FILE = 'backend/db/demo_flights_fake_1200.csv'
 
 def parse_datetime(date_str, time_str):
     # date_str: '2025-10-01', time_str: '05:45'

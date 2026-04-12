@@ -15,9 +15,9 @@ interface IBookingRegistry {
 
 /**
  * SKY Token - Reward Points (ERC-20)
- * - Mint khi booking đã RECORDED (thành công)
- * - Auto-allow user khi receive token (không cần manual whitelist)
- * - Chỉ dùng trong hệ SkyPlan: hạn chế transfer bằng allowlist
+ * - Mint when booking is RECORDED (successful)
+ * - Auto-allow user when receiving token (no manual whitelist needed)
+ * - Used only in SkyPlan system: restrict transfers via allowlist
  */
 contract SkyToken is ERC20, AccessControl {
     bytes32 public constant MINTER_ROLE  = keccak256("MINTER_ROLE");
@@ -28,7 +28,7 @@ contract SkyToken is ERC20, AccessControl {
     // bookingCodeHash -> minted?
     mapping(bytes32 => bool) public mintedForBooking;
 
-    // allowlist để token chỉ chạy trong hệ SkyPlan
+    // allowlist to ensure token only runs in SkyPlan system
     mapping(address => bool) public allowed;
 
     bool public transfersRestricted = true;
@@ -47,7 +47,7 @@ contract SkyToken is ERC20, AccessControl {
 
         registry = IBookingRegistry(bookingRegistryAddress);
         
-        // ✓ Admin được allow từ đầu
+        // ✓ Admin is allowed from the start
         allowed[admin] = true;
     }
 
@@ -85,8 +85,8 @@ contract SkyToken is ERC20, AccessControl {
     }
 
     /**
-     * ✓ Mint token cho user khi booking RECORDED
-     * ✓ Tự động add user vào allowlist
+     * ✓ Mint token for user when booking RECORDED
+     * ✓ Automatically add user to allowlist
      */
     function mintForBooking(
         address to,
@@ -108,7 +108,7 @@ contract SkyToken is ERC20, AccessControl {
         // ✓ Mark as minted
         mintedForBooking[bookingCodeHash] = true;
 
-        // ✓ AUTO-ALLOW user - không cần admin manual add
+        // ✓ AUTO-ALLOW user - no manual admin approval needed
         if (!allowed[to]) {
             allowed[to] = true;
             emit AllowedSet(to, true);

@@ -9,6 +9,7 @@ import urllib.parse
 import json
 import time
 from datetime import datetime
+from decimal import Decimal
 from flask import Blueprint, request, jsonify, redirect
 import requests
 from urllib.parse import quote_plus
@@ -603,3 +604,86 @@ def check_config():
         'environment': VNPayConfig.ENVIRONMENT,
         'payment_url': VNPayConfig.get_payment_url()
     })
+
+
+@payment_bp.route('/mark-paid', methods=['POST'])
+def mark_paid_compat():
+    """Compatibility endpoint for local card/bank demo flow.
+    Mirrors /api/payment/mark-paid behavior used by newer payment route module.
+    """
+    data = request.get_json(silent=True) or {}
+    booking_code = data.get('booking_code')
+    amount = data.get('amount')
+    transaction_id = data.get('transaction_id')
+    provider = data.get('provider', 'manual')
+
+    if not booking_code:
+        return jsonify({'success': False, 'message': 'booking_code is required'}), 400
+
+    try:
+        try:
+            from backend.models.db import session_scope
+            from backend.models.booking import Booking, BookingStatus
+            from backend.models.payments import Payment
+            from backend.models.user import User
+        except Exception:
+            from models.db import session_scope
+            from models.booking import Booking, BookingStatus
+            from models.payments import Payment
+            from models.user import User
+
+        # Resolve caller user from Bearer token (optional)
+        caller_user = None
+        auth_header = request.headers.get('Authorization')
+        if auth_header and auth_header.startswith('Bearer '):
+            token = auth_header.split(' ')[1]
+            try:
+                caller_user = User.verify_auth_token(token)
+            except Exception:
+                caller_user = None
+
+        with session_scope() as session:
+            booking = session.query(Booking).filter_by(booking_code=booking_code).first()
+            if not booking:
+                return jsonify({'success': False, 'message': 'Booking not found'}), 404
+
+            if caller_user and getattr(booking, 'user_id', None) is None:
+                booking.user_id = caller_user
+                session.add(booking)
+
+            try:
+                amount_dec = Decimal(str(amount)) if amount is not None else booking.total_amount
+            except Exception:
+                amount_dec = booking.total_amount
+
+            payment = Payment(
+                booking_id=booking.id,
+                booking_code=booking.booking_code,
+                amount=amount_dec,
+                provider=provider,
+                status='SUCCESS',
+                transaction_id=transaction_id,
+            )
+            session.add(payment)
+
+            try:
+                booking.total_amount = amount_dec
+            except Exception:
+                pass
+
+            try:
+                booking.status = BookingStatus.CONFIRMED
+            except Exception:
+                booking.status = 'CONFIRMED'
+            booking.confirmed_at = datetime.utcnow()
+            session.add(booking)
+            session.flush()
+
+            return jsonify({
+                'success': True,
+                'booking_code': booking.booking_code,
+                'payment': payment.as_dict() if hasattr(payment, 'as_dict') else {'id': payment.id}
+            }), 200
+
+    except Exception as exc:
+        return jsonify({'success': False, 'message': str(exc)}), 500

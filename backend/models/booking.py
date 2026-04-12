@@ -51,7 +51,10 @@ class Booking(Base):
     wallet_address = Column(String(42), nullable=True)  # Ethereum address (0x + 40 hex)
     onchain_recorded = Column(Boolean, nullable=False, default=False)
     nft_minted = Column(Boolean, nullable=False, default=False)
+    nft_token_id = Column(String(100), nullable=True)  # NFT token ID from TicketNFT contract
+    nft_contract = Column(String(42), nullable=True)  # TicketNFT contract address (0x + 40 hex)
     sky_minted = Column(Boolean, nullable=False, default=False)
+    sky_reward_amount = Column(Numeric(12, 2), nullable=True)  # SKY token reward amount
     onchain_record_tx_hash = Column(String(66), nullable=True)
     nft_mint_tx_hash = Column(String(66), nullable=True)
     sky_mint_tx_hash = Column(String(66), nullable=True)
@@ -152,14 +155,25 @@ class Booking(Base):
             "onchain_record_tx_hash": self.onchain_record_tx_hash,
             "nft_mint_tx_hash": self.nft_mint_tx_hash,
             "sky_mint_tx_hash": self.sky_mint_tx_hash,
+            # Nested NFT info (for FE convenience)
+            "nft": {
+                "minted": bool(self.nft_minted),
+                "tokenId": self.nft_token_id,
+                "contract": self.nft_contract
+            },
+            # Blockchain verification status
+            "isVerified": bool(self.onchain_recorded),
+            # Reward amount
+            "rewardSky": float(self.sky_reward_amount) if self.sky_reward_amount is not None else 0,
         }
 
     @staticmethod
     def generate_booking_code():
-        """Generate unique booking code like SP2025001"""
-        import random
+        """Generate unique booking code like SP202610001 using cryptographically secure random"""
+        import secrets
         year = datetime.now().year
-        random_suffix = str(random.randint(10000, 99999))
+        # Use secrets for cryptographically secure random number (not predictable)
+        random_suffix = str(secrets.randbelow(90000) + 10000)  # Range: 10000-99999
         return f"SP{year}{random_suffix}"
 
 
