@@ -121,7 +121,9 @@ function initWalletUI() {
             // If not connected, try to connect wallet (prevent multiple rapid clicks)
             if (!connectBtn.dataset.connecting && typeof MetaMaskWallet !== 'undefined' && MetaMaskWallet.connect) {
               connectBtn.dataset.connecting = '1';
-              MetaMaskWallet.connect().finally(() => {
+              MetaMaskWallet.connect().then(() => {
+                updateWalletUIState();
+              }).finally(() => {
                 delete connectBtn.dataset.connecting;
               });
             }
@@ -157,6 +159,20 @@ function initWalletUI() {
 
       // Update wallet UI based on connection status
       updateWalletUIState();
+
+      // Keep button state synced when MetaMask state changes asynchronously.
+      if (window.ethereum && !window.ethereum.__skyplanWalletUiBound) {
+        window.ethereum.on('accountsChanged', () => {
+          setTimeout(updateWalletUIState, 0);
+        });
+        window.ethereum.on('chainChanged', () => {
+          setTimeout(updateWalletUIState, 0);
+        });
+        window.ethereum.__skyplanWalletUiBound = '1';
+      }
+
+      // Restore path in metamask.js is async; this refresh catches that update.
+      setTimeout(updateWalletUIState, 600);
     }
   }, 250);
 }

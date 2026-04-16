@@ -12,6 +12,12 @@
   --skyplan-success: #10b981;
 }
 
+.main-content {
+  min-height: calc(100vh - 160px);
+  padding: 90px 15px 20px;
+  background-color: #f5f7fa;
+}
+
 /* Page Header */
 .page-header {
   margin-bottom: 32px;

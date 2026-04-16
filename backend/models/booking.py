@@ -48,6 +48,7 @@ class Booking(Base):
     
     # Blockchain fields
     booking_hash = Column(String(66), nullable=True)  # keccak256 hash (0x + 64 hex)
+    booking_state_hash = Column(String(66), nullable=True)  # canonical hash of mutable booking state
     wallet_address = Column(String(42), nullable=True)  # Ethereum address (0x + 40 hex)
     onchain_recorded = Column(Boolean, nullable=False, default=False)
     nft_minted = Column(Boolean, nullable=False, default=False)
@@ -55,6 +56,7 @@ class Booking(Base):
     nft_contract = Column(String(42), nullable=True)  # TicketNFT contract address (0x + 40 hex)
     sky_minted = Column(Boolean, nullable=False, default=False)
     sky_reward_amount = Column(Numeric(12, 2), nullable=True)  # SKY token reward amount
+    sky_redeemed_amount = Column(Numeric(12, 2), nullable=False, default=0)  # SKY amount already redeemed from this booking
     onchain_record_tx_hash = Column(String(66), nullable=True)
     nft_mint_tx_hash = Column(String(66), nullable=True)
     sky_mint_tx_hash = Column(String(66), nullable=True)
@@ -148,10 +150,15 @@ class Booking(Base):
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "confirmed_at": self.confirmed_at.isoformat() if self.confirmed_at else None,
             "booking_hash": self.booking_hash,
+            "booking_state_hash": self.booking_state_hash,
             "wallet_address": self.wallet_address,
             "onchain_recorded": bool(self.onchain_recorded),
             "nft_minted": bool(self.nft_minted),
+            "nft_token_id": self.nft_token_id,
+            "nft_contract": self.nft_contract,
             "sky_minted": bool(self.sky_minted),
+            "sky_reward_amount": float(self.sky_reward_amount) if self.sky_reward_amount is not None else 0,
+            "sky_redeemed_amount": float(self.sky_redeemed_amount) if self.sky_redeemed_amount is not None else 0,
             "onchain_record_tx_hash": self.onchain_record_tx_hash,
             "nft_mint_tx_hash": self.nft_mint_tx_hash,
             "sky_mint_tx_hash": self.sky_mint_tx_hash,
@@ -165,6 +172,7 @@ class Booking(Base):
             "isVerified": bool(self.onchain_recorded),
             # Reward amount
             "rewardSky": float(self.sky_reward_amount) if self.sky_reward_amount is not None else 0,
+            "redeemedSky": float(self.sky_redeemed_amount) if self.sky_redeemed_amount is not None else 0,
         }
 
     @staticmethod

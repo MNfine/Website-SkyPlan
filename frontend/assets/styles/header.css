@@ -585,6 +585,12 @@ header {
   transform: translateY(0);
 }
 
+.user-dropdown:focus-within .user-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
 .dropdown-item {
   display: flex;
   align-items: center;
@@ -645,6 +651,19 @@ header {
   background: rgba(10, 150, 157, 0.05);
 }
 
+#wallet-connect-btn.connected {
+  border-color: #0a969d;
+  background: #0a969d;
+  color: #fff;
+}
+
+#wallet-connect-btn.connected:hover:not(:disabled),
+#wallet-connect-btn.connected:focus-visible {
+  border-color: #0a969d;
+  background: #0a969d;
+  color: #fff;
+}
+
 #wallet-connect-btn:disabled {
   opacity: 0.7;
   cursor: default;
@@ -652,6 +671,11 @@ header {
 
 #wallet-connect-btn i {
   font-size: 14px;
+}
+
+#wallet-connect-btn.connected i,
+#wallet-connect-btn.connected span {
+  color: inherit;
 }
 
 /* Wallet dropdown menu - only show when connected and menu is open */

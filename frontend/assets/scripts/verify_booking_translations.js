@@ -65,6 +65,9 @@ const verifyBookingTranslations = {
     signInText: 'Đăng nhập',
     signUpText: 'Đăng ký',
     profileText: 'Hồ sơ cá nhân',
+    verifyBookingMenuText: 'Kiểm tra đặt chỗ',
+    myNftTicketsText: 'Vé NFT của tôi',
+    mySkyTokensText: 'SKY Tokens của tôi',
     logoutText: 'Đăng xuất',
     // Footer shared
     footerDesc: 'Đối tác du lịch đáng tin cậy của bạn cho các ưu đãi vé máy bay tốt nhất và những hành trình khó quên.',
@@ -150,6 +153,9 @@ const verifyBookingTranslations = {
     signInText: 'Sign In',
     signUpText: 'Sign Up',
     profileText: 'Profile',
+    verifyBookingMenuText: 'Verify Booking',
+    myNftTicketsText: 'My NFT Tickets',
+    mySkyTokensText: 'My SKY Tokens',
     logoutText: 'Logout',
     // Footer shared
     footerDesc: 'Your trusted travel companion for the best flight deals and unforgettable journeys.',
@@ -235,6 +241,9 @@ const verifyBookingTranslations = {
     signInText: '登录',
     signUpText: '注册',
     profileText: '个人资料',
+    verifyBookingMenuText: '查询预订',
+    myNftTicketsText: '我的 NFT 机票',
+    mySkyTokensText: '我的 SKY 代币',
     logoutText: '登出',
     // Footer shared
     footerDesc: '您值得信赖的旅行伙伴，提供最优惠的航班和难忘的旅程。',
@@ -320,6 +329,9 @@ const verifyBookingTranslations = {
     signInText: 'サインイン',
     signUpText: 'サインアップ',
     profileText: 'プロフィール',
+    verifyBookingMenuText: '予約確認',
+    myNftTicketsText: '私の NFT チケット',
+    mySkyTokensText: '私の SKY トークン',
     logoutText: 'ログアウト',
     // Footer shared
     footerDesc: 'あなたの信頼できる旅のパートナー。最高のフライトディールと忘れられない旅。',

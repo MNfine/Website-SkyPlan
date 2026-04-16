@@ -99,6 +99,34 @@ def _apply_migrations():
 						conn.rollback()
 					except:
 						pass
+
+			# Check if bookings table exists
+			if 'bookings' in inspector.get_table_names():
+				bookings_columns = [col['name'] for col in inspector.get_columns('bookings')]
+
+				if 'booking_state_hash' not in bookings_columns:
+					try:
+						conn.execute(text("ALTER TABLE bookings ADD COLUMN booking_state_hash VARCHAR(66)"))
+						conn.commit()
+						print("[DB Migration] Added booking_state_hash column to bookings table")
+					except Exception as e:
+						print(f"[DB Migration] booking_state_hash column already exists or error: {e}")
+						try:
+							conn.rollback()
+						except:
+							pass
+
+				if 'sky_redeemed_amount' not in bookings_columns:
+					try:
+						conn.execute(text("ALTER TABLE bookings ADD COLUMN sky_redeemed_amount NUMERIC(12,2) NOT NULL DEFAULT 0"))
+						conn.commit()
+						print("[DB Migration] Added sky_redeemed_amount column to bookings table")
+					except Exception as e:
+						print(f"[DB Migration] sky_redeemed_amount column already exists or error: {e}")
+						try:
+							conn.rollback()
+						except:
+							pass
 			
 			# Add wallet_nonce column if missing
 			if 'wallet_nonce' not in users_columns:

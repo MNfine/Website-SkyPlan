@@ -11,7 +11,7 @@ from backend.models.passenger import Passenger
 from backend.models.booking import Booking, BookingPassenger, BookingStatus, TripType, FareClass
 from sqlalchemy.orm import joinedload
 from backend.models.flights import Flight
-from backend.utils.blockchain import generate_booking_hash_simple
+from backend.utils.blockchain import generate_booking_hash_simple, generate_booking_state_hash
 from backend.utils.blockchain_verifier import (
 	verify_transaction_receipt,
 	check_booking_recorded,
@@ -28,6 +28,19 @@ def _get_user_id_from_bearer() -> int | None:
 		return None
 	token = auth_header.split(' ')[1]
 	return User.verify_auth_token(token)
+
+
+def _normalize_tx_hash(tx_hash: str | None) -> str | None:
+	if not tx_hash:
+		return None
+	candidate = str(tx_hash).strip().lower()
+	if candidate.startswith('0x'):
+		candidate = candidate[2:]
+	if len(candidate) != 64:
+		return None
+	if not all(ch in '0123456789abcdef' for ch in candidate):
+		return None
+	return '0x' + candidate
 
 
 @bookings_bp.route('/passenger', methods=['POST'])
@@ -444,7 +457,17 @@ def create_booking():
 				wallet_address = None
 			
 			# Generate blockchain hash from booking code
-			booking_hash = generate_booking_hash_simple(booking_code)
+			booking_state_hash = generate_booking_state_hash({
+				'booking_code': booking_code,
+				'trip_type': trip_type,
+				'fare_class': fare_class,
+				'outbound_flight_id': outbound_flight_id,
+				'inbound_flight_id': inbound_flight_id,
+				'total_amount': final_total,
+				'wallet_address': wallet_address,
+				'passengers': passenger_entries if passenger_entries else [{'id': p.id, 'seat_number': None} for p in passengers],
+			})
+			booking_hash = booking_state_hash
 			current_app.logger.info(f"[bookings.create] generated booking_hash for {booking_code}")
 
 			# Create booking
@@ -458,6 +481,7 @@ def create_booking():
 				inbound_flight_id=inbound_flight_id,
 				total_amount=final_total,
 				booking_hash=booking_hash,
+				booking_state_hash=booking_state_hash,
 				wallet_address=wallet_address
 			)
 			session.add(booking)
@@ -493,6 +517,10 @@ def create_booking():
 				)
 				session.add(bp)
 
+			session.flush()
+
+			booking.booking_state_hash = generate_booking_state_hash(booking)
+			booking.booking_hash = booking.booking_state_hash
 			session.flush()
 			current_app.logger.info(f"[bookings.create] booking committed code={booking_code} user_id={user_id}")
 			
@@ -800,6 +828,92 @@ def get_wallet_sky_balance(wallet_address):
 		}), 200
 
 
+@bookings_bp.route('/redeem-sky', methods=['POST'])
+def redeem_sky_tokens():
+	"""Redeem SKY tokens from user's minted rewards.
+
+	Request JSON:
+	- amount: number of SKY to redeem (>0)
+	- redeem_type: discount | upgrade
+	"""
+	user_id = _get_user_id_from_bearer()
+	if not user_id:
+		return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+
+	data = request.get_json(silent=True) or {}
+	raw_amount = data.get('amount')
+	redeem_type = str(data.get('redeem_type') or 'discount').strip().lower()
+
+	if redeem_type not in ('discount', 'upgrade'):
+		return jsonify({'success': False, 'message': 'Invalid redeem_type'}), 400
+
+	try:
+		amount = Decimal(str(raw_amount))
+	except Exception:
+		return jsonify({'success': False, 'message': 'Invalid amount'}), 400
+
+	if amount <= 0:
+		return jsonify({'success': False, 'message': 'Amount must be greater than 0'}), 400
+
+	amount = amount.quantize(Decimal('0.01'))
+
+	with session_scope() as session:
+		eligible_bookings = session.query(Booking).filter(
+			Booking.user_id == user_id,
+			Booking.sky_minted == True,
+			Booking.status.in_([BookingStatus.CONFIRMED, BookingStatus.COMPLETED])
+		).order_by(Booking.created_at.asc()).all()
+
+		total_earned = Decimal('0')
+		total_redeemed = Decimal('0')
+		for booking in eligible_bookings:
+			reward = Decimal(str(booking.sky_reward_amount or 0))
+			redeemed = Decimal(str(booking.sky_redeemed_amount or 0))
+			total_earned += reward
+			total_redeemed += redeemed
+
+		available = total_earned - total_redeemed
+		if amount > available:
+			return jsonify({
+				'success': False,
+				'message': 'Insufficient SKY balance',
+				'available_balance': float(available)
+			}), 400
+
+		remaining_to_redeem = amount
+		updated_booking_codes = []
+		for booking in eligible_bookings:
+			if remaining_to_redeem <= 0:
+				break
+
+			reward = Decimal(str(booking.sky_reward_amount or 0))
+			redeemed = Decimal(str(booking.sky_redeemed_amount or 0))
+			booking_available = reward - redeemed
+			if booking_available <= 0:
+				continue
+
+			consume = booking_available if booking_available < remaining_to_redeem else remaining_to_redeem
+			booking.sky_redeemed_amount = (redeemed + consume).quantize(Decimal('0.01'))
+			updated_booking_codes.append(booking.booking_code)
+			remaining_to_redeem -= consume
+
+		new_total_redeemed = (total_redeemed + amount).quantize(Decimal('0.01'))
+		new_balance = (total_earned - new_total_redeemed).quantize(Decimal('0.01'))
+
+		return jsonify({
+			'success': True,
+			'message': 'Redeemed SKY successfully',
+			'redeem': {
+				'amount': float(amount),
+				'redeem_type': redeem_type,
+				'updated_bookings': updated_booking_codes,
+				'total_earned': float(total_earned),
+				'total_redeemed': float(new_total_redeemed),
+				'remaining_balance': float(new_balance),
+			}
+		}), 200
+
+
 @bookings_bp.route('/blockchain/record', methods=['POST'])
 def record_booking_on_blockchain():
 	"""Record a booking on the blockchain (Sepolia testnet).
@@ -895,7 +1009,9 @@ def integrate_ticket_nft_no_gas():
 
 		# Ensure booking_hash exists for on-chain recording
 		if not booking.booking_hash:
-			booking.booking_hash = generate_booking_hash_simple(booking.booking_code)
+			booking.booking_hash = booking.booking_state_hash or generate_booking_state_hash(booking)
+		if not booking.booking_state_hash:
+			booking.booking_state_hash = generate_booking_state_hash(booking)
 
 		# Build tokenURI pointing to this backend
 		base = (request.host_url or '').rstrip('/')
@@ -937,12 +1053,22 @@ def get_booking_onchain_hash():
 		return jsonify({'success': False, 'message': 'BOOKING_REGISTRY_ADDRESS is not configured'}), 500
 
 	with session_scope() as session:
-		booking = session.query(Booking).filter_by(
+		booking = session.query(Booking).options(
+			joinedload(Booking.passengers).joinedload(BookingPassenger.passenger),
+			joinedload(Booking.outbound_flight),
+			joinedload(Booking.inbound_flight)
+		).filter_by(
 			booking_code=booking_code,
 			user_id=user_id
 		).first()
 		if not booking:
 			return jsonify({'success': False, 'message': 'Booking not found'}), 404
+
+		current_state_hash = generate_booking_state_hash(booking)
+		if not booking.booking_state_hash:
+			booking.booking_state_hash = current_state_hash
+		stored_state_hash = booking.booking_state_hash
+		state_hash_matches = (stored_state_hash or '').lower() == current_state_hash.lower()
 
 		success, message, onchain_data = read_onchain_booking(
 			booking_code=booking_code,
@@ -955,8 +1081,8 @@ def get_booking_onchain_hash():
 		block_number = None
 		confirmations = 0
 		
-		tx_hash = booking.onchain_record_tx_hash
-		if tx_hash and tx_hash.startswith('0x'):
+		tx_hash = _normalize_tx_hash(booking.onchain_record_tx_hash)
+		if tx_hash:
 			receipt_success, _, receipt = verify_transaction_receipt(tx_hash)
 			if receipt_success and receipt:
 				from backend.utils.blockchain_verifier import get_web3_connection
@@ -972,16 +1098,31 @@ def get_booking_onchain_hash():
 		if onchain_data:
 			onchain_data['block_number'] = block_number
 			onchain_data['confirmations'] = confirmations
+			onchain_data['integrity'] = {
+				'is_match': state_hash_matches,
+				'message': 'Dữ liệu đặt chỗ khớp với trạng thái đã lưu' if state_hash_matches else 'Phát hiện dữ liệu đặt chỗ đã thay đổi trong database',
+				'current_state_hash': current_state_hash,
+				'stored_state_hash': stored_state_hash,
+			}
 
 		return jsonify({
 			'success': True,
 			'booking_code': booking_code,
 			'off_chain_hash': booking.booking_hash,
+			'booking_state_hash': stored_state_hash,
+			'current_state_hash': current_state_hash,
 			'tx_hash': booking.onchain_record_tx_hash,
 			'booking': {
 				'tx_hash': booking.onchain_record_tx_hash,
+				'booking_state_hash': stored_state_hash,
 			},
 			'on_chain': onchain_data,
+			'integrity': {
+				'is_match': state_hash_matches,
+				'message': 'Dữ liệu đặt chỗ khớp với trạng thái đã lưu' if state_hash_matches else 'Phát hiện dữ liệu đặt chỗ đã thay đổi trong database',
+				'current_state_hash': current_state_hash,
+				'stored_state_hash': stored_state_hash,
+			},
 		}), 200
 
 
@@ -1012,11 +1153,19 @@ def verify_booking_hash_onchain():
 		if not booking.booking_hash:
 			return jsonify({'success': False, 'message': 'Missing off-chain booking_hash in database'}), 400
 
+		current_state_hash = generate_booking_state_hash(booking)
+		if not booking.booking_state_hash:
+			booking.booking_state_hash = current_state_hash
+		stored_state_hash = booking.booking_state_hash
+		state_hash_matches = (stored_state_hash or '').lower() == current_state_hash.lower()
+
 		is_match, message, compare_result = compare_offchain_onchain_hash(
 			offchain_hash=booking.booking_hash,
 			booking_code=booking_code,
 			contract_address=contract_address,
 		)
+
+		integrity_message = 'Dữ liệu đặt chỗ khớp với trạng thái đã lưu' if state_hash_matches else 'Phát hiện dữ liệu đặt chỗ đã thay đổi trong database'
 
 		if is_match:
 			booking.status = BookingStatus.CONFIRMED
@@ -1026,6 +1175,12 @@ def verify_booking_hash_onchain():
 				'success': True,
 				'message': 'Booking hash verified successfully',
 				'verification': compare_result,
+				'integrity': {
+					'is_match': state_hash_matches,
+					'message': integrity_message,
+					'current_state_hash': current_state_hash,
+					'stored_state_hash': stored_state_hash,
+				},
 				'booking_status': 'CONFIRMED',
 				'booking': booking.as_dict(),
 			}), 200
@@ -1036,6 +1191,12 @@ def verify_booking_hash_onchain():
 			'success': False,
 			'message': message,
 			'verification': compare_result,
+			'integrity': {
+				'is_match': state_hash_matches,
+				'message': integrity_message,
+				'current_state_hash': current_state_hash,
+				'stored_state_hash': stored_state_hash,
+			},
 			'booking_status': 'PAYMENT_FAILED',
 			'booking': booking.as_dict(),
 		}), 400

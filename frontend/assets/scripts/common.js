@@ -133,6 +133,9 @@ window.applyHeaderTranslations = function(lang) {
             helpText: 'Help',
             myTripsText: 'My Trips',
             profileText: 'Profile',
+            verifyBookingMenuText: 'Verify Booking',
+            myNftTicketsText: 'My NFT Tickets',
+            mySkyTokensText: 'My SKY Tokens',
             logoutText: 'Logout',
             signInText: 'Sign In',
             signUpText: 'Sign Up',
@@ -143,6 +146,9 @@ window.applyHeaderTranslations = function(lang) {
             helpText: 'Trợ giúp',
             myTripsText: 'Chuyến đi của tôi',
             profileText: 'Hồ sơ cá nhân',
+            verifyBookingMenuText: 'Kiểm tra đặt chỗ',
+            myNftTicketsText: 'Vé NFT của tôi',
+            mySkyTokensText: 'SKY Tokens của tôi',
             logoutText: 'Đăng xuất',
             signInText: 'Đăng nhập',
             signUpText: 'Đăng ký',
@@ -587,9 +593,35 @@ function initializeUserDropdown() {
     console.debug('[initializeUserDropdown] Dropdown initialized successfully');
 }
 
+function bindUserDropdownDelegation() {
+    if (document.body && document.body.dataset.userDropdownDelegationBound === 'true') {
+        return;
+    }
+
+    document.addEventListener('click', function(e) {
+        const userButton = e.target.closest('.user-button');
+        if (!userButton) return;
+
+        const userDropdown = userButton.closest('.user-dropdown');
+        if (!userDropdown) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (window.innerWidth > 1024) {
+            userDropdown.classList.toggle('active');
+        }
+    }, true);
+
+    if (document.body) {
+        document.body.dataset.userDropdownDelegationBound = 'true';
+    }
+}
+
 // Initialize all common functionality
 document.addEventListener('DOMContentLoaded', function() {
     initializeUserDropdown();
+    bindUserDropdownDelegation();
 
     // Reconcile and broadcast persisted language once after DOM is ready.
     // This helps prevent late-loaded components from showing the default VI text.

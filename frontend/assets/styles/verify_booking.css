@@ -317,7 +317,7 @@
   border: 1px solid #e9f2f1;
 }
 
-.booking-details .detail-item:nth-child(4) {
+.booking-details .detail-item.full-width {
   grid-column: 1 / -1;
 }
 
@@ -405,6 +405,11 @@
 .status-pending {
   background: rgba(245, 158, 11, 0.1);
   color: #d97706;
+}
+
+.status-warning {
+  background: rgba(245, 158, 11, 0.14);
+  color: #b45309;
 }
 
 .status-cancelled {

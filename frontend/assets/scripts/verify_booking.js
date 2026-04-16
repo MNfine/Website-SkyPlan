@@ -164,6 +164,7 @@ function initializeElements() {
     // Success state elements
     resultBookingCode: document.getElementById('resultBookingCode'),
     resultOnChainStatus: document.getElementById('resultOnChainStatus'),
+    resultIntegrityStatus: document.getElementById('resultIntegrityStatus'),
     resultTransactionHash: document.getElementById('resultTransactionHash'),
     resultBlockNumber: document.getElementById('resultBlockNumber'),
     resultConfirmations: document.getElementById('resultConfirmations'),
@@ -415,14 +416,25 @@ function getAuthToken() {
 function displayVerificationResult(data) {
   const bookingCode = data.booking_code || data.booking?.booking_code || '-';
   const onChainStatus = data.on_chain?.status || 'UNKNOWN';
-  const txHash = data.booking?.tx_hash || data.tx_hash || '-';
+  const rawTxHash = data.booking?.tx_hash || data.tx_hash || '-';
+  const txHash = normalizeTxHash(rawTxHash) || rawTxHash;
   const blockNumber = data.on_chain?.block_number || '-';
   const confirmations = data.on_chain?.confirmations || 0;
+  const integrity = data.integrity || data.on_chain?.integrity || {};
+  const integrityMessage = integrity.message || 'Chưa có dữ liệu kiểm tra toàn vẹn';
+  const integrityMatched = integrity.is_match !== false;
 
   // Update success state elements
   elements.resultBookingCode.textContent = bookingCode;
   elements.resultOnChainStatus.textContent = getStatusLabel(onChainStatus);
   elements.resultOnChainStatus.className = `status-badge status-${onChainStatus.toLowerCase()}`;
+  if (elements.resultIntegrityStatus) {
+    elements.resultIntegrityStatus.textContent = integrityMessage;
+    elements.resultIntegrityStatus.className = `status-badge ${integrityMatched ? 'status-confirmed' : 'status-warning'}`;
+    elements.resultIntegrityStatus.title = integrity.current_state_hash && integrity.stored_state_hash
+      ? `Current: ${integrity.current_state_hash}\nStored: ${integrity.stored_state_hash}`
+      : integrityMessage;
+  }
   elements.resultTransactionHash.textContent = truncateHash(txHash);
   elements.resultTransactionHash.title = txHash;
   elements.resultBlockNumber.textContent = blockNumber !== '-' ? `#${blockNumber}` : '-';
@@ -435,6 +447,27 @@ function displayVerificationResult(data) {
   } else {
     elements.explorerLink.style.display = 'none';
   }
+}
+
+function normalizeTxHash(value) {
+  if (!value || value === '-') {
+    return null;
+  }
+
+  let candidate = String(value).trim().toLowerCase();
+  if (candidate.startsWith('0x')) {
+    candidate = candidate.slice(2);
+  }
+
+  if (candidate.length !== 64) {
+    return null;
+  }
+
+  if (!/^[0-9a-f]{64}$/.test(candidate)) {
+    return null;
+  }
+
+  return `0x${candidate}`;
 }
 
 /**

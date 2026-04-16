@@ -15,6 +15,73 @@
       pending: 0
     }
   };
+  let activeModalNFT = null;
+  let currentLanguage = 'vi';
+
+  const NFT_TRANSLATIONS = {
+    vi: {
+      metaMyNFTsTitle: 'SkyPlan - Vé NFT của tôi',
+      myNFTs: {
+        pageTitle: 'Vé NFT của tôi',
+        pageSubtitle: 'Những vé máy bay NFT đã được mint trên blockchain',
+        totalNFTs: 'Tổng NFT',
+        mintedTickets: 'Đã mint',
+        pendingMint: 'Chờ mint',
+        noNFTs: 'Chưa có vé NFT',
+        noNFTsDesc: 'Khi bạn hoàn tất thanh toán, các vé sẽ được tự động mint thành NFT trên blockchain.',
+        bookFlight: 'Đặt chuyến bay ngay',
+        mintedBadge: 'Đã mint',
+        tokenIdLabel: 'Token ID:',
+        passengersLabel: 'Hành khách:',
+        viewDetails: 'Xem chi tiết',
+        modalTitle: 'Thông tin vé NFT',
+        modalTitleWithCode: '{code} - Thông tin vé NFT',
+        notAssignedYet: 'Chưa cấp',
+        statusMinted: 'Đã mint ✓',
+        viewOnEtherscan: 'Xem trên Etherscan',
+        mintNow: 'Mint NFT ngay',
+        bookingCodeLabel: 'Mã đặt chỗ:',
+        contractLabel: 'Contract:',
+        statusLabel: 'Trạng thái:',
+        mintTxHashLabel: 'Hash giao dịch mint:',
+        flightInfoLabel: 'Thông tin chuyến bay:',
+        na: 'N/A',
+        initError: 'Không thể khởi tạo trang vé NFT',
+        loadError: 'Không thể tải dữ liệu vé NFT'
+      }
+    },
+    en: {
+      metaMyNFTsTitle: 'SkyPlan - My NFT Tickets',
+      myNFTs: {
+        pageTitle: 'My NFT Tickets',
+        pageSubtitle: 'Flight tickets minted as NFTs on blockchain',
+        totalNFTs: 'Total NFTs',
+        mintedTickets: 'Minted',
+        pendingMint: 'Pending Mint',
+        noNFTs: 'No NFT Tickets Yet',
+        noNFTsDesc: 'After your payment is completed, tickets will be automatically minted as NFTs on blockchain.',
+        bookFlight: 'Book a Flight',
+        mintedBadge: 'Minted',
+        tokenIdLabel: 'Token ID:',
+        passengersLabel: 'Passengers:',
+        viewDetails: 'View Details',
+        modalTitle: 'NFT Ticket Details',
+        modalTitleWithCode: '{code} - NFT Details',
+        notAssignedYet: 'Not assigned yet',
+        statusMinted: 'Minted ✓',
+        viewOnEtherscan: 'View on Etherscan',
+        mintNow: 'Mint NFT now',
+        bookingCodeLabel: 'Booking Code:',
+        contractLabel: 'Contract:',
+        statusLabel: 'Status:',
+        mintTxHashLabel: 'Mint Tx Hash:',
+        flightInfoLabel: 'Flight Info:',
+        na: 'N/A',
+        initError: 'Failed to initialize NFT Dashboard',
+        loadError: 'Failed to load NFT data'
+      }
+    }
+  };
 
   // Initialize on page load
   document.addEventListener('DOMContentLoaded', async function() {
@@ -49,14 +116,27 @@
 
       // Listen for language changes
       window.addEventListener('storage', function(e) {
-        if (e.key === 'preferredLanguage') {
-          location.reload();
+        if (e.key === 'preferredLanguage' || e.key === 'language') {
+          applyDashboardLanguage(e.newValue || getCurrentLanguage());
+          renderNFTCards();
         }
+      });
+
+      window.addEventListener('languageChanged', function(e) {
+        const nextLang = e && e.detail && (e.detail.lang || e.detail.language);
+        applyDashboardLanguage(nextLang || getCurrentLanguage());
+        renderNFTCards();
+      });
+
+      document.addEventListener('languageChanged', function(e) {
+        const nextLang = e && e.detail && (e.detail.lang || e.detail.language);
+        applyDashboardLanguage(nextLang || getCurrentLanguage());
+        renderNFTCards();
       });
 
     } catch (error) {
       console.error('[NFTDashboard]  initialization error:', error);
-      showErrorToast('Failed to initialize NFT Dashboard');
+      showErrorToast(t('myNFTs.initError', 'Failed to initialize NFT Dashboard'));
     }
   }
 
@@ -102,8 +182,8 @@
       nftData.nfts = bookingsWithNFTs.map(booking => ({
         id: booking.id,
         bookingCode: booking.booking_code,
-        tokenId: booking.nft_token_id,
-        contractAddress: booking.nft_contract,
+        tokenId: booking.nft_token_id || booking.nft?.tokenId || null,
+        contractAddress: booking.nft_contract || booking.nft?.contract || null,
         txHash: booking.nft_mint_tx_hash,
         status: 'MINTED',
         flight: {
@@ -136,7 +216,7 @@
       console.error('[NFTDashboard] Failed to load NFT data:', error);
       document.getElementById('loadingState').style.display = 'none';
       document.getElementById('emptyState').style.display = 'flex';
-      showErrorToast('Failed to load NFT data');
+      showErrorToast(t('myNFTs.loadError', 'Failed to load NFT data'));
     }
   }
 
@@ -160,6 +240,10 @@
       const card = createNFTCard(nft);
       container.appendChild(card);
     });
+
+    if (activeModalNFT) {
+      showNFTModal(activeModalNFT);
+    }
   }
 
   /**
@@ -176,7 +260,7 @@
         <div class="nft-status">
           <span class="status-badge status-minted">
             <i class="fas fa-check-circle"></i>
-            Minted
+            ${t('myNFTs.mintedBadge', 'Minted')}
           </span>
         </div>
       </div>
@@ -198,11 +282,11 @@
 
         <div class="nft-metadata">
           <div class="meta-item">
-            <label>Token ID:</label>
-            <value>${nft.tokenId || 'N/A'}</value>
+            <label>${t('myNFTs.tokenIdLabel', 'Token ID:')}</label>
+            <value>${nft.tokenId || t('myNFTs.na', 'N/A')}</value>
           </div>
           <div class="meta-item">
-            <label>Passengers:</label>
+            <label>${t('myNFTs.passengersLabel', 'Passengers:')}</label>
             <value>${nft.passengers.length}</value>
           </div>
         </div>
@@ -211,7 +295,7 @@
       <div class="nft-card-footer">
         <button class="btn-view-details" data-booking-code="${nft.bookingCode}">
           <i class="fas fa-eye"></i>
-          View Details
+          ${t('myNFTs.viewDetails', 'View Details')}
         </button>
       </div>
     `;
@@ -228,12 +312,13 @@
    * Show NFT details modal
    */
   function showNFTModal(nft) {
-    document.getElementById('modalTitle').textContent = `${nft.bookingCode} - NFT Details`;
+    activeModalNFT = nft;
+    document.getElementById('modalTitle').textContent = t('myNFTs.modalTitleWithCode', '{code} - NFT Details').replace('{code}', nft.bookingCode);
     document.getElementById('detailBookingCode').textContent = nft.bookingCode;
-    document.getElementById('detailTokenId').textContent = nft.tokenId || 'Not assigned yet';
+    document.getElementById('detailTokenId').textContent = nft.tokenId || t('myNFTs.notAssignedYet', 'Not assigned yet');
     document.getElementById('detailContract').textContent = truncateAddress(nft.contractAddress || '0x...');
     document.getElementById('detailContract').title = nft.contractAddress;
-    document.getElementById('detailStatus').textContent = 'Minted ✓';
+    document.getElementById('detailStatus').textContent = t('myNFTs.statusMinted', 'Minted ✓');
 
     // TX Hash
     if (nft.txHash) {
@@ -244,7 +329,7 @@
       explorerLink.href = `https://sepolia.etherscan.io/tx/${nft.txHash}`;
       explorerLink.style.display = 'inline';
     } else {
-      document.getElementById('detailTxHash').textContent = 'N/A';
+      document.getElementById('detailTxHash').textContent = t('myNFTs.na', 'N/A');
       document.getElementById('explorerLink').style.display = 'none';
     }
 
@@ -266,7 +351,7 @@
     document.getElementById('mintNFTBtn').style.display = 'none';
 
     // Show modal
-    document.getElementById('nftModal').style.display = 'block';
+    document.getElementById('nftModal').style.display = 'flex';
   }
 
   /**
@@ -276,12 +361,14 @@
     // Close modal
     document.querySelector('.modal-close').addEventListener('click', () => {
       document.getElementById('nftModal').style.display = 'none';
+      activeModalNFT = null;
     });
 
     // Click outside modal to close
     document.getElementById('nftModal').addEventListener('click', (e) => {
       if (e.target.id === 'nftModal') {
         document.getElementById('nftModal').style.display = 'none';
+        activeModalNFT = null;
       }
     });
 
@@ -298,10 +385,10 @@
    * Format date and time
    */
   function formatDateTime(dateString) {
-    if (!dateString) return 'N/A';
+    if (!dateString) return t('myNFTs.na', 'N/A');
     try {
       const date = new Date(dateString);
-      return date.toLocaleString('vi-VN', {
+      return date.toLocaleString(currentLanguage === 'en' ? 'en-US' : 'vi-VN', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
@@ -333,7 +420,13 @@
    * Get authentication token
    */
   function getAuthToken() {
-    return localStorage.getItem('authToken');
+    try {
+      if (window.AuthState && typeof window.AuthState.getToken === 'function') {
+        return window.AuthState.getToken() || '';
+      }
+    } catch (_) {}
+
+    return localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
   }
 
   /**
@@ -347,13 +440,41 @@
     }
   }
 
+  function getCurrentLanguage() {
+    const raw = (localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi').toLowerCase();
+    return raw === 'en' ? 'en' : 'vi';
+  }
+
+  function getNestedValue(source, path) {
+    return String(path || '').split('.').reduce((obj, segment) => (obj && obj[segment] !== undefined ? obj[segment] : undefined), source);
+  }
+
+  function t(key, fallback) {
+    const dict = NFT_TRANSLATIONS[currentLanguage] || NFT_TRANSLATIONS.vi;
+    const value = getNestedValue(dict, key);
+    return value !== undefined ? value : (fallback || key);
+  }
+
+  function applyDashboardLanguage(lang) {
+    currentLanguage = String(lang || '').toLowerCase() === 'en' ? 'en' : 'vi';
+
+    const nodes = document.querySelectorAll('[data-i18n]');
+    nodes.forEach((node) => {
+      const key = node.getAttribute('data-i18n');
+      if (!key) return;
+      const translated = t(key, null);
+      if (!translated || translated === key) return;
+      node.textContent = translated;
+    });
+
+    document.title = t('metaMyNFTsTitle', document.title);
+  }
+
   /**
    * Apply initial translations
    */
   function applyInitialTranslations() {
-    if (typeof applyPageTranslations === 'function') {
-      applyPageTranslations();
-    }
+    applyDashboardLanguage(getCurrentLanguage());
   }
 
   /**
@@ -369,6 +490,14 @@
       if (headerRes.ok) {
         const headerHtml = await headerRes.text();
         document.getElementById('headerContainer').innerHTML = headerHtml;
+        if (typeof initializeMobileMenu === 'function') initializeMobileMenu();
+        if (typeof initializeLanguageSelector === 'function') initializeLanguageSelector();
+        if (typeof window.applyHeaderTranslations === 'function') {
+          window.applyHeaderTranslations(getCurrentLanguage());
+        }
+        if (typeof updateSelectedLanguage === 'function') {
+          updateSelectedLanguage(getCurrentLanguage());
+        }
       }
 
       if (footerRes.ok) {
