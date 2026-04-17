@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>SkyPlan Airport Explorer</title>
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+        background: #070f1a;
+        color: #e2e8f0;
+      }
+
+      .map-shell {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .esri-attribution,
+      .esri-attribution__sources,
+      .esri-attribution__powered-by,
+      .esri-ui-bottom-container {
+        display: none !important;
+      }
+
+      #sidebar {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: min(420px, 34vw);
+        height: 100%;
+        background: rgba(1, 21, 42, 0.88);
+        border-left: 1px solid rgba(56, 189, 248, 0.25);
+        backdrop-filter: blur(6px);
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+      }
+
+      #sidebar.hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(100%);
+      }
+
+      .sidebar-header {
+        padding: 16px 16px 10px 16px;
+        border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      }
+
+      .sidebar-title {
+        margin: 0;
+        font-size: 1rem;
+        color: #dbeafe;
+      }
+
+      .sidebar-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .count-pill {
+        font-size: 0.9rem;
+        color: #7dd3fc;
+      }
+
+      .date-picker {
+        background: rgba(2, 38, 73, 0.9);
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        border-radius: 999px;
+        color: #e2e8f0;
+        padding: 7px 12px;
+        font-size: 0.85rem;
+      }
+
+      #flightList {
+        flex: 1;
+        overflow: auto;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .flight-card {
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: rgba(2, 34, 63, 0.7);
+      }
+
+      .flight-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .route-code {
+        color: #38bdf8;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+      }
+
+      .distance {
+        color: #93c5fd;
+        font-size: 0.85rem;
+      }
+
+      .flight-line {
+        margin-top: 6px;
+        color: #cbd5e1;
+        font-size: 0.92rem;
+      }
+
+      .flight-sub {
+        margin-top: 4px;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        color: #94a3b8;
+        font-size: 0.84rem;
+      }
+
+      .empty {
+        margin-top: 8px;
+        color: #94a3b8;
+        font-size: 0.92rem;
+      }
+
+      @media (max-width: 980px) {
+        #sidebar {
+          width: min(100vw, 440px);
+        }
+      }
+    </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.33/esri/themes/light/main.css" />
+    <script src="https://js.arcgis.com/4.33/"></script>
+
+    <script type="module">
+      const [Map, MapView, Graphic, GraphicsLayer] = await $arcgis.import([
+        "@arcgis/core/Map.js",
+        "@arcgis/core/views/MapView.js",
+        "@arcgis/core/Graphic.js",
+        "@arcgis/core/layers/GraphicsLayer.js",
+      ]);
+
+      const API_BASE = "/api/flights";
+
+      const map = new Map({
+        basemap: "dark-gray-vector",
+      });
+
+      const view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [106.48330248953283, 17.36666754408967],
+        zoom: 5
+      });
+      view.popupEnabled = true;
+      view.popup.autoOpenEnabled = false;
+
+      const flightLineLayer = new GraphicsLayer();
+      map.add(flightLineLayer);
+
+      const airports = [
+        {
+          province: "Cần Thơ",
+          airportName: "Sân bay quốc tế Cần Thơ",
+          code: "VCA",
+          longitude: 105.71215613805612,
+          latitude: 10.080578158893125,
+        },
+        {
+          province: "Đà Nẵng",
+          airportName: "Sân bay quốc tế Đà Nẵng",
+          code: "DAD",
+          longitude: 108.20255862950854,
+          latitude: 16.057186550437873,
+        },
+        {
+          province: "Đắk Lắk",
+          airportName: "Sân bay Buôn Ma Thuột",
+          code: "BMV",
+          longitude: 108.11759875373512,
+          latitude: 12.664602602825711,
+        },
+        {
+          province: "Hà Nội",
+          airportName: "Sân bay quốc tế Nội Bài",
+          code: "HAN",
+          longitude: 105.80250522385172,
+          latitude: 21.21790515241054,
+        },
+        {
+          province: "Hải Phòng",
+          airportName: "Sân bay quốc tế Cát Bi",
+          code: "HPH",
+          longitude: 106.7230383536199,
+          latitude: 20.81874904922658,
+        },
+        {
+          province: "Huế",
+          airportName: "Sân bay quốc tế Phú Bài",
+          code: "HUI",
+          longitude: 107.70022868129469,
+          latitude: 16.397699835035812,
+        },
+        {
+          province: "Khánh Hòa",
+          airportName: "Sân bay quốc tế Cam Ranh",
+          code: "CXR",
+          longitude: 109.2183086167067,
+          latitude: 11.998995276511584,
+        },
+        {
+          province: "Lâm Đồng",
+          airportName: "Sân bay quốc tế Liên Khương",
+          code: "DLI",
+          longitude: 108.36827223808027,
+          latitude: 11.748778016880447,
+        },
+        {
+          province: "Nghệ An",
+          airportName: "Sân bay Vinh",
+          code: "VII",
+          longitude: 105.66867610938448,
+          latitude: 18.72767015118337,
+        },
+        {
+          province: "TP.HCM",
+          airportName: "Sân bay quốc tế Tân Sơn Nhất",
+          code: "SGN",
+          longitude: 106.65648227097381,
+          latitude: 10.81704518887609,
+        },
+      ];
+
+      const airportByCode = Object.fromEntries(airports.map((a) => [a.code, a]));
+
+      const airportLayer = new GraphicsLayer();
+      map.add(airportLayer);
+
+      const airportGraphics = airports.flatMap((airport) => {
+        const point = {
+          type: "point",
+          longitude: airport.longitude,
+          latitude: airport.latitude,
+        };
+
+        const glowGraphic = new Graphic({
+          geometry: point,
+          symbol: {
+            type: "simple-marker",
+            style: "circle",
+            size: 13,
+            color: [180, 220, 255, 0.25],
+            outline: {
+              color: [180, 220, 255, 0],
+              width: 0,
+            },
+          },
+        });
+
+        const dotGraphic = new Graphic({
+          geometry: point,
+          symbol: {
+            type: "simple-marker",
+            style: "circle",
+            size: 6,
+            color: [210, 235, 255, 0.95],
+            outline: {
+              color: [255, 255, 255, 0.95],
+              width: 0.8,
+            },
+          },
+          attributes: {
+            province: airport.province,
+            airportName: airport.airportName,
+            code: airport.code,
+          },
+          popupTemplate: {
+            title: "{airportName} ({code})",
+            content: "<b>Tỉnh/Thành phố:</b> {province}<br><b>Mã sân bay:</b> {code}",
+          },
+        });
+
+        return [glowGraphic, dotGraphic];
+      });
+
+      airportLayer.addMany(airportGraphics);
+
+      const sidebarTitle = document.getElementById("sidebarTitle");
+      const flightCount = document.getElementById("flightCount");
+      const flightList = document.getElementById("flightList");
+      const dateFilter = document.getElementById("dateFilter");
+      const sidebar = document.getElementById("sidebar");
+
+      function toKm(lat1, lon1, lat2, lon2) {
+        const toRad = (deg) => (deg * Math.PI) / 180;
+        const R = 6371;
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return Math.round(R * c);
+      }
+
+      function fmtPrice(value) {
+        const numeric = Number(value || 0);
+        return new Intl.NumberFormat("vi-VN").format(numeric) + " VND";
+      }
+
+      function fmtTime(isoLike) {
+        if (!isoLike) return "--:--";
+        const d = new Date(isoLike);
+        if (Number.isNaN(d.getTime())) return "--:--";
+        return d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: false });
+      }
+
+      function fmtDateTime(isoLike) {
+        if (!isoLike) return "--:-- --/--/----";
+        const d = new Date(isoLike);
+        if (Number.isNaN(d.getTime())) return "--:-- --/--/----";
+        const time = d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: false });
+        const date = d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
+        return `${time} ${date}`;
+      }
+
+      function fmtDateHeader(dateInput) {
+        if (!dateInput) {
+          return "all departure times";
+        }
+        const d = new Date(`${dateInput}T00:00:00`);
+        if (Number.isNaN(d.getTime())) return dateInput;
+        return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      }
+
+      function isCurrentOrFutureFlight(flight) {
+        const departureIso = flight?.departure_time;
+        if (!departureIso) return false;
+        const departureDate = new Date(departureIso);
+        if (Number.isNaN(departureDate.getTime())) return false;
+        return departureDate.getTime() >= Date.now();
+      }
+
+      function renderFlights(originCode, destinationCode, flights) {
+        const dateText = fmtDateHeader(dateFilter.value);
+        const titleBase = destinationCode
+          ? `Flights from ${originCode} to ${destinationCode}`
+          : `Flights from ${originCode}`;
+        sidebarTitle.textContent = dateFilter.value
+          ? `${titleBase} on ${dateText}`
+          : `${titleBase} (${dateText})`;
+        flightCount.textContent = `${flights.length} flights`;
+        flightList.innerHTML = "";
+
+        if (!flights.length) {
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.textContent = destinationCode
+            ? "No flights found for this route."
+            : (dateFilter.value ? "No flights found for this airport/date." : "No flights found for this airport.");
+          flightList.appendChild(empty);
+          return;
+        }
+
+        flights.forEach((flight) => {
+          const destinationCode = flight.arrival_airport;
+          const destinationAirport = airportByCode[destinationCode];
+          const originAirport = airportByCode[originCode];
+
+          const destinationLabel = destinationAirport
+            ? `${destinationCode} ${destinationAirport.province}`
+            : destinationCode;
+
+          const distanceKm = destinationAirport && originAirport
+            ? toKm(originAirport.latitude, originAirport.longitude, destinationAirport.latitude, destinationAirport.longitude)
+            : null;
+
+          const card = document.createElement("article");
+          card.className = "flight-card";
+
+          card.innerHTML = `
+            <div class="flight-top">
+              <div class="route-code">${destinationLabel}</div>
+              <div class="distance">${distanceKm ? `${distanceKm} km` : "-"}</div>
+            </div>
+            <div class="flight-line">${flight.flight_number} · ${flight.airline_name || flight.airline || "Unknown airline"}</div>
+            <div class="flight-sub">
+              <span>${originCode} ${fmtDateTime(flight.departure_time)} → ${destinationCode} ${fmtDateTime(flight.arrival_time)}</span>
+              <span>${fmtPrice(flight.price)}</span>
+            </div>
+          `;
+
+          flightList.appendChild(card);
+        });
+      }
+
+      function drawDestinationLines(originCode, destinationCode, flights) {
+        flightLineLayer.removeAll();
+        const origin = airportByCode[originCode];
+        if (!origin) return;
+
+        const uniqueDestinations = Array.from(new Set(flights.map((f) => f.arrival_airport)))
+          .filter((code) => code !== originCode)
+          .filter((code) => !destinationCode || code === destinationCode);
+
+        const lines = uniqueDestinations
+          .map((destinationCode) => {
+            const destination = airportByCode[destinationCode];
+            if (!destination) return null;
+            return new Graphic({
+              geometry: {
+                type: "polyline",
+                paths: [
+                  [origin.longitude, origin.latitude],
+                  [destination.longitude, destination.latitude],
+                ],
+              },
+              symbol: {
+                type: "simple-line",
+                color: [56, 189, 248, 0.9],
+                width: 1.5,
+              },
+            });
+          })
+          .filter(Boolean);
+
+        if (lines.length) {
+          flightLineLayer.addMany(lines);
+        }
+      }
+
+      async function loadFlightsForSelection(originCode, destinationCode) {
+        const params = new URLSearchParams({ from: originCode });
+        if (destinationCode) {
+          params.set("to", destinationCode);
+        }
+        if (dateFilter.value) {
+          params.set("date", dateFilter.value);
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}?${params.toString()}`);
+          if (!response.ok) {
+            throw new Error(`API ${response.status}`);
+          }
+
+          const payload = await response.json();
+          const flightsRaw = Array.isArray(payload?.flights) ? payload.flights : [];
+          const flights = flightsRaw.filter(isCurrentOrFutureFlight);
+          renderFlights(originCode, destinationCode, flights);
+          drawDestinationLines(originCode, destinationCode, flights);
+        } catch (error) {
+          console.error("Failed to load flights:", error);
+          renderFlights(originCode, destinationCode, []);
+          drawDestinationLines(originCode, destinationCode, []);
+        }
+      }
+
+      let selectedOriginCode = null;
+      let selectedDestinationCode = null;
+      let hoveredAirportCode = null;
+      let selectionPulseFrame = null;
+      let selectionPulsePhase = 0;
+
+      function showSidebar() {
+        sidebar.classList.remove("hidden");
+      }
+
+      function hideSidebar() {
+        sidebar.classList.add("hidden");
+      }
+
+      function clearAirportSelection() {
+        selectedOriginCode = null;
+        selectedDestinationCode = null;
+        stopSelectionPulse();
+        highlightAirport(null, null);
+        flightLineLayer.removeAll();
+        hideSidebar();
+
+        try {
+          view.popup.close();
+        } catch (_) {}
+
+        try {
+          view.closePopup();
+        } catch (_) {}
+      }
+
+      function stopSelectionPulse() {
+        if (selectionPulseFrame) {
+          cancelAnimationFrame(selectionPulseFrame);
+          selectionPulseFrame = null;
+        }
+        selectionPulsePhase = 0;
+      }
+
+      function startSelectionPulse() {
+        stopSelectionPulse();
+
+        const run = () => {
+          if (!selectedOriginCode) return;
+
+          const selectedGraphic = airportLayer.graphics.find((g) => g.attributes && g.attributes.code === selectedOriginCode);
+          if (!selectedGraphic) return;
+
+          selectionPulsePhase += 0.1;
+          const pulse = (Math.sin(selectionPulsePhase) + 1) / 2;
+          const markerSize = 10 + pulse * 5;
+          const markerAlpha = 0.75 + pulse * 0.25;
+
+          selectedGraphic.symbol = {
+            type: "simple-marker",
+            style: "circle",
+            size: markerSize,
+            color: [14, 165, 233, markerAlpha],
+            outline: {
+              color: [255, 255, 255, 0.95],
+              width: 1.2 + pulse * 1.1,
+            },
+          };
+
+          selectionPulseFrame = requestAnimationFrame(run);
+        };
+
+        selectionPulseFrame = requestAnimationFrame(run);
+      }
+
+      function highlightAirport(originCode, destinationCode) {
+        airportLayer.graphics.forEach((graphic) => {
+          const isDot = graphic.attributes && graphic.attributes.code;
+          if (!isDot) return;
+
+          const airportCode = graphic.attributes.code;
+          const isOrigin = airportCode === originCode;
+          const isDestination = airportCode === destinationCode;
+
+          if (isOrigin) {
+            graphic.symbol = {
+              type: "simple-marker",
+              style: "circle",
+              size: 10,
+              color: [14, 165, 233, 1],
+              outline: {
+                color: [255, 255, 255, 0.95],
+                width: 1.4,
+              },
+            };
+            return;
+          }
+
+          if (isDestination) {
+            graphic.symbol = {
+              type: "simple-marker",
+              style: "circle",
+              size: 9,
+              color: [251, 191, 36, 0.95],
+              outline: {
+                color: [255, 255, 255, 0.95],
+                width: 1.2,
+              },
+            };
+            return;
+          }
+
+          graphic.symbol = {
+            type: "simple-marker",
+            style: "circle",
+            size: 6,
+            color: [210, 235, 255, 0.95],
+            outline: {
+              color: [255, 255, 255, 0.95],
+              width: 0.8,
+            },
+          };
+        });
+      }
+
+      async function refreshSelectionUI() {
+        if (!selectedOriginCode) {
+          clearAirportSelection();
+          return;
+        }
+
+        highlightAirport(selectedOriginCode, selectedDestinationCode);
+        startSelectionPulse();
+        showSidebar();
+        await loadFlightsForSelection(selectedOriginCode, selectedDestinationCode);
+      }
+
+      async function handleAirportSelection(code) {
+        if (!selectedOriginCode) {
+          selectedOriginCode = code;
+          selectedDestinationCode = null;
+          await refreshSelectionUI();
+          return;
+        }
+
+        if (!selectedDestinationCode) {
+          if (code !== selectedOriginCode) {
+            selectedDestinationCode = code;
+          }
+          await refreshSelectionUI();
+          return;
+        }
+
+        if (code === selectedOriginCode || code === selectedDestinationCode) {
+          selectedDestinationCode = null;
+        } else {
+          selectedDestinationCode = code;
+        }
+
+        await refreshSelectionUI();
+      }
+
+      await view.when();
+      await view.goTo(airportLayer.graphics.toArray(), {
+        padding: {
+          top: 40,
+          right: 460,
+          bottom: 40,
+          left: 40,
+        },
+      });
+
+      view.on("click", async (event) => {
+        const result = await view.hitTest(event);
+        const hit = result.results.find((r) => r?.graphic?.layer === airportLayer && r?.graphic?.attributes?.code);
+        if (!hit) {
+          clearAirportSelection();
+          return;
+        }
+        const code = hit.graphic.attributes.code;
+        await handleAirportSelection(code);
+      });
+
+      view.on("pointer-move", async (event) => {
+        const result = await view.hitTest(event);
+        const hit = result.results.find((r) => r?.graphic?.layer === airportLayer && r?.graphic?.attributes?.code);
+
+        if (!hit) {
+          hoveredAirportCode = null;
+          try {
+            view.closePopup();
+          } catch (_) {}
+          return;
+        }
+
+        const attributes = hit.graphic.attributes || {};
+        const code = attributes.code;
+        if (!code || code === hoveredAirportCode) return;
+
+        hoveredAirportCode = code;
+        view.openPopup({
+          location: hit.graphic.geometry,
+          title: `${attributes.airportName || "Airport"} (${code})`,
+          content: `<b>Tỉnh/Thành phố:</b> ${attributes.province || "-"}<br><b>Mã sân bay:</b> ${code}`,
+        });
+      });
+
+      document.addEventListener("click", async (event) => {
+        const clickedInsideSidebar = sidebar.contains(event.target);
+        if (clickedInsideSidebar) return;
+
+        const clickedInsideMap = view.container.contains(event.target);
+        if (!clickedInsideMap) {
+          clearAirportSelection();
+        }
+      });
+
+      dateFilter.addEventListener("change", () => {
+        if (!selectedOriginCode) return;
+        refreshSelectionUI();
+      });
+
+      hideSidebar();
+    </script>
+  </head>
+
+  <body>
+    <div class="map-shell">
+      <div id="viewDiv"></div>
+      <aside id="sidebar">
+        <div class="sidebar-header">
+          <h2 id="sidebarTitle" class="sidebar-title">Flights from SGN</h2>
+          <div class="sidebar-meta">
+            <span id="flightCount" class="count-pill">0 flights</span>
+            <input id="dateFilter" class="date-picker" type="date" />
+          </div>
+        </div>
+        <div id="flightList"></div>
+      </aside>
+    </div>
+  </body>
+</html>
