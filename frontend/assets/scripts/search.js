@@ -84,6 +84,420 @@ function getQueryParams() {
     return params;
 }
 
+const TREND_WINDOW_DAYS = 15;
+let currentTrendState = {
+    from: '',
+    to: '',
+    dep: '',
+    tripType: 'one-way'
+};
+let pendingTrendSelectedDate = '';
+
+function normalizeDateForApi(value) {
+    const raw = (value || '').trim();
+    if (!raw) return '';
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+
+    const dmy = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (dmy) {
+        const day = dmy[1].padStart(2, '0');
+        const month = dmy[2].padStart(2, '0');
+        const year = dmy[3];
+        return `${year}-${month}-${day}`;
+    }
+
+    const mdy = raw.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+    if (mdy) {
+        const month = mdy[1].padStart(2, '0');
+        const day = mdy[2].padStart(2, '0');
+        const year = mdy[3];
+        return `${year}-${month}-${day}`;
+    }
+
+    const parsed = new Date(raw);
+    if (!Number.isNaN(parsed.getTime())) {
+        return parsed.toISOString().slice(0, 10);
+    }
+
+    return raw;
+}
+
+function addDays(isoDate, offsetDays) {
+    const base = new Date(`${isoDate}T00:00:00`);
+    if (Number.isNaN(base.getTime())) return isoDate;
+    base.setDate(base.getDate() + offsetDays);
+    return base.toISOString().slice(0, 10);
+}
+
+function buildTrendDateRange(centerDateIso) {
+    const items = [];
+    for (let diff = -TREND_WINDOW_DAYS; diff <= TREND_WINDOW_DAYS; diff++) {
+        items.push(addDays(centerDateIso, diff));
+    }
+    return items;
+}
+
+function formatCurrencyVND(value) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) return 'Chưa có giá';
+    return Number(value).toLocaleString('vi-VN') + ' đ';
+}
+
+function formatTrendDate(isoDate) {
+    if (!isoDate) return '';
+    const date = new Date(`${isoDate}T00:00:00`);
+    if (Number.isNaN(date.getTime())) return isoDate;
+    return date.toLocaleDateString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit' });
+}
+
+function shouldShowTrendButton() {
+    return Boolean(currentTrendState.from && currentTrendState.to && currentTrendState.dep);
+}
+
+function ensureTrendToolbar(resultsContainer) {
+    if (!resultsContainer) return null;
+
+    let toolbar = resultsContainer.querySelector('#spTrendToolbar');
+    if (!toolbar) {
+        toolbar = document.createElement('div');
+        toolbar.id = 'spTrendToolbar';
+        toolbar.className = 'sp-trend-toolbar';
+        toolbar.innerHTML = `
+            <button id="spOpenTrendBtn" type="button" class="sp-btn sp-btn-trend">
+                <i class="fa-solid fa-chart-column"></i>
+                <span>Biểu đồ giá</span>
+            </button>
+        `;
+        resultsContainer.insertBefore(toolbar, resultsContainer.firstChild);
+    }
+
+    toolbar.hidden = !shouldShowTrendButton();
+
+    const openBtn = toolbar.querySelector('#spOpenTrendBtn');
+    if (openBtn && !openBtn.dataset.boundTrend) {
+        openBtn.dataset.boundTrend = 'true';
+        openBtn.addEventListener('click', function() {
+            openTrendModal();
+        });
+    }
+
+    return toolbar;
+}
+
+function closeTrendModal() {
+    const modal = document.getElementById('spTrendModal');
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+}
+
+function openTrendModal() {
+    const modal = document.getElementById('spTrendModal');
+    if (!modal) return;
+
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    pendingTrendSelectedDate = currentTrendState.dep || '';
+    loadAndRenderTrendChart();
+}
+
+window.openPriceTrendModal = openTrendModal;
+
+function bindTrendButtonDelegation() {
+    if (document.body && document.body.dataset.boundTrendDelegation) return;
+    if (document.body) {
+        document.body.dataset.boundTrendDelegation = 'true';
+    }
+
+    document.addEventListener('click', function(event) {
+        const button = event.target && event.target.closest ? event.target.closest('#spOpenTrendBtn') : null;
+        if (!button) return;
+        event.preventDefault();
+        event.stopPropagation();
+        openTrendModal();
+    }, true);
+}
+
+function bindTrendModalEvents() {
+    const modal = document.getElementById('spTrendModal');
+    if (!modal || modal.dataset.boundTrendModal) return;
+
+    modal.dataset.boundTrendModal = 'true';
+
+    modal.querySelectorAll('[data-trend-close]').forEach((element) => {
+        element.addEventListener('click', function() {
+            closeTrendModal();
+        });
+    });
+
+    const okButton = document.getElementById('spTrendOk');
+    if (okButton) {
+        okButton.addEventListener('click', function() {
+            if (!pendingTrendSelectedDate || pendingTrendSelectedDate === currentTrendState.dep) {
+                closeTrendModal();
+                return;
+            }
+
+            const depInput = document.getElementById('dep');
+            if (depInput) {
+                depInput.value = pendingTrendSelectedDate;
+                depInput.dataset.isoValue = pendingTrendSelectedDate;
+            }
+
+            const url = new URL(window.location.href);
+            url.searchParams.set('dep', pendingTrendSelectedDate);
+            window.history.replaceState({}, '', url.toString());
+
+            closeTrendModal();
+            fetchFlights();
+        });
+    }
+
+    modal.addEventListener('click', function(event) {
+        if (event.target === modal || event.target.classList.contains('sp-trend-modal__backdrop')) {
+            closeTrendModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+            closeTrendModal();
+        }
+    });
+}
+
+async function loadAndRenderTrendChart() {
+    const summary = document.getElementById('spTrendSummary');
+    const grid = document.getElementById('spTrendGrid');
+    const axis = document.getElementById('spTrendAxis');
+    if (!summary || !grid || !axis) return;
+
+    summary.style.display = 'inline-flex';
+
+    if (!shouldShowTrendButton()) {
+        summary.textContent = 'Thiếu thông tin tuyến bay để hiển thị biểu đồ.';
+        grid.innerHTML = '';
+        axis.innerHTML = '';
+        return;
+    }
+
+    summary.textContent = 'Đang tải dữ liệu giá...';
+    grid.innerHTML = '';
+    axis.innerHTML = '';
+
+    const normalizedCenterDate = normalizeDateForApi(currentTrendState.dep);
+    if (!normalizedCenterDate || !/^\d{4}-\d{2}-\d{2}$/.test(normalizedCenterDate)) {
+        summary.textContent = 'Ngày đi chưa đúng định dạng để vẽ biểu đồ.';
+        return;
+    }
+
+    const params = new URLSearchParams({
+        from: currentTrendState.from,
+        to: currentTrendState.to,
+        center_date: normalizedCenterDate,
+        window_days: String(TREND_WINDOW_DAYS)
+    });
+
+    try {
+        const response = await fetch(`/api/flights/price-trend?${params.toString()}`);
+        if (!response.ok) {
+            throw new Error(`Trend API ${response.status}`);
+        }
+
+        const payload = await response.json();
+        const points = Array.isArray(payload.points) ? payload.points : [];
+        renderTrendBars(points, payload.center_date || normalizedCenterDate);
+    } catch (error) {
+        console.error('Failed loading trend endpoint; fallback to daily flights API:', error);
+        try {
+            const fallbackPoints = await fetchTrendPointsFallback(
+                currentTrendState.from,
+                currentTrendState.to,
+                normalizedCenterDate
+            );
+            renderTrendBars(fallbackPoints, normalizedCenterDate);
+        } catch (fallbackError) {
+            console.error('Fallback trend loading failed:', fallbackError);
+            summary.textContent = 'Không thể tải dữ liệu biểu đồ giá. Vui lòng thử lại.';
+            grid.innerHTML = '';
+            axis.innerHTML = '';
+        }
+    }
+}
+
+async function fetchTrendPointsFallback(fromCode, toCode, centerDateIso) {
+    const dateRange = buildTrendDateRange(centerDateIso);
+    const requests = dateRange.map(async (dateIso) => {
+        const url = `/api/flights?from=${encodeURIComponent(fromCode)}&to=${encodeURIComponent(toCode)}&date=${encodeURIComponent(dateIso)}`;
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Flights API ${response.status} at ${dateIso}`);
+        }
+
+        const payload = await response.json();
+        const flights = Array.isArray(payload?.flights) ? payload.flights : [];
+        const prices = flights
+            .map((flight) => Number(flight?.price))
+            .filter((price) => !Number.isNaN(price) && price > 0);
+
+        const minPrice = prices.length ? Math.min(...prices) : null;
+
+        return {
+            date: dateIso,
+            min_price: minPrice,
+            flight_count: flights.length,
+            is_selected: dateIso === centerDateIso
+        };
+    });
+
+    return Promise.all(requests);
+}
+
+function renderTrendBars(points, centerDate) {
+    const summary = document.getElementById('spTrendSummary');
+    const grid = document.getElementById('spTrendGrid');
+    const axis = document.getElementById('spTrendAxis');
+    if (!summary || !grid || !axis) return;
+
+    grid.innerHTML = '';
+    summary.style.display = 'none';
+
+    if (!points.length) {
+        summary.style.display = 'inline-flex';
+        summary.textContent = 'Không có dữ liệu giá trong khoảng thời gian này.';
+        axis.innerHTML = '';
+        return;
+    }
+
+    const availablePrices = points
+        .map((point) => (point && point.min_price !== null ? Number(point.min_price) : null))
+        .filter((price) => price !== null && !Number.isNaN(price));
+
+    const minPrice = availablePrices.length ? Math.min(...availablePrices) : 0;
+    const maxPrice = availablePrices.length ? Math.max(...availablePrices) : 0;
+    const priceRange = Math.max(maxPrice - minPrice, 1);
+
+    const selectedIndex = points.findIndex((point) => point.date === centerDate);
+
+    function tooltipContent(point) {
+        const labelDate = formatTrendDate(point.date);
+        const priceLine = point.min_price === null
+            ? 'Tạm thời chưa có giá'
+            : `Từ ${formatCurrencyVND(point.min_price)}`;
+        return {
+            head: 'Chuyến đi một chiều',
+            body: `${labelDate}<br>${priceLine}`
+        };
+    }
+
+    function createTooltip(className) {
+        const node = document.createElement('div');
+        node.className = `sp-trend-tooltip ${className}`;
+        node.innerHTML = `
+            <div class="sp-trend-tooltip__head"></div>
+            <div class="sp-trend-tooltip__body"></div>
+        `;
+        return node;
+    }
+
+    function setTooltipData(node, point) {
+        if (!node || !point) return;
+        const content = tooltipContent(point);
+        const head = node.querySelector('.sp-trend-tooltip__head');
+        const body = node.querySelector('.sp-trend-tooltip__body');
+        if (head) head.textContent = content.head;
+        if (body) body.innerHTML = content.body;
+    }
+
+    function positionTooltip(node, bar) {
+        if (!node || !bar) return;
+        const gridRect = grid.getBoundingClientRect();
+        const barRect = bar.getBoundingClientRect();
+
+        const centerX = (barRect.left - gridRect.left) + (barRect.width / 2);
+        const safePadding = 22;
+        const tooltipHalf = Math.max((node.offsetWidth || 0) / 2, 0);
+        const minX = tooltipHalf + safePadding;
+        const maxX = Math.max(minX, gridRect.width - tooltipHalf - safePadding);
+        const clampedX = Math.max(minX, Math.min(centerX, maxX));
+
+        node.style.left = `${clampedX}px`;
+    }
+
+    const pinnedTooltip = createTooltip('sp-trend-tooltip--pinned');
+    const hoverTooltip = createTooltip('sp-trend-tooltip--hover');
+    hoverTooltip.style.display = 'none';
+
+    grid.appendChild(pinnedTooltip);
+    grid.appendChild(hoverTooltip);
+
+    let selectedPoint = points[selectedIndex >= 0 ? selectedIndex : 0];
+    let selectedBar = null;
+
+    points.forEach((point) => {
+        const bar = document.createElement('div');
+        bar.className = 'sp-trend-bar';
+
+        if (point.date === centerDate) {
+            bar.classList.add('is-selected');
+            selectedBar = bar;
+            selectedPoint = point;
+        }
+
+        if (point.min_price === null) {
+            bar.classList.add('is-empty');
+            bar.style.height = '8px';
+        } else {
+            const normalized = (Number(point.min_price) - minPrice) / priceRange;
+            const heightPercent = 20 + normalized * 75;
+            bar.style.height = `${heightPercent}%`;
+        }
+
+        bar.addEventListener('mouseenter', function() {
+            setTooltipData(hoverTooltip, point);
+            positionTooltip(hoverTooltip, bar);
+            hoverTooltip.style.display = 'block';
+        });
+
+        bar.addEventListener('mouseleave', function() {
+            hoverTooltip.style.display = 'none';
+        });
+
+        bar.addEventListener('click', function() {
+            points.forEach((item) => { item.is_selected = false; });
+            point.is_selected = true;
+            pendingTrendSelectedDate = point.date;
+
+            const bars = grid.querySelectorAll('.sp-trend-bar');
+            bars.forEach((node) => node.classList.remove('is-selected'));
+            bar.classList.add('is-selected');
+
+            selectedPoint = point;
+            selectedBar = bar;
+            setTooltipData(pinnedTooltip, selectedPoint);
+            positionTooltip(pinnedTooltip, selectedBar);
+        });
+
+        grid.insertBefore(bar, pinnedTooltip);
+    });
+
+    if (!selectedBar) {
+        selectedBar = grid.querySelector('.sp-trend-bar');
+    }
+    if (selectedBar && selectedPoint) {
+        setTooltipData(pinnedTooltip, selectedPoint);
+        positionTooltip(pinnedTooltip, selectedBar);
+    }
+
+    axis.innerHTML = `
+        <span>${formatTrendDate(points[0].date)}</span>
+        <span>${formatTrendDate(centerDate)}</span>
+        <span>${formatTrendDate(points[points.length - 1].date)}</span>
+    `;
+}
+
 // Set lại input ngày đi/ngày về theo query hoặc ngày hiện tại
 function setDateInputsFromQuery() {
     const params = getQueryParams();
@@ -167,12 +581,20 @@ async function fetchFlights() {
     // Normalize input (slug or IATA) -> IATA for backend query
     const fromCity = CITY_TO_IATA[params.from] || CITY_TO_IATA[params.from && params.from.toString()] || params.from || '';
     const toCity = CITY_TO_IATA[params.to] || CITY_TO_IATA[params.to && params.to.toString()] || params.to || '';
-    const dep = params.dep || '';
-    const ret = params.ret || '';
+    const dep = normalizeDateForApi(params.dep || '');
+    const ret = normalizeDateForApi(params.ret || '');
+
+    currentTrendState = {
+        from: fromCity,
+        to: toCity,
+        dep: dep,
+        tripType: tripType
+    };
     
     // Nếu không có đủ thông tin tìm kiếm, render với dữ liệu rỗng
     if (!fromCity || !toCity || !dep) {
         renderFlights([], [], tripType);
+        ensureTrendToolbar(document.querySelector('.sp-results'));
         // Delay để đảm bảo filter script đã sẵn sàng
         setTimeout(() => {
             if (typeof window.applyFilters === 'function') window.applyFilters();
@@ -205,6 +627,7 @@ async function fetchFlights() {
         console.error('Error fetching flights:', e);
         // Render với dữ liệu rỗng để filter script xử lý
         renderFlights([], [], tripType);
+        ensureTrendToolbar(document.querySelector('.sp-results'));
         // Delay để đảm bảo filter script đã sẵn sàng
         setTimeout(() => {
             if (typeof window.applyFilters === 'function') window.applyFilters();
@@ -221,6 +644,7 @@ function renderFlights(outbounds, inbounds, tripType = 'round-trip') {
     }
 
     results.innerHTML = '';
+    ensureTrendToolbar(results);
     
     // Get current language for formatting airports and dates - use same key as search_translations.js
     let currentLang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
@@ -242,7 +666,7 @@ function renderFlights(outbounds, inbounds, tripType = 'round-trip') {
     
     // Không có dữ liệu phù hợp nào
     if (!hasOut && (!isOneWay ? !hasIn : true)) {
-        results.innerHTML = '';
+        ensureTrendToolbar(results);
         console.warn('[search] No flights found: outbounds=', outbounds ? outbounds.length : 0, 'inbounds=', inbounds ? inbounds.length : 0, 'type=', tripType);
         return;
     }
@@ -423,8 +847,9 @@ function renderFlights(outbounds, inbounds, tripType = 'round-trip') {
     if (results.querySelector('.sp-no-return-message')) {
         results.innerHTML += htmlContent;
     } else {
-        results.innerHTML = htmlContent;
+        results.innerHTML += htmlContent;
     }
+    ensureTrendToolbar(results);
     // Khởi tạo lại modal cho các nút mới
     
     setTimeout(function() {
@@ -582,6 +1007,9 @@ let searchInitialized = false;
 document.addEventListener('DOMContentLoaded', function() {
     if (!searchInitialized) {
         initializeTripTypeHandlers();
+        bindTrendButtonDelegation();
+        bindTrendModalEvents();
+        ensureTrendToolbar(document.querySelector('.sp-results'));
         // Remove automatic flight fetching - only search when button is clicked
         // fetchFlights();
         searchInitialized = true;
@@ -682,8 +1110,8 @@ function initializeTripTypeHandlers() {
     function handleSearchSubmit() {
         const fromCity = document.getElementById('fromCity').value;
         const toCity = document.getElementById('toCity').value;
-        const depDate = document.getElementById('dep').value;
-        const retDate = document.getElementById('ret').value;
+        const depDate = normalizeDateForApi(document.getElementById('dep').value);
+        const retDate = normalizeDateForApi(document.getElementById('ret').value);
         const tripType = document.querySelector('input[name="tripType"]:checked')?.value || 'round-trip';
         
 

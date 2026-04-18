@@ -107,7 +107,7 @@
 
       .count-pill {
         font-size: 0.9rem;
-        color: #7dd3fc;
+        color: #20B2AA;
       }
 
       .date-picker {
@@ -151,13 +151,13 @@
       }
 
       .route-code {
-        color: #38bdf8;
+        color: #20B2AA;
         font-weight: 700;
         letter-spacing: 0.2px;
       }
 
       .distance {
-        color: #93c5fd;
+        color: #20B2AA;
         font-size: 0.85rem;
       }
 
@@ -201,6 +201,7 @@
       ]);
 
       const API_BASE = "/api/flights";
+      const isEmbedMode = new URLSearchParams(window.location.search).get("embed") === "1";
 
       const map = new Map({
         basemap: "dark-gray-vector",
@@ -210,7 +211,10 @@
         container: "viewDiv",
         map: map,
         center: [106.48330248953283, 17.36666754408967],
-        zoom: 5
+        zoom: 5,
+        ui: {
+          components: []
+        }
       });
       view.popupEnabled = true;
       view.popup.autoOpenEnabled = false;
@@ -350,6 +354,11 @@
       const flightList = document.getElementById("flightList");
       const dateFilter = document.getElementById("dateFilter");
       const sidebar = document.getElementById("sidebar");
+      const backButton = document.getElementById("mapBackButton");
+
+      if (isEmbedMode && backButton) {
+        backButton.style.display = "none";
+      }
 
       function toKm(lat1, lon1, lat2, lon2) {
         const toRad = (deg) => (deg * Math.PI) / 180;
@@ -770,7 +779,7 @@
   <body>
     <div class="map-shell">
       <div id="viewDiv"></div>
-      <a class="map-back-button" href="index.html" aria-label="Quay về trang chủ">
+      <a id="mapBackButton" class="map-back-button" href="index.html" aria-label="Quay về trang chủ">
         <span aria-hidden="true">←</span>
         Quay lại trang chủ
       </a>

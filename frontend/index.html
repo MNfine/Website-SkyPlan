@@ -76,22 +76,20 @@
   <section>
     <div class="container">
       <div class="airport-map-promo">
-        <div class="airport-map-card">
-          <div class="airport-map-copy">
-            <div class="airport-map-kicker">
-              <i class="fas fa-map-location-dot"></i>
-              Bản đồ sân bay tương tác
-            </div>
-            <h2 class="airport-map-title">Chọn 1 sân bay để xem toàn bộ chuyến bay, chọn thêm điểm đến để lọc đúng tuyến bay</h2>
-            <p class="airport-map-desc">
-              Khám phá các sân bay trên bản đồ, xem chuyến bay theo thời gian thực hiện tại và theo dõi tuyến bay cụ thể giữa 2 điểm bạn chọn.
-            </p>
-            <div class="airport-map-note">Mở bản đồ để xem sidebar chuyến bay và popup thông tin sân bay khi hover.</div>
-          </div>
-          <div class="airport-map-actions">
-            <a class="airport-map-btn" href="/map_interact.html">
-              <i class="fas fa-plane"></i>
-              Mở bản đồ sân bay
+        <div class="airport-map-card dark">
+          <div class="airport-map-preview">
+            <iframe
+              class="airport-map-embed"
+              src="/map_interact.html?embed=1"
+              title="Bản đồ sân bay tương tác"
+              loading="lazy"
+              referrerpolicy="no-referrer"
+              tabindex="-1"
+              aria-hidden="true">
+            </iframe>
+            <div class="airport-map-overlay" aria-hidden="true"></div>
+            <a class="airport-map-btn-overlay" href="/map_interact.html">
+              Khám phá các điểm đến
             </a>
           </div>
         </div>

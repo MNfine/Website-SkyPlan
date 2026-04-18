@@ -87,6 +87,12 @@
 
         <section class="sp-results" aria-live="polite" aria-labelledby="results-heading">
             <h2 id="results-heading" class="sr-only">Kết quả tìm kiếm</h2>
+            <div id="spTrendToolbar" class="sp-trend-toolbar" hidden>
+                <button id="spOpenTrendBtn" type="button" class="sp-btn sp-btn-trend" onclick="if(window.openPriceTrendModal){window.openPriceTrendModal();}">
+                    <i class="fa-solid fa-chart-column"></i>
+                    <span>Biểu đồ giá</span>
+                </button>
+            </div>
             <!-- Results will be injected dynamically -->
         </section>
     </main>
@@ -166,6 +172,24 @@
             <div class="sp-modal__footer">
                 <button class="sp-btn sp-btn--ghost" type="button">Chia sẻ chuyến đi</button>
                 <button id="spBookBtn" class="sp-btn sp-btn--primary" type="button">Đặt ngay với giá</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="spTrendModal" class="sp-trend-modal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="sp-trend-modal__backdrop" data-trend-close></div>
+        <div class="sp-trend-modal__dialog" role="document" aria-labelledby="spTrendTitle">
+            <div class="sp-trend-modal__tabs">
+                <button type="button" class="sp-trend-tab is-active">Biểu đồ giá vé rẻ nhất trong Ngày</button>
+            </div>
+            <div class="sp-trend-modal__content">
+                <div class="sp-trend-summary" id="spTrendSummary">Đang tải dữ liệu...</div>
+                <div class="sp-trend-grid" id="spTrendGrid" aria-label="Biểu đồ xu hướng giá vé"></div>
+                <div class="sp-trend-axis" id="spTrendAxis"></div>
+            </div>
+            <div class="sp-trend-modal__footer">
+                <button id="spTrendCancel" type="button" class="sp-btn-trend-footer" data-trend-close>Hủy</button>
+                <button id="spTrendOk" type="button" class="sp-btn-trend-footer is-primary" data-trend-close>OK</button>
             </div>
         </div>
     </div>
