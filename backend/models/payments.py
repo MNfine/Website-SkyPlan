@@ -18,6 +18,7 @@ class Payment(Base):
     amount = Column(Numeric(12, 2), nullable=False)
     status = Column(String(20), nullable=False, default="PENDING", index=True)
     provider = Column(String(20), nullable=False, default="vnpay")
+    voucher_code = Column(String(40), nullable=True, index=True)
     transaction_id = Column(String(100), nullable=True, index=True)  # External payment ID
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     
@@ -31,5 +32,6 @@ class Payment(Base):
             "amount": float(self.amount),
             "status": self.status,
             "provider": self.provider,
+            "voucher_code": self.voucher_code,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }

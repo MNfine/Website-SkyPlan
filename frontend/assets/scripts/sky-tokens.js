@@ -48,7 +48,7 @@
         seatUpgrade: 'Nâng cấp chỗ ngồi',
         willRedeem: 'Sẽ đổi:',
         remainingBalance: 'Số dư còn lại:',
-        redeemDisclaimer: 'Tỷ giá hiện tại: 1 SKY = ~10 VND',
+        redeemDisclaimer: 'Tỷ giá hiện tại: 1 SKY = 100 VND',
         cancel: 'Hủy',
         confirmRedeem: 'Xác nhận đổi',
         tableBooking: 'Booking',
@@ -61,6 +61,14 @@
         insufficientBalance: 'Số dư không đủ',
         redemptionSuccess: 'Đổi điểm thành công!',
         redemptionFailed: 'Đổi điểm thất bại',
+        voucherCreated: 'Voucher mới',
+        voucherHistoryTitle: 'Voucher đã đổi',
+        noVouchers: 'Chưa có voucher',
+        noVouchersDesc: 'Đổi SKY Tokens để nhận voucher sử dụng ở trang thanh toán',
+        copyVoucher: 'Sao chép mã',
+        copied: 'Đã sao chép',
+        expiresAt: 'HSD',
+        expired: 'Đã hết hạn',
         initError: 'Không thể khởi tạo trang SKY Tokens',
         loadError: 'Không thể tải dữ liệu SKY Tokens',
         na: 'N/A'
@@ -97,7 +105,7 @@
         seatUpgrade: 'Seat upgrade',
         willRedeem: 'Will redeem:',
         remainingBalance: 'Remaining balance:',
-        redeemDisclaimer: 'Current rate: 1 SKY = ~10 VND',
+        redeemDisclaimer: 'Current rate: 1 SKY = 100 VND',
         cancel: 'Cancel',
         confirmRedeem: 'Confirm Redeem',
         tableBooking: 'Booking',
@@ -110,6 +118,14 @@
         insufficientBalance: 'Insufficient balance',
         redemptionSuccess: 'Redemption successful!',
         redemptionFailed: 'Redemption failed',
+        voucherCreated: 'New voucher',
+        voucherHistoryTitle: 'Redeemed Vouchers',
+        noVouchers: 'No vouchers yet',
+        noVouchersDesc: 'Redeem SKY Tokens to get vouchers for the payment page',
+        copyVoucher: 'Copy code',
+        copied: 'Copied',
+        expiresAt: 'Expires',
+        expired: 'Expired',
         initError: 'Failed to initialize SKY Tokens Dashboard',
         loadError: 'Failed to load token data',
         na: 'N/A'
@@ -153,6 +169,7 @@
         if (e.key === 'preferredLanguage' || e.key === 'language') {
           applySkyTokensLanguage(e.newValue || getCurrentLanguage());
           renderRewardsTable();
+          renderVoucherList();
         }
       });
 
@@ -160,12 +177,14 @@
         const nextLang = e && e.detail && (e.detail.lang || e.detail.language);
         applySkyTokensLanguage(nextLang || getCurrentLanguage());
         renderRewardsTable();
+        renderVoucherList();
       });
 
       document.addEventListener('languageChanged', function(e) {
         const nextLang = e && e.detail && (e.detail.lang || e.detail.language);
         applySkyTokensLanguage(nextLang || getCurrentLanguage());
         renderRewardsTable();
+        renderVoucherList();
       });
 
     } catch (error) {
@@ -206,6 +225,8 @@
       if (!result.success || !result.bookings) {
         throw new Error(result.message || 'Failed to fetch bookings');
       }
+
+      await syncVouchersFromServer(token, true);
 
       const bookings = result.bookings;
 
@@ -249,6 +270,7 @@
       // Update UI
       updateTokenStats();
       renderRewardsTable();
+      renderVoucherList();
 
       // Hide loading state
       document.getElementById('loadingState').style.display = 'none';
@@ -462,7 +484,18 @@
       }
 
       // Success
+      const redeemInfo = result.redeem || {};
+      const voucher = redeemInfo.voucher || null;
+
       showSuccessToast(t('skyTokens.redemptionSuccess', 'Redemption successful!'));
+
+      if (voucher && voucher.code) {
+        persistRedeemVoucher(voucher);
+        renderVoucherList();
+        const voucherLabel = t('skyTokens.voucherCreated', 'New voucher');
+        const voucherValue = Number(voucher.value || 0);
+        showSuccessToast(`${voucherLabel}: ${voucher.code} (${formatVnd(voucherValue)})`);
+      }
       closeRedeemModal();
       
       // Reload data
@@ -502,6 +535,172 @@
       });
     } catch (e) {
       return '-';
+    }
+  }
+
+  function formatVnd(amount) {
+    const text = new Intl.NumberFormat(currentLanguage === 'en' ? 'en-US' : 'vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      minimumFractionDigits: 0,
+    }).format(amount || 0);
+
+    return text.replace(/₫/g, ' VND');
+  }
+
+  function formatDateTime(dateString) {
+    if (!dateString) return '-';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleString(currentLanguage === 'en' ? 'en-US' : 'vi-VN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (_) {
+      return '-';
+    }
+  }
+
+  function getPersistedVouchers() {
+    try {
+      const raw = JSON.parse(localStorage.getItem('skyplanRedeemVouchers') || '[]');
+      return Array.isArray(raw) ? raw : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  async function syncVouchersFromServer(token, includeExpired = true) {
+    if (!token) return;
+    try {
+      const query = includeExpired ? '?include_expired=true' : '';
+      const response = await fetch(`/api/bookings/redeem-vouchers${query}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) return;
+
+      const result = await response.json();
+      if (!result.success || !Array.isArray(result.vouchers)) return;
+
+      const fromServer = result.vouchers.map((voucher) => ({
+        code: String(voucher.code || '').toUpperCase(),
+        type: String(voucher.type || 'fixed').toLowerCase(),
+        value: Number(voucher.value || 0),
+        minAmount: Number(voucher.min_amount || voucher.minAmount || 0),
+        currency: voucher.currency || 'VND',
+        description: voucher.description || '',
+        redeemType: voucher.redeem_type || voucher.redeemType || 'discount',
+        expiresAt: voucher.expires_at || voucher.expiresAt || null,
+        createdAt: voucher.created_at || voucher.createdAt || null,
+        source: 'sky_redeem_server',
+      })).filter((voucher) => voucher.code && voucher.value > 0);
+
+      localStorage.setItem('skyplanRedeemVouchers', JSON.stringify(fromServer.slice(0, 50)));
+    } catch (error) {
+      console.warn('[SKYTokens] Failed to sync vouchers from server:', error);
+    }
+  }
+
+  function renderVoucherList() {
+    const voucherListEl = document.getElementById('voucherList');
+    const emptyStateEl = document.getElementById('voucherEmptyState');
+    if (!voucherListEl || !emptyStateEl) return;
+
+    const vouchers = getPersistedVouchers();
+    voucherListEl.innerHTML = '';
+
+    if (!vouchers.length) {
+      emptyStateEl.style.display = 'flex';
+      return;
+    }
+
+    emptyStateEl.style.display = 'none';
+    const now = Date.now();
+
+    vouchers.forEach((voucher) => {
+      const code = String(voucher.code || '').toUpperCase();
+      const value = Number(voucher.value || 0);
+      const minAmount = Number(voucher.minAmount || voucher.min_amount || 0);
+      const expiresAt = voucher.expiresAt || voucher.expires_at || null;
+      const expiresMs = expiresAt ? new Date(expiresAt).getTime() : null;
+      const isExpired = Number.isFinite(expiresMs) ? expiresMs < now : false;
+
+      const card = document.createElement('div');
+      card.className = `voucher-card${isExpired ? ' voucher-expired' : ''}`;
+
+      const metaText = isExpired
+        ? t('skyTokens.expired', 'Expired')
+        : `${t('skyTokens.expiresAt', 'Expires')}: ${formatDateTime(expiresAt)}`;
+
+      card.innerHTML = `
+        <div>
+          <div class="voucher-code">${code || '-'}</div>
+          <div class="voucher-meta">${voucher.description || ''}</div>
+        </div>
+        <div class="voucher-meta">
+          <div>${formatVnd(value)}</div>
+          <div>Min: ${formatVnd(minAmount)}</div>
+          <div>${metaText}</div>
+        </div>
+        <div>
+          <button class="voucher-copy-btn" type="button">${t('skyTokens.copyVoucher', 'Copy code')}</button>
+        </div>
+      `;
+
+      const copyBtn = card.querySelector('.voucher-copy-btn');
+      if (copyBtn && code && !isExpired) {
+        copyBtn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(code);
+            copyBtn.textContent = t('skyTokens.copied', 'Copied');
+            setTimeout(() => {
+              copyBtn.textContent = t('skyTokens.copyVoucher', 'Copy code');
+            }, 1200);
+          } catch (_) {
+            showErrorToast('Cannot copy voucher code');
+          }
+        });
+      } else if (copyBtn && isExpired) {
+        copyBtn.disabled = true;
+      }
+
+      voucherListEl.appendChild(card);
+    });
+  }
+
+  function persistRedeemVoucher(voucher) {
+    try {
+      const storageKey = 'skyplanRedeemVouchers';
+      const current = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      const normalized = {
+        code: String(voucher.code || '').toUpperCase(),
+        type: String(voucher.type || 'fixed').toLowerCase(),
+        value: Number(voucher.value || 0),
+        minAmount: Number(voucher.min_amount || voucher.minAmount || 0),
+        currency: voucher.currency || 'VND',
+        description: voucher.description || '',
+        redeemType: voucher.redeem_type || voucher.redeemType || 'discount',
+        expiresAt: voucher.expires_at || voucher.expiresAt || null,
+        source: 'sky_redeem',
+      };
+
+      if (!normalized.code || normalized.value <= 0) {
+        return;
+      }
+
+      const deduped = current.filter((item) => String(item.code || '').toUpperCase() !== normalized.code);
+      deduped.unshift(normalized);
+      localStorage.setItem(storageKey, JSON.stringify(deduped.slice(0, 20)));
+    } catch (error) {
+      console.warn('[SKYTokens] Failed to persist redeem voucher:', error);
     }
   }
 
@@ -575,6 +774,7 @@
    */
   function applyInitialTranslations() {
     applySkyTokensLanguage(getCurrentLanguage());
+    renderVoucherList();
   }
 
   /**

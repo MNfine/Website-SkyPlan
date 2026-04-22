@@ -220,40 +220,59 @@ body {
 }
 
 .method-header {
-  display: flex;
-  align-items: center;
-  padding: 20px 24px;
-  cursor: pointer;
-  background-color: white;
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid rgba(10, 150, 157, 0.14);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #fbfffe 0%, #f8fbfb 100%);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.04);
   transition: all 0.3s ease;
+
+.voucher-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
   position: relative;
 }
 
 .method-header:hover {
   background-color: #f8f9fa;
+  align-items: stretch;
 }
 
 .payment-method.active .method-header {
   background-color: #f0f9f8;
 }
-
-.method-header::after {
+  border: 1px solid #d8e1e6;
+  border-radius: 12px;
+  background: #fff;
   content: '';
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   position: absolute;
+
+.voucher-input-group input:focus {
+  outline: none;
+  border-color: #0a969d;
+  box-shadow: 0 0 0 3px rgba(10, 150, 157, 0.12);
+}
   right: 20px;
   width: 12px;
   height: 12px;
-  border: 2px solid var(--primary-color);
+  background: linear-gradient(135deg, #0a969d 0%, #1fb6a0 100%);
   border-radius: 50%;
   transition: all 0.3s ease;
-}
+  border-radius: 12px;
 
 .payment-method.active .method-header::after {
+  box-shadow: 0 10px 18px rgba(10, 150, 157, 0.16);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
   background-color: var(--primary-color);
   box-shadow: inset 0 0 0 2px white;
 }
-
 .method-header i {
+  box-shadow: 0 14px 22px rgba(10, 150, 157, 0.2);
   font-size: 22px;
   color: var(--primary-color);
   margin-right: 16px;
@@ -683,10 +702,48 @@ body {
   color: #ef4444;
 }
 
+.dynamic-voucher-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.dynamic-voucher-title {
+  display: block;
+  width: 100%;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dynamic-voucher-chip {
+  border: 1px solid rgba(10, 150, 157, 0.18);
+  background: linear-gradient(180deg, #ffffff 0%, #f2fffd 100%);
+  color: #0f766e;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(15, 118, 110, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.dynamic-voucher-chip:hover {
+  background: #0a969d;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(10, 150, 157, 0.18);
+}
+
 .voucher-discount {
   margin-top: 16px;
-  padding-top: 16px;
+  padding: 16px;
   border-top: 1px solid #e1e5e9;
+  background: #f8fffe;
+  border-radius: 14px;
+  border: 1px solid rgba(10, 150, 157, 0.12);
 }
 
 .voucher-discount.hidden {
@@ -699,22 +756,24 @@ body {
 }
 
 .price-item.final-total {
-  border-top: 2px solid var(--primary-color);
+  border-top: 2px solid rgba(10, 150, 157, 0.18);
   margin-top: 12px;
   padding-top: 16px;
   font-size: 18px;
   font-weight: 700;
   color: var(--primary-color);
-  background: #f0f9f8;
-  margin-left: -20px;
-  margin-right: -20px;
-  padding-left: 20px;
-  padding-right: 20px;
-  border-radius: 8px;
+  background: linear-gradient(180deg, #f2fffd 0%, #e8fffb 100%);
+  margin-left: -16px;
+  margin-right: -16px;
+  padding-left: 16px;
+  padding-right: 16px;
+  border-radius: 12px;
 }
 
 .remove-voucher-btn {
   transition: all 0.3s ease;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
 }
 
 .remove-voucher-btn:hover {

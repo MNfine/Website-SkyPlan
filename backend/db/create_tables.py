@@ -8,6 +8,7 @@ from backend.models.booking import Booking, BookingPassenger
 from backend.models.payments import Payment
 from backend.models.seats import Seat
 from backend.models.tickets import Ticket
+from backend.models.sky_voucher import SkyVoucher
 
 if __name__ == '__main__':
     print("Creating all tables in database...")

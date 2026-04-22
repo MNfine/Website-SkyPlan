@@ -133,6 +133,23 @@
                 </div>
             </div>
 
+            <!-- Redeemed Vouchers -->
+            <div class="rewards-section" id="redeemedVouchersSection">
+                <h2 class="section-title" data-i18n="skyTokens.voucherHistoryTitle">Voucher đã đổi</h2>
+
+                <div id="voucherEmptyState" class="empty-state" style="display: none; padding: 28px 20px;">
+                    <div class="empty-icon" style="font-size: 40px; margin-bottom: 12px;">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <h3 class="empty-title" data-i18n="skyTokens.noVouchers">Chưa có voucher</h3>
+                    <p class="empty-text" data-i18n="skyTokens.noVouchersDesc">
+                        Đổi SKY Tokens để nhận voucher sử dụng ở trang thanh toán
+                    </p>
+                </div>
+
+                <div id="voucherList" class="voucher-list"></div>
+            </div>
+
             <!-- How to Use Section -->
             <div class="info-section">
                 <h2 class="section-title" data-i18n="skyTokens.howToUse">Cách sử dụng SKY</h2>
@@ -217,8 +234,8 @@
 
                     <div class="price-disclaimer">
                         <i class="fas fa-info-circle"></i>
-                        <p data-i18n="skyTokens.redeemDisclaimer" data-i18n-fallback="Tỷ giá hiện tại: 1 SKY = ~10 VND">
-                            Tỷ giá hiện tại: 1 SKY = ~10 VND
+                        <p data-i18n="skyTokens.redeemDisclaimer" data-i18n-fallback="Tỷ giá hiện tại: 1 SKY = 100 VND">
+                            Tỷ giá hiện tại: 1 SKY = 100 VND
                         </p>
                     </div>
                 </div>

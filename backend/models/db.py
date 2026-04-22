@@ -70,6 +70,7 @@ def init_db():
 	from .payments import Payment  # noqa: F401  ensure models imported
 	from .flights import Flight  # noqa: F401
 	from .passenger import Passenger  # noqa: F401
+	from .sky_voucher import SkyVoucher  # noqa: F401
 	Base.metadata.create_all(bind=engine)
 	
 	# Apply migrations/alter tables if needed
@@ -95,6 +96,20 @@ def _apply_migrations():
 					print("[DB Migration] Added wallet_address column to users table")
 				except Exception as e:
 					print(f"[DB Migration] wallet_address column already exists or error: {e}")
+					try:
+						conn.rollback()
+					except:
+						pass
+
+			# Add member_tier column if missing
+			if 'member_tier' not in users_columns:
+				try:
+					conn.execute(text("ALTER TABLE users ADD COLUMN member_tier VARCHAR(20) NOT NULL DEFAULT 'Registered'"))
+					conn.execute(text("CREATE INDEX IF NOT EXISTS idx_users_member_tier ON users(member_tier)"))
+					conn.commit()
+					print("[DB Migration] Added member_tier column to users table")
+				except Exception as e:
+					print(f"[DB Migration] member_tier column already exists or error: {e}")
 					try:
 						conn.rollback()
 					except:
@@ -140,4 +155,51 @@ def _apply_migrations():
 						conn.rollback()
 					except:
 						pass
+
+		if 'payments' in inspector.get_table_names():
+			payments_columns = [col['name'] for col in inspector.get_columns('payments')]
+			if 'voucher_code' not in payments_columns:
+				try:
+					conn.execute(text("ALTER TABLE payments ADD COLUMN voucher_code VARCHAR(40)"))
+					conn.execute(text("CREATE INDEX IF NOT EXISTS idx_payments_voucher_code ON payments(voucher_code)"))
+					conn.commit()
+					print("[DB Migration] Added voucher_code column to payments table")
+				except Exception as e:
+					print(f"[DB Migration] voucher_code column already exists or error: {e}")
+					try:
+						conn.rollback()
+					except:
+						pass
+
+		# Ensure sky_vouchers table exists
+		if 'sky_vouchers' not in inspector.get_table_names():
+			try:
+				conn.execute(text("""
+					CREATE TABLE sky_vouchers (
+						id SERIAL PRIMARY KEY,
+						user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+						code VARCHAR(40) NOT NULL UNIQUE,
+						voucher_type VARCHAR(20) NOT NULL DEFAULT 'fixed',
+						redeem_type VARCHAR(20) NOT NULL DEFAULT 'discount',
+						value NUMERIC(12,2) NOT NULL,
+						min_amount NUMERIC(12,2) NOT NULL DEFAULT 0,
+						currency VARCHAR(10) NOT NULL DEFAULT 'VND',
+						description VARCHAR(255),
+						expires_at TIMESTAMP NOT NULL,
+						is_used BOOLEAN NOT NULL DEFAULT FALSE,
+						used_at TIMESTAMP NULL,
+						created_at TIMESTAMP NOT NULL DEFAULT NOW()
+					)
+				"""))
+				conn.execute(text("CREATE INDEX IF NOT EXISTS idx_sky_vouchers_user_id ON sky_vouchers(user_id)"))
+				conn.execute(text("CREATE INDEX IF NOT EXISTS idx_sky_vouchers_expires_at ON sky_vouchers(expires_at)"))
+				conn.execute(text("CREATE INDEX IF NOT EXISTS idx_sky_vouchers_is_used ON sky_vouchers(is_used)"))
+				conn.commit()
+				print("[DB Migration] Created sky_vouchers table")
+			except Exception as e:
+				print(f"[DB Migration] sky_vouchers table creation failed or already exists: {e}")
+				try:
+					conn.rollback()
+				except:
+					pass
 

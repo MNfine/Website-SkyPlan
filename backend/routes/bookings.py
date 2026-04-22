@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from flask import Blueprint, request, jsonify, current_app
 from backend.utils.blockchain_admin import run_post_payment_blockchain_flow
@@ -9,6 +9,7 @@ from backend.models.db import session_scope
 from backend.models.user import User
 from backend.models.passenger import Passenger
 from backend.models.booking import Booking, BookingPassenger, BookingStatus, TripType, FareClass
+from backend.models.sky_voucher import SkyVoucher
 from sqlalchemy.orm import joinedload
 from backend.models.flights import Flight
 from backend.utils.blockchain import generate_booking_hash_simple, generate_booking_state_hash
@@ -20,6 +21,10 @@ from backend.utils.blockchain_verifier import (
 )
 
 bookings_bp = Blueprint('bookings', __name__)
+
+
+SKY_TO_VND_RATE = Decimal('100')
+SKY_REDEEM_VOUCHER_EXPIRY_DAYS = 30
 
 
 def _get_user_id_from_bearer() -> int | None:
@@ -41,6 +46,37 @@ def _normalize_tx_hash(tx_hash: str | None) -> str | None:
 	if not all(ch in '0123456789abcdef' for ch in candidate):
 		return None
 	return '0x' + candidate
+
+
+def _build_sky_redeem_voucher(user_id: int, amount: Decimal, redeem_type: str) -> dict:
+	base_discount_vnd = (amount * SKY_TO_VND_RATE).quantize(Decimal('1'))
+
+	if redeem_type == 'upgrade':
+		discount_vnd = (base_discount_vnd * Decimal('1.2')).quantize(Decimal('1'))
+		min_order_vnd = max(Decimal('800000'), (discount_vnd * Decimal('2')).quantize(Decimal('1')))
+		prefix = 'SKYUP'
+		description = 'Voucher nâng hạng chỗ ngồi từ SKY Tokens'
+	else:
+		discount_vnd = base_discount_vnd
+		min_order_vnd = max(Decimal('300000'), (discount_vnd * Decimal('3')).quantize(Decimal('1')))
+		prefix = 'SKYDIS'
+		description = 'Voucher giảm giá vé máy bay từ SKY Tokens'
+
+	now_utc = datetime.utcnow()
+	code = f"{prefix}{now_utc.strftime('%y%m%d%H%M%S')}{user_id % 1000:03d}"
+	expires_at = now_utc + timedelta(days=SKY_REDEEM_VOUCHER_EXPIRY_DAYS)
+
+	return {
+		'code': code,
+		'type': 'fixed',
+		'value': int(discount_vnd),
+		'min_amount': int(min_order_vnd),
+		'currency': 'VND',
+		'redeem_type': redeem_type,
+		'description': description,
+		'expires_at': expires_at.isoformat() + 'Z',
+		'rate_vnd_per_sky': int(SKY_TO_VND_RATE),
+	}
 
 
 @bookings_bp.route('/passenger', methods=['POST'])
@@ -899,6 +935,21 @@ def redeem_sky_tokens():
 
 		new_total_redeemed = (total_redeemed + amount).quantize(Decimal('0.01'))
 		new_balance = (total_earned - new_total_redeemed).quantize(Decimal('0.01'))
+		voucher = _build_sky_redeem_voucher(user_id=user_id, amount=amount, redeem_type=redeem_type)
+
+		db_voucher = SkyVoucher(
+			user_id=user_id,
+			code=voucher['code'],
+			voucher_type=voucher.get('type') or 'fixed',
+			redeem_type=voucher.get('redeem_type') or redeem_type,
+			value=Decimal(str(voucher.get('value') or 0)).quantize(Decimal('0.01')),
+			min_amount=Decimal(str(voucher.get('min_amount') or 0)).quantize(Decimal('0.01')),
+			currency=voucher.get('currency') or 'VND',
+			description=voucher.get('description'),
+			expires_at=datetime.fromisoformat(str(voucher['expires_at']).replace('Z', '')),
+			is_used=False,
+		)
+		session.add(db_voucher)
 
 		return jsonify({
 			'success': True,
@@ -906,11 +957,41 @@ def redeem_sky_tokens():
 			'redeem': {
 				'amount': float(amount),
 				'redeem_type': redeem_type,
+				'exchange_rate_vnd_per_sky': int(SKY_TO_VND_RATE),
+				'voucher': voucher,
 				'updated_bookings': updated_booking_codes,
 				'total_earned': float(total_earned),
 				'total_redeemed': float(new_total_redeemed),
 				'remaining_balance': float(new_balance),
 			}
+		}), 200
+
+
+@bookings_bp.route('/redeem-vouchers', methods=['GET'])
+def get_redeem_vouchers():
+	"""Return SKY redeem vouchers for authenticated user."""
+	user_id = _get_user_id_from_bearer()
+	if not user_id:
+		return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+
+	include_expired_raw = str(request.args.get('include_expired') or 'false').strip().lower()
+	include_expired = include_expired_raw in ('1', 'true', 'yes')
+
+	now_utc = datetime.utcnow()
+	with session_scope() as session:
+		query = session.query(SkyVoucher).filter(
+			SkyVoucher.user_id == user_id,
+			SkyVoucher.is_used == False,
+		)
+		if not include_expired:
+			query = query.filter(SkyVoucher.expires_at >= now_utc)
+
+		vouchers = query.order_by(SkyVoucher.created_at.desc()).all()
+
+		return jsonify({
+			'success': True,
+			'count': len(vouchers),
+			'vouchers': [voucher.as_dict() for voucher in vouchers],
 		}), 200
 
 

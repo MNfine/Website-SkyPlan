@@ -3,9 +3,12 @@ from flask import Blueprint, request, jsonify, current_app
 import re
 import jwt
 from datetime import datetime
+from decimal import Decimal
+from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash
 
+from backend.models.booking import Booking, BookingStatus
 from backend.models.user import User
 from backend.models.db import session_scope, get_session
 from backend.utils.wallet_auth import (
@@ -18,6 +21,32 @@ from backend.utils.wallet_auth import (
 
 # Create blueprint for auth routes
 auth_bp = Blueprint('auth', __name__)
+
+
+def _calculate_member_tier(total_earned):
+    try:
+        earned = Decimal(str(total_earned or 0))
+    except Exception:
+        earned = Decimal('0')
+
+    if earned >= Decimal('3000'):
+        return 'Platinum'
+    if earned >= Decimal('1000'):
+        return 'Gold'
+    if earned >= Decimal('500'):
+        return 'Silver'
+    return 'Registered'
+
+
+def _calculate_member_tier_from_bookings(bookings):
+    total_earned_value = Decimal('0')
+    total_redeemed_value = Decimal('0')
+
+    for booking in bookings:
+        total_earned_value += Decimal(str(booking.sky_reward_amount or 0))
+        total_redeemed_value += Decimal(str(booking.sky_redeemed_amount or 0))
+
+    return _calculate_member_tier(total_earned_value), total_earned_value, total_redeemed_value
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
@@ -193,17 +222,44 @@ def get_profile():
         # Get user from database using session_scope
         with session_scope() as session:
             user = session.query(User).filter_by(id=user_id).first()
-            
             if not user:
                 return jsonify({
                     'success': False,
-                'message': 'User not found'
-            }), 404
+                    'message': 'User not found'
+                }), 404
+
+            booking_filters = [Booking.user_id == user_id]
+            if user.wallet_address:
+                booking_filters.append(Booking.wallet_address == user.wallet_address)
+
+            bookings = session.query(Booking).filter(
+                or_(*booking_filters)
+            ).all()
+
+            bookings_count = len(bookings)
+            computed_tier, total_earned_value, total_redeemed_value = _calculate_member_tier_from_bookings(bookings)
+
+            total_available_value = max(Decimal('0'), total_earned_value - total_redeemed_value)
+            member_tier = user.member_tier or computed_tier
+
+            if user.member_tier != computed_tier:
+                user.member_tier = computed_tier
+                member_tier = computed_tier
+
+            user_data = user.as_dict()
+            user_data.update({
+                'member_tier': member_tier,
+                'tier': member_tier,
+                'total_earned_sky': float(total_earned_value),
+                'total_redeemed_sky': float(total_redeemed_value),
+                'total_available_sky': float(total_available_value),
+                'sky_bookings_count': bookings_count,
+            })
             
         # Return user profile data
         return jsonify({
             'success': True,
-            'user': user.as_dict()
+            'user': user_data
         }), 200
         
     except Exception as e:

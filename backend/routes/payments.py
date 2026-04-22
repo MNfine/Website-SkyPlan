@@ -8,6 +8,7 @@ from backend.models.payments import Payment
 from backend.models.booking import Booking, BookingStatus
 from backend.models.user import User
 from backend.models.tickets import Ticket
+from backend.models.sky_voucher import SkyVoucher
 from backend.config import VNPayConfig
 from backend.utils.blockchain_admin import run_post_payment_blockchain_flow
 import urllib.parse
@@ -18,6 +19,23 @@ import re
 
 
 payment_bp = Blueprint('payment', __name__)
+
+
+def _consume_sky_voucher(session, voucher_code: str | None, user_id: int | None = None) -> bool:
+	voucher_code = str(voucher_code or '').strip().upper()
+	if not voucher_code:
+		return False
+
+	query = session.query(SkyVoucher).filter(SkyVoucher.code == voucher_code)
+	if user_id is not None:
+		query = query.filter(SkyVoucher.user_id == user_id)
+
+	voucher = query.first()
+	if not voucher:
+		return False
+
+	session.delete(voucher)
+	return True
 
 
 def _run_blockchain_post_payment(booking):
@@ -183,6 +201,7 @@ def vnpay_return():
 
 						# Trigger blockchain flow (record -> mint NFT -> mint SKY)
 						blockchain_result = _run_blockchain_post_payment(payment.booking)
+						_consume_sky_voucher(session, payment.voucher_code, payment.booking.user_id)
 						session.add(payment.booking)
 
 					session.commit()
@@ -287,6 +306,7 @@ def create_payment():
 			booking_code=booking_code,
 			amount=amount_dec,
 			provider=provider,
+			voucher_code=str(data.get('voucher_code') or '').strip().upper() or None,
 			status='PENDING'
 		)
 		session.add(payment)
@@ -401,6 +421,7 @@ def confirm_payment():
 
 			# Trigger blockchain flow (record -> mint NFT -> mint SKY)
 			blockchain_result = _run_blockchain_post_payment(payment.booking)
+			_consume_sky_voucher(session, payment.voucher_code, payment.booking.user_id)
 
 		elif status == 'FAILED':
 			# Giữ booking để user có thể retry, không cancel luôn
@@ -498,6 +519,7 @@ def mark_paid():
 			booking_code=booking.booking_code,
 			amount=amount_dec,
 			provider=provider,
+			voucher_code=str(data.get('voucher_code') or '').strip().upper() or None,
 			status='SUCCESS',
 			transaction_id=transaction_id
 		)
@@ -515,6 +537,7 @@ def mark_paid():
 
 		# Trigger blockchain flow (record -> mint NFT -> mint SKY)
 		blockchain_result = _run_blockchain_post_payment(booking)
+		_consume_sky_voucher(session, payment.voucher_code, booking.user_id)
 		session.add(booking)
 
 		session.commit()

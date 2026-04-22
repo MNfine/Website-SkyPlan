@@ -337,6 +337,83 @@
   color: white;
 }
 
+.voucher-list {
+  display: grid;
+  gap: 14px;
+}
+
+.voucher-card {
+  position: relative;
+  border: 1px solid rgba(0, 168, 150, 0.12);
+  border-left: 4px solid var(--skyplan-primary);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr auto;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfffe 100%);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.voucher-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+  border-color: rgba(0, 168, 150, 0.2);
+}
+
+.voucher-code {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  color: var(--skyplan-primary-dark);
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  word-break: break-all;
+}
+
+.voucher-meta {
+  color: var(--skyplan-text-medium);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.voucher-copy-btn {
+  border: 1px solid rgba(0, 168, 150, 0.25);
+  background: linear-gradient(180deg, #ffffff 0%, #f2fffd 100%);
+  color: var(--skyplan-primary);
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 118px;
+  box-shadow: 0 4px 12px rgba(0, 168, 150, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.voucher-copy-btn:hover {
+  background: var(--skyplan-primary);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(0, 168, 150, 0.18);
+}
+
+.voucher-expired {
+  opacity: 0.65;
+}
+
+@media (max-width: 768px) {
+  .voucher-card {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .voucher-copy-btn {
+    width: 100%;
+  }
+}
+
 /* Info Section */
 .info-section {
   background: white;

@@ -95,6 +95,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  function formatPoints(value) {
+    var numeric = Number(value);
+    if (!isFinite(numeric)) numeric = 0;
+    return new Intl.NumberFormat(getCurrentLang() === 'en' ? 'en-US' : 'vi-VN').format(numeric);
+  }
+
+  function getTierInfo(totalEarned) {
+    var earned = Number(totalEarned);
+    if (!isFinite(earned)) earned = 0;
+
+    if (earned >= 3000) return { tier: 'Platinum', className: 'tier-platinum' };
+    if (earned >= 1000) return { tier: 'Gold', className: 'tier-gold' };
+    if (earned >= 500) return { tier: 'Silver', className: 'tier-silver' };
+    return { tier: 'Registered', className: 'tier-registered' };
+  }
+
   function clearError(fieldId) {
     var field = document.getElementById(fieldId);
     var errorDiv = document.getElementById(fieldId + 'Error');
@@ -275,12 +291,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const memberIdEl = document.getElementById('memberId');
         const memberTierEl = document.getElementById('memberTier');
         const memberPointsEl = document.getElementById('memberPoints');
+        const totalEarned = data.user.total_earned_sky ?? data.user.totalEarned ?? data.user.points ?? 0;
+        const tierInfo = getTierInfo(totalEarned);
 
         if (accountEmailEl && data.user.email) accountEmailEl.textContent = data.user.email;
         if (accountPhoneEl && (data.user.phone || data.user.mobile)) accountPhoneEl.textContent = data.user.phone || data.user.mobile;
         if (memberIdEl && (data.user.memberId || data.user.id)) memberIdEl.textContent = data.user.memberId || data.user.id;
-        if (memberTierEl && data.user.tier) memberTierEl.textContent = data.user.tier;
-        if (memberPointsEl && (data.user.points || data.user.loyaltyPoints)) memberPointsEl.textContent = (data.user.points || data.user.loyaltyPoints) + ' ' + (memberPointsEl.querySelector('[data-i18n]') ? '' : '');
+        if (memberTierEl) {
+          memberTierEl.textContent = data.user.member_tier || data.user.tier || tierInfo.tier;
+          memberTierEl.classList.remove('tier-registered', 'tier-silver', 'tier-gold', 'tier-platinum');
+          memberTierEl.classList.add(tierInfo.className);
+        }
+        if (memberPointsEl) {
+          const pointsLabel = getTranslation('profile.account.pointsUnit');
+          memberPointsEl.innerHTML = formatPoints(totalEarned) + '<span data-i18n="profile.account.pointsUnit">' + pointsLabel + '</span>';
+        }
 
         // Fill legacy/profile-name and profile-email if present (some templates use these ids)
         const profileNameEl = document.getElementById('profile-name');

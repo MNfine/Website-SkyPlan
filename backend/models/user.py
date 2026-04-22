@@ -24,6 +24,8 @@ class User(Base):
     # Wallet authentication fields
     wallet_address = Column(String(42), unique=True, nullable=True, index=True)  # Ethereum address (0x + 40 hex)
     wallet_nonce = Column(String(64), nullable=True)  # Random nonce for signature verification
+
+    member_tier = Column(String(20), nullable=False, default="Registered", index=True)
     
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
@@ -76,6 +78,7 @@ class User(Base):
             "email": self.email,
             "phone": self.phone,
             "wallet_address": self.wallet_address,
+            "member_tier": self.member_tier,
             "is_active": self.is_active,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,

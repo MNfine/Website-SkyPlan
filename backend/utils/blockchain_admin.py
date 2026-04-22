@@ -12,6 +12,8 @@ from eth_account import Account
 from flask import current_app, has_app_context
 from dotenv import load_dotenv
 
+from backend.models.booking import Booking, BookingStatus
+
 
 def _log_info(message: str) -> None:
     if has_app_context():
@@ -32,6 +34,75 @@ def _log_error(message: str) -> None:
         current_app.logger.error(message)
         return
     print(message)
+
+
+def _member_tier_from_earned(total_earned: Decimal) -> str:
+    if total_earned >= Decimal('3000'):
+        return 'Platinum'
+    if total_earned >= Decimal('1000'):
+        return 'Gold'
+    if total_earned >= Decimal('500'):
+        return 'Silver'
+    return 'Registered'
+
+
+def _sky_reward_for_tier(member_tier: str) -> Decimal:
+    reward_map = {
+        'Registered': Decimal('100'),
+        'Silver': Decimal('110'),
+        'Gold': Decimal('120'),
+        'Platinum': Decimal('150'),
+    }
+    return reward_map.get(member_tier, Decimal('100'))
+
+
+def _calculate_tier_from_total_earned(total_earned: Decimal) -> str:
+    if total_earned >= Decimal('3000'):
+        return 'Platinum'
+    if total_earned >= Decimal('1000'):
+        return 'Gold'
+    if total_earned >= Decimal('500'):
+        return 'Silver'
+    return 'Registered'
+
+
+def _calculate_booking_sky_reward(booking) -> tuple[Decimal, str]:
+    total_earned = Decimal('0')
+
+    user = getattr(booking, 'user', None)
+    bookings = getattr(user, 'bookings', None) if user is not None else None
+
+    if bookings is not None:
+        for item in bookings:
+            if getattr(item, 'id', None) == getattr(booking, 'id', None):
+                continue
+            if not bool(getattr(item, 'sky_minted', False)):
+                continue
+            try:
+                total_earned += Decimal(str(getattr(item, 'sky_reward_amount', 0) or 0))
+            except Exception:
+                continue
+
+    member_tier = _calculate_tier_from_total_earned(total_earned)
+    return _sky_reward_for_tier(member_tier), member_tier
+
+
+def _calculate_user_tier(user) -> tuple[str, Decimal, Decimal]:
+    total_earned = Decimal('0')
+    total_redeemed = Decimal('0')
+
+    bookings = getattr(user, 'bookings', None) if user is not None else None
+    if bookings is not None:
+        for item in bookings:
+            if not bool(getattr(item, 'sky_minted', False)):
+                continue
+            try:
+                total_earned += Decimal(str(getattr(item, 'sky_reward_amount', 0) or 0))
+                total_redeemed += Decimal(str(getattr(item, 'sky_redeemed_amount', 0) or 0))
+            except Exception:
+                continue
+
+    return _calculate_tier_from_total_earned(total_earned), total_earned, total_redeemed
 
 
 BOOKING_REGISTRY_WRITE_ABI = [
@@ -554,7 +625,7 @@ def run_post_payment_blockchain_flow(booking, token_uri: str | None = None) -> D
                 result["message"] = f"mint_sky setAllowed failed: {e}"
                 _log_error(f"[blockchain-flow] step failed booking={booking.booking_code}: {result['message']}")
                 return result
-            amount_human = Decimal(config.get("reward_amount") or "100")
+            amount_human, member_tier = _calculate_booking_sky_reward(booking)
             amount_wei = int(amount_human * (10 ** 18))
 
             try:
@@ -572,10 +643,15 @@ def run_post_payment_blockchain_flow(booking, token_uri: str | None = None) -> D
             booking.sky_minted = True
             booking.sky_mint_tx_hash = mint_tx
             booking.sky_reward_amount = amount_human
+
+            if getattr(booking, 'user', None) is not None:
+                user_tier, _, _ = _calculate_user_tier(booking.user)
+                booking.user.member_tier = user_tier
+
             result["steps"]["mint_sky"] = {
                 "executed": True,
                 "tx_hash": mint_tx,
-                "message": f"setAllowed tx={allow_tx}; minted {amount_human} SKY",
+                "message": f"setAllowed tx={allow_tx}; minted {amount_human} SKY for {member_tier}",
             }
         else:
             result["steps"]["mint_sky"]["message"] = "Skipped (already minted)"

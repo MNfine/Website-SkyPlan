@@ -39,6 +39,7 @@ from backend.models.payments import Payment
 from backend.models.booking import Booking, BookingPassenger
 from backend.models.seats import Seat
 from backend.models.tickets import Ticket
+from backend.models.sky_voucher import SkyVoucher
 
 from os import getenv
 from sqlalchemy import create_engine

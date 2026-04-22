@@ -110,7 +110,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const paymentData = {
       orderInfo: orderInfo,
       amount: amount,
-      txnRef: txnRef
+      txnRef: txnRef,
+      voucher_code: localStorage.getItem('skyplanAppliedVoucherCode') || window.__skyplanAppliedVoucherCode || null
     };
 
     // Create a Payment record on backend first so VNPay return can reconcile
@@ -124,7 +125,12 @@ document.addEventListener('DOMContentLoaded', function() {
             'Content-Type': 'application/json',
             ...(token ? { 'Authorization': `Bearer ${token}` } : {})
           },
-          body: JSON.stringify({ booking_code: bookingCode, amount: amount, provider: 'vnpay' })
+          body: JSON.stringify({
+            booking_code: bookingCode,
+            amount: amount,
+            provider: 'vnpay',
+            voucher_code: localStorage.getItem('skyplanAppliedVoucherCode') || window.__skyplanAppliedVoucherCode || null
+          })
         });
         const body = await res.json();
         if (!res.ok || !body.success) {

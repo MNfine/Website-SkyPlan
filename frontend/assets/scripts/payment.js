@@ -209,7 +209,8 @@ async function markBookingPaidOnBackend(provider) {
     const payload = {
       booking_code: bookingCode,
       amount: amount,
-      provider: provider || 'manual'
+      provider: provider || 'manual',
+      voucher_code: window.__skyplanAppliedVoucherCode || null
     };
     const headers = {
       'Content-Type': 'application/json',
@@ -639,6 +640,19 @@ async function showPaymentSuccess(provider = 'manual') {
     localStorage.setItem('amount_' + bookingCode, amount);
     localStorage.setItem('lastBookingCode', bookingCode);
   }
+
+  if (window.__skyplanAppliedVoucherCode) {
+    try {
+      const key = 'skyplanRedeemVouchers';
+      const current = JSON.parse(localStorage.getItem(key) || '[]');
+      const filtered = Array.isArray(current)
+        ? current.filter((item) => String(item?.code || '').toUpperCase() !== String(window.__skyplanAppliedVoucherCode).toUpperCase())
+        : [];
+      localStorage.setItem(key, JSON.stringify(filtered));
+    } catch (_) {}
+    window.__skyplanAppliedVoucherCode = null;
+    localStorage.removeItem('skyplanAppliedVoucherCode');
+  }
   localStorage.setItem('lastTxnRef', bookingCode);
   localStorage.setItem('lastAmount', amount);
   try { localStorage.removeItem('pendingBookingPayload'); } catch (_) {}
@@ -752,7 +766,7 @@ function simulateVNPayTest(paymentData) {
       <body>
         <div class="container">
           <div class="logo">🏦 VNPAY TEST</div>
-          <div class="amount">${paymentData.amount.toLocaleString()} ₫</div>
+          <div class="amount">${paymentData.amount.toLocaleString('vi-VN')} VND</div>
           <div class="info">
             <strong>Nội dung:</strong> ${paymentData.orderInfo}<br>
             <strong>Mã giao dịch:</strong> ${paymentData.txnRef}
@@ -917,15 +931,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Voucher functionality
 function initializeVoucher() {
-  const voucherInput = document.getElementById('voucherInput');
-  const applyBtn = document.getElementById('applyVoucherBtn');
+  const voucherInput = document.getElementById('voucherInput') || document.getElementById('voucherCode');
+  const applyBtn = document.getElementById('applyVoucherBtn') || document.getElementById('applyVoucher');
   const voucherMessage = document.getElementById('voucherMessage');
   const voucherDiscount = document.getElementById('voucherDiscount');
+  const voucherListEl = document.getElementById('dynamicVoucherList');
   
   if (!voucherInput || !applyBtn) return;
   
   // Voucher codes and their conditions
-  const vouchers = {
+  const baseVouchers = {
     'XMAS10': {
       type: 'percentage',
       value: 10,
@@ -945,6 +960,154 @@ function initializeVoucher() {
       description: 'Giảm 200.000 VND cho đơn từ 2.000.000 VND'
     }
   };
+
+  function getDynamicRedeemVouchers() {
+    try {
+      const key = 'skyplanRedeemVouchers';
+      const raw = JSON.parse(localStorage.getItem(key) || '[]');
+      if (!Array.isArray(raw)) return {};
+
+      const now = Date.now();
+      const map = {};
+      const validList = [];
+
+      raw.forEach((item) => {
+        const code = String(item?.code || '').trim().toUpperCase();
+        const type = String(item?.type || 'fixed').toLowerCase();
+        const value = Number(item?.value || 0);
+        const minAmount = Number(item?.minAmount || item?.min_amount || 0);
+        const expiresAt = item?.expiresAt || item?.expires_at || null;
+        const expiryMs = expiresAt ? new Date(expiresAt).getTime() : null;
+        const isExpired = Number.isFinite(expiryMs) ? expiryMs < now : false;
+
+        if (!code || !Number.isFinite(value) || value <= 0 || isExpired) {
+          return;
+        }
+
+        const normalized = {
+          type: type === 'percentage' ? 'percentage' : 'fixed',
+          value,
+          minAmount: Number.isFinite(minAmount) ? minAmount : 0,
+          description: item?.description || `Voucher SKY ${code}`,
+          source: item?.source || 'sky_redeem',
+          expiresAt,
+        };
+
+        map[code] = normalized;
+        validList.push({ code, ...normalized });
+      });
+
+      localStorage.setItem('skyplanRedeemVouchers', JSON.stringify(validList));
+      return map;
+    } catch (_) {
+      return {};
+    }
+  }
+
+  function updateAvailableVoucherHint(voucherMap) {
+    const hintEl = document.querySelector('[data-i18n="availableVouchers"]');
+    if (!hintEl) return;
+    const codes = Object.keys(voucherMap);
+    if (!codes.length) return;
+
+    const lang = ((localStorage.getItem('preferredLanguage') || localStorage.getItem('language') || 'vi').toLowerCase() === 'en') ? 'en' : 'vi';
+    const codeList = codes.slice(0, 8).join(', ');
+    hintEl.textContent = lang === 'en' ? `Available codes: ${codeList}` : `Mã khả dụng: ${codeList}`;
+  }
+
+  function renderDynamicVoucherList(voucherMap) {
+    if (!voucherListEl) return;
+    const entries = Object.entries(voucherMap)
+      .filter(([code]) => code.startsWith('SKYDIS') || code.startsWith('SKYUP'));
+
+    if (!entries.length) {
+      voucherListEl.innerHTML = '';
+      return;
+    }
+
+    const lang = ((localStorage.getItem('preferredLanguage') || localStorage.getItem('language') || 'vi').toLowerCase() === 'en') ? 'en' : 'vi';
+    const title = lang === 'en' ? 'Redeemed SKY vouchers:' : 'Voucher từ SKY đã đổi:';
+    const useLabel = lang === 'en' ? 'Use' : 'Dùng mã';
+
+    voucherListEl.innerHTML = `<small class="dynamic-voucher-title">${title}</small>`;
+    entries.slice(0, 6).forEach(([code, voucher]) => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'dynamic-voucher-chip';
+      const valueText = formatCurrency(Number(voucher.value || 0));
+      item.textContent = `${code} (${valueText})`;
+      item.title = `${useLabel}: ${code}`;
+      item.addEventListener('click', () => {
+        voucherInput.value = code;
+      });
+      voucherListEl.appendChild(item);
+    });
+  }
+
+  let vouchers = {
+    ...baseVouchers,
+    ...getDynamicRedeemVouchers(),
+  };
+  updateAvailableVoucherHint(vouchers);
+  renderDynamicVoucherList(vouchers);
+
+  async function syncServerVouchers() {
+    try {
+      const token = (typeof getAuthTokenForPayment === 'function') ? getAuthTokenForPayment() : '';
+      if (!token) return;
+
+      const response = await fetch('/api/bookings/redeem-vouchers', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) return;
+
+      const result = await response.json();
+      if (!result.success || !Array.isArray(result.vouchers)) return;
+
+      const serverMap = {};
+      const normalizedList = [];
+      result.vouchers.forEach((item) => {
+        const code = String(item?.code || '').trim().toUpperCase();
+        const value = Number(item?.value || 0);
+        const minAmount = Number(item?.min_amount || item?.minAmount || 0);
+        if (!code || !Number.isFinite(value) || value <= 0) return;
+
+        const normalized = {
+          type: String(item?.type || 'fixed').toLowerCase() === 'percentage' ? 'percentage' : 'fixed',
+          value,
+          minAmount: Number.isFinite(minAmount) ? minAmount : 0,
+          description: item?.description || `Voucher SKY ${code}`,
+          source: 'sky_redeem_server',
+          expiresAt: item?.expires_at || item?.expiresAt || null,
+        };
+
+        serverMap[code] = normalized;
+        normalizedList.push({ code, ...normalized });
+      });
+
+      if (!Object.keys(serverMap).length) return;
+
+      try {
+        localStorage.setItem('skyplanRedeemVouchers', JSON.stringify(normalizedList.slice(0, 50)));
+      } catch (_) {}
+
+      vouchers = {
+        ...vouchers,
+        ...serverMap,
+      };
+      updateAvailableVoucherHint(vouchers);
+      renderDynamicVoucherList(vouchers);
+    } catch (_) {
+      // fallback silently to localStorage vouchers only
+    }
+  }
+
+  syncServerVouchers();
   
   let appliedVoucher = null;
   const originalAmount = parseFloat(document.getElementById('totalAmount').textContent.replace(/[^\d]/g, ''));
@@ -971,6 +1134,8 @@ function initializeVoucher() {
     
     // Apply voucher
     appliedVoucher = { code, ...voucher };
+    window.__skyplanAppliedVoucherCode = code;
+    localStorage.setItem('skyplanAppliedVoucherCode', code);
     const discount = calculateDiscount(originalAmount, voucher);
     const finalAmount = originalAmount - discount;
     
@@ -992,7 +1157,7 @@ function initializeVoucher() {
     if (voucher.type === 'percentage') {
       return Math.round(amount * voucher.value / 100);
     } else {
-      return voucher.value;
+      return Math.min(amount, voucher.value);
     }
   }
   
@@ -1006,7 +1171,7 @@ function initializeVoucher() {
       style: 'currency',
       currency: 'VND',
       minimumFractionDigits: 0
-    }).format(amount).replace('₫', 'VND');
+    }).format(amount).replace(/₫/g, ' VND');
   }
   
   function addRemoveVoucherButton() {
@@ -1027,6 +1192,8 @@ function initializeVoucher() {
     removeBtn.addEventListener('click', function() {
       // Reset voucher
       appliedVoucher = null;
+      window.__skyplanAppliedVoucherCode = null;
+      localStorage.removeItem('skyplanAppliedVoucherCode');
       voucherDiscount.classList.add('hidden');
       voucherInput.value = '';
       voucherInput.disabled = false;
