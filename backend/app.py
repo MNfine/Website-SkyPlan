@@ -235,6 +235,11 @@ def create_app():
     def support_page():
         """Support page"""
         return send_from_directory(app.template_folder, 'support.html')
+
+    @app.route('/checkin-online')
+    def checkin_online_page():
+        """Online check-in page"""
+        return send_from_directory(app.template_folder, 'checkin-online.html')
         
     @app.route('/cancel')
     def cancel_page():

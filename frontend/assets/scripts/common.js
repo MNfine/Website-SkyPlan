@@ -130,6 +130,7 @@ window.applyHeaderTranslations = function(lang) {
     const normalizedLang = String(lang || '').toLowerCase() === 'en' ? 'en' : 'vi';
     const dict = {
         en: {
+            checkinOnlineText: 'Online Check-in',
             helpText: 'Help',
             myTripsText: 'My Trips',
             profileText: 'Profile',
@@ -143,6 +144,7 @@ window.applyHeaderTranslations = function(lang) {
             disconnectText: 'Disconnect'
         },
         vi: {
+            checkinOnlineText: 'Check-in online',
             helpText: 'Trợ giúp',
             myTripsText: 'Chuyến đi của tôi',
             profileText: 'Hồ sơ cá nhân',

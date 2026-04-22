@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from decimal import Decimal
+import re
+import unicodedata
 from flask import Blueprint, request, jsonify, current_app
 from backend.utils.blockchain_admin import run_post_payment_blockchain_flow
 from web3 import Web3
@@ -25,6 +27,16 @@ bookings_bp = Blueprint('bookings', __name__)
 
 SKY_TO_VND_RATE = Decimal('100')
 SKY_REDEEM_VOUCHER_EXPIRY_DAYS = 30
+
+
+def _normalize_name_for_match(value: str) -> str:
+	text = (value or '').strip().lower()
+	if not text:
+		return ''
+	text = unicodedata.normalize('NFD', text)
+	text = ''.join(ch for ch in text if unicodedata.category(ch) != 'Mn')
+	text = re.sub(r'\s+', ' ', text)
+	return text
 
 
 def _get_user_id_from_bearer() -> int | None:
@@ -610,6 +622,86 @@ def get_booking(booking_code):
 		return jsonify({
 			'success': True,
 			'booking': booking.as_dict()
+		}), 200
+
+
+@bookings_bp.route('/checkin/lookup', methods=['POST'])
+def lookup_booking_for_checkin():
+	"""Lookup booking for online check-in by booking code and passenger full name."""
+	data = request.get_json(silent=True) or {}
+	booking_code = str(data.get('booking_code') or '').strip().upper()
+	full_name = str(data.get('full_name') or '').strip()
+
+	if not booking_code or not full_name:
+		return jsonify({
+			'success': False,
+			'message': 'booking_code and full_name are required'
+		}), 400
+
+	with session_scope() as session:
+		booking = session.query(Booking).options(
+			joinedload(Booking.passengers).joinedload(BookingPassenger.passenger),
+			joinedload(Booking.passengers).joinedload(BookingPassenger.seat),
+			joinedload(Booking.outbound_flight),
+			joinedload(Booking.inbound_flight)
+		).filter_by(booking_code=booking_code).first()
+
+		if not booking:
+			return jsonify({'success': False, 'message': 'Không tìm thấy mã đặt chỗ'}), 404
+
+		if booking.status in [BookingStatus.CANCELLED, BookingStatus.EXPIRED, BookingStatus.PAYMENT_FAILED]:
+			return jsonify({
+				'success': False,
+				'message': f'Booking ở trạng thái {booking.status.value}, không thể check-in'
+			}), 400
+
+		normalized_input = _normalize_name_for_match(full_name)
+		matched_bp = None
+		matched_name = ''
+
+		for bp in booking.passengers or []:
+			passenger = bp.passenger
+			if not passenger:
+				continue
+			full_name_forward = f"{passenger.firstname} {passenger.lastname}".strip()
+			full_name_reverse = f"{passenger.lastname} {passenger.firstname}".strip()
+			candidates = [full_name_forward, full_name_reverse]
+
+			for candidate in candidates:
+				if _normalize_name_for_match(candidate) == normalized_input:
+					matched_bp = bp
+					matched_name = full_name_forward
+					break
+
+			if matched_bp:
+				break
+
+		if not matched_bp:
+			return jsonify({
+				'success': False,
+				'message': 'Họ tên không khớp với mã đặt chỗ'
+			}), 404
+
+		booking_data = booking.as_dict()
+		outbound = booking_data.get('outbound_flight') or {}
+		seat_number = matched_bp.seat_number
+		if not seat_number and getattr(matched_bp, 'seat', None):
+			seat_number = getattr(matched_bp.seat, 'seat_number', None)
+
+		return jsonify({
+			'success': True,
+			'booking': booking_data,
+			'passenger': {
+				'id': matched_bp.passenger_id,
+				'full_name': matched_name,
+				'seat_number': seat_number,
+			},
+			'flight': {
+				'flight_number': outbound.get('flight_number'),
+				'route': f"{outbound.get('departure_airport') or ''} → {outbound.get('arrival_airport') or ''}".strip(' →'),
+				'departure_time': outbound.get('departure_time'),
+				'arrival_time': outbound.get('arrival_time'),
+			},
 		}), 200
 
 

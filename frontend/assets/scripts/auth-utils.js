@@ -222,15 +222,10 @@ function updateHeaderUserInfo() {
     if (authButtons) authButtons.style.display = 'none';
     if (userMenu) userMenu.style.display = 'block';
     
-    // On desktop (>1024px), hide nav-links-main to avoid duplication
-    // On mobile, keep it visible as separate menu items
+    // Keep nav-links-main visible in all states so header links are always accessible
     const navLinksMain = document.querySelector('.nav-links-main');
     if (navLinksMain) {
-      if (window.innerWidth > 1024) {
-        navLinksMain.style.display = 'none';
-      } else {
-        navLinksMain.style.display = 'flex'; // Show on mobile for clean menu
-      }
+      navLinksMain.style.display = 'flex';
     }
     
     // Apply translations to user dropdown after showing it
@@ -279,17 +274,13 @@ window.addEventListener('storage', function(e) {
   }
 });
 
-// Listen for window resize to update nav-links-main visibility on mobile/desktop toggle
+// Keep nav-links-main visible on resize as well
 window.addEventListener('resize', function() {
   const user = AuthState.getUser();
   const navLinksMain = document.querySelector('.nav-links-main');
   
   if (user && AuthState.isAuthenticated() && navLinksMain) {
-    if (window.innerWidth > 1024) {
-      navLinksMain.style.display = 'none'; // Hide on desktop
-    } else {
-      navLinksMain.style.display = 'flex'; // Show on mobile
-    }
+    navLinksMain.style.display = 'flex';
   }
 });
 

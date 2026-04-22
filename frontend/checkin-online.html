@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Check-in online SkyPlan: nhập mã đặt chỗ, xác nhận thông tin và hoàn tất check-in trực tuyến."
+    />
+    <title>SkyPlan - Check-in online</title>
+
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate icon" href="favicon.ico" type="image/x-icon" />
+
+    <link rel="stylesheet" href="assets/styles/reset.css" />
+    <link rel="stylesheet" href="assets/styles/index.css" />
+    <link rel="stylesheet" href="assets/styles/flags.css" />
+    <link rel="stylesheet" href="assets/styles/header.css" />
+    <link rel="stylesheet" href="assets/styles/wallet.css" />
+    <link rel="stylesheet" href="assets/styles/footer.css" />
+    <link rel="stylesheet" href="assets/styles/checkin-online.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div id="header-container"></div>
+
+    <main class="checkin-page">
+      <div class="container">
+        <section class="checkin-hero">
+          <h1>Check-in online</h1>
+          <p>
+            Làm thủ tục nhanh chóng với 4 bước đơn giản. Sau khi hoàn tất,
+            hệ thống sẽ gửi thông báo qua email của bạn.
+          </p>
+        </section>
+
+        <section class="checkin-grid" aria-label="Check-in online">
+          <div class="checkin-panel checkin-panel--form">
+            <div class="panel-heading">
+              <div>
+                <h2>Nhập thông tin chuyến bay</h2>
+                <p>Vui lòng điền chính xác thông tin để tra cứu chuyến bay.</p>
+              </div>
+            </div>
+
+            <form id="checkinForm" class="checkin-form" novalidate>
+              <div class="field-group">
+                <label for="bookingCode">Mã đặt chỗ</label>
+                <input
+                  id="bookingCode"
+                  name="bookingCode"
+                  type="text"
+                  placeholder="VD: SPN123"
+                  autocomplete="off"
+                  required
+                />
+              </div>
+
+              <div class="field-group">
+                <label for="fullName">Họ và tên</label>
+                <input
+                  id="fullName"
+                  name="fullName"
+                  type="text"
+                  placeholder="VD: NGUYEN VAN A"
+                  autocomplete="off"
+                  required
+                />
+                <small>Viết in hoa chữ cái đầu, không dấu.</small>
+              </div>
+
+              <div class="field-group confirm-code-group">
+                <label for="confirmCode">Mã xác nhận</label>
+                <div class="confirm-line">
+                  <span id="codeDisplay" class="code-display" aria-live="polite"></span>
+                  <button type="button" id="refreshCodeBtn" class="btn-refresh">
+                    <i class="fa-solid fa-rotate-right"></i>
+                  </button>
+                </div>
+                <input
+                  id="confirmCode"
+                  name="confirmCode"
+                  type="text"
+                  placeholder="Nhập mã hiển thị"
+                  autocomplete="off"
+                  required
+                />
+              </div>
+
+              <p class="form-note">
+                Hãy kiểm tra mã đặt chỗ thật kỹ để tránh sai sót nhé!
+              </p>
+
+              <button type="submit" class="btn-primary-action">Xem chuyến bay</button>
+            </form>
+
+            <div id="checkinError" class="alert error" hidden></div>
+
+            <article id="flightResult" class="flight-result" hidden>
+              <h3>Thông tin chuyến bay</h3>
+              <div class="result-grid">
+                <div><strong>Mã đặt chỗ:</strong> <span id="resultCode"></span></div>
+                <div><strong>Hành khách:</strong> <span id="resultName"></span></div>
+                <div><strong>Chuyến bay:</strong> <span id="resultFlightNumber">-</span></div>
+                <div><strong>Hành trình:</strong> <span id="resultRoute">-</span></div>
+                <div><strong>Khởi hành:</strong> <span id="resultDeparture">-</span></div>
+                <div><strong>Ghế:</strong> <span id="resultSeat">-</span></div>
+              </div>
+
+              <div class="action-row">
+                <button id="completeBtn" class="btn-primary-action" disabled>
+                  Hoàn thành check-in
+                </button>
+              </div>
+            </article>
+
+            <div id="successMessage" class="alert success" hidden>
+              Check-in online thành công! Vui lòng kiểm tra email để xem thông
+              báo xác nhận.
+            </div>
+          </div>
+
+          <aside class="checkin-panel checkin-panel--guide">
+            <div class="panel-heading">
+              <div>
+                <h2>Hướng dẫn 4 bước check-in online</h2>
+                <p>
+                  Bên trái là form nhập liệu, bên phải là toàn bộ quy trình để
+                  bạn thao tác nhanh và chính xác.
+                </p>
+              </div>
+            </div>
+
+            <div class="guide-box">
+              <h3>Bước 1: Nhập mã đặt chỗ và thông tin hành khách</h3>
+              <p>
+                Nhập <strong>mã đặt chỗ</strong>, <strong>họ tên</strong> và
+                <strong>mã xác nhận</strong> đúng như hiển thị trong form bên
+                trái.
+              </p>
+            </div>
+
+            <div class="guide-box">
+              <h3>Bước 2: Tra cứu chuyến bay</h3>
+              <p>
+                Nhấn <strong>"Xem chuyến bay"</strong> để hệ thống kiểm tra dữ
+                liệu và hiển thị thông tin hành trình tương ứng.
+              </p>
+            </div>
+
+            <div class="guide-box">
+              <h3>Bước 3: Xác nhận lại thông tin</h3>
+              <p>
+                Kiểm tra kỹ mã đặt chỗ, họ tên hành khách và thông tin chuyến bay.
+                Nếu đúng, nhấn <strong>"Hoàn thành check-in"</strong> để hoàn tất.
+              </p>
+            </div>
+
+            <div class="guide-box guide-box--highlight">
+              <h3>Bước 4: Hoàn thành check-in trực tuyến</h3>
+              <p>
+                Sau khi hoàn tất, hệ thống sẽ gửi thông báo qua email của bạn.
+              </p>
+            </div>
+
+            <div class="guide-list">
+              <h3>Lưu ý quan trọng</h3>
+              <ul>
+                <li>Nhập đúng mã đặt chỗ để tránh lỗi tra cứu.</li>
+                <li>Họ tên phải viết in hoa chữ cái đầu và không dấu.</li>
+                <li>Mã xác nhận thay đổi theo từng lần tải lại trang.</li>
+                <li>Nên kiểm tra thông tin trước khi bấm hoàn tất.</li>
+              </ul>
+            </div>
+          </aside>
+        </section>
+      </div>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script src="assets/scripts/index_translations.js" defer></script>
+    <script src="assets/scripts/common.js" defer></script>
+    <script src="assets/scripts/wallet_translations.js" defer></script>
+    <script src="assets/scripts/metamask.js" defer></script>
+    <script src="assets/scripts/wallet-ui.js" defer></script>
+    <script src="assets/scripts/checkin-online.js" defer></script>
+    <script src="assets/scripts/auth-utils.js"></script>
+  </body>
+</html>

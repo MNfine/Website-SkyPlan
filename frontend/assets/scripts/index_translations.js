@@ -6,6 +6,7 @@ const translations = {
     metaDescription: "Find the best flight deals with SkyPlan. Book your next trip with confidence.",
 
     // Header
+    checkinOnlineText: "Online Check-in",
     helpText: "Help",
     myTripsText: "My Trips",
     signUpText: "Sign Up",
@@ -85,6 +86,7 @@ const translations = {
     metaDescription: "Tìm các chuyến bay nội địa giá tốt nhất tại Việt Nam với SkyPlan. Đặt chuyến đi tiếp theo của bạn với sự tự tin.",
 
     // Header
+    checkinOnlineText: "Check-in online",
     helpText: "Trợ giúp",
     myTripsText: "Chuyến đi của tôi",
     signUpText: "Đăng ký",
