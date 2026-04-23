@@ -1,7 +1,6 @@
 
  # SkyPlan — Ứng dụng đặt vé máy bay
 
-
  Đây là repository chứa toàn bộ ứng dụng SkyPlan: frontend tĩnh bằng HTML/CSS/JavaScript (vanilla) và backend bằng Python + Flask sử dụng SQLAlchemy. README này hướng dẫn cài đặt, chạy local, cấu hình và các lưu ý phát triển cho cả frontend và backend.
 
 ## Nội dung chính
