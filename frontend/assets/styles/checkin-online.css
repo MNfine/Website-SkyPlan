@@ -5,7 +5,7 @@
 }
 
 .checkin-hero {
-  background: linear-gradient(135deg, #0a969d, #0a6f8c);
+  background: #0a969d;
   color: #fff;
   border-radius: 16px;
   padding: 26px 24px;
@@ -163,7 +163,7 @@
 
 .btn-primary-action {
   grid-column: span 2;
-  background: linear-gradient(135deg, #0a969d, #0a7f9c);
+  background: #0a969d;
   color: #fff;
 }
 

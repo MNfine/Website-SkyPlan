@@ -249,6 +249,10 @@ function updateHeaderUserInfo() {
 
 // Setup logout buttons
 function setupLogoutButtons() {
+  if (document.body && document.body.dataset.logoutButtonsBound === 'true') {
+    return;
+  }
+
   document.addEventListener('click', function(e) {
     if (e.target.matches('.logout-btn') || e.target.closest('.logout-btn')) {
       e.preventDefault();
@@ -256,6 +260,10 @@ function setupLogoutButtons() {
       AuthState.logout();
     }
   });
+
+  if (document.body) {
+    document.body.dataset.logoutButtonsBound = 'true';
+  }
 }
 
 // Auto-update header on page load and auth changes
@@ -265,6 +273,14 @@ document.addEventListener('DOMContentLoaded', function() {
     updateHeaderUserInfo();
     setupLogoutButtons();
   }, 500);
+});
+
+// Re-sync auth UI after pages that inject header asynchronously dispatch this event
+document.addEventListener('header-loaded', function() {
+  setTimeout(() => {
+    updateHeaderUserInfo();
+    setupLogoutButtons();
+  }, 0);
 });
 
 // Listen for storage changes (cross-tab auth sync)

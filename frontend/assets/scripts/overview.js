@@ -9,6 +9,11 @@
   } catch(e){}
 
   const TRIP_KEY = 'skyplan_trip_selection';
+  const OVERVIEW_LOAD_STATE = {
+    inFlight: false,
+    lastRequestedCode: null,
+    lastLoadedCode: null,
+  };
 
   function getAuthToken() {
     try {
@@ -213,7 +218,9 @@
   }
   function fmtDateISO(iso, lang) {
     if (!iso) return '';
-    const d = new Date(iso + 'T00:00:00');
+    const raw = String(iso).trim();
+    const d = raw.includes('T') ? new Date(raw) : new Date(raw + 'T00:00:00');
+    if (isNaN(d.getTime())) return raw;
     const s = new Intl.DateTimeFormat(lang === 'vi' ? 'vi-VN' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' }).format(d);
     return (lang === 'vi' ? 'Ngày ' + s : s);
   }
@@ -272,7 +279,7 @@
 
     // Check URL parameters for booking code (tripId or booking_code) and load booking data if exists
     const urlParams = new URLSearchParams(window.location.search);
-    const tripId = urlParams.get('tripId') || urlParams.get('booking_code');
+    const tripId = (urlParams.get('tripId') || urlParams.get('booking_code') || '').trim();
     if (tripId) {
       localStorage.setItem('currentBookingCode', tripId);
       localStorage.setItem('overviewMode', 'existing-trip');
@@ -281,8 +288,10 @@
         flowEl.style.display = 'none';
       }
       console.log('🔍 Overview: Found tripId/booking_code in URL, saved to currentBookingCode:', tripId);
-      // Load booking data from backend
-      loadBookingData(tripId);
+      // Load booking data from backend only when needed (avoid request loops)
+      if (!OVERVIEW_LOAD_STATE.inFlight && OVERVIEW_LOAD_STATE.lastLoadedCode !== tripId) {
+        loadBookingData(tripId);
+      }
     } else {
       // New booking flow - clear stale booking codes so confirm button stays visible
       localStorage.setItem('overviewMode', 'new-trip');
@@ -619,13 +628,25 @@
 
   // Load booking data from backend and populate overview page
   async function loadBookingData(bookingCode) {
-    if (!bookingCode) {
+    const normalizedCode = String(bookingCode || '').trim();
+    if (!normalizedCode) {
       console.log('No booking code provided for loading booking data');
       return;
     }
 
+    if (OVERVIEW_LOAD_STATE.inFlight && OVERVIEW_LOAD_STATE.lastRequestedCode === normalizedCode) {
+      return;
+    }
+
+    if (OVERVIEW_LOAD_STATE.lastLoadedCode === normalizedCode) {
+      return;
+    }
+
+    OVERVIEW_LOAD_STATE.inFlight = true;
+    OVERVIEW_LOAD_STATE.lastRequestedCode = normalizedCode;
+
     const token = getAuthToken();
-    console.log(`🔍 Loading booking data for: ${bookingCode}, Token: ${token ? 'Present' : 'None'}`);
+    console.log(`🔍 Loading booking data for: ${normalizedCode}, Token: ${token ? 'Present' : 'None'}`);
 
     try {
       const headers = {
@@ -635,7 +656,7 @@
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch(`/api/bookings/${bookingCode}`, { headers });
+      const response = await fetch(`/api/bookings/${normalizedCode}`, { headers });
       if (!response.ok) {
         console.warn(`Failed to load booking: ${response.status}`);
         return;
@@ -647,6 +668,7 @@
 
       // Populate overview page with booking data
       if (booking && booking.booking_code) {
+        OVERVIEW_LOAD_STATE.lastLoadedCode = String(booking.booking_code).trim();
         console.log('🔍 Populating overview with booking:', booking);
         
         // Build complete trip data from booking
@@ -727,6 +749,8 @@
       }
     } catch (error) {
       console.error('Error loading booking data:', error);
+    } finally {
+      OVERVIEW_LOAD_STATE.inFlight = false;
     }
   }
 
