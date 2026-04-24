@@ -33,6 +33,7 @@ const translations = {
 
     // Popular routes
     popularRoutesTitle: "Popular Routes",
+    exploreDestinations: "Explore destinations",
     appComingSoon: "Coming soon",
 
     // Blockchain ticket CTA
@@ -113,6 +114,7 @@ const translations = {
 
     // Popular routes
     popularRoutesTitle: "Điểm đến phổ biến",
+    exploreDestinations: "Khám phá các điểm đến",
     appComingSoon: "Sắp ra mắt",
 
     // Blockchain ticket CTA
