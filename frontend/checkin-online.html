@@ -30,50 +30,52 @@
     <main class="checkin-page">
       <div class="container">
         <section class="checkin-hero">
-          <h1>Check-in online</h1>
-          <p>
+          <h1 data-i18n="heroTitle">Check-in online</h1>
+          <p data-i18n="heroDesc">
             Làm thủ tục nhanh chóng với 4 bước đơn giản. Sau khi hoàn tất,
             hệ thống sẽ gửi thông báo qua email của bạn.
           </p>
         </section>
 
-        <section class="checkin-grid" aria-label="Check-in online">
+        <section class="checkin-grid" aria-label="Check-in online" data-i18n-aria-label="gridAriaLabel">
           <div class="checkin-panel checkin-panel--form">
             <div class="panel-heading">
               <div>
-                <h2>Nhập thông tin chuyến bay</h2>
-                <p>Vui lòng điền chính xác thông tin để tra cứu chuyến bay.</p>
+                <h2 data-i18n="formTitle">Nhập thông tin chuyến bay</h2>
+                <p data-i18n="formSubtitle">Vui lòng điền chính xác thông tin để tra cứu chuyến bay.</p>
               </div>
             </div>
 
             <form id="checkinForm" class="checkin-form" novalidate>
               <div class="field-group">
-                <label for="bookingCode">Mã đặt chỗ</label>
+                <label for="bookingCode" data-i18n="bookingCodeLabel">Mã đặt chỗ</label>
                 <input
                   id="bookingCode"
                   name="bookingCode"
                   type="text"
                   placeholder="VD: SPN123"
+                  data-i18n-placeholder="bookingCodePlaceholder"
                   autocomplete="off"
                   required
                 />
               </div>
 
               <div class="field-group">
-                <label for="fullName">Họ và tên</label>
+                <label for="fullName" data-i18n="fullNameLabel">Họ và tên</label>
                 <input
                   id="fullName"
                   name="fullName"
                   type="text"
                   placeholder="VD: NGUYEN VAN A"
+                  data-i18n-placeholder="fullNamePlaceholder"
                   autocomplete="off"
                   required
                 />
-                <small>Viết in hoa chữ cái đầu, không dấu.</small>
+                <small data-i18n="fullNameNote">Viết in hoa chữ cái đầu, không dấu.</small>
               </div>
 
               <div class="field-group confirm-code-group">
-                <label for="confirmCode">Mã xác nhận</label>
+                <label for="confirmCode" data-i18n="confirmCodeLabel">Mã xác nhận</label>
                 <div class="confirm-line">
                   <span id="codeDisplay" class="code-display" aria-live="polite"></span>
                   <button type="button" id="refreshCodeBtn" class="btn-refresh">
@@ -85,39 +87,40 @@
                   name="confirmCode"
                   type="text"
                   placeholder="Nhập mã hiển thị"
+                  data-i18n-placeholder="confirmCodePlaceholder"
                   autocomplete="off"
                   required
                 />
               </div>
 
-              <p class="form-note">
+              <p class="form-note" data-i18n="formNote">
                 Hãy kiểm tra mã đặt chỗ thật kỹ để tránh sai sót nhé!
               </p>
 
-              <button type="submit" class="btn-primary-action">Xem chuyến bay</button>
+              <button type="submit" class="btn-primary-action" data-i18n="submitButton">Xem chuyến bay</button>
             </form>
 
             <div id="checkinError" class="alert error" hidden></div>
 
             <article id="flightResult" class="flight-result" hidden>
-              <h3>Thông tin chuyến bay</h3>
+              <h3 data-i18n="resultTitle">Thông tin chuyến bay</h3>
               <div class="result-grid">
-                <div><strong>Mã đặt chỗ:</strong> <span id="resultCode"></span></div>
-                <div><strong>Hành khách:</strong> <span id="resultName"></span></div>
-                <div><strong>Chuyến bay:</strong> <span id="resultFlightNumber">-</span></div>
-                <div><strong>Hành trình:</strong> <span id="resultRoute">-</span></div>
-                <div><strong>Khởi hành:</strong> <span id="resultDeparture">-</span></div>
-                <div><strong>Ghế:</strong> <span id="resultSeat">-</span></div>
+                <div><strong data-i18n="resultBookingCodeLabel">Mã đặt chỗ:</strong> <span id="resultCode"></span></div>
+                <div><strong data-i18n="resultPassengerLabel">Hành khách:</strong> <span id="resultName"></span></div>
+                <div><strong data-i18n="resultFlightNumberLabel">Chuyến bay:</strong> <span id="resultFlightNumber">-</span></div>
+                <div><strong data-i18n="resultRouteLabel">Hành trình:</strong> <span id="resultRoute">-</span></div>
+                <div><strong data-i18n="resultDepartureLabel">Khởi hành:</strong> <span id="resultDeparture">-</span></div>
+                <div><strong data-i18n="resultSeatLabel">Ghế:</strong> <span id="resultSeat">-</span></div>
               </div>
 
               <div class="action-row">
-                <button id="completeBtn" class="btn-primary-action" disabled>
+                <button id="completeBtn" class="btn-primary-action" disabled data-i18n="completeButton">
                   Hoàn thành check-in
                 </button>
               </div>
             </article>
 
-            <div id="successMessage" class="alert success" hidden>
+            <div id="successMessage" class="alert success" hidden data-i18n="successMessage">
               Check-in online thành công! Vui lòng kiểm tra email để xem thông
               báo xác nhận.
             </div>
@@ -126,8 +129,8 @@
           <aside class="checkin-panel checkin-panel--guide">
             <div class="panel-heading">
               <div>
-                <h2>Hướng dẫn 4 bước check-in online</h2>
-                <p>
+                <h2 data-i18n="guideTitle">Hướng dẫn 4 bước check-in online</h2>
+                <p data-i18n="guideSubtitle">
                   Bên trái là form nhập liệu, bên phải là toàn bộ quy trình để
                   bạn thao tác nhanh và chính xác.
                 </p>
@@ -135,8 +138,8 @@
             </div>
 
             <div class="guide-box">
-              <h3>Bước 1: Nhập mã đặt chỗ và thông tin hành khách</h3>
-              <p>
+              <h3 data-i18n="step1Title">Bước 1: Nhập mã đặt chỗ và thông tin hành khách</h3>
+              <p data-i18n="step1Desc">
                 Nhập <strong>mã đặt chỗ</strong>, <strong>họ tên</strong> và
                 <strong>mã xác nhận</strong> đúng như hiển thị trong form bên
                 trái.
@@ -144,35 +147,35 @@
             </div>
 
             <div class="guide-box">
-              <h3>Bước 2: Tra cứu chuyến bay</h3>
-              <p>
+              <h3 data-i18n="step2Title">Bước 2: Tra cứu chuyến bay</h3>
+              <p data-i18n="step2Desc">
                 Nhấn <strong>"Xem chuyến bay"</strong> để hệ thống kiểm tra dữ
                 liệu và hiển thị thông tin hành trình tương ứng.
               </p>
             </div>
 
             <div class="guide-box">
-              <h3>Bước 3: Xác nhận lại thông tin</h3>
-              <p>
+              <h3 data-i18n="step3Title">Bước 3: Xác nhận lại thông tin</h3>
+              <p data-i18n="step3Desc">
                 Kiểm tra kỹ mã đặt chỗ, họ tên hành khách và thông tin chuyến bay.
                 Nếu đúng, nhấn <strong>"Hoàn thành check-in"</strong> để hoàn tất.
               </p>
             </div>
 
             <div class="guide-box guide-box--highlight">
-              <h3>Bước 4: Hoàn thành check-in trực tuyến</h3>
-              <p>
+              <h3 data-i18n="step4Title">Bước 4: Hoàn thành check-in trực tuyến</h3>
+              <p data-i18n="step4Desc">
                 Sau khi hoàn tất, hệ thống sẽ gửi thông báo qua email của bạn.
               </p>
             </div>
 
             <div class="guide-list">
-              <h3>Lưu ý quan trọng</h3>
+              <h3 data-i18n="notesTitle">Lưu ý quan trọng</h3>
               <ul>
-                <li>Nhập đúng mã đặt chỗ để tránh lỗi tra cứu.</li>
-                <li>Họ tên phải viết in hoa chữ cái đầu và không dấu.</li>
-                <li>Mã xác nhận thay đổi theo từng lần tải lại trang.</li>
-                <li>Nên kiểm tra thông tin trước khi bấm hoàn tất.</li>
+                <li data-i18n="note1">Nhập đúng mã đặt chỗ để tránh lỗi tra cứu.</li>
+                <li data-i18n="note2">Họ tên phải viết in hoa chữ cái đầu và không dấu.</li>
+                <li data-i18n="note3">Mã xác nhận thay đổi theo từng lần tải lại trang.</li>
+                <li data-i18n="note4">Nên kiểm tra thông tin trước khi bấm hoàn tất.</li>
               </ul>
             </div>
           </aside>
@@ -184,6 +187,7 @@
 
     <script src="assets/scripts/index_translations.js" defer></script>
     <script src="assets/scripts/common.js" defer></script>
+    <script src="assets/scripts/checkin_online_translations.js" defer></script>
     <script src="assets/scripts/wallet_translations.js" defer></script>
     <script src="assets/scripts/metamask.js" defer></script>
     <script src="assets/scripts/wallet-ui.js" defer></script>

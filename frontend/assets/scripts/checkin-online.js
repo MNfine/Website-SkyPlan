@@ -2,8 +2,39 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (typeof loadHeaderFooter === "function") {
     await loadHeaderFooter();
   }
+
+  if (window.CheckinOnlineI18n && typeof window.CheckinOnlineI18n.applyTranslations === "function") {
+    window.CheckinOnlineI18n.applyTranslations(window.CheckinOnlineI18n.getLanguage());
+  }
+
   initCheckinOnline();
 });
+
+function getCheckinLanguage() {
+  if (window.CheckinOnlineI18n && typeof window.CheckinOnlineI18n.getLanguage === "function") {
+    return window.CheckinOnlineI18n.getLanguage();
+  }
+
+  if (typeof window.getPersistedLanguage === "function") {
+    return window.getPersistedLanguage() === "en" ? "en" : "vi";
+  }
+
+  const languageRaw = (localStorage.getItem("language") || "").toLowerCase();
+  if (languageRaw === "en" || languageRaw === "vi") return languageRaw;
+
+  const preferredRaw = (localStorage.getItem("preferredLanguage") || "").toLowerCase();
+  if (preferredRaw === "en" || preferredRaw === "vi") return preferredRaw;
+
+  return (document.documentElement.lang || "vi").toLowerCase() === "en" ? "en" : "vi";
+}
+
+function tCheckin(key) {
+  if (window.CheckinOnlineI18n && typeof window.CheckinOnlineI18n.t === "function") {
+    return window.CheckinOnlineI18n.t(key, getCheckinLanguage());
+  }
+
+  return key;
+}
 
 function initCheckinOnline() {
   const form = document.getElementById("checkinForm");
@@ -49,27 +80,24 @@ function initCheckinOnline() {
     const confirmCode = (confirmCodeInput?.value || "").trim().toUpperCase();
 
     if (!bookingCode || bookingCode.length < 6) {
-      showError(errorBox, "Vui lòng nhập mã đặt chỗ hợp lệ (tối thiểu 6 ký tự).");
+      showError(errorBox, tCheckin("errorBookingCode"));
       return;
     }
 
     if (!isValidVietnameseNoAccentName(fullName)) {
-      showError(
-        errorBox,
-        "Họ và tên cần viết in hoa chữ cái đầu, không dấu (ví dụ: NGUYEN VAN A)."
-      );
+      showError(errorBox, tCheckin("errorFullName"));
       return;
     }
 
     if (confirmCode !== generatedCode) {
-      showError(errorBox, "Mã xác nhận không đúng. Vui lòng kiểm tra lại.");
+      showError(errorBox, tCheckin("errorConfirmCode"));
       return;
     }
 
-    const originalSubmitLabel = submitBtn?.textContent || "Xem chuyến bay";
+    const originalSubmitLabel = submitBtn?.textContent || tCheckin("submitButton");
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.textContent = "Đang tra cứu...";
+      submitBtn.textContent = tCheckin("submitLoading");
     }
 
     try {
@@ -86,7 +114,7 @@ function initCheckinOnline() {
 
       const payload = await response.json();
       if (!response.ok || !payload?.success) {
-        throw new Error(payload?.message || "Không thể tra cứu thông tin check-in.");
+        throw new Error(payload?.message || tCheckin("errorLookup"));
       }
 
       renderCheckinResult(payload, {
@@ -102,7 +130,7 @@ function initCheckinOnline() {
       completeBtn.disabled = false;
       completeBtn.scrollIntoView({ behavior: "smooth", block: "center" });
     } catch (error) {
-      showError(errorBox, error?.message || "Không thể tra cứu thông tin check-in.");
+      showError(errorBox, error?.message || tCheckin("errorLookup"));
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
@@ -134,7 +162,8 @@ function formatDateTime(isoValue) {
   if (!isoValue) return "-";
   const date = new Date(isoValue);
   if (Number.isNaN(date.getTime())) return "-";
-  return new Intl.DateTimeFormat("vi-VN", {
+  const locale = getCheckinLanguage() === "en" ? "en-GB" : "vi-VN";
+  return new Intl.DateTimeFormat(locale, {
     hour: "2-digit",
     minute: "2-digit",
     day: "2-digit",
@@ -153,7 +182,7 @@ function renderCheckinResult(payload, refs) {
   refs.resultFlightNumber.textContent = flight.flight_number || "-";
   refs.resultRoute.textContent = flight.route || "-";
   refs.resultDeparture.textContent = formatDateTime(flight.departure_time);
-  refs.resultSeat.textContent = passenger.seat_number || "Chưa chọn";
+  refs.resultSeat.textContent = passenger.seat_number || tCheckin("seatNotSelected");
 }
 
 function isValidVietnameseNoAccentName(name) {
