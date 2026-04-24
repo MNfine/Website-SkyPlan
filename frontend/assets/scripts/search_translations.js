@@ -52,6 +52,20 @@ const searchTranslations = {
           noReturnFlights: "No return flights found for the selected date. Showing departure flights:",
         modalTitle: "Flight Details",
         legTo: "To",
+        trendButton: "Price chart",
+        trendTabTitle: "Cheapest fare by day",
+        trendSummaryLoading: "Loading data...",
+        trendGridAriaLabel: "Fare trend chart",
+        trendCancel: "Cancel",
+        trendOk: "OK",
+        trendMissingRoute: "Missing route information to display the chart.",
+        trendLoadingPrice: "Loading fare data...",
+        trendInvalidDate: "Departure date format is invalid for chart rendering.",
+        trendLoadError: "Unable to load fare chart data. Please try again.",
+        trendNoData: "No fare data available in this time range.",
+        trendTooltipHead: "One-way trip",
+        trendTooltipNoPrice: "Price not available yet",
+        trendTooltipFrom: "From {price}",
     },
     vi: {
         // Header
@@ -106,6 +120,20 @@ const searchTranslations = {
         noReturnFlights: "Không tìm thấy chuyến về cho ngày đã chọn. Hiển thị chuyến đi:",
         modalTitle: "Chi tiết chuyến bay",
         legTo: "Đến",
+        trendButton: "Biểu đồ giá",
+        trendTabTitle: "Biểu đồ giá vé rẻ nhất trong Ngày",
+        trendSummaryLoading: "Đang tải dữ liệu...",
+        trendGridAriaLabel: "Biểu đồ xu hướng giá vé",
+        trendCancel: "Hủy",
+        trendOk: "OK",
+        trendMissingRoute: "Thiếu thông tin tuyến bay để hiển thị biểu đồ.",
+        trendLoadingPrice: "Đang tải dữ liệu giá...",
+        trendInvalidDate: "Ngày đi chưa đúng định dạng để vẽ biểu đồ.",
+        trendLoadError: "Không thể tải dữ liệu biểu đồ giá. Vui lòng thử lại.",
+        trendNoData: "Không có dữ liệu giá trong khoảng thời gian này.",
+        trendTooltipHead: "Chuyến đi một chiều",
+        trendTooltipNoPrice: "Tạm thời chưa có giá",
+        trendTooltipFrom: "Từ {price}",
     }
 };
 
@@ -177,6 +205,21 @@ function _$(sel, ctx) { return (ctx || document).querySelector(sel); }
 
 function _$all(sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); }
 
+function getSearchPersistedLanguage() {
+    if (typeof window.getPersistedLanguage === 'function') {
+        return window.getPersistedLanguage() === 'en' ? 'en' : 'vi';
+    }
+
+    const languageRaw = (localStorage.getItem('language') || '').toLowerCase();
+    if (languageRaw === 'en' || languageRaw === 'vi') return languageRaw;
+
+    const preferredRaw = (localStorage.getItem('preferredLanguage') || '').toLowerCase();
+    if (preferredRaw === 'en' || preferredRaw === 'vi') return preferredRaw;
+
+    const htmlRaw = (document.documentElement.lang || '').toLowerCase();
+    return htmlRaw === 'en' ? 'en' : 'vi';
+}
+
 // Apply translations for search page
 function applySearchTranslations(lang) {
     const dict = _t(lang);
@@ -225,6 +268,27 @@ function applySearchTranslations(lang) {
 
     const anyEl = _$('.sp-price-top span:last-child', aside);
     if (anyEl) anyEl.textContent = dict.anyLabel;
+
+    // Trend chart toolbar + modal
+    const trendBtnText = _$('#spOpenTrendBtn span');
+    if (trendBtnText) trendBtnText.textContent = dict.trendButton || 'Price chart';
+
+    const trendTab = _$('#spTrendModal .sp-trend-tab');
+    if (trendTab) trendTab.textContent = dict.trendTabTitle || 'Cheapest fare by day';
+
+    const trendSummary = _$('#spTrendSummary');
+    if (trendSummary && !trendSummary.dataset.lockedByTrendRender) {
+        trendSummary.textContent = dict.trendSummaryLoading || 'Loading data...';
+    }
+
+    const trendGrid = _$('#spTrendGrid');
+    if (trendGrid) trendGrid.setAttribute('aria-label', dict.trendGridAriaLabel || 'Fare trend chart');
+
+    const trendCancel = _$('#spTrendCancel');
+    if (trendCancel) trendCancel.textContent = dict.trendCancel || 'Cancel';
+
+    const trendOk = _$('#spTrendOk');
+    if (trendOk) trendOk.textContent = dict.trendOk || 'OK';
 
     // 3) Cards
     _$all('.sp-card .sp-btn.sp-btn-block').forEach(btn => {
@@ -323,7 +387,10 @@ function applySearchTranslations(lang) {
 // Change language (public API for search page)
 function changeSearchLanguage(lang) {
     const next = (lang === 'en' || lang === 'vi') ? lang : 'vi';
-    try { localStorage.setItem('preferredLanguage', next); } catch (_) {}
+    try {
+        localStorage.setItem('preferredLanguage', next);
+        localStorage.setItem('language', next);
+    } catch (_) {}
     document.documentElement.lang = next;
     applySearchTranslations(next);
 
@@ -343,18 +410,24 @@ window.changeSearchLanguage = changeSearchLanguage;
 window.changeLanguage = changeSearchLanguage; // commonly used alias
 
 // Default to VI on first load
-if (!localStorage.getItem('preferredLanguage')) {
+if (!localStorage.getItem('preferredLanguage') && !localStorage.getItem('language')) {
     localStorage.setItem('preferredLanguage', 'vi');
+    localStorage.setItem('language', 'vi');
 }
 
 // Function to init translations after components are loaded
 function initSearchTranslations() {
     const qLang = new URLSearchParams(location.search).get('lang');
-    const storedLang = localStorage.getItem('preferredLanguage');
+    const storedLang = getSearchPersistedLanguage();
     
     const lang = (qLang === 'vi' || qLang === 'en') ?
         qLang :
         (storedLang || 'vi');
+
+    try {
+        localStorage.setItem('preferredLanguage', lang);
+        localStorage.setItem('language', lang);
+    } catch (_) {}
 
     applySearchTranslations(lang);
 

@@ -1,5 +1,19 @@
 /* SkyPlane Filters — ORDER: PRICE -> TIME, scroll to top after ~1s */
 (function() {
+    function getSearchFilterLanguage() {
+        if (typeof window.getPersistedLanguage === 'function') {
+            return window.getPersistedLanguage() === 'en' ? 'en' : 'vi';
+        }
+
+        const languageRaw = (localStorage.getItem('language') || '').toLowerCase();
+        if (languageRaw === 'en' || languageRaw === 'vi') return languageRaw;
+
+        const preferredRaw = (localStorage.getItem('preferredLanguage') || '').toLowerCase();
+        if (preferredRaw === 'en' || preferredRaw === 'vi') return preferredRaw;
+
+        return (document.documentElement.lang || 'vi').toLowerCase() === 'en' ? 'en' : 'vi';
+    }
+
     // ---------- Shorthands ----------
     const $ = (sel, ctx) => (ctx || document).querySelector(sel);
     const $all = (sel, ctx) => Array.prototype.slice.call((ctx || document).querySelectorAll(sel));
@@ -111,7 +125,7 @@
             }
 
             // get current language
-            const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+            const lang = getSearchFilterLanguage();
             const messages = {
                 vi: "Không có chuyến bay phù hợp với bộ lọc.",
                 en: "No flights match your filters."
@@ -153,7 +167,7 @@
     let __emptyLangBound = false;
     if (!__emptyLangBound) {
         document.addEventListener('languageChanged', (e) => {
-            const lang = (e && e.detail && e.detail.lang) || localStorage.getItem('preferredLanguage') || 'vi';
+            const lang = (e && e.detail && e.detail.lang) || getSearchFilterLanguage();
             const empty = document.getElementById('sp-empty');
             if (empty) {
                 const messages = { vi: 'Không có chuyến bay phù hợp với bộ lọc.', en: 'No flights match your filters.' };
@@ -191,7 +205,7 @@
     }
 
     document.addEventListener('languageChanged', () => {
-        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        const lang = getSearchFilterLanguage();
         const t = MODAL_I18N[lang] || MODAL_I18N.vi;
 
         const shareBtn = document.querySelector('.sp-modal__footer .sp-btn--ghost');

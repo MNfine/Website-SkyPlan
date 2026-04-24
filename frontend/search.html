@@ -302,11 +302,19 @@
 
         function initializeLanguage() {
             // Get or set language
-            let currentLang = localStorage.getItem('preferredLanguage');
+            let currentLang = (typeof window.getPersistedLanguage === 'function')
+                ? window.getPersistedLanguage()
+                : (localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi');
             if (!currentLang) {
                 currentLang = 'vi';
                 localStorage.setItem('preferredLanguage', 'vi');
+                localStorage.setItem('language', 'vi');
             }
+
+            try {
+                localStorage.setItem('preferredLanguage', currentLang);
+                localStorage.setItem('language', currentLang);
+            } catch (_) {}
 
             document.documentElement.lang = currentLang;
 
@@ -371,7 +379,8 @@
         (function () {
             // Lấy ngôn ngữ hiện tại
             function getLang() {
-                return localStorage.getItem('preferredLanguage') || 'vi';
+                if (typeof window.getPersistedLanguage === 'function') return window.getPersistedLanguage();
+                return localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi';
             }
 
             // Tạo dropdown cho phần "From" và "To"
@@ -430,7 +439,9 @@
         document.getElementById('spSearchForm').addEventListener('submit', (e) => {
             e.preventDefault();
 
-            const lang = localStorage.getItem('preferredLanguage') || 'vi';
+            const lang = (typeof window.getPersistedLanguage === 'function')
+                ? window.getPersistedLanguage()
+                : (localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi');
             const dict = (window.SKYPLAN_CITY_TRANSLATIONS && window.SKYPLAN_CITY_TRANSLATIONS[lang]) || {};
 
             const fromCode = document.getElementById('fromCity').value;
@@ -466,7 +477,8 @@
             const KEY = 'skyplan:lastSearch';
 
             function getLang() {
-                return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+                if (typeof window.getPersistedLanguage === 'function') return window.getPersistedLanguage();
+                return localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
             }
 
             function formatDate(dateStr, lang) {
@@ -628,7 +640,8 @@
             };
 
             function getLang() {
-                return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+                if (typeof window.getPersistedLanguage === 'function') return window.getPersistedLanguage();
+                return localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
             }
 
             // Tự bắt mã IATA trong text "(XXX)" nếu chưa có data-iata
@@ -678,7 +691,10 @@
     <script>
         // hàm phụ an toàn lấy lang
         function getLangSafe(e) {
-            return (e && e.detail && e.detail.lang) || localStorage.getItem('preferredLanguage') || 'vi';
+            return (e && e.detail && e.detail.lang)
+                || (typeof window.getPersistedLanguage === 'function'
+                    ? window.getPersistedLanguage()
+                    : (localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi'));
         }
 
         // ====== Lắng nghe đổi ngôn ngữ từ header ======
@@ -745,7 +761,9 @@
                 AnGiang: 'VKG', DienBien: 'DIN', GiaLai: 'PXU', SonLa: 'SQH', ThanhHoa: 'THD'
             };
             const CITY_LABELS = window.SKYPLAN_CITY_TRANSLATIONS || { vi: {}, en: {} };
-            const getLang = () => localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+            const getLang = () => (typeof window.getPersistedLanguage === 'function')
+                ? window.getPersistedLanguage()
+                : (localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi');
 
             const fmtDate = (iso) => {
                 const h = window.dateFormatHandler;

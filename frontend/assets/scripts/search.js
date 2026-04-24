@@ -11,6 +11,20 @@
 
 // search.js: Xử lý trang search.html, lấy dữ liệu chuyến bay thực tế từ backend
 
+function getSearchPageLanguage() {
+    if (typeof window.getPersistedLanguage === 'function') {
+        return window.getPersistedLanguage() === 'en' ? 'en' : 'vi';
+    }
+
+    const languageRaw = (localStorage.getItem('language') || '').toLowerCase();
+    if (languageRaw === 'en' || languageRaw === 'vi') return languageRaw;
+
+    const preferredRaw = (localStorage.getItem('preferredLanguage') || '').toLowerCase();
+    if (preferredRaw === 'en' || preferredRaw === 'vi') return preferredRaw;
+
+    return (document.documentElement.lang || 'vi').toLowerCase() === 'en' ? 'en' : 'vi';
+}
+
 // Global function to open the modal directly - available from anywhere
 window.openFlightModal = function() {
     const modal = document.getElementById('spModal');
@@ -92,6 +106,53 @@ let currentTrendState = {
     tripType: 'one-way'
 };
 let pendingTrendSelectedDate = '';
+let lastTrendPoints = [];
+let lastTrendCenterDate = '';
+
+function getTrendI18n() {
+    const lang = getSearchPageLanguage();
+    const fallback = {
+        trendButton: 'Price chart',
+        trendTabTitle: 'Cheapest fare by day',
+        trendSummaryLoading: 'Loading data...',
+        trendGridAriaLabel: 'Fare trend chart',
+        trendCancel: 'Cancel',
+        trendOk: 'OK',
+        trendMissingRoute: 'Missing route information to display the chart.',
+        trendLoadingPrice: 'Loading fare data...',
+        trendInvalidDate: 'Departure date format is invalid for chart rendering.',
+        trendLoadError: 'Unable to load fare chart data. Please try again.',
+        trendNoData: 'No fare data available in this time range.',
+        trendTooltipHead: 'One-way trip',
+        trendTooltipNoPrice: 'Price not available yet',
+        trendTooltipFrom: 'From {price}',
+    };
+
+    const dict = (window.searchTranslations && window.searchTranslations[lang]) || {};
+    return {
+        lang,
+        text: { ...fallback, ...dict }
+    };
+}
+
+function applyTrendStaticTranslations() {
+    const { text } = getTrendI18n();
+
+    const trendBtnLabel = document.querySelector('#spOpenTrendBtn span');
+    if (trendBtnLabel) trendBtnLabel.textContent = text.trendButton;
+
+    const trendTab = document.querySelector('#spTrendModal .sp-trend-tab');
+    if (trendTab) trendTab.textContent = text.trendTabTitle;
+
+    const trendGrid = document.getElementById('spTrendGrid');
+    if (trendGrid) trendGrid.setAttribute('aria-label', text.trendGridAriaLabel);
+
+    const trendCancel = document.getElementById('spTrendCancel');
+    if (trendCancel) trendCancel.textContent = text.trendCancel;
+
+    const trendOk = document.getElementById('spTrendOk');
+    if (trendOk) trendOk.textContent = text.trendOk;
+}
 
 function normalizeDateForApi(value) {
     const raw = (value || '').trim();
@@ -139,15 +200,20 @@ function buildTrendDateRange(centerDateIso) {
 }
 
 function formatCurrencyVND(value) {
-    if (value === null || value === undefined || Number.isNaN(Number(value))) return 'Chưa có giá';
-    return Number(value).toLocaleString('vi-VN') + ' đ';
+    const { lang, text } = getTrendI18n();
+    if (value === null || value === undefined || Number.isNaN(Number(value))) return text.trendTooltipNoPrice;
+    const locale = lang === 'en' ? 'en-US' : 'vi-VN';
+    const formatted = Number(value).toLocaleString(locale);
+    return lang === 'en' ? `${formatted} VND` : `${formatted} đ`;
 }
 
 function formatTrendDate(isoDate) {
     if (!isoDate) return '';
     const date = new Date(`${isoDate}T00:00:00`);
     if (Number.isNaN(date.getTime())) return isoDate;
-    return date.toLocaleDateString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit' });
+    const { lang } = getTrendI18n();
+    const locale = lang === 'en' ? 'en-GB' : 'vi-VN';
+    return date.toLocaleDateString(locale, { weekday: 'short', day: '2-digit', month: '2-digit' });
 }
 
 function shouldShowTrendButton() {
@@ -159,17 +225,20 @@ function ensureTrendToolbar(resultsContainer) {
 
     let toolbar = resultsContainer.querySelector('#spTrendToolbar');
     if (!toolbar) {
+        const { text } = getTrendI18n();
         toolbar = document.createElement('div');
         toolbar.id = 'spTrendToolbar';
         toolbar.className = 'sp-trend-toolbar';
         toolbar.innerHTML = `
             <button id="spOpenTrendBtn" type="button" class="sp-btn sp-btn-trend">
                 <i class="fa-solid fa-chart-column"></i>
-                <span>Biểu đồ giá</span>
+                <span>${text.trendButton}</span>
             </button>
         `;
         resultsContainer.insertBefore(toolbar, resultsContainer.firstChild);
     }
+
+    applyTrendStaticTranslations();
 
     toolbar.hidden = !shouldShowTrendButton();
 
@@ -275,21 +344,24 @@ async function loadAndRenderTrendChart() {
     if (!summary || !grid || !axis) return;
 
     summary.style.display = 'inline-flex';
+    summary.dataset.lockedByTrendRender = 'true';
+    applyTrendStaticTranslations();
+    const { text } = getTrendI18n();
 
     if (!shouldShowTrendButton()) {
-        summary.textContent = 'Thiếu thông tin tuyến bay để hiển thị biểu đồ.';
+        summary.textContent = text.trendMissingRoute;
         grid.innerHTML = '';
         axis.innerHTML = '';
         return;
     }
 
-    summary.textContent = 'Đang tải dữ liệu giá...';
+    summary.textContent = text.trendLoadingPrice;
     grid.innerHTML = '';
     axis.innerHTML = '';
 
     const normalizedCenterDate = normalizeDateForApi(currentTrendState.dep);
     if (!normalizedCenterDate || !/^\d{4}-\d{2}-\d{2}$/.test(normalizedCenterDate)) {
-        summary.textContent = 'Ngày đi chưa đúng định dạng để vẽ biểu đồ.';
+        summary.textContent = text.trendInvalidDate;
         return;
     }
 
@@ -308,7 +380,10 @@ async function loadAndRenderTrendChart() {
 
         const payload = await response.json();
         const points = Array.isArray(payload.points) ? payload.points : [];
-        renderTrendBars(points, payload.center_date || normalizedCenterDate);
+        const center = payload.center_date || normalizedCenterDate;
+        lastTrendPoints = points;
+        lastTrendCenterDate = center;
+        renderTrendBars(points, center);
     } catch (error) {
         console.error('Failed loading trend endpoint; fallback to daily flights API:', error);
         try {
@@ -317,10 +392,12 @@ async function loadAndRenderTrendChart() {
                 currentTrendState.to,
                 normalizedCenterDate
             );
+            lastTrendPoints = fallbackPoints;
+            lastTrendCenterDate = normalizedCenterDate;
             renderTrendBars(fallbackPoints, normalizedCenterDate);
         } catch (fallbackError) {
             console.error('Fallback trend loading failed:', fallbackError);
-            summary.textContent = 'Không thể tải dữ liệu biểu đồ giá. Vui lòng thử lại.';
+            summary.textContent = text.trendLoadError;
             grid.innerHTML = '';
             axis.innerHTML = '';
         }
@@ -363,10 +440,11 @@ function renderTrendBars(points, centerDate) {
 
     grid.innerHTML = '';
     summary.style.display = 'none';
+    const { text } = getTrendI18n();
 
     if (!points.length) {
         summary.style.display = 'inline-flex';
-        summary.textContent = 'Không có dữ liệu giá trong khoảng thời gian này.';
+        summary.textContent = text.trendNoData;
         axis.innerHTML = '';
         return;
     }
@@ -384,10 +462,10 @@ function renderTrendBars(points, centerDate) {
     function tooltipContent(point) {
         const labelDate = formatTrendDate(point.date);
         const priceLine = point.min_price === null
-            ? 'Tạm thời chưa có giá'
-            : `Từ ${formatCurrencyVND(point.min_price)}`;
+            ? text.trendTooltipNoPrice
+            : text.trendTooltipFrom.replace('{price}', formatCurrencyVND(point.min_price));
         return {
-            head: 'Chuyến đi một chiều',
+            head: text.trendTooltipHead,
             body: `${labelDate}<br>${priceLine}`
         };
     }
@@ -497,6 +575,14 @@ function renderTrendBars(points, centerDate) {
         <span>${formatTrendDate(points[points.length - 1].date)}</span>
     `;
 }
+
+document.addEventListener('languageChanged', function () {
+    applyTrendStaticTranslations();
+    const modal = document.getElementById('spTrendModal');
+    if (modal && modal.classList.contains('is-open') && lastTrendPoints.length) {
+        renderTrendBars(lastTrendPoints, lastTrendCenterDate || currentTrendState.dep);
+    }
+});
 
 // Set lại input ngày đi/ngày về theo query hoặc ngày hiện tại
 function setDateInputsFromQuery() {
@@ -647,7 +733,7 @@ function renderFlights(outbounds, inbounds, tripType = 'round-trip') {
     ensureTrendToolbar(results);
     
     // Get current language for formatting airports and dates - use same key as search_translations.js
-    let currentLang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+    let currentLang = getSearchPageLanguage();
     
     let isOneWay = tripType === 'one-way';
     const hasOut = Array.isArray(outbounds) && outbounds.length > 0;
@@ -901,7 +987,7 @@ function renderFlights(outbounds, inbounds, tripType = 'round-trip') {
         // Apply translations to newly rendered flight cards
         if (typeof window.applySearchTranslations === 'function') {
             // Try multiple methods to get the current language
-            let currentLang = localStorage.getItem('preferredLanguage');
+            let currentLang = getSearchPageLanguage();
             
             // Also check DOM elements for language indicators
             if (!currentLang) {
@@ -914,7 +1000,7 @@ function renderFlights(outbounds, inbounds, tripType = 'round-trip') {
             if (!currentLang) {
                 // Check localStorage first, then URL parameter
                 const urlParams = new URLSearchParams(window.location.search);
-                currentLang = urlParams.get('lang') || localStorage.getItem('preferredLanguage') || 'vi';
+                currentLang = urlParams.get('lang') || getSearchPageLanguage() || 'vi';
             }
             
             window.applySearchTranslations(currentLang);
@@ -1168,7 +1254,7 @@ function initializeTripTypeHandlers() {
         };
         
         // Get current language
-        const currentLang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+        const currentLang = getSearchPageLanguage();
         
         // Lấy tên thành phố từ sân bay
         let outArrCity = formatAirport(outData.arrival_airport || '', currentLang).split('(')[0].trim();
