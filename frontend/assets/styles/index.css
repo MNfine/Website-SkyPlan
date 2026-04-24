@@ -1,3 +1,84 @@
+/* --- Mobile Ultra Small Devices (iPhone SE/12/13/14/15 Pro, width <= 430px) --- */
+@media (max-width: 430px) {
+  .container {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+  .ticket-upgrade-banner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 10px 8px;
+  }
+  .ticket-upgrade-mark {
+    margin-bottom: 6px;
+    align-self: center;
+  }
+  .ticket-upgrade-btn {
+    width: 100%;
+    margin-top: 8px;
+  }
+  .ticket-upgrade-title {
+    font-size: 15px;
+  }
+  .ticket-upgrade-desc {
+    font-size: 12px;
+  }
+  .ticket-upgrade-pillars {
+    gap: 4px;
+  }
+  .routes-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .route-img {
+    height: 140px;
+  }
+  .features {
+    gap: 24px;
+    padding: 18px 4px;
+  }
+  .feature-title {
+    font-size: 15px;
+  }
+  .feature-desc {
+    font-size: 12px;
+  }
+  .promo-content {
+    padding: 0 4px;
+  }
+  .promo-title {
+    font-size: 16px;
+  }
+  .promo-desc {
+    font-size: 12px;
+  }
+  .app-btn {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+  .airport-map-preview {
+    height: 180px;
+  }
+}
+
+/* --- Extra Small Devices (max-width: 375px) --- */
+@media (max-width: 375px) {
+  .hero-title {
+    font-size: 20px;
+  }
+  .search-box {
+    padding: 8px;
+  }
+  .search-field {
+    padding: 6px;
+    font-size: 12px;
+  }
+  .search-btn {
+    height: 38px;
+    font-size: 12px;
+  }
+}
 /* Main styles for SkyPlane */
 
 /* Variables */

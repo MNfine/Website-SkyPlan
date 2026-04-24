@@ -196,10 +196,9 @@ function updateWalletUIState() {
     connectBtn.classList.add('connected');
     const spanEl = connectBtn.querySelector('span');
     if (spanEl) {
-      spanEl.setAttribute('data-i18n', 'connectedText');
-      spanEl.textContent = 'Ví đã kết nối';
+      spanEl.setAttribute('data-i18n', 'walletConnected');
+      spanEl.textContent = walletT('walletConnected', 'Ví đã kết nối');
     }
-    
     // Show address if available
     if (walletAddress && MetaMaskWallet.account) {
       walletAddress.textContent = MetaMaskWallet.account;
@@ -210,7 +209,7 @@ function updateWalletUIState() {
     const spanEl = connectBtn.querySelector('span');
     if (spanEl) {
       spanEl.setAttribute('data-i18n', 'connectWalletText');
-      spanEl.textContent = 'Connect Wallet';
+      spanEl.textContent = walletT('connectWalletText', 'Connect Wallet');
     }
     if (walletMenu) {
       walletMenu.classList.remove('show');
@@ -256,12 +255,14 @@ window.addEventListener('auth-logout', () => {
 document.addEventListener('languageChanged', () => {
   const connectBtn = document.getElementById('wallet-connect-btn');
   if (!connectBtn) return;
-
+  // Update button title
   if (isUserLoggedIn()) {
     connectBtn.title = walletT('connectMetaMaskWalletTitle', 'Connect MetaMask wallet');
   } else {
     connectBtn.title = walletT('loginRequiredToConnectWallet', 'Sign in first to connect wallet');
   }
+  // Update button text
+  updateWalletUIState();
 });
 
 // Initialize when DOM ready
