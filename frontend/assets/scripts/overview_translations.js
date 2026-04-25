@@ -193,21 +193,28 @@ if (typeof module !== 'undefined' && module.exports) {
 
 // Function to apply translations for overview page
 function applyOverviewTranslations(lang) {
-    const elements = document.querySelectorAll('[data-i18n]');
+    const normalizedLang = String(lang || '').toLowerCase() === 'en' ? 'en' : 'vi';
+    const dict = overviewTranslations[normalizedLang] || overviewTranslations.vi;
+    const elements = document.querySelectorAll('.overview-flow [data-i18n], .overview-content [data-i18n], title[data-i18n]');
+
+    if (!window.__overviewMissingTranslationLoggedKeys) {
+        window.__overviewMissingTranslationLoggedKeys = new Set();
+    }
 
     elements.forEach(element => {
         const key = element.getAttribute('data-i18n');
 
-        if (overviewTranslations[lang] && overviewTranslations[lang][key]) {
-            element.textContent = overviewTranslations[lang][key];
-        } else {
-            console.warn(`Missing translation for key: '${key}' in language: '${lang}'`);
+        if (dict && dict[key]) {
+            element.textContent = dict[key];
+        } else if (window.SKYPLAN_DEBUG && key && !window.__overviewMissingTranslationLoggedKeys.has(`${normalizedLang}:${key}`)) {
+            window.__overviewMissingTranslationLoggedKeys.add(`${normalizedLang}:${key}`);
+            console.warn(`Missing translation for key: '${key}' in language: '${normalizedLang}'`);
         }
     });
 
     // Update page title if needed
-    if (overviewTranslations[lang]['overviewTitle']) {
-        document.title = overviewTranslations[lang]['overviewTitle'];
+    if (dict['overviewTitle']) {
+        document.title = dict['overviewTitle'];
     }
 
     // Helpers
@@ -218,9 +225,9 @@ function applyOverviewTranslations(lang) {
 
     const params = new URLSearchParams(window.location.search);
     const iataToCode = { HAN: 'HaNoi', SGN: 'HoChiMinh', DAD: 'DaNang', VCA: 'CanTho' };
-    const cities = overviewTranslations[lang].cities || {};
-    const routeBetween = overviewTranslations[lang].routeBetween || ((a, b) => `${a} - ${b}`);
-    const formatDate = overviewTranslations[lang].formatDate || ((x) => x);
+    const cities = dict.cities || {};
+    const routeBetween = dict.routeBetween || ((a, b) => `${a} - ${b}`);
+    const formatDate = dict.formatDate || ((x) => x);
 
     if (!hasTrip) {
         // Infer from/to codes only when no explicit selected trip exists
@@ -239,10 +246,10 @@ function applyOverviewTranslations(lang) {
         toCode = toCode || 'HoChiMinh';
 
         const fromName = (typeof window !== 'undefined' && typeof window.resolveCityLabel === 'function')
-            ? window.resolveCityLabel(fromCode, lang)
+            ? window.resolveCityLabel(fromCode, normalizedLang)
             : (cities[fromCode] || fromCode);
         const toName = (typeof window !== 'undefined' && typeof window.resolveCityLabel === 'function')
-            ? window.resolveCityLabel(toCode, lang)
+            ? window.resolveCityLabel(toCode, normalizedLang)
             : (cities[toCode] || toCode);
 
         // Update heading
@@ -263,10 +270,10 @@ function applyOverviewTranslations(lang) {
         const fromCode = storedTrip.fromCode || storedTrip.from || '';
         const toCode = storedTrip.toCode || storedTrip.to || '';
         const fromName = (typeof window !== 'undefined' && typeof window.resolveCityLabel === 'function')
-            ? window.resolveCityLabel(fromCode, lang)
+            ? window.resolveCityLabel(fromCode, normalizedLang)
             : ((cities && cities[fromCode]) || fromCode);
         const toName = (typeof window !== 'undefined' && typeof window.resolveCityLabel === 'function')
-            ? window.resolveCityLabel(toCode, lang)
+            ? window.resolveCityLabel(toCode, normalizedLang)
             : ((cities && cities[toCode]) || toCode);
         const heading = document.getElementById('route-heading');
         if (heading) heading.textContent = routeBetween(fromName, toName);

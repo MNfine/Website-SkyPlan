@@ -426,10 +426,9 @@
           card.classList.remove('has-extras');
           // keep default "no extras" card; ensure image is visible
           const title = card.querySelector('h3');
-          title.setAttribute('data-i18n','noExtras');
-          // Re-apply translation for this title only
-          if (typeof applyOverviewTranslations==='function'){
-            applyOverviewTranslations(lang);
+          if (title) {
+            title.removeAttribute('data-i18n');
+            title.textContent = getOT(lang)?.noExtras || (lang === 'vi' ? 'Không có dịch vụ thêm' : 'No additional services');
           }
           // Render 0 VND for extras subtotal even when none selected
           let priceRow = card.querySelector('.card-price');
@@ -451,15 +450,6 @@
         // safety re-render after header/footer async work
         setTimeout(()=>{ try { render(); } catch(_) {} }, 50);
       });
-
-      // Ensure render runs after overview translations (which may reset the title)
-      try {
-        const orig = window.applyOverviewTranslations;
-        window.applyOverviewTranslations = function(lang){
-          if (typeof orig === 'function') orig(lang);
-          try { render(); } catch(_){}
-        }
-      } catch(_) {}
     })();
 
     // Handle confirm booking button
