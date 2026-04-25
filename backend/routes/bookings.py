@@ -11,6 +11,7 @@ from backend.models.db import session_scope
 from backend.models.user import User
 from backend.models.passenger import Passenger
 from backend.models.booking import Booking, BookingPassenger, BookingStatus, TripType, FareClass
+from backend.models.payments import Payment
 from backend.models.tickets import Ticket
 from backend.models.sky_voucher import SkyVoucher
 from sqlalchemy.orm import joinedload
@@ -38,6 +39,168 @@ def _normalize_name_for_match(value: str) -> str:
 	text = ''.join(ch for ch in text if unicodedata.category(ch) != 'Mn')
 	text = re.sub(r'\s+', ' ', text)
 	return text
+
+
+def _name_signature_for_match(value: str) -> str:
+	normalized = _normalize_name_for_match(value)
+	if not normalized:
+		return ''
+	tokens = [token for token in normalized.split(' ') if token]
+	if not tokens:
+		return ''
+	return ' '.join(sorted(tokens))
+
+
+def _find_ticket_for_checkin(session, booking: Booking, matched_bp: BookingPassenger, matched_name: str) -> Ticket | None:
+	"""Resolve a ticket for check-in with backward-compatible fallbacks."""
+	# 1) ORM relationship (expected for current schema)
+	ticket_obj = getattr(matched_bp, 'ticket', None)
+	if ticket_obj:
+		return ticket_obj
+
+	# 2) Strict lookup by booking_id + passenger mapping.
+	# Legacy data may have saved either booking_passengers.id or passengers.id into Ticket.passenger_id.
+	passenger_link_ids = [matched_bp.id]
+	if matched_bp.passenger_id and matched_bp.passenger_id != matched_bp.id:
+		passenger_link_ids.append(matched_bp.passenger_id)
+
+	ticket_obj = session.query(Ticket).filter(
+		Ticket.booking_id == booking.id,
+		Ticket.passenger_id.in_(passenger_link_ids)
+	).order_by(Ticket.issued_at.desc()).first()
+	if ticket_obj:
+		return ticket_obj
+
+	# 3) If seat is already known, try matching by seat.
+	if matched_bp.seat_id:
+		ticket_obj = session.query(Ticket).filter_by(
+			booking_id=booking.id,
+			seat_id=matched_bp.seat_id,
+		).order_by(Ticket.issued_at.desc()).first()
+		if ticket_obj:
+			return ticket_obj
+
+	# 4) Name-based fallback (supports both normal and reversed token order).
+	booking_tickets = session.query(Ticket).filter_by(booking_id=booking.id).order_by(Ticket.issued_at.desc()).all()
+	if not booking_tickets:
+		return None
+
+	if len(booking_tickets) == 1:
+		return booking_tickets[0]
+
+	normalized_target = _normalize_name_for_match(matched_name)
+	signature_target = _name_signature_for_match(matched_name)
+
+	for candidate_ticket in booking_tickets:
+		if _normalize_name_for_match(candidate_ticket.passenger_name) == normalized_target:
+			return candidate_ticket
+
+	for candidate_ticket in booking_tickets:
+		if _name_signature_for_match(candidate_ticket.passenger_name) == signature_target:
+			return candidate_ticket
+
+	return None
+
+
+def _booking_has_successful_payment(session, booking_id: int) -> bool:
+	return session.query(Payment.id).filter(
+		Payment.booking_id == booking_id,
+		Payment.status == 'SUCCESS'
+	).first() is not None
+
+
+def _auto_issue_missing_tickets_for_checkin(session, booking: Booking) -> list[str]:
+	has_successful_payment = _booking_has_successful_payment(session, booking.id)
+	if booking.status not in [BookingStatus.CONFIRMED, BookingStatus.COMPLETED] and not has_successful_payment:
+		return []
+
+	if has_successful_payment and booking.status == BookingStatus.PENDING:
+		booking.status = BookingStatus.CONFIRMED
+		if not booking.confirmed_at:
+			booking.confirmed_at = datetime.utcnow()
+		session.add(booking)
+
+	existing_tickets = session.query(Ticket).filter_by(booking_id=booking.id).all()
+	existing_passenger_ids = set()
+	existing_seat_ids = set()
+	existing_name_norm = set()
+
+	for ticket in existing_tickets:
+		if ticket.passenger_id is not None:
+			existing_passenger_ids.add(ticket.passenger_id)
+		if ticket.seat_id is not None:
+			existing_seat_ids.add(ticket.seat_id)
+		existing_name_norm.add(_normalize_name_for_match(ticket.passenger_name))
+
+	flight = booking.outbound_flight
+	if not flight and booking.outbound_flight_id:
+		flight = session.query(Flight).filter_by(id=booking.outbound_flight_id).first()
+
+	generated_codes: list[str] = []
+	for booking_passenger in booking.passengers or []:
+		passenger = booking_passenger.passenger
+		passenger_name = f"{getattr(passenger, 'firstname', '') or ''} {getattr(passenger, 'lastname', '') or ''}".strip() or f"Passenger {booking_passenger.id}"
+		normalized_name = _normalize_name_for_match(passenger_name)
+
+		if (
+			booking_passenger.id in existing_passenger_ids
+			or booking_passenger.passenger_id in existing_passenger_ids
+			or (booking_passenger.seat_id and booking_passenger.seat_id in existing_seat_ids)
+			or normalized_name in existing_name_norm
+		):
+			continue
+
+		seat = booking_passenger.seat
+		base_price = float(flight.price) if (flight and getattr(flight, 'price', None) is not None) else float(booking.total_amount or 0)
+		seat_fee = float(seat.price_modifier) if (seat and getattr(seat, 'price_modifier', None) is not None) else 0
+
+		ticket = Ticket.create_ticket(
+			booking_id=booking.id,
+			passenger_id=booking_passenger.id,
+			flight_id=flight.id if flight else booking.outbound_flight_id,
+			seat_id=seat.id if seat else None,
+			passenger_name=passenger_name,
+			base_price=base_price,
+			seat_fee=seat_fee,
+			phone=getattr(passenger, 'phone_number', None),
+			email=getattr(passenger, 'email', None),
+			id_number=getattr(passenger, 'cccd', None),
+		)
+
+		session.add(ticket)
+		generated_codes.append(ticket.ticket_code)
+
+		if seat:
+			seat.status = 'CONFIRMED'
+			seat.confirmed_booking_id = booking.id
+
+		if booking_passenger.id is not None:
+			existing_passenger_ids.add(booking_passenger.id)
+		if booking_passenger.passenger_id is not None:
+			existing_passenger_ids.add(booking_passenger.passenger_id)
+		if seat and seat.id is not None:
+			existing_seat_ids.add(seat.id)
+		existing_name_norm.add(normalized_name)
+
+	if generated_codes:
+		session.flush()
+
+	return generated_codes
+
+
+def _ensure_booking_tickets_if_eligible(session, booking: Booking) -> bool:
+	"""Ensure eligible booking has tickets. Returns True if new tickets were issued."""
+	generated_codes = _auto_issue_missing_tickets_for_checkin(session, booking)
+	return bool(generated_codes)
+
+
+def _ensure_tickets_for_bookings_if_eligible(session, bookings: list[Booking]) -> int:
+	"""Ensure tickets for a booking list. Returns number of bookings repaired."""
+	repaired_count = 0
+	for booking in bookings or []:
+		if _ensure_booking_tickets_if_eligible(session, booking):
+			repaired_count += 1
+	return repaired_count
 
 
 def _get_user_id_from_bearer() -> int | None:
@@ -620,6 +783,8 @@ def get_booking(booking_code):
 		if not booking:
 			return jsonify({'success': False, 'message': 'Booking not found'}), 404
 
+		_ensure_booking_tickets_if_eligible(session, booking)
+
 		return jsonify({
 			'success': True,
 			'booking': booking.as_dict()
@@ -690,22 +855,28 @@ def lookup_booking_for_checkin():
 		if not seat_number and getattr(matched_bp, 'seat', None):
 			seat_number = getattr(matched_bp.seat, 'seat_number', None)
 
-		ticket_obj = getattr(matched_bp, 'ticket', None)
+		ticket_obj = _find_ticket_for_checkin(session, booking, matched_bp, matched_name)
+		auto_generated_ticket_codes: list[str] = []
 		if not ticket_obj:
-			ticket_obj = session.query(Ticket).filter_by(
-				booking_id=booking.id,
-				passenger_id=matched_bp.id,
-			).first()
-
-		# Fallback for legacy/inconsistent data: match ticket by passenger name inside booking.
-		if not ticket_obj:
-			normalized_target_name = _normalize_name_for_match(matched_name)
-			for candidate_ticket in session.query(Ticket).filter_by(booking_id=booking.id).all():
-				if _normalize_name_for_match(candidate_ticket.passenger_name) == normalized_target_name:
-					ticket_obj = candidate_ticket
-					break
+			auto_generated_ticket_codes = _auto_issue_missing_tickets_for_checkin(session, booking)
+			if auto_generated_ticket_codes:
+				ticket_obj = _find_ticket_for_checkin(session, booking, matched_bp, matched_name)
+				booking_data = booking.as_dict()
+				outbound = booking_data.get('outbound_flight') or {}
 
 		ticket_code = ticket_obj.ticket_code if ticket_obj else None
+		has_successful_payment = _booking_has_successful_payment(session, booking.id)
+		is_checkin_status_allowed = booking.status in [BookingStatus.CONFIRMED, BookingStatus.COMPLETED] or has_successful_payment
+		can_checkin = bool(ticket_code) and is_checkin_status_allowed
+
+		if can_checkin:
+			checkin_message = None
+		elif not ticket_code and booking.status == BookingStatus.PENDING and not has_successful_payment:
+			checkin_message = 'Booking đang chờ thanh toán/xác nhận, vé điện tử chưa được phát hành nên chưa thể check-in online.'
+		elif not ticket_code:
+			checkin_message = 'Booking chưa có vé điện tử để check-in. Vui lòng liên hệ hỗ trợ.'
+		else:
+			checkin_message = f'Booking ở trạng thái {booking.status.value}, chưa thể check-in online.'
 
 		return jsonify({
 			'success': True,
@@ -723,8 +894,9 @@ def lookup_booking_for_checkin():
 				'departure_time': outbound.get('departure_time'),
 				'arrival_time': outbound.get('arrival_time'),
 			},
-			'can_checkin': bool(ticket_code),
-			'checkin_message': None if ticket_code else 'Booking chưa có vé điện tử để check-in. Vui lòng liên hệ hỗ trợ.',
+			'can_checkin': can_checkin,
+			'checkin_message': checkin_message,
+			'auto_ticket_issued': bool(auto_generated_ticket_codes),
 		}), 200
 
 
@@ -787,6 +959,8 @@ def list_user_bookings():
 			joinedload(Booking.outbound_flight),
 			joinedload(Booking.inbound_flight)
 		).filter_by(user_id=user_id).order_by(Booking.created_at.desc()).all()
+
+		_ensure_tickets_for_bookings_if_eligible(session, bookings)
 
 		return jsonify({
 			'success': True,
@@ -892,6 +1066,8 @@ def get_booking_status(booking_code):
 		if not booking:
 			return jsonify({'success': False, 'message': 'Booking not found'}), 404
 
+		_ensure_booking_tickets_if_eligible(session, booking)
+
 		return jsonify({
 			'success': True,
 			'booking': booking.as_dict()
@@ -935,6 +1111,7 @@ def get_my_trips():
 			query = query.filter(Booking.wallet_address == wallet_address)
 		
 		bookings = query.order_by(Booking.created_at.desc()).all()
+		_ensure_tickets_for_bookings_if_eligible(session, bookings)
 		
 		# Build response with status filtering support
 		response_bookings = []

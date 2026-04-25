@@ -131,7 +131,7 @@ function initCheckinOnline() {
       lastLookupPayload = payload;
 
       resultCard.hidden = false;
-      if (!payload?.passenger?.ticket_code) {
+      if (!payload?.can_checkin) {
         completeBtn.disabled = true;
         showError(errorBox, payload?.checkin_message || tCheckin("errorTicketNotIssued"));
       } else {
@@ -149,6 +149,11 @@ function initCheckinOnline() {
   });
 
   completeBtn?.addEventListener("click", async () => {
+    if (!lastLookupPayload?.can_checkin) {
+      showError(errorBox, lastLookupPayload?.checkin_message || tCheckin("errorTicketNotIssued"));
+      return;
+    }
+
     const ticketCode = lastLookupPayload?.passenger?.ticket_code;
     if (!ticketCode) {
       showError(errorBox, lastLookupPayload?.checkin_message || tCheckin("errorTicketNotIssued"));
