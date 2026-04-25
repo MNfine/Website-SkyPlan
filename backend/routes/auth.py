@@ -2,7 +2,7 @@
 from flask import Blueprint, request, jsonify, current_app
 import re
 import jwt
-from datetime import datetime
+from datetime import datetime, date
 from decimal import Decimal
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
@@ -47,6 +47,27 @@ def _calculate_member_tier_from_bookings(bookings):
         total_redeemed_value += Decimal(str(booking.sky_redeemed_amount or 0))
 
     return _calculate_member_tier(total_earned_value), total_earned_value, total_redeemed_value
+
+
+def _parse_birth_date(value):
+    if value is None:
+        return None
+    if isinstance(value, date):
+        return value
+    if isinstance(value, datetime):
+        return value.date()
+
+    text_value = str(value).strip()
+    if text_value == '':
+        return None
+
+    for fmt in ('%Y-%m-%d', '%d/%m/%Y'):
+        try:
+            return datetime.strptime(text_value, fmt).date()
+        except ValueError:
+            continue
+
+    raise ValueError('Invalid date format. Use YYYY-MM-DD or DD/MM/YYYY')
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
@@ -292,17 +313,23 @@ def update_profile():
         }), 401
     
     # Get JSON data from request
-    data = request.json
+    data = request.get_json(silent=True) or {}
     if not data:
         return jsonify({
             'success': False,
             'message': 'No update data provided'
         }), 400
+
+    if isinstance(data.get('data'), dict):
+        payload = dict(data['data'])
+        payload.update({k: v for k, v in data.items() if k != 'data'})
+        data = payload
+
+    session = None
     
     try:
-        # Get user from database using session_scope
-        with session_scope() as session:
-            user = session.query(User).filter_by(id=user_id).first()
+        session = get_session()
+        user = session.query(User).filter_by(id=user_id).first()
         
         if not user:
             return jsonify({
@@ -327,11 +354,39 @@ def update_profile():
                 
                 setattr(user, field, data[field])
                 updated = True
+
+        if 'gender' in data:
+            incoming_gender = str(data.get('gender') or '').strip().lower()
+            if incoming_gender and incoming_gender not in {'male', 'female', 'other'}:
+                return jsonify({
+                    'success': False,
+                    'message': 'Gender must be one of: male, female, other'
+                }), 400
+
+            normalized_gender = incoming_gender or None
+            current_gender = (user.gender or '').strip().lower() or None
+            if normalized_gender != current_gender:
+                user.gender = normalized_gender
+                updated = True
+
+        if 'birth_date' in data or 'dateOfBirth' in data or 'dob' in data:
+            raw_birth_date = data.get('birth_date', data.get('dateOfBirth', data.get('dob')))
+            try:
+                parsed_birth_date = _parse_birth_date(raw_birth_date)
+            except ValueError as exc:
+                return jsonify({
+                    'success': False,
+                    'message': str(exc)
+                }), 400
+
+            if parsed_birth_date != user.birth_date:
+                user.birth_date = parsed_birth_date
+                updated = True
         
         # Update password if provided
         if 'password' in data and data['password']:
             # Validate current password if provided
-            if 'current_password' not in data or not user.check_password(data['current_password']):
+            if 'current_password' not in data or not user.password_hash or not user.check_password(data['current_password']):
                 return jsonify({
                     'success': False,
                     'message': 'Current password is incorrect'
@@ -365,7 +420,8 @@ def update_profile():
             }), 200
             
     except IntegrityError as e:
-        session.rollback()
+        if session is not None:
+            session.rollback()
         # Check for duplicate email or phone
         error_info = str(e).lower()
         if 'unique constraint' in error_info and 'phone' in error_info:
@@ -379,14 +435,16 @@ def update_profile():
         }), 409
         
     except Exception as e:
-        session.rollback()
+        if session is not None:
+            session.rollback()
         current_app.logger.error(f"Profile update error: {str(e)}")
         return jsonify({
             'success': False,
             'message': 'An error occurred during profile update'
         }), 500
     finally:
-        session.close()
+        if session is not None:
+            session.close()
 
 
 # ============================================================================

@@ -115,6 +115,32 @@ def _apply_migrations():
 					except:
 						pass
 
+			# Add birth_date column if missing
+			if 'birth_date' not in users_columns:
+				try:
+					conn.execute(text("ALTER TABLE users ADD COLUMN birth_date DATE"))
+					conn.commit()
+					print("[DB Migration] Added birth_date column to users table")
+				except Exception as e:
+					print(f"[DB Migration] birth_date column already exists or error: {e}")
+					try:
+						conn.rollback()
+					except:
+						pass
+
+			# Add gender column if missing
+			if 'gender' not in users_columns:
+				try:
+					conn.execute(text("ALTER TABLE users ADD COLUMN gender VARCHAR(20)"))
+					conn.commit()
+					print("[DB Migration] Added gender column to users table")
+				except Exception as e:
+					print(f"[DB Migration] gender column already exists or error: {e}")
+					try:
+						conn.rollback()
+					except:
+						pass
+
 			# Check if bookings table exists
 			if 'bookings' in inspector.get_table_names():
 				bookings_columns = [col['name'] for col in inspector.get_columns('bookings')]

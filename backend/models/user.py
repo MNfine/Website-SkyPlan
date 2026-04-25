@@ -5,7 +5,7 @@ import os
 import jwt
 from datetime import datetime, timedelta
 from flask import current_app
-from sqlalchemy import Column, Integer, String, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Date
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from .db import Base
@@ -20,6 +20,8 @@ class User(Base):
     # Phone should be stored but not necessarily unique across users
     phone = Column(String(20), nullable=False, index=True)
     password_hash = Column(String(255), nullable=True)  # Nullable for wallet-only users
+    birth_date = Column(Date, nullable=True)
+    gender = Column(String(20), nullable=True)
     
     # Wallet authentication fields
     wallet_address = Column(String(42), unique=True, nullable=True, index=True)  # Ethereum address (0x + 40 hex)
@@ -72,11 +74,17 @@ class User(Base):
 
     def as_dict(self):
         """Convert user to dictionary (without sensitive data)."""
+        birth_date_iso = self.birth_date.isoformat() if self.birth_date else None
+        dob_display = self.birth_date.strftime('%d/%m/%Y') if self.birth_date else None
         return {
             "id": self.id,
             "fullname": self.fullname,
             "email": self.email,
             "phone": self.phone,
+            "birth_date": birth_date_iso,
+            "dateOfBirth": birth_date_iso,
+            "dob": dob_display,
+            "gender": self.gender,
             "wallet_address": self.wallet_address,
             "member_tier": self.member_tier,
             "is_active": self.is_active,

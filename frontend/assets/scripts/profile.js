@@ -1,10 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Helper to get current language from localStorage
   function getCurrentLang() {
-    try { 
-      return localStorage.getItem('preferredLanguage') || 'vi'; 
-    } catch { 
-      return 'vi'; 
+    try {
+      if (typeof window.getPersistedLanguage === 'function') {
+        return window.getPersistedLanguage();
+      }
+      var lang = (localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi').toLowerCase();
+      return lang === 'en' ? 'en' : 'vi';
+    } catch {
+      return 'vi';
     }
   }
   
@@ -82,6 +86,16 @@ document.addEventListener('DOMContentLoaded', function() {
     var today = new Date();
     today.setHours(0, 0, 0, 0);
     return date < today;
+  }
+
+  function toIsoDate(dateString) {
+    if (!dateString) return null;
+    var parts = dateString.split('/');
+    if (parts.length !== 3) return null;
+    var day = parts[0].padStart(2, '0');
+    var month = parts[1].padStart(2, '0');
+    var year = parts[2];
+    return year + '-' + month + '-' + day;
   }
 
   // Error handling functions
@@ -239,8 +253,61 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       
       if (isValid) {
-        var lang = getCurrentLang();
-        showToast(lang === 'vi' ? 'Thành công!' : 'Success!', getTranslation('successMessage'), 'success');
+        var payload = {
+          fullname: fullName,
+          phone: phone,
+          gender: gender,
+          birth_date: toIsoDate(dob)
+        };
+
+        var updateUrl = '/api/auth/update';
+        var updateRequest = (window.AuthState && typeof AuthState.fetchWithAuth === 'function')
+          ? AuthState.fetchWithAuth(updateUrl, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            })
+          : fetch(updateUrl, {
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(payload)
+            });
+
+        updateRequest
+          .then(function(response) {
+            return response.json().then(function(data) {
+              return { ok: response.ok, data: data };
+            });
+          })
+          .then(function(result) {
+            if (!result.ok || !result.data || !result.data.success) {
+              throw new Error((result.data && result.data.message) || 'Failed to update profile');
+            }
+
+            var user = result.data.user || {};
+            if (inputs.fullName && user.fullname) inputs.fullName.value = user.fullname;
+            if (inputs.phone && (user.phone || user.mobile)) inputs.phone.value = user.phone || user.mobile;
+            if (inputs.dob && user.dob) inputs.dob.value = user.dob;
+            if (inputs.gender && user.gender) inputs.gender.value = user.gender;
+
+            var accountPhoneEl = document.getElementById('accountPhone');
+            if (accountPhoneEl && (user.phone || user.mobile)) {
+              accountPhoneEl.textContent = user.phone || user.mobile;
+            }
+
+            var profileNameEl = document.getElementById('profile-name');
+            if (profileNameEl && user.fullname) profileNameEl.textContent = user.fullname;
+
+            var lang = getCurrentLang();
+            showToast(lang === 'vi' ? 'Thành công!' : 'Success!', getTranslation('successMessage'), 'success');
+          })
+          .catch(function(err) {
+            var lang = getCurrentLang();
+            showToast(lang === 'vi' ? 'Thất bại' : 'Failed', err.message || 'Failed to update profile', 'error');
+          });
       }
     });
   }
@@ -342,21 +409,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Language switcher for profile page
 function changeProfileLanguage(lang) {
-  localStorage.setItem('preferredLanguage', lang);
-  document.documentElement.lang = lang;
+  var normalizedLang = String(lang || '').toLowerCase() === 'en' ? 'en' : 'vi';
+  if (typeof window.broadcastLanguageChange === 'function') {
+    window.broadcastLanguageChange(normalizedLang);
+  } else {
+    localStorage.setItem('preferredLanguage', normalizedLang);
+    localStorage.setItem('language', normalizedLang);
+    document.documentElement.lang = normalizedLang;
+  }
   
   // Apply profile translations first (including title)
   if (typeof applyProfileTranslations === 'function') {
-    applyProfileTranslations(lang);
+    applyProfileTranslations(normalizedLang);
   }
   
   // Update language selector display
   if (typeof updateSelectedLanguage === 'function') {
-    updateSelectedLanguage(lang);
+    updateSelectedLanguage(normalizedLang);
   }
   
   // Apply translations to header and footer using common.js function
   if (typeof applyTranslations === 'function') {
-    applyTranslations(lang);
+    applyTranslations(normalizedLang);
   }
 }
+
+document.addEventListener('languageChanged', function(e) {
+  var lang = (e && e.detail && (e.detail.lang || e.detail.language)) || getCurrentLang();
+  if (typeof applyProfileTranslations === 'function') {
+    applyProfileTranslations(lang);
+  }
+});

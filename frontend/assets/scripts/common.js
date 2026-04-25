@@ -336,6 +336,8 @@ function initializeLanguageSelector() {
                     changeBlogLanguage(selectedLangValue);
                 } else if (typeof applyVerifyBookingTranslations === 'function' && (path.includes('verify_booking.html') || path.endsWith('/verify_booking'))) {
                     applyVerifyBookingTranslations(selectedLangValue);
+                } else if (typeof changeProfileLanguage === 'function' && (path.includes('profile.html') || path.endsWith('/profile'))) {
+                    changeProfileLanguage(selectedLangValue);
                 } else if (typeof changeLanguage === 'function') {
                     changeLanguage(selectedLangValue);
                 } else if (typeof applyTranslations === 'function') {

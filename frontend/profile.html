@@ -139,7 +139,9 @@
     document.addEventListener('DOMContentLoaded', function () {
       function handleComponentError(name) { console.error('Failed to load ' + name); }
 
-      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const lang = (typeof window.getPersistedLanguage === 'function')
+        ? window.getPersistedLanguage()
+        : (localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi');
       document.documentElement.lang = lang;
 
       fetch('components/header.html')
