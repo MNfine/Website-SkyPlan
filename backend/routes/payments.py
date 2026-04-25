@@ -11,6 +11,7 @@ from backend.models.tickets import Ticket
 from backend.models.sky_voucher import SkyVoucher
 from backend.config import VNPayConfig
 from backend.utils.blockchain_admin import run_post_payment_blockchain_flow
+from web3 import Web3
 import urllib.parse
 import hashlib
 import hmac
@@ -41,6 +42,27 @@ def _consume_sky_voucher(session, voucher_code: str | None, user_id: int | None 
 def _run_blockchain_post_payment(booking):
 	"""Run blockchain post-payment flow without breaking payment confirmation."""
 	try:
+		wallet_address = getattr(booking, 'wallet_address', None)
+		if not wallet_address:
+			message = 'Skipped blockchain flow: booking has no wallet_address'
+			print(f"[blockchain] ℹ️ {booking.booking_code}: {message}")
+			return {
+				'success': False,
+				'message': message,
+				'steps': {},
+				'skipped': True,
+			}
+
+		if not Web3.is_address(wallet_address):
+			message = f'Skipped blockchain flow: invalid wallet_address {wallet_address}'
+			print(f"[blockchain] ℹ️ {booking.booking_code}: {message}")
+			return {
+				'success': False,
+				'message': message,
+				'steps': {},
+				'skipped': True,
+			}
+
 		result = run_post_payment_blockchain_flow(booking)
 		if result.get('success'):
 			print(f"[blockchain] ✅ {booking.booking_code}: {result.get('message')}")
@@ -507,6 +529,27 @@ def mark_paid():
 		if caller_user and (booking.user_id is None):
 			booking.user_id = caller_user
 			session.add(booking)
+
+		# Ensure wallet_address exists for blockchain flow
+		wallet_input = str(data.get('wallet_address') or data.get('walletAddress') or '').strip()
+		if wallet_input and Web3.is_address(wallet_input):
+			booking.wallet_address = Web3.to_checksum_address(wallet_input)
+			session.add(booking)
+		elif not booking.wallet_address:
+			resolved_wallet = None
+			if booking.user_id:
+				owner_user = session.get(User, booking.user_id)
+				if owner_user and owner_user.wallet_address and Web3.is_address(owner_user.wallet_address):
+					resolved_wallet = Web3.to_checksum_address(owner_user.wallet_address)
+
+			if not resolved_wallet and caller_user:
+				caller = session.get(User, caller_user)
+				if caller and caller.wallet_address and Web3.is_address(caller.wallet_address):
+					resolved_wallet = Web3.to_checksum_address(caller.wallet_address)
+
+			if resolved_wallet:
+				booking.wallet_address = resolved_wallet
+				session.add(booking)
 
 		# Create a payment record for audit
 		try:

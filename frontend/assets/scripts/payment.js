@@ -173,6 +173,18 @@ function parseVndNumber(text) {
   return Number(digits || 0);
 }
 
+function getConnectedWalletAddress() {
+  try {
+    if (window.MetaMaskWallet && window.MetaMaskWallet.account) {
+      const account = String(window.MetaMaskWallet.account).trim();
+      if (account) return account;
+    }
+  } catch (_) { }
+
+  const persisted = String(localStorage.getItem('skyplan_wallet_account') || '').trim();
+  return persisted || '';
+}
+
 function getEffectivePaymentAmount() {
   const finalAmountEl = document.getElementById('finalAmount');
   if (finalAmountEl && parseVndNumber(finalAmountEl.textContent) > 0) {
@@ -210,7 +222,8 @@ async function markBookingPaidOnBackend(provider) {
       booking_code: bookingCode,
       amount: amount,
       provider: provider || 'manual',
-      voucher_code: window.__skyplanAppliedVoucherCode || null
+      voucher_code: window.__skyplanAppliedVoucherCode || null,
+      wallet_address: getConnectedWalletAddress() || null
     };
     const headers = {
       'Content-Type': 'application/json',
@@ -938,6 +951,16 @@ function initializeVoucher() {
   const voucherListEl = document.getElementById('dynamicVoucherList');
   
   if (!voucherInput || !applyBtn) return;
+
+  function getVoucherLang() {
+    if (typeof window.getCurrentLanguage === 'function') {
+      const current = String(window.getCurrentLanguage() || '').toLowerCase();
+      if (current === 'en' || current === 'vi') return current;
+    }
+    const preferred = String(localStorage.getItem('preferredLanguage') || localStorage.getItem('language') || '').toLowerCase();
+    if (preferred === 'en' || preferred === 'vi') return preferred;
+    return String(document.documentElement.lang || 'vi').toLowerCase() === 'en' ? 'en' : 'vi';
+  }
   
   // Voucher codes and their conditions
   const baseVouchers = {
@@ -1010,7 +1033,7 @@ function initializeVoucher() {
     const codes = Object.keys(voucherMap);
     if (!codes.length) return;
 
-    const lang = ((localStorage.getItem('preferredLanguage') || localStorage.getItem('language') || 'vi').toLowerCase() === 'en') ? 'en' : 'vi';
+    const lang = getVoucherLang();
     const codeList = codes.slice(0, 8).join(', ');
     hintEl.textContent = lang === 'en' ? `Available codes: ${codeList}` : `Mã khả dụng: ${codeList}`;
   }
@@ -1025,8 +1048,10 @@ function initializeVoucher() {
       return;
     }
 
-    const lang = ((localStorage.getItem('preferredLanguage') || localStorage.getItem('language') || 'vi').toLowerCase() === 'en') ? 'en' : 'vi';
-    const title = lang === 'en' ? 'Redeemed SKY vouchers:' : 'Voucher từ SKY đã đổi:';
+    const lang = getVoucherLang();
+    const title = (typeof getPaymentTranslation === 'function')
+      ? getPaymentTranslation('redeemedSkyVouchersTitle', lang)
+      : (lang === 'en' ? 'Redeemed SKY vouchers:' : 'Voucher từ SKY đã đổi:');
     const useLabel = lang === 'en' ? 'Use' : 'Dùng mã';
 
     voucherListEl.innerHTML = `<small class="dynamic-voucher-title">${title}</small>`;
@@ -1050,6 +1075,11 @@ function initializeVoucher() {
   };
   updateAvailableVoucherHint(vouchers);
   renderDynamicVoucherList(vouchers);
+
+  document.addEventListener('languageChanged', function () {
+    updateAvailableVoucherHint(vouchers);
+    renderDynamicVoucherList(vouchers);
+  });
 
   async function syncServerVouchers() {
     try {

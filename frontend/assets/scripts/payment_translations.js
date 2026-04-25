@@ -97,6 +97,7 @@ const paymentTranslations = {
         voucherRemoveText: "Remove",
         voucherCodeApplied: "Code applied successfully",
         voucherDiscountApplied: "Discount applied",
+        redeemedSkyVouchersTitle: "Redeemed SKY vouchers:",
         vnpay: "VNPay",
         momo: "MoMo",
         cash: "Cash at counter",
@@ -201,6 +202,7 @@ const paymentTranslations = {
         voucherRemoveText: "Hủy bỏ",
         voucherCodeApplied: "Mã đã được áp dụng thành công",
         voucherDiscountApplied: "Đã áp dụng giảm giá",
+        redeemedSkyVouchersTitle: "Voucher từ SKY đã đổi:",
         // Header 
         helpText: "Trợ giúp",
         myTripsText: "Chuyến đi của tôi",

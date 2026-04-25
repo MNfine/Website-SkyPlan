@@ -14,6 +14,28 @@
     function readJSON(key, fb) { return window.readJSON ? window.readJSON(key, fb) : (function() { try { return JSON.parse(localStorage.getItem(key)) || fb; } catch { return fb; } })(); }
     function parseDigits(text) { const n = String(text || '').replace(/[^0-9]/g, ''); return Number(n) || 0; }
 
+    function resolveExtrasTotal(extras) {
+        const data = (extras && typeof extras === 'object') ? extras : {};
+        const meals = Array.isArray(data.meals) ? data.meals : [];
+        const services = Array.isArray(data.services) ? data.services : [];
+        const baggageKg = Number((data.baggage && data.baggage.kg) || data.baggageKg || 0) || 0;
+
+        const hasMealSelection = meals.some((item) => {
+            const qty = Number(item?.qty ?? item?.quantity ?? 0) || 0;
+            return qty > 0;
+        });
+        const hasServiceSelection = services.length > 0;
+        const hasBaggageSelection = baggageKg > 0;
+        const hasAnySelection = hasMealSelection || hasServiceSelection || hasBaggageSelection;
+
+        const rawTotal = Number(data.total);
+        const rawTotalCost = Number(data.totalCost);
+        const storedTotal = Number.isFinite(rawTotal) ? rawTotal : (Number.isFinite(rawTotalCost) ? rawTotalCost : 0);
+
+        if (!hasAnySelection) return 0;
+        return Math.max(0, storedTotal || 0);
+    }
+
     function fmtDateISO(iso, lang) {
         if (!iso) return '';
         try {
@@ -112,7 +134,7 @@
 
         // Price breakdown
         const fareVND = (fare && (Number(fare.priceVND) || parseDigits(fare.priceLabel))) || 0;
-        const extrasTotal = Number(extras.total) || 0;
+        const extrasTotal = resolveExtrasTotal(extras);
         const tax = 200000; // demo flat tax/fees
         const ticketAmount = fareVND; // only display base ticket price without extra services
         const total = fareVND + extrasTotal + tax;
@@ -120,9 +142,17 @@
         const breakdownEl = document.querySelector('.price-breakdown');
         const ticketLabelEl = document.querySelector('.price-breakdown .price-item:nth-of-type(1) span:first-child');
         const ticketAmountEl = document.querySelector('.price-breakdown .price-item:nth-of-type(1) span:last-child');
-        const taxItemEl = document.querySelector('.price-breakdown .price-item:nth-of-type(2)');
+        const totalItemEl = breakdownEl ? breakdownEl.querySelector('.price-item.total') : null;
+        const totalAmountEl = totalItemEl ? totalItemEl.querySelector('span:last-child') : null;
+
+        let taxItemEl = breakdownEl ? breakdownEl.querySelector('.price-item.price-tax') : null;
+        if (!taxItemEl && breakdownEl) {
+            const rows = Array.from(breakdownEl.querySelectorAll('.price-item'));
+            const nonExtrasRows = rows.filter((row) => !row.classList.contains('price-extras') && !row.classList.contains('total'));
+            taxItemEl = nonExtrasRows.length > 1 ? nonExtrasRows[1] : null;
+            if (taxItemEl) taxItemEl.classList.add('price-tax');
+        }
         const taxAmountEl = taxItemEl ? taxItemEl.querySelector('span:last-child') : null;
-        const totalAmountEl = document.querySelector('.price-breakdown .price-item.total span:last-child');
 
         if (ticketLabelEl) {
         const ot = getOT(lang) || {};
@@ -141,7 +171,13 @@
                 extrasRow = document.createElement('div');
                 extrasRow.className = 'price-item price-extras';
                 extrasRow.innerHTML = '<span class="extras-label"></span><span class="extras-amount"></span>';
-                if (taxItemEl) breakdownEl.insertBefore(extrasRow, taxItemEl); else breakdownEl.appendChild(extrasRow);
+                if (taxItemEl) {
+                    breakdownEl.insertBefore(extrasRow, taxItemEl);
+                } else if (totalItemEl) {
+                    breakdownEl.insertBefore(extrasRow, totalItemEl);
+                } else {
+                    breakdownEl.appendChild(extrasRow);
+                }
             }
             const extrasLabelEl = extrasRow.querySelector('.extras-label');
             const extrasAmountEl = extrasRow.querySelector('.extras-amount');
