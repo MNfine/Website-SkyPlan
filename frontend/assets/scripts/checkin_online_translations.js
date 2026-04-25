@@ -49,7 +49,8 @@ const checkinOnlineTranslations = {
     errorBookingCode: "Please enter a valid booking code (at least 6 characters).",
     errorFullName: "Full name must use capitalized initials, no accents (example: NGUYEN VAN A).",
     errorConfirmCode: "Verification code is incorrect. Please check again.",
-    errorLookup: "Unable to look up check-in information."
+    errorLookup: "Unable to look up check-in information.",
+    errorTicketNotIssued: "This booking does not have an issued e-ticket yet, so online check-in is not available."
   },
   vi: {
     metaDescription: "Check-in online SkyPlan: nhập mã đặt chỗ, xác nhận thông tin và hoàn tất check-in trực tuyến.",
@@ -101,7 +102,8 @@ const checkinOnlineTranslations = {
     errorBookingCode: "Vui lòng nhập mã đặt chỗ hợp lệ (tối thiểu 6 ký tự).",
     errorFullName: "Họ và tên cần viết in hoa chữ cái đầu, không dấu (ví dụ: NGUYEN VAN A).",
     errorConfirmCode: "Mã xác nhận không đúng. Vui lòng kiểm tra lại.",
-    errorLookup: "Không thể tra cứu thông tin check-in."
+    errorLookup: "Không thể tra cứu thông tin check-in.",
+    errorTicketNotIssued: "Booking này chưa có vé điện tử nên chưa thể check-in online."
   }
 };
 

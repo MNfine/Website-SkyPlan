@@ -222,3 +222,70 @@ Trân trọng,
     except Exception as e:
         return False
 
+
+def send_checkin_confirmation_email(
+    passenger_name: str,
+    passenger_email: str,
+    booking_code: str,
+    ticket_code: str,
+    flight_number: str | None = None,
+    route: str | None = None,
+    departure_time: str | None = None,
+    seat_number: str | None = None,
+):
+    """Send an online check-in confirmation email to the passenger."""
+    if not mail or not passenger_email:
+        return False
+
+    try:
+        display_name = passenger_name or passenger_email
+        flight_number_text = flight_number or '-'
+        route_text = route or '-'
+        departure_time_text = departure_time or '-'
+        seat_text = seat_number or '-'
+
+        msg = Message(
+            subject=f'[SkyPlan] Check-in online thành công - {booking_code}',
+            recipients=[passenger_email],
+            body=f"""
+Xin chào {display_name},
+
+Bạn đã hoàn tất check-in online thành công.
+
+Mã đặt chỗ: {booking_code}
+Mã vé: {ticket_code}
+Chuyến bay: {flight_number_text}
+Hành trình: {route_text}
+Giờ khởi hành: {departure_time_text}
+Ghế: {seat_text}
+
+Cảm ơn bạn đã sử dụng SkyPlan.
+
+Trân trọng,
+Đội ngũ SkyPlan
+            """,
+            html=f"""
+            <html>
+            <body>
+                <h2>Xin chào {display_name},</h2>
+                <p>Bạn đã hoàn tất <strong>check-in online</strong> thành công.</p>
+                <ul>
+                    <li><strong>Mã đặt chỗ:</strong> {booking_code}</li>
+                    <li><strong>Mã vé:</strong> {ticket_code}</li>
+                    <li><strong>Chuyến bay:</strong> {flight_number_text}</li>
+                    <li><strong>Hành trình:</strong> {route_text}</li>
+                    <li><strong>Giờ khởi hành:</strong> {departure_time_text}</li>
+                    <li><strong>Ghế:</strong> {seat_text}</li>
+                </ul>
+                <p>Cảm ơn bạn đã sử dụng SkyPlan.</p>
+                <p>Trân trọng,<br><strong>Đội ngũ SkyPlan</strong></p>
+            </body>
+            </html>
+            """,
+        )
+
+        mail.send(msg)
+        return True
+    except Exception:
+        return False
+

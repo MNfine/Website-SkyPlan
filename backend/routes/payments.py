@@ -78,6 +78,49 @@ def _run_blockchain_post_payment(booking):
 		}
 
 
+def _ensure_tickets_generated(session, booking) -> list[str]:
+	"""Ensure tickets exist for all passengers in a confirmed booking."""
+	existing_tickets = session.query(Ticket).filter_by(booking_id=booking.id).all()
+	if existing_tickets:
+		return [t.ticket_code for t in existing_tickets]
+
+	generated_codes: list[str] = []
+	flight = booking.outbound_flight
+
+	for booking_passenger in booking.passengers or []:
+		passenger = booking_passenger.passenger
+		if not passenger:
+			continue
+
+		seat = booking_passenger.seat
+		base_price = float(flight.price) if (flight and getattr(flight, 'price', None) is not None) else float(booking.total_amount or 0)
+		seat_fee = float(seat.price_modifier) if (seat and getattr(seat, 'price_modifier', None) is not None) else 0
+		passenger_name = f"{passenger.firstname or ''} {passenger.lastname or ''}".strip() or f"Passenger {booking_passenger.id}"
+
+		ticket = Ticket.create_ticket(
+			booking_id=booking.id,
+			passenger_id=booking_passenger.id,
+			flight_id=flight.id if flight else booking.outbound_flight_id,
+			seat_id=seat.id if seat else None,
+			passenger_name=passenger_name,
+			base_price=base_price,
+			seat_fee=seat_fee,
+			phone=passenger.phone_number,
+			email=passenger.email,
+			id_number=passenger.cccd,
+		)
+
+		session.add(ticket)
+		generated_codes.append(ticket.ticket_code)
+
+		if seat:
+			seat.status = 'CONFIRMED'
+			seat.confirmed_booking_id = booking.id
+
+	session.flush()
+	return generated_codes
+
+
 @payment_bp.route('/vnpay/create', methods=['POST'])
 def create_vnpay_payment():
 	try:
@@ -181,6 +224,7 @@ def vnpay_return():
 			# Find and update payment record
 			with session_scope() as session:
 				blockchain_result = None
+				tickets_generated = []
 				payment = session.query(Payment).filter_by(booking_code=vnp_txn_ref).first()
 				if payment:
 					payment.status = 'SUCCESS'
@@ -220,6 +264,12 @@ def vnpay_return():
 									seat.status = SeatStatus.CONFIRMED.value
 									seat.confirmed_booking_id = payment.booking.id
 									session.add(seat)
+
+						try:
+							tickets_generated = _ensure_tickets_generated(session, payment.booking)
+							print(f"[vnpay] Tickets ensured for {vnp_txn_ref}: {tickets_generated}")
+						except Exception as ticket_exc:
+							print(f"[vnpay] Ticket generation failed for {vnp_txn_ref}: {ticket_exc}")
 
 						# Trigger blockchain flow (record -> mint NFT -> mint SKY)
 						blockchain_result = _run_blockchain_post_payment(payment.booking)
@@ -394,47 +444,8 @@ def confirm_payment():
 
 			# AUTO-GENERATE TICKETS after successful payment
 			try:
-				# Check if tickets already exist
-				existing_tickets = session.query(Ticket).filter_by(booking_id=payment.booking_id).all()
-
-				if not existing_tickets:
-					# Generate tickets for each passenger
-					for booking_passenger in payment.booking.passengers:
-						passenger = booking_passenger.passenger
-						flight = payment.booking.outbound_flight  # Primary flight
-						seat = booking_passenger.seat
-
-						# Calculate pricing
-						base_price = float(flight.price)
-						seat_fee = float(seat.price_modifier) if seat else 0
-
-						# Create ticket with unique code
-						ticket = Ticket.create_ticket(
-							booking_id=payment.booking.id,
-							passenger_id=booking_passenger.id,
-							flight_id=flight.id,
-							seat_id=seat.id if seat else None,
-							passenger_name=passenger.full_name,
-							base_price=base_price,
-							seat_fee=seat_fee,
-							phone=passenger.phone,
-							email=passenger.email,
-							id_number=passenger.passport_number or passenger.id_number
-						)
-
-						session.add(ticket)
-						tickets_generated.append(ticket.ticket_code)
-
-						# Confirm seat reservation
-						if seat:
-							seat.status = 'CONFIRMED'
-							seat.confirmed_booking_id = payment.booking.id
-
-					session.flush()  # Ensure ticket codes are generated
-					print(f"✅ Generated {len(tickets_generated)} tickets: {tickets_generated}")
-				else:
-					tickets_generated = [t.ticket_code for t in existing_tickets]
-					print(f"✅ Tickets already exist: {tickets_generated}")
+				tickets_generated = _ensure_tickets_generated(session, payment.booking)
+				print(f"✅ Tickets ensured: {tickets_generated}")
 
 			except Exception as e:
 				print(f"❌ Error generating tickets: {e}")
@@ -577,6 +588,12 @@ def mark_paid():
 		booking.status = BookingStatus.CONFIRMED
 		booking.confirmed_at = datetime.utcnow()
 		session.add(booking)
+
+		try:
+			tickets_generated = _ensure_tickets_generated(session, booking)
+			print(f"[mark-paid] Tickets ensured for {booking.booking_code}: {tickets_generated}")
+		except Exception as ticket_exc:
+			print(f"[mark-paid] Ticket generation failed for {booking.booking_code}: {ticket_exc}")
 
 		# Trigger blockchain flow (record -> mint NFT -> mint SKY)
 		blockchain_result = _run_blockchain_post_payment(booking)

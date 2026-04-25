@@ -10,6 +10,7 @@ try:
     from backend.models.flights import Flight
     from backend.models.seats import Seat
     from backend.models.payments import Payment
+    from backend.utils.email_service import send_checkin_confirmation_email
 except ImportError:
     from models.db import session_scope
     from models.tickets import Ticket
@@ -17,6 +18,7 @@ except ImportError:
     from models.flights import Flight
     from models.seats import Seat
     from models.payments import Payment
+    from utils.email_service import send_checkin_confirmation_email
 
 tickets_bp = Blueprint('tickets', __name__)
 
@@ -67,21 +69,22 @@ def generate_tickets():
                 seat = booking_passenger.seat
                 
                 # Calculate pricing
-                base_price = float(flight.price)
+                base_price = float(flight.price) if (flight and getattr(flight, 'price', None) is not None) else float(booking.total_amount or 0)
                 seat_fee = float(seat.price_modifier) if seat else 0
+                passenger_name = f"{getattr(passenger, 'firstname', '')} {getattr(passenger, 'lastname', '')}".strip() or f"Passenger {booking_passenger.id}"
                 
                 # Create ticket
                 ticket = Ticket.create_ticket(
                     booking_id=booking.id,
                     passenger_id=booking_passenger.id,
-                    flight_id=flight.id,
+                    flight_id=flight.id if flight else booking.outbound_flight_id,
                     seat_id=seat.id if seat else None,
-                    passenger_name=passenger.full_name,
+                    passenger_name=passenger_name,
                     base_price=base_price,
                     seat_fee=seat_fee,
-                    phone=passenger.phone,
-                    email=passenger.email,
-                    id_number=passenger.passport_number or passenger.id_number
+                    phone=getattr(passenger, 'phone_number', None),
+                    email=getattr(passenger, 'email', None),
+                    id_number=getattr(passenger, 'cccd', None)
                 )
                 
                 session.add(ticket)
@@ -206,13 +209,42 @@ def checkin_passenger(ticket_code):
             
             # Perform check-in
             ticket.check_in_passenger()
+
+            passenger_email = None
+            passenger_name = ticket.passenger_name
+            if ticket.passenger and ticket.passenger.passenger:
+                passenger = ticket.passenger.passenger
+                passenger_email = passenger.email
+                if passenger.firstname or passenger.lastname:
+                    passenger_name = f"{passenger.firstname} {passenger.lastname}".strip() or passenger_name
+
+            flight = ticket.flight
+            route = None
+            departure_time = None
+            flight_number = None
+            if flight:
+                flight_number = flight.flight_number
+                departure_time = flight.departure_time.isoformat() if flight.departure_time else None
+                route = f"{flight.departure_airport} → {flight.arrival_airport}".strip(' →')
+
+            email_sent = send_checkin_confirmation_email(
+                passenger_name=passenger_name,
+                passenger_email=passenger_email or ticket.passenger_email,
+                booking_code=ticket.booking.booking_code if ticket.booking else '',
+                ticket_code=ticket.ticket_code,
+                flight_number=flight_number,
+                route=route,
+                departure_time=departure_time,
+                seat_number=ticket.seat.seat_number if ticket.seat else None,
+            )
             
             return jsonify({
                 'success': True,
                 'message': 'Passenger checked in successfully',
                 'ticket_code': ticket.ticket_code,
                 'boarding_pass_issued': True,
-                'check_in_time': ticket.check_in_at.isoformat()
+                'check_in_time': ticket.check_in_at.isoformat(),
+                'email_sent': email_sent,
             })
             
     except Exception as e:

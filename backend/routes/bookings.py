@@ -11,6 +11,7 @@ from backend.models.db import session_scope
 from backend.models.user import User
 from backend.models.passenger import Passenger
 from backend.models.booking import Booking, BookingPassenger, BookingStatus, TripType, FareClass
+from backend.models.tickets import Ticket
 from backend.models.sky_voucher import SkyVoucher
 from sqlalchemy.orm import joinedload
 from backend.models.flights import Flight
@@ -642,6 +643,7 @@ def lookup_booking_for_checkin():
 		booking = session.query(Booking).options(
 			joinedload(Booking.passengers).joinedload(BookingPassenger.passenger),
 			joinedload(Booking.passengers).joinedload(BookingPassenger.seat),
+			joinedload(Booking.passengers).joinedload(BookingPassenger.ticket),
 			joinedload(Booking.outbound_flight),
 			joinedload(Booking.inbound_flight)
 		).filter_by(booking_code=booking_code).first()
@@ -688,6 +690,23 @@ def lookup_booking_for_checkin():
 		if not seat_number and getattr(matched_bp, 'seat', None):
 			seat_number = getattr(matched_bp.seat, 'seat_number', None)
 
+		ticket_obj = getattr(matched_bp, 'ticket', None)
+		if not ticket_obj:
+			ticket_obj = session.query(Ticket).filter_by(
+				booking_id=booking.id,
+				passenger_id=matched_bp.id,
+			).first()
+
+		# Fallback for legacy/inconsistent data: match ticket by passenger name inside booking.
+		if not ticket_obj:
+			normalized_target_name = _normalize_name_for_match(matched_name)
+			for candidate_ticket in session.query(Ticket).filter_by(booking_id=booking.id).all():
+				if _normalize_name_for_match(candidate_ticket.passenger_name) == normalized_target_name:
+					ticket_obj = candidate_ticket
+					break
+
+		ticket_code = ticket_obj.ticket_code if ticket_obj else None
+
 		return jsonify({
 			'success': True,
 			'booking': booking_data,
@@ -695,6 +714,8 @@ def lookup_booking_for_checkin():
 				'id': matched_bp.passenger_id,
 				'full_name': matched_name,
 				'seat_number': seat_number,
+				'email': getattr(matched_bp.passenger, 'email', None),
+				'ticket_code': ticket_code,
 			},
 			'flight': {
 				'flight_number': outbound.get('flight_number'),
@@ -702,6 +723,8 @@ def lookup_booking_for_checkin():
 				'departure_time': outbound.get('departure_time'),
 				'arrival_time': outbound.get('arrival_time'),
 			},
+			'can_checkin': bool(ticket_code),
+			'checkin_message': None if ticket_code else 'Booking chưa có vé điện tử để check-in. Vui lòng liên hệ hỗ trợ.',
 		}), 200
 
 

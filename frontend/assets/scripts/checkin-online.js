@@ -58,6 +58,8 @@ function initCheckinOnline() {
   const successMessage = document.getElementById("successMessage");
   const submitBtn = form?.querySelector(".btn-primary-action");
 
+  let lastLookupPayload = null;
+
   let generatedCode = generateConfirmCode();
   codeDisplay.textContent = generatedCode;
 
@@ -126,8 +128,15 @@ function initCheckinOnline() {
         resultSeat,
       });
 
+      lastLookupPayload = payload;
+
       resultCard.hidden = false;
-      completeBtn.disabled = false;
+      if (!payload?.passenger?.ticket_code) {
+        completeBtn.disabled = true;
+        showError(errorBox, payload?.checkin_message || tCheckin("errorTicketNotIssued"));
+      } else {
+        completeBtn.disabled = false;
+      }
       completeBtn.scrollIntoView({ behavior: "smooth", block: "center" });
     } catch (error) {
       showError(errorBox, error?.message || tCheckin("errorLookup"));
@@ -139,9 +148,39 @@ function initCheckinOnline() {
     }
   });
 
-  completeBtn?.addEventListener("click", () => {
-    successMessage.hidden = false;
+  completeBtn?.addEventListener("click", async () => {
+    const ticketCode = lastLookupPayload?.passenger?.ticket_code;
+    if (!ticketCode) {
+      showError(errorBox, lastLookupPayload?.checkin_message || tCheckin("errorTicketNotIssued"));
+      return;
+    }
+
     completeBtn.disabled = true;
+    completeBtn.textContent = tCheckin("submitLoading");
+
+    try {
+      const response = await fetch(`/api/tickets/${encodeURIComponent(ticketCode)}/checkin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const payload = await response.json();
+      if (!response.ok || !payload?.success) {
+        throw new Error(payload?.message || tCheckin("errorLookup"));
+      }
+
+      successMessage.hidden = false;
+      successMessage.textContent = payload.email_sent
+        ? "Check-in online thành công! Email xác nhận đã được gửi cho bạn."
+        : "Check-in online thành công! Hệ thống chưa gửi được email xác nhận, vui lòng kiểm tra lại sau.";
+    } catch (error) {
+      showError(errorBox, error?.message || tCheckin("errorLookup"));
+      completeBtn.disabled = false;
+    } finally {
+      completeBtn.textContent = tCheckin("completeButton");
+    }
   });
 }
 
