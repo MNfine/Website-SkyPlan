@@ -36,3 +36,6 @@ eventlet==0.40.4
 web3==7.13.0
 eth-account==0.13.7
 pycryptodome==3.23.0
+
+# Production WSGI Server
+gunicorn==23.0.0
