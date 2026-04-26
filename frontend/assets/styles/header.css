@@ -220,15 +220,15 @@ header {
   }
   
   .nav-links-main .link {
-    padding: 0.6rem 0.75rem;
-    font-size: 0.9rem;
+    padding: 0.45rem 0.6rem;
+    font-size: 0.88rem;
     justify-content: flex-start;
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.45rem;
     border-radius: 6px;
-    transition: background-color 0.2s ease;
-    margin-bottom: 0.15rem;
+    transition: background-color 0.15s ease;
+    margin-bottom: 0.08rem;
   }
   
   .nav-links-main .link:hover {
@@ -242,36 +242,60 @@ header {
   }
   
   .language-selector {
-    margin: 0.75rem 0;
+    margin: 0.5rem 0;
     position: relative;
     border-top: 1px solid #eee;
     border-bottom: 1px solid #eee;
-    padding: 0.75rem 0;
+    padding: 0.5rem 0;
+  }
+
+  /* Language dropdown - hidden by default, open when .open present */
+  .language-selector .lang-dropdown {
+    display: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.18s ease, opacity 0.18s ease, padding 0.12s ease;
+    opacity: 0;
+    position: static; /* render inline inside mobile nav */
+    box-shadow: none;
+    padding: 0;
+  }
+  .language-selector.open .lang-dropdown {
+    display: block;
+    max-height: 300px;
+    opacity: 1;
+    position: static;
+    transform: none;
+    padding: 6px 0;
+    box-shadow: none;
   }
   
   .auth-buttons {
     flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 0.25rem;
+    gap: 0.35rem;
+    margin-top: 0.15rem;
     width: 100%;
   }
   
   .auth-buttons .btn {
     width: 100%;
     text-align: center;
-    padding: 0.6rem 0.75rem;
-    font-size: 0.85rem;
+    padding: 0.45rem 0.6rem;
+    font-size: 0.82rem;
     border-radius: 6px;
   }
   
-  /* User menu on mobile */
+  /* User menu on mobile: hidden by default, shown only when authenticated */
   .user-menu {
     width: 100%;
-    display: flex !important;
+    display: none;
     flex-direction: column;
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
     border-top: 1px solid #eee;
+  }
+  .user-menu.authenticated {
+    display: flex !important;
   }
   
   .user-dropdown {
@@ -282,11 +306,11 @@ header {
     width: 100%;
     border: none;
     background: #f8f9fa;
-    padding: 0.75rem;
+    padding: 0.5rem;
     justify-content: flex-start;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
   }
   
   .user-button:hover {
@@ -303,8 +327,8 @@ header {
     display: none;
   }
   
-  /* On mobile, always show user menu (override hidden state) */
-  .user-dropdown-menu {
+  /* On mobile, show user dropdown only when authenticated */
+  .user-menu.authenticated .user-dropdown-menu {
     position: static !important;
     opacity: 1 !important;
     visibility: visible !important;
@@ -313,25 +337,26 @@ header {
     border: none;
     background: none;
     padding: 0;
-    margin-top: 0.5rem;
+    margin-top: 0.4rem;
   }
-  
-  /* Hide My Trips and Profile items on mobile, show only logout */
-  .user-dropdown-menu .dropdown-item:nth-child(1),
-  .user-dropdown-menu .dropdown-item:nth-child(2),
-  .user-dropdown-menu .dropdown-divider {
+
+  /* Hide My Trips and Profile items on mobile, show only logout (when authenticated)
+     Note: indexing is preserved from header order */
+  .user-menu.authenticated .user-dropdown-menu .dropdown-item:nth-child(1),
+  .user-menu.authenticated .user-dropdown-menu .dropdown-item:nth-child(2),
+  .user-menu.authenticated .user-dropdown-menu .dropdown-divider {
     display: none;
   }
-  
-  .user-dropdown-menu .logout-btn {
+
+  .user-menu.authenticated .user-dropdown-menu .logout-btn {
     background: #f8f9fa;
     padding: 0.75rem;
     border-radius: 6px;
     margin-top: 0;
     width: 100%;
   }
-  
-  .user-dropdown-menu .logout-btn:hover {
+
+  .user-menu.authenticated .user-dropdown-menu .logout-btn:hover {
     background: #ffe0e0;
   }
   

@@ -1,6 +1,12 @@
 // Common JS for SkyPlan: shared UI logic (menu, language selector, authentication, etc.)
 
 // ====== GLOBAL LANGUAGE HELPER - used by ALL scripts ======
+
+// Initialize mobile menu and language selector on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    try { if (typeof initializeMobileMenu === 'function') initializeMobileMenu(); } catch(_) {}
+    try { if (typeof initializeLanguageSelector === 'function') initializeLanguageSelector(); } catch(_) {}
+});
 window.getPersistedLanguage = function() {
     const prefRaw = (localStorage.getItem('preferredLanguage') || '').toLowerCase();
     const langRaw = (localStorage.getItem('language') || '').toLowerCase();
@@ -181,6 +187,14 @@ document.addEventListener('header-loaded', function() {
             window.applyHeaderTranslations(lang);
         }
     } catch (_) {}
+
+    // Ensure mobile menu and language selector initialize when header is loaded
+    try {
+        if (typeof initializeMobileMenu === 'function') initializeMobileMenu();
+    } catch (_) {}
+    try {
+        if (typeof initializeLanguageSelector === 'function') initializeLanguageSelector();
+    } catch (_) {}
 });
 
 // Retry init user dropdown when header loads late
@@ -305,6 +319,24 @@ function initializeLanguageSelector() {
         const langOptions = document.querySelectorAll('.lang-option');
         const selectedLang = document.querySelector('.selected-lang');
         const currentLang = getCurrentLanguage();
+        // Toggle dropdown on selectedLang pointerdown for snappy mobile response
+        if (selectedLang && !selectedLang.dataset.toggleBound) {
+            const toggleFn = function(e) {
+                // Use pointerdown to respond immediately on touch devices
+                try { e.preventDefault(); } catch (_) {}
+                try { e.stopPropagation(); } catch (_) {}
+                const parent = selectedLang.closest('.language-selector');
+                if (!parent) return;
+                parent.classList.toggle('open');
+            };
+            // Prefer pointerdown if available (fast), fall back to click
+            if ('onpointerdown' in window) {
+                selectedLang.addEventListener('pointerdown', toggleFn, { passive: false });
+            } else {
+                selectedLang.addEventListener('click', toggleFn);
+            }
+            selectedLang.dataset.toggleBound = '1';
+        }
         langOptions.forEach(option => {
             if (option.dataset.bound === '1') return;
             option.addEventListener('click', function(e) {
@@ -312,6 +344,9 @@ function initializeLanguageSelector() {
                 const selectedLangValue = this.getAttribute('data-lang');
                 langOptions.forEach(opt => opt.classList.remove('active'));
                 this.classList.add('active');
+                // Close dropdown after selection
+                const parent = this.closest('.language-selector');
+                if (parent) parent.classList.remove('open');
                 // Change language: use correct function for each page (support both .html and backend route)
                 const path = window.location.pathname;
                 if (typeof changeOverviewLanguage === 'function' && (path.includes('overview.html') || path.endsWith('/overview'))) {
@@ -373,6 +408,17 @@ function initializeLanguageSelector() {
         // Ensure the header's selected language UI reflects the saved language on load
         if (typeof updateSelectedLanguage === 'function') {
             updateSelectedLanguage(currentLang);
+        }
+
+        // Close language dropdown when clicking outside (bind once)
+        if (!document.body.dataset.languageOutsideClickBound) {
+            document.addEventListener('click', function(event) {
+                const openSel = document.querySelector('.language-selector.open');
+                if (!openSel) return;
+                if (event.target.closest('.language-selector')) return;
+                openSel.classList.remove('open');
+            }, true);
+            document.body.dataset.languageOutsideClickBound = '1';
         }
     }, 100);
 }

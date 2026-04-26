@@ -21,33 +21,47 @@ function getPersistedLanguage() {
 const AuthState = {
   // Get current authentication token
   getToken: function() {
+    // Normalize token values so strings like 'null' / 'undefined' / '' are treated as no-token
+    const normalize = (v) => {
+      if (!v && v !== 0) return null;
+      try {
+        if (typeof v === 'string') {
+          const t = v.trim();
+          if (t === '' || t.toLowerCase() === 'null' || t.toLowerCase() === 'undefined') return null;
+          return t;
+        }
+        return v;
+      } catch (_) { return null; }
+    };
+
     // Check localStorage first (for "remember me")
-    let token = localStorage.getItem('authToken');
-    console.debug('[AuthState.getToken] Retrieved from localStorage:', token); // Debug log
+    let token = normalize(localStorage.getItem('authToken'));
+    console.debug('[AuthState.getToken] Retrieved from localStorage:', token);
     if (token) return token;
-    
+
     // Check sessionStorage (for current session)
-    token = sessionStorage.getItem('authToken');
-    console.debug('[AuthState.getToken] Retrieved from sessionStorage:', token); // Debug log
+    token = normalize(sessionStorage.getItem('authToken'));
+    console.debug('[AuthState.getToken] Retrieved from sessionStorage:', token);
     if (token) return token;
-    
-    // Try other token keys
+
+    // Try other token keys (legacy)
     const keys = ['accessToken', 'token', 'jwt'];
     for (const key of keys) {
-      token = localStorage.getItem(key) || sessionStorage.getItem(key);
+      token = normalize(localStorage.getItem(key)) || normalize(sessionStorage.getItem(key));
       if (token) {
         // Heal legacy token keys so all pages read a canonical key.
         try {
-          if (!localStorage.getItem('authToken') && !sessionStorage.getItem('authToken')) {
-            const fromLocal = localStorage.getItem(key);
-            (fromLocal ? localStorage : sessionStorage).setItem('authToken', token);
+          const fromLocal = normalize(localStorage.getItem(key));
+          const targetStorage = fromLocal ? localStorage : sessionStorage;
+          if (!normalize(localStorage.getItem('authToken')) && !normalize(sessionStorage.getItem('authToken'))) {
+            targetStorage.setItem('authToken', token);
           }
         } catch (_) {}
-        console.debug(`[AuthState.getToken] Retrieved from key ${key}:`, token); // Debug log
+        console.debug(`[AuthState.getToken] Retrieved from key ${key}:`, token);
         return token;
       }
     }
-    
+
     return null;
   },
   
@@ -81,8 +95,18 @@ const AuthState = {
   // Check if user is authenticated
   isAuthenticated: function() {
     const token = this.getToken();
-    console.debug('[AuthState.getToken]', token); // Debug log for token retrieval
-    return !!token;
+    console.debug('[AuthState.isAuthenticated] token:', token);
+    if (!token) return false;
+    // Prefer authoritative token validity check when available
+    try {
+      if (typeof this.isTokenValid === 'function' && !this.isTokenValid()) {
+        console.debug('[AuthState.isAuthenticated] token appears invalid by isTokenValid check');
+        return false;
+      }
+    } catch (e) {
+      console.debug('[AuthState.isAuthenticated] isTokenValid threw', e);
+    }
+    return true;
   },
   
   // Set authentication data
@@ -210,37 +234,50 @@ function updateHeaderUserInfo() {
   console.debug('[authButtons]', authButtons);
   console.debug('[userMenu]', userMenu);
   
-  if (user && AuthState.isAuthenticated()) {
+  const hasValidUser = user && typeof user === 'object' && (user.fullname || user.email || user.id || user.username);
+  if (hasValidUser && AuthState.isAuthenticated()) {
     console.log('User authenticated:', user); // Debug log
-    
+
     // Show user info
     userNameElements.forEach(el => {
-      el.textContent = user.fullname || user.email || 'User';
+      el.textContent = user.fullname || user.email || user.username || 'User';
     });
-    
-    // Hide auth buttons, show user menu
+
+    // Hide auth buttons, show user menu (mark as authenticated)
     if (authButtons) authButtons.style.display = 'none';
-    if (userMenu) userMenu.style.display = 'block';
-    
+    if (userMenu) {
+      userMenu.classList.add('authenticated');
+      userMenu.style.display = '';
+    }
+
     // Keep nav-links-main visible in all states so header links are always accessible
     const navLinksMain = document.querySelector('.nav-links-main');
     if (navLinksMain) {
       navLinksMain.style.display = 'flex';
     }
-    
+
     // Apply translations to user dropdown after showing it
     if (typeof applyTranslations === 'function') {
       const lang = getPersistedLanguage();
       applyTranslations(lang);
     }
-    
+
   } else {
-    console.log('User not authenticated'); // Debug log
-    
-    // Show auth buttons, hide user menu  
+    console.log('User not authenticated or invalid user object'); // Debug log
+
+    // If token exists but user object is missing or invalid, clear auth to avoid inconsistent UI
+    if (AuthState.isAuthenticated() && !hasValidUser) {
+      console.debug('[updateHeaderUserInfo] Clearing stale auth because token present but user missing or malformed');
+      try { AuthState.clearAuth(); } catch (e) { console.debug('clearAuth failed', e); }
+    }
+
+    // Show auth buttons, hide user menu (remove authenticated mark)
     if (authButtons) authButtons.style.display = 'flex';
-    if (userMenu) userMenu.style.display = 'none';
-    
+    if (userMenu) {
+      userMenu.classList.remove('authenticated');
+      userMenu.style.display = '';
+    }
+
     // Show nav-links-main when logged out
     const navLinksMain = document.querySelector('.nav-links-main');
     if (navLinksMain) navLinksMain.style.display = 'flex';

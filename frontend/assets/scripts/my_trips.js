@@ -248,7 +248,11 @@ async function loadUserTrips() {
         if (directResp.ok && directPayload && directPayload.success && directPayload.booking) {
           tripsData.unshift(mapBookingToTrip(directPayload.booking));
         } else if (directResp.status === 404) {
-          showNotification('Booking ' + bookingCode + ' khong thuoc tai khoan dang dang nhap.', 'warning', 3800);
+          try {
+            showNotification(t('bookingNotInAccount').replace('{code}', bookingCode), 'warning', 3800);
+          } catch (e) {
+            showNotification('Booking ' + bookingCode + ' khong thuoc tai khoan dang dang nhap.', 'warning', 3800);
+          }
         }
       } catch (_) {
         // no-op
@@ -256,11 +260,12 @@ async function loadUserTrips() {
     }
 
     renderTrips();
-  } catch (error) {
+    } catch (error) {
     console.error('Failed to load real my-trips data:', error);
     tripsData = [];
     renderTrips();
-    showNotification(error && error.message ? error.message : 'Khong the tai danh sach chuyen di', 'error', 2800);
+    const defaultMsg = t('failedToLoadTrips') || 'Khong the tai danh sach chuyen di';
+    showNotification(error && error.message ? error.message : defaultMsg, 'error', 2800);
   }
 }
 
@@ -298,7 +303,11 @@ async function autoIntegrateFromRedirectIfNeeded() {
 
   const target = tripsData.find(function (trip) { return trip.bookingCode === codeFromUrl; });
   if (!target) {
-    showNotification('Khong tim thay booking ' + codeFromUrl + ' trong tai khoan hien tai.', 'warning', 3200);
+    try {
+      showNotification(t('bookingNotFoundInAccount').replace('{code}', codeFromUrl), 'warning', 3200);
+    } catch (e) {
+      showNotification('Khong tim thay booking ' + codeFromUrl + ' trong tai khoan hien tai.', 'warning', 3200);
+    }
     return;
   }
 
