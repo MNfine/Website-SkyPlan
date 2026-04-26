@@ -77,32 +77,20 @@ def bootstrap_database_scripts():
     so startup stays idempotent on Render.
     """
     script_order = [
-        "backend/db/create_tables.py",
-        "backend/db/generate_fake_flights.py",
-        "backend/db/import_flights.py",
-        "backend/db/create_all_seats.py",
-        "backend/db/add_booking_state_hash.py",
-        "backend/db/add_blockchain_idempotent_columns.py",
+        ("backend.db.create_tables", True),
+        ("backend.db.generate_fake_flights", False),
+        ("backend.db.import_flights", False),
+        ("backend.db.create_all_seats", False),
+        ("backend.db.add_booking_state_hash", True),
+        ("backend.db.add_blockchain_idempotent_columns", True),
     ]
 
-    from sqlalchemy import text
-
-    with engine.connect() as conn:
-        has_flights = conn.execute(text("SELECT EXISTS (SELECT 1 FROM flights LIMIT 1)"))
-        flights_exist = bool(has_flights.scalar())
-
-    for script in script_order:
-        if script in ("backend/db/generate_fake_flights.py", "backend/db/import_flights.py", "backend/db/create_all_seats.py") and flights_exist:
-            continue
-
-        if script == "backend/db/create_all_seats.py" and not flights_exist:
-            # import_flights.py creates flights first; seats are only safe afterwards
-            pass
-
-        print(f"[DB Bootstrap] Running {script}...")
+    def run_module(module_name: str) -> None:
+        print(f"[DB Bootstrap] Running {module_name}...")
         result = subprocess.run(
-            [sys.executable, os.path.join(root_dir, script)],
+            [sys.executable, "-m", module_name],
             cwd=root_dir,
+            env={**os.environ, "PYTHONPATH": root_dir},
             capture_output=True,
             text=True,
         )
@@ -111,10 +99,28 @@ def bootstrap_database_scripts():
         if result.returncode != 0:
             if result.stderr:
                 print(result.stderr)
-            raise RuntimeError(f"{script} failed with exit code {result.returncode}")
+            raise RuntimeError(f"{module_name} failed with exit code {result.returncode}")
 
-        if script == "backend/db/import_flights.py":
-            flights_exist = True
+    # 1) Always create/ensure schema first.
+    run_module("backend.db.create_tables")
+
+    from sqlalchemy import text
+
+    with engine.connect() as conn:
+        has_flights = conn.execute(text("SELECT EXISTS (SELECT 1 FROM flights LIMIT 1)"))
+        flights_exist = bool(has_flights.scalar())
+
+    # 2-4) Seed demo flights and seats only when database is still empty.
+    if not flights_exist:
+        run_module("backend.db.generate_fake_flights")
+        run_module("backend.db.import_flights")
+        run_module("backend.db.create_all_seats")
+    else:
+        print("[DB Bootstrap] Flights already exist; skipping seed flight/seat scripts.")
+
+    # 5-6) Always apply idempotent backfills/migrations.
+    run_module("backend.db.add_booking_state_hash")
+    run_module("backend.db.add_blockchain_idempotent_columns")
 
 def create_app():
     """Create and configure Flask application"""
