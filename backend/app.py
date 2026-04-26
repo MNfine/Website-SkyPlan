@@ -44,6 +44,7 @@ from backend.models.sky_voucher import SkyVoucher
 from os import getenv
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
+import subprocess
 
 # Load environment variables from .env file in root directory
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -59,6 +60,61 @@ if not DATABASE_URL:
 
 # Create the SQLAlchemy engine
 engine = create_engine(DATABASE_URL)
+
+
+def bootstrap_database_scripts():
+    """Run DB scripts in the requested order during app startup.
+
+    Order:
+    1. create_tables.py
+    2. generate_fake_flights.py
+    3. import_flights.py
+    4. create_all_seats.py
+    5. add_booking_state_hash.py
+    6. add_blockchain_idempotent_columns.py
+
+    The flights seeding block only runs when the flights table is empty,
+    so startup stays idempotent on Render.
+    """
+    script_order = [
+        "backend/db/create_tables.py",
+        "backend/db/generate_fake_flights.py",
+        "backend/db/import_flights.py",
+        "backend/db/create_all_seats.py",
+        "backend/db/add_booking_state_hash.py",
+        "backend/db/add_blockchain_idempotent_columns.py",
+    ]
+
+    from sqlalchemy import text
+
+    with engine.connect() as conn:
+        has_flights = conn.execute(text("SELECT EXISTS (SELECT 1 FROM flights LIMIT 1)"))
+        flights_exist = bool(has_flights.scalar())
+
+    for script in script_order:
+        if script in ("backend/db/generate_fake_flights.py", "backend/db/import_flights.py", "backend/db/create_all_seats.py") and flights_exist:
+            continue
+
+        if script == "backend/db/create_all_seats.py" and not flights_exist:
+            # import_flights.py creates flights first; seats are only safe afterwards
+            pass
+
+        print(f"[DB Bootstrap] Running {script}...")
+        result = subprocess.run(
+            [sys.executable, os.path.join(root_dir, script)],
+            cwd=root_dir,
+            capture_output=True,
+            text=True,
+        )
+        if result.stdout:
+            print(result.stdout)
+        if result.returncode != 0:
+            if result.stderr:
+                print(result.stderr)
+            raise RuntimeError(f"{script} failed with exit code {result.returncode}")
+
+        if script == "backend/db/import_flights.py":
+            flights_exist = True
 
 def create_app():
     """Create and configure Flask application"""
@@ -100,6 +156,7 @@ def create_app():
         try:
             init_db()
             print("[DB] Tables ensured.")
+            bootstrap_database_scripts()
         except Exception as e:
             print(f"[DB] Initialization failed: {e}")
     
