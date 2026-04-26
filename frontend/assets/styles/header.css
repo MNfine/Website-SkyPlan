@@ -538,9 +538,13 @@ header {
 /* User Menu Dropdown */
 .user-menu {
   position: relative;
-  display: flex;
+  display: none; /* hidden by default, shown only when authenticated */
   align-items: center;
   height: 100%; /* Match parent height */
+}
+
+.user-menu.authenticated {
+  display: flex;
 }
 
 .user-dropdown {
