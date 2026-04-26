@@ -62,35 +62,42 @@ if not DATABASE_URL:
 engine = create_engine(DATABASE_URL)
 
 
-def bootstrap_database_scripts():
-    """Run DB scripts in the requested order during app startup.
+def _is_render_environment() -> bool:
+    return os.getenv('RENDER', '').lower() == 'true' or bool(os.getenv('RENDER_SERVICE_ID'))
 
-    Order:
-    1. create_tables.py
-    2. generate_fake_flights.py
-    3. import_flights.py
-    4. create_all_seats.py
-    5. add_booking_state_hash.py
-    6. add_blockchain_idempotent_columns.py
 
-    The flights seeding block only runs when the flights table is empty,
-    so startup stays idempotent on Render.
+def _should_bootstrap_db() -> bool:
+    explicit = os.getenv('BOOTSTRAP_DB_ON_STARTUP')
+    if explicit is not None:
+        return explicit.lower() in ('1', 'true', 'yes', 'on')
+    return _is_render_environment()
+
+
+def bootstrap_database_scripts() -> None:
+    """Run DB scripts in a safe order.
+
+    Render: bootstrap automatically by default.
+    Localhost: bootstrap only when BOOTSTRAP_DB_ON_STARTUP is enabled.
     """
+    if not _should_bootstrap_db():
+        print('[DB Bootstrap] Skipped (disabled for this environment).')
+        return
+
     script_order = [
-        ("backend.db.create_tables", True),
-        ("backend.db.generate_fake_flights", False),
-        ("backend.db.import_flights", False),
-        ("backend.db.create_all_seats", False),
-        ("backend.db.add_booking_state_hash", True),
-        ("backend.db.add_blockchain_idempotent_columns", True),
+        'backend.db.create_tables',
+        'backend.db.generate_fake_flights',
+        'backend.db.import_flights',
+        'backend.db.create_all_seats',
+        'backend.db.add_booking_state_hash',
+        'backend.db.add_blockchain_idempotent_columns',
     ]
 
     def run_module(module_name: str) -> None:
-        print(f"[DB Bootstrap] Running {module_name}...")
+        print(f'[DB Bootstrap] Running {module_name}...')
         result = subprocess.run(
-            [sys.executable, "-m", module_name],
+            [sys.executable, '-m', module_name],
             cwd=root_dir,
-            env={**os.environ, "PYTHONPATH": root_dir},
+            env={**os.environ, 'PYTHONPATH': root_dir},
             capture_output=True,
             text=True,
         )
@@ -99,28 +106,34 @@ def bootstrap_database_scripts():
         if result.returncode != 0:
             if result.stderr:
                 print(result.stderr)
-            raise RuntimeError(f"{module_name} failed with exit code {result.returncode}")
+            raise RuntimeError(f'{module_name} failed with exit code {result.returncode}')
 
-    # 1) Always create/ensure schema first.
-    run_module("backend.db.create_tables")
+    try:
+        # Always ensure schema first.
+        run_module('backend.db.create_tables')
 
-    from sqlalchemy import text
+        from sqlalchemy import text
 
-    with engine.connect() as conn:
-        has_flights = conn.execute(text("SELECT EXISTS (SELECT 1 FROM flights LIMIT 1)"))
-        flights_exist = bool(has_flights.scalar())
+        with engine.connect() as conn:
+            flights_exist = bool(conn.execute(text('SELECT EXISTS (SELECT 1 FROM flights LIMIT 1)')).scalar())
 
-    # 2-4) Seed demo flights and seats only when database is still empty.
-    if not flights_exist:
-        run_module("backend.db.generate_fake_flights")
-        run_module("backend.db.import_flights")
-        run_module("backend.db.create_all_seats")
-    else:
-        print("[DB Bootstrap] Flights already exist; skipping seed flight/seat scripts.")
+        # Only seed demo data when the flights table is empty.
+        if not flights_exist:
+            run_module('backend.db.generate_fake_flights')
+            run_module('backend.db.import_flights')
+            run_module('backend.db.create_all_seats')
+        else:
+            print('[DB Bootstrap] Flights already exist; skipping demo flight/seat seeding.')
 
-    # 5-6) Always apply idempotent backfills/migrations.
-    run_module("backend.db.add_booking_state_hash")
-    run_module("backend.db.add_blockchain_idempotent_columns")
+        # Idempotent migrations/backfills should run every startup.
+        run_module('backend.db.add_booking_state_hash')
+        run_module('backend.db.add_blockchain_idempotent_columns')
+
+        print('[DB Bootstrap] Completed successfully.')
+    except Exception as exc:
+        if _is_render_environment():
+            raise
+        print(f'[DB Bootstrap] Warning (local only): {exc}')
 
 def create_app():
     """Create and configure Flask application"""
