@@ -336,15 +336,38 @@ def _get_w3_and_signer(config: Dict[str, str]) -> tuple[Web3, Any]:
     return w3, signer
 
 
+def _safe_gas_price(w3: Web3) -> int:
+    """Return a reliable gas price for Sepolia.
+
+    Sepolia RPC nodes sometimes report absurdly low gas prices (< 0.1 Gwei)
+    which causes transactions to stay pending indefinitely.  We apply a floor
+    of 3 Gwei and a 1.5× multiplier on top of the RPC estimate so that txs
+    get mined promptly.
+    """
+    MIN_GAS_PRICE = Web3.to_wei(3, 'gwei')  # 3 Gwei floor
+    MULTIPLIER = 1.5
+
+    try:
+        rpc_price = w3.eth.gas_price
+    except Exception:
+        rpc_price = 0
+
+    boosted = int(rpc_price * MULTIPLIER)
+    final = max(boosted, MIN_GAS_PRICE)
+    _log_info(f"[blockchain] gas_price: rpc={rpc_price} boosted={boosted} final={final} ({final / 1e9:.2f} Gwei)")
+    return final
+
+
 def _send_tx(w3: Web3, signer: Any, function_call, nonce: int, gas_limit: int = 500000) -> str:
     import time
+    gas_price = _safe_gas_price(w3)
     tx = function_call.build_transaction(
         {
             "from": signer.address,
             "nonce": nonce,
             "chainId": w3.eth.chain_id,
             "gas": gas_limit,
-            "gasPrice": w3.eth.gas_price,
+            "gasPrice": gas_price,
         }
     )
     signed = signer.sign_transaction(tx)
@@ -369,13 +392,14 @@ def _send_tx(w3: Web3, signer: Any, function_call, nonce: int, gas_limit: int = 
 
 def _send_tx_with_receipt(w3: Web3, signer: Any, function_call, nonce: int, gas_limit: int = 500000) -> tuple[str, Any]:
     import time
+    gas_price = _safe_gas_price(w3)
     tx = function_call.build_transaction(
         {
             "from": signer.address,
             "nonce": nonce,
             "chainId": w3.eth.chain_id,
             "gas": gas_limit,
-            "gasPrice": w3.eth.gas_price,
+            "gasPrice": gas_price,
         }
     )
     signed = signer.sign_transaction(tx)

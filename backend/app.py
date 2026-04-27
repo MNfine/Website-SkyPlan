@@ -12,6 +12,8 @@ socketio = None
 import os
 from datetime import datetime
 import sys
+from pathlib import Path
+from threading import Thread
 
 # Add parent directory to path to allow imports from different directories
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -61,6 +63,8 @@ if not DATABASE_URL:
 # Create the SQLAlchemy engine
 engine = create_engine(DATABASE_URL)
 
+_bootstrap_completed = False
+
 
 def _is_render_environment() -> bool:
     return os.getenv('RENDER', '').lower() == 'true' or bool(os.getenv('RENDER_SERVICE_ID'))
@@ -70,17 +74,12 @@ def _should_bootstrap_db() -> bool:
     explicit = os.getenv('BOOTSTRAP_DB_ON_STARTUP')
     if explicit is not None:
         return explicit.lower() in ('1', 'true', 'yes', 'on')
-    # On Render: bootstrap only if DB is truly empty (first startup)
-    # Don't bootstrap on every reload
+    # Render: bootstrap by default. The bootstrap flow itself is idempotent:
+    # - create_tables is safe to run repeatedly
+    # - demo seed only runs when flights table is empty
+    # - migration/backfill scripts are idempotent
     if _is_render_environment():
-        try:
-            from sqlalchemy import text
-            with engine.connect() as conn:
-                tables_exist = bool(conn.execute(text("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' LIMIT 1)")).scalar())
-            return not tables_exist  # Bootstrap only if no tables exist
-        except Exception as e:
-            print(f'[Bootstrap Check] Warning: {e}')
-            return False
+        return True
     return False
 
 
@@ -89,19 +88,38 @@ def bootstrap_database_scripts() -> None:
 
     Render: bootstrap automatically by default.
     Localhost: bootstrap only when BOOTSTRAP_DB_ON_STARTUP is enabled.
+
+    On Render, execute all python scripts in backend/db so a fresh deploy
+    gets full schema, demo flights, seats, and idempotent migrations.
     """
     if not _should_bootstrap_db():
         print('[DB Bootstrap] Skipped (disabled for this environment).')
         return
 
-    script_order = [
-        'backend.db.create_tables',
-        'backend.db.generate_fake_flights',
-        'backend.db.import_flights',
-        'backend.db.create_all_seats',
-        'backend.db.add_booking_state_hash',
-        'backend.db.add_blockchain_idempotent_columns',
+    db_dir = Path(root_dir) / 'backend' / 'db'
+    preferred_order = [
+        'create_tables',
+        'generate_fake_flights',
+        'import_flights',
+        'create_all_seats',
+        'add_booking_state_hash',
+        'add_blockchain_idempotent_columns',
     ]
+
+    discovered = {
+        p.stem
+        for p in db_dir.glob('*.py')
+        if p.name != '__init__.py'
+    }
+
+    ordered_scripts = [name for name in preferred_order if name in discovered]
+    remaining = sorted(name for name in discovered if name not in ordered_scripts)
+    ordered_scripts.extend(remaining)
+
+    if not ordered_scripts:
+        raise RuntimeError(f'No bootstrap scripts found in {db_dir}')
+
+    print('[DB Bootstrap] Scripts to run:', ', '.join(ordered_scripts))
 
     def run_module(module_name: str) -> None:
         print(f'[DB Bootstrap] Running {module_name}...')
@@ -120,31 +138,20 @@ def bootstrap_database_scripts() -> None:
             raise RuntimeError(f'{module_name} failed with exit code {result.returncode}')
 
     try:
-        # Always ensure schema first.
-        run_module('backend.db.create_tables')
-
-        from sqlalchemy import text
-
-        with engine.connect() as conn:
-            flights_exist = bool(conn.execute(text('SELECT EXISTS (SELECT 1 FROM flights LIMIT 1)')).scalar())
-
-        # Only seed demo data when the flights table is empty.
-        if not flights_exist:
-            run_module('backend.db.generate_fake_flights')
-            run_module('backend.db.import_flights')
-            run_module('backend.db.create_all_seats')
-        else:
-            print('[DB Bootstrap] Flights already exist; skipping demo flight/seat seeding.')
-
-        # Idempotent migrations/backfills should run every startup.
-        run_module('backend.db.add_booking_state_hash')
-        run_module('backend.db.add_blockchain_idempotent_columns')
+        for script in ordered_scripts:
+            run_module(f'backend.db.{script}')
 
         print('[DB Bootstrap] Completed successfully.')
     except Exception as exc:
         if _is_render_environment():
             raise
         print(f'[DB Bootstrap] Warning (local only): {exc}')
+
+
+def _run_render_bootstrap_in_background() -> None:
+    print('[DB Bootstrap] Running bootstrap synchronously on Render...')
+    bootstrap_database_scripts()
+    print('[DB Bootstrap] Bootstrap completed.')
 
 def create_app():
     """Create and configure Flask application"""
@@ -186,9 +193,14 @@ def create_app():
         try:
             init_db()
             print("[DB] Tables ensured.")
-            bootstrap_database_scripts()
+            if _is_render_environment():
+                _run_render_bootstrap_in_background()
+            else:
+                bootstrap_database_scripts()
         except Exception as e:
             print(f"[DB] Initialization failed: {e}")
+            if _is_render_environment():
+                raise
     
     # Initialize email service
     try:
