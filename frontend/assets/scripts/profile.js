@@ -139,6 +139,29 @@ document.addEventListener('DOMContentLoaded', function() {
     ['fullName', 'email', 'phone', 'dob', 'gender'].forEach(clearError);
   }
 
+  // Helper to switch to a specific tab
+  function switchToTab(targetSel) {
+    var menu = document.getElementById('profileMenu');
+    var target = document.querySelector(targetSel);
+    var item = document.querySelector('[data-target="' + targetSel + '"]');
+    
+    if (menu && target && item) {
+      menu.querySelectorAll('.menu-item').forEach(function(m) { m.classList.remove('active'); });
+      item.classList.add('active');
+      
+      document.querySelectorAll('.profile-content .card').forEach(function(card) { card.hidden = true; });
+      target.hidden = false;
+    }
+  }
+
+  // Handle setup redirect
+  if (new URLSearchParams(window.location.search).get('setup') === 'true') {
+    setTimeout(function() {
+      switchToTab('#personalSection');
+      showToast(getTranslation('profile.notification'), getTranslation('profile.setupPrompt'), 'info');
+    }, 800);
+  }
+
   // Language selector handler
   setTimeout(function() {
     document.querySelectorAll('.lang-option').forEach(function(option) {
@@ -191,12 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var targetSel = item.getAttribute('data-target');
       if (!targetSel) return;
       
-      menu.querySelectorAll('.menu-item').forEach(function(m) { m.classList.remove('active'); });
-      item.classList.add('active');
-      
-      document.querySelectorAll('.profile-content .card').forEach(function(card) { card.hidden = true; });
-      var target = document.querySelector(targetSel);
-      if (target) target.hidden = false;
+      switchToTab(targetSel);
     });
   }
 
@@ -255,6 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (isValid) {
         var payload = {
           fullname: fullName,
+          email: email,
           phone: phone,
           gender: gender,
           birth_date: toIsoDate(dob)
@@ -289,9 +308,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
             var user = result.data.user || {};
             if (inputs.fullName && user.fullname) inputs.fullName.value = user.fullname;
+            if (inputs.email && user.email) {
+              if (user.email.endsWith('@wallet.skyplan.local')) {
+                inputs.email.value = '';
+              } else {
+                inputs.email.value = user.email;
+              }
+            }
             if (inputs.phone && (user.phone || user.mobile)) inputs.phone.value = user.phone || user.mobile;
             if (inputs.dob && user.dob) inputs.dob.value = user.dob;
             if (inputs.gender && user.gender) inputs.gender.value = user.gender;
+
+            var accountEmailEl = document.getElementById('accountEmail');
+            if (accountEmailEl && user.email) {
+              accountEmailEl.textContent = user.email;
+              accountEmailEl.style.opacity = '1';
+            }
 
             var accountPhoneEl = document.getElementById('accountPhone');
             if (accountPhoneEl && (user.phone || user.mobile)) {
@@ -300,6 +332,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
             var profileNameEl = document.getElementById('profile-name');
             if (profileNameEl && user.fullname) profileNameEl.textContent = user.fullname;
+            
+            // Update AuthState so the header and reloading work
+            if (window.AuthState && typeof window.AuthState.setAuth === 'function') {
+              window.AuthState.setAuth(token, user, !!localStorage.getItem('authToken'));
+            } else {
+              localStorage.setItem('currentUser', JSON.stringify(user));
+            }
+            if (typeof window.updateHeaderUserInfo === 'function') {
+              window.updateHeaderUserInfo();
+            }
 
             var lang = getCurrentLang();
             showToast(lang === 'vi' ? 'Thành công!' : 'Success!', getTranslation('successMessage'), 'success');
@@ -358,11 +400,39 @@ document.addEventListener('DOMContentLoaded', function() {
         const memberIdEl = document.getElementById('memberId');
         const memberTierEl = document.getElementById('memberTier');
         const memberPointsEl = document.getElementById('memberPoints');
-        const totalEarned = data.user.total_earned_sky ?? data.user.totalEarned ?? data.user.points ?? 0;
+        const walletAddressItem = document.getElementById('walletAddressItem');
+        const accountWalletEl = document.getElementById('accountWallet');
+        
+        // Use available sky tokens as points balance
+        const totalEarned = data.user.total_available_sky ?? data.user.total_earned_sky ?? data.user.totalEarned ?? data.user.points ?? 0;
         const tierInfo = getTierInfo(totalEarned);
 
-        if (accountEmailEl && data.user.email) accountEmailEl.textContent = data.user.email;
-        if (accountPhoneEl && (data.user.phone || data.user.mobile)) accountPhoneEl.textContent = data.user.phone || data.user.mobile;
+        if (accountEmailEl && data.user.email) {
+          if (data.user.email.endsWith('@wallet.skyplan.local')) {
+            accountEmailEl.textContent = getTranslation('profile.notUpdated');
+            accountEmailEl.style.opacity = '0.5';
+          } else {
+            accountEmailEl.textContent = data.user.email;
+          }
+        }
+        
+        if (data.user.wallet_address) {
+          if (walletAddressItem) walletAddressItem.style.display = 'flex';
+          if (accountWalletEl) {
+            accountWalletEl.textContent = data.user.wallet_address.substring(0, 6) + '...' + data.user.wallet_address.substring(data.user.wallet_address.length - 4);
+            accountWalletEl.title = data.user.wallet_address;
+          }
+        }
+        
+        if (accountPhoneEl && (data.user.phone || data.user.mobile)) {
+          const phone = data.user.phone || data.user.mobile;
+          if (phone === '0000000000') {
+            accountPhoneEl.textContent = getTranslation('profile.notUpdated');
+            accountPhoneEl.style.opacity = '0.5';
+          } else {
+            accountPhoneEl.textContent = phone;
+          }
+        }
         if (memberIdEl && (data.user.memberId || data.user.id)) memberIdEl.textContent = data.user.memberId || data.user.id;
         if (memberTierEl) {
           memberTierEl.textContent = data.user.member_tier || data.user.tier || tierInfo.tier;
@@ -371,14 +441,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (memberPointsEl) {
           const pointsLabel = getTranslation('profile.account.pointsUnit');
-          memberPointsEl.innerHTML = formatPoints(totalEarned) + '<span data-i18n="profile.account.pointsUnit">' + pointsLabel + '</span>';
+          memberPointsEl.innerHTML = formatPoints(totalEarned) + '<span data-i18n="profile.account.pointsUnit"> ' + pointsLabel + '</span>';
         }
 
         // Fill legacy/profile-name and profile-email if present (some templates use these ids)
         const profileNameEl = document.getElementById('profile-name');
         const profileEmailEl = document.getElementById('profile-email');
-        if (profileNameEl && data.user.fullname) profileNameEl.textContent = data.user.fullname;
-        if (profileEmailEl && data.user.email) profileEmailEl.textContent = data.user.email;
+        if (profileNameEl && data.user.fullname) {
+          if (data.user.fullname.startsWith('User 0x')) {
+            profileNameEl.textContent = getTranslation('profile.notUpdated');
+          } else {
+            profileNameEl.textContent = data.user.fullname;
+          }
+        }
+        if (profileEmailEl && data.user.email && !data.user.email.endsWith('@wallet.skyplan.local')) {
+          profileEmailEl.textContent = data.user.email;
+        }
 
         // Populate form inputs if present
         try {
@@ -388,9 +466,9 @@ document.addEventListener('DOMContentLoaded', function() {
           const dobInput = document.getElementById('dob');
           const genderSelect = document.getElementById('gender');
 
-          if (fullNameInput && data.user.fullname) fullNameInput.value = data.user.fullname;
-          if (emailInput && data.user.email) emailInput.value = data.user.email;
-          if (phoneInput && (data.user.phone || data.user.mobile)) phoneInput.value = data.user.phone || data.user.mobile;
+          if (fullNameInput && data.user.fullname && !data.user.fullname.startsWith('User 0x')) fullNameInput.value = data.user.fullname;
+          if (emailInput && data.user.email && !data.user.email.endsWith('@wallet.skyplan.local')) emailInput.value = data.user.email;
+          if (phoneInput && (data.user.phone || data.user.mobile) && (data.user.phone || data.user.mobile) !== '0000000000') phoneInput.value = data.user.phone || data.user.mobile;
           if (dobInput && (data.user.dob || data.user.dateOfBirth)) dobInput.value = data.user.dob || data.user.dateOfBirth;
           if (genderSelect && data.user.gender) genderSelect.value = data.user.gender;
         } catch (e) {

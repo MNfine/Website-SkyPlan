@@ -234,6 +234,8 @@
       sessionStorage.removeItem('currentUser');
     }
     localStorage.removeItem('walletConnected');
+    localStorage.removeItem('skyplan_wallet_connected');
+    localStorage.removeItem('skyplan_wallet_account');
     
     updateWalletUI();
     console.log('[WalletLogin] Wallet disconnected');
@@ -370,6 +372,8 @@
       }
 
       localStorage.setItem('walletConnected', walletState.account);
+      localStorage.setItem('skyplan_wallet_connected', 'true');
+      localStorage.setItem('skyplan_wallet_account', walletState.account);
 
       if (typeof window.updateHeaderUserInfo === 'function') {
         window.updateHeaderUserInfo();
@@ -378,9 +382,13 @@
       console.log('[WalletLogin] ✓ Authentication successful!');
       showLoadingState(elements, false);
 
-      // Redirect to dashboard or bookings page
+      // Redirect to dashboard, bookings page or profile setup
       setTimeout(() => {
-        window.location.href = '/search.html';
+        if (verifyData.data && verifyData.data.needs_profile_update) {
+          window.location.href = '/profile.html?setup=true';
+        } else {
+          window.location.href = '/search.html';
+        }
       }, 1000);
 
     } catch (error) {

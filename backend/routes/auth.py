@@ -338,7 +338,7 @@ def update_profile():
             }), 404
         
         # Update allowed fields
-        updateable_fields = ['fullname', 'phone']
+        updateable_fields = ['fullname', 'phone', 'email']
         updated = False
         
         for field in updateable_fields:
@@ -351,6 +351,15 @@ def update_profile():
                             'success': False,
                             'message': 'Invalid phone number format'
                         }), 400
+                        
+                # Validate email uniqueness
+                if field == 'email':
+                    existing = session.query(User).filter(User.email == data['email'].strip().lower(), User.id != user.id).first()
+                    if existing:
+                        return jsonify({
+                            'success': False,
+                            'message': 'Email address already in use'
+                        }), 409
                 
                 setattr(user, field, data[field])
                 updated = True

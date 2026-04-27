@@ -14,6 +14,28 @@ function walletT(key, fallback) {
   return fallback || key;
 }
 
+async function linkWalletToUser(account) {
+  try {
+    if (!account || typeof window.AuthState === 'undefined' || !window.AuthState.isAuthenticated()) return;
+    const response = await window.AuthState.fetchWithAuth('/api/auth/wallet/connect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ wallet_address: account })
+    });
+    const data = await response.json();
+    if (data.success && data.user) {
+      console.log('Wallet linked to user successfully');
+      const token = window.AuthState.getToken();
+      const remember = !!localStorage.getItem('authToken');
+      window.AuthState.setAuth(token, data.user, remember);
+    } else {
+      console.warn('Failed to link wallet:', data.message);
+    }
+  } catch (err) {
+    console.error('Error linking wallet to user:', err);
+  }
+}
+
 // Prompt user to install MetaMask if extension not found
 function showInstallMetaMaskPrompt() {
   return new Promise((resolve) => {
@@ -155,6 +177,9 @@ async function openWalletConnectSession() {
           window.MetaMaskWallet.account = null;
           updateWalletUIState();
         };
+        if (account) {
+          linkWalletToUser(account);
+        }
         updateWalletUIState();
       } catch (e) {
         console.error(e);
@@ -525,7 +550,10 @@ function initWalletUI() {
                   // Try MetaMask wrapper first (project-specific)
                   if (typeof MetaMaskWallet !== 'undefined' && typeof MetaMaskWallet.connect === 'function') {
                     try {
-                      await MetaMaskWallet.connect();
+                      const success = await MetaMaskWallet.connect();
+                      if (success && MetaMaskWallet.account) {
+                        await linkWalletToUser(MetaMaskWallet.account);
+                      }
                       updateWalletUIState();
                       return;
                     } catch (err) {
@@ -541,6 +569,7 @@ function initWalletUI() {
                         window.MetaMaskWallet = window.MetaMaskWallet || {};
                         window.MetaMaskWallet.isConnected = true;
                         window.MetaMaskWallet.account = accounts[0];
+                        await linkWalletToUser(accounts[0]);
                         window.MetaMaskWallet.disconnect = async () => {
                           // No standard programmatic disconnect for extension; just update UI
                           window.MetaMaskWallet.isConnected = false;
