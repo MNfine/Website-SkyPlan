@@ -2,6 +2,8 @@ import csv
 from datetime import datetime, timedelta
 import random
 
+random.seed(104)
+
 # Danh sách sân bay phổ biến ở Việt Nam
 AIRPORTS = [
     ('HAN', 'Sân bay quốc tế Nội Bài', 'Hà Nội'),
@@ -33,8 +35,9 @@ POPULAR_ROUTES = [
 
 # Sinh dữ liệu chuyến bay giả lập từ hôm nay
 rows = []
-start_date = datetime(2026, 4, 7)  # Hôm nay: 7/4/2026
-end_date = datetime(2026, 6, 6)    # 60 ngày sau
+today = datetime.utcnow().date()
+start_date = datetime.combine(today, datetime.min.time())
+end_date = start_date + timedelta(days=60)
 
 # Tạo 1200 chuyến bay
 for i in range(1200):
@@ -102,5 +105,5 @@ with open('backend/db/demo_flights_fake_1200.csv', 'w', encoding='utf-8', newlin
     writer.writerows(rows)
 
 print(f'✅ Đã tạo file backend/db/demo_flights_fake_1200.csv với {len(rows)} chuyến bay.')
-print(f'📅 Ngày: 7/4/2026 → 6/6/2026 (60 ngày)')
+print(f'📅 Ngày: {start_date.strftime("%d/%m/%Y")} → {end_date.strftime("%d/%m/%Y")} (60 ngày)')
 print(f'🛫 Routes: 8 tuyến chính + random')
