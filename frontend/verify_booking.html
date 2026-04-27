@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,6 +24,7 @@
   <link rel="stylesheet" href="assets/styles/verify_booking.css">
   <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
+
 <body>
   <!-- Header -->
   <div id="header-container"></div>
@@ -42,14 +44,8 @@
       <form id="verifyBookingForm" class="verify-form">
         <div class="input-group">
           <label for="bookingCode" data-i18n="bookingCodeLabel">Mã đặt chỗ</label>
-          <input 
-            type="text" 
-            id="bookingCode" 
-            placeholder="BK123456789" 
-            class="booking-code-input"
-            autocomplete="off"
-            maxlength="50"
-          />
+          <input type="text" id="bookingCode" placeholder="SP2026XXXXX" class="booking-code-input" autocomplete="off"
+            maxlength="50" />
           <span class="input-hint" data-i18n="bookingCodeHint">Nhập mã đặt chỗ được cấp khi hoàn tất đặt chỗ</span>
         </div>
 
@@ -115,7 +111,7 @@
           </div>
 
           <div class="detail-item full-width">
-            <label>Tính toàn vẹn dữ liệu</label>
+            <label data-i18n="dataIntegrity">Tính toàn vẹn dữ liệu</label>
             <p id="resultIntegrityStatus" class="status-badge">-</p>
           </div>
         </div>
@@ -183,4 +179,5 @@
   <script defer src="assets/scripts/verify_booking_translations.js"></script>
   <script defer src="assets/scripts/verify_booking.js"></script>
 </body>
+
 </html>

@@ -17,7 +17,7 @@ const VERIFY_CONFIG = {
   explorerBaseUrl: 'https://sepolia.etherscan.io',
   chainName: 'Sepolia',
   networkId: 11155111,
-  requestTimeoutMs: 12000,
+  requestTimeoutMs: 120000,
   cacheTtlMs: 60000
 };
 
@@ -67,7 +67,7 @@ function updateSharedTranslations(lang) {
     // Fallback: update elements with data-i18n attribute in header and footer containers
     const headerContainer = document.getElementById('header-container');
     const footerContainer = document.getElementById('footer-container');
-    
+
     if (headerContainer) {
       updateElementTranslations(headerContainer, lang);
     }
@@ -82,10 +82,10 @@ function updateSharedTranslations(lang) {
  */
 function updateElementTranslations(container, lang) {
   // Try to get translation object from window.translations first, then from verifyBookingTranslations
-  let translations = (window.translations && window.translations[lang]) || 
-                     (typeof verifyBookingTranslations !== 'undefined' && verifyBookingTranslations[lang]) || 
-                     {};
-  
+  let translations = (window.translations && window.translations[lang]) ||
+    (typeof verifyBookingTranslations !== 'undefined' && verifyBookingTranslations[lang]) ||
+    {};
+
   if (!translations || Object.keys(translations).length === 0) {
     translations = {};
   }
@@ -194,20 +194,20 @@ function attachEventListeners() {
   }
 
   elements.verifyForm.addEventListener('submit', handleFormSubmit);
-  
+
   elements.copyTxHashBtn?.addEventListener('click', () => copyToClipboard(elements.resultTransactionHash.textContent));
   elements.verifyAgainBtn?.addEventListener('click', resetForm);
   elements.retryBtn?.addEventListener('click', resetForm);
   elements.notFoundRetryBtn?.addEventListener('click', resetForm);
-  
+
   // Clear validation error when user starts typing
-  elements.bookingCodeInput.addEventListener('input', function() {
+  elements.bookingCodeInput.addEventListener('input', function () {
     // Remove inline error styles
     this.style.border = '';
     this.style.backgroundColor = '';
     this.style.boxShadow = '';
     this.classList.remove('error');
-    
+
     const inputHint = document.querySelector('.input-hint');
     if (inputHint) {
       inputHint.style.color = '';
@@ -246,7 +246,7 @@ async function handleFormSubmit(e) {
     input.style.backgroundColor = 'rgba(239, 68, 68, 0.08)';
     input.style.boxShadow = 'none';
     input.style.outline = 'none';
-    
+
     // Show error message
     if (inputHint) {
       inputHint.style.display = 'block';
@@ -424,16 +424,29 @@ function displayVerificationResult(data) {
   const integrityMessage = integrity.message || 'Chưa có dữ liệu kiểm tra toàn vẹn';
   const integrityMatched = integrity.is_match !== false;
 
+  const lang = localStorage.getItem('preferredLanguage') || 'vi';
+  const trans = (typeof verifyBookingTranslations !== 'undefined' && verifyBookingTranslations[lang]) || {};
+
+  // Map known backend integrity messages to translations
+  let displayIntegrityMessage = integrityMessage;
+  if (integrityMessage.includes('Dữ liệu hợp lệ') || integrityMessage.includes('Data is valid')) {
+    displayIntegrityMessage = trans.integrityValid || integrityMessage;
+  } else if (integrityMessage.includes('thay đổi') || integrityMessage.includes('altered')) {
+    displayIntegrityMessage = trans.integrityAltered || integrityMessage;
+  } else if (integrityMessage.includes('Chưa có dữ liệu')) {
+    displayIntegrityMessage = trans.integrityNoData || integrityMessage;
+  }
+
   // Update success state elements
   elements.resultBookingCode.textContent = bookingCode;
   elements.resultOnChainStatus.textContent = getStatusLabel(onChainStatus);
   elements.resultOnChainStatus.className = `status-badge status-${onChainStatus.toLowerCase()}`;
   if (elements.resultIntegrityStatus) {
-    elements.resultIntegrityStatus.textContent = integrityMessage;
+    elements.resultIntegrityStatus.textContent = displayIntegrityMessage;
     elements.resultIntegrityStatus.className = `status-badge ${integrityMatched ? 'status-confirmed' : 'status-warning'}`;
     elements.resultIntegrityStatus.title = integrity.current_state_hash && integrity.stored_state_hash
       ? `Current: ${integrity.current_state_hash}\nStored: ${integrity.stored_state_hash}`
-      : integrityMessage;
+      : displayIntegrityMessage;
   }
   elements.resultTransactionHash.textContent = truncateHash(txHash);
   elements.resultTransactionHash.title = txHash;
@@ -474,7 +487,14 @@ function normalizeTxHash(value) {
  * Get localized status label
  */
 function getStatusLabel(status) {
-  const statusMap = {
+  const lang = localStorage.getItem('preferredLanguage') || 'vi';
+  const trans = (typeof verifyBookingTranslations !== 'undefined' && verifyBookingTranslations[lang]) || {};
+
+  if (trans[status]) {
+    return trans[status];
+  }
+
+  const defaultMap = {
     'RECORDED': 'Đã ghi chép',
     'CONFIRMED': 'Đã xác nhận',
     'PENDING': 'Chờ xác nhận',
@@ -483,7 +503,7 @@ function getStatusLabel(status) {
     'UNKNOWN': 'Không xác định'
   };
 
-  return statusMap[status] || status;
+  return defaultMap[status] || status;
 }
 
 /**
@@ -609,7 +629,16 @@ function setVerifyPending(isPending) {
   }
 
   if (buttonText) {
-    buttonText.textContent = isPending ? 'Đang kiểm tra...' : 'Kiểm tra';
+    if (isPending) {
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const loadingTexts = { vi: 'Đang kiểm tra...', en: 'Verifying...', zh: '查询中...', ja: '確認中...' };
+      buttonText.textContent = loadingTexts[lang] || loadingTexts['vi'];
+    } else {
+      // Restore button text using current language translations
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const trans = (typeof verifyBookingTranslations !== 'undefined' && verifyBookingTranslations[lang]) || {};
+      buttonText.textContent = trans.verifyButton || 'Kiểm tra';
+    }
   }
 }
 

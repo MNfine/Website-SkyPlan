@@ -45,23 +45,16 @@ class Config {
 
     switch (this.environment) {
       case 'development':
-        return 'http://localhost:5000';
+        return window.location.origin;
       case 'production':
         return window.location.origin;
       default:
-        return 'http://localhost:5000';
+        return window.location.origin;
     }
   }
 
   getFrontendUrl() {
-    switch (this.environment) {
-      case 'development':
-        return 'http://localhost:5000';
-      case 'production':
-        return window.location.origin;
-      default:
-        return window.location.origin;
-    }
+    return window.location.origin;
   }
 
   // VNPay specific configs
@@ -98,14 +91,14 @@ class Config {
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
-      
+
       const result = await response.json();
       if (result.success && result.data) {
         // Cache for session
         sessionStorage.setItem('skyplan_blockchain_config', JSON.stringify(result.data));
         return result.data;
       }
-      
+
       console.error('Blockchain config fetch failed:', result);
       throw new Error('Invalid blockchain config response');
     } catch (error) {
