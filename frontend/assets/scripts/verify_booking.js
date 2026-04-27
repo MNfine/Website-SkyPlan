@@ -17,7 +17,7 @@ const VERIFY_CONFIG = {
   explorerBaseUrl: 'https://sepolia.etherscan.io',
   chainName: 'Sepolia',
   networkId: 11155111,
-  requestTimeoutMs: 12000,
+  requestTimeoutMs: 120000,
   cacheTtlMs: 60000
 };
 
@@ -424,16 +424,29 @@ function displayVerificationResult(data) {
   const integrityMessage = integrity.message || 'Chưa có dữ liệu kiểm tra toàn vẹn';
   const integrityMatched = integrity.is_match !== false;
 
+  const lang = localStorage.getItem('preferredLanguage') || 'vi';
+  const trans = (typeof verifyBookingTranslations !== 'undefined' && verifyBookingTranslations[lang]) || {};
+
+  // Map known backend integrity messages to translations
+  let displayIntegrityMessage = integrityMessage;
+  if (integrityMessage.includes('Dữ liệu hợp lệ') || integrityMessage.includes('Data is valid')) {
+    displayIntegrityMessage = trans.integrityValid || integrityMessage;
+  } else if (integrityMessage.includes('thay đổi') || integrityMessage.includes('altered')) {
+    displayIntegrityMessage = trans.integrityAltered || integrityMessage;
+  } else if (integrityMessage.includes('Chưa có dữ liệu')) {
+    displayIntegrityMessage = trans.integrityNoData || integrityMessage;
+  }
+
   // Update success state elements
   elements.resultBookingCode.textContent = bookingCode;
   elements.resultOnChainStatus.textContent = getStatusLabel(onChainStatus);
   elements.resultOnChainStatus.className = `status-badge status-${onChainStatus.toLowerCase()}`;
   if (elements.resultIntegrityStatus) {
-    elements.resultIntegrityStatus.textContent = integrityMessage;
+    elements.resultIntegrityStatus.textContent = displayIntegrityMessage;
     elements.resultIntegrityStatus.className = `status-badge ${integrityMatched ? 'status-confirmed' : 'status-warning'}`;
     elements.resultIntegrityStatus.title = integrity.current_state_hash && integrity.stored_state_hash
       ? `Current: ${integrity.current_state_hash}\nStored: ${integrity.stored_state_hash}`
-      : integrityMessage;
+      : displayIntegrityMessage;
   }
   elements.resultTransactionHash.textContent = truncateHash(txHash);
   elements.resultTransactionHash.title = txHash;
@@ -474,7 +487,14 @@ function normalizeTxHash(value) {
  * Get localized status label
  */
 function getStatusLabel(status) {
-  const statusMap = {
+  const lang = localStorage.getItem('preferredLanguage') || 'vi';
+  const trans = (typeof verifyBookingTranslations !== 'undefined' && verifyBookingTranslations[lang]) || {};
+  
+  if (trans[status]) {
+    return trans[status];
+  }
+
+  const defaultMap = {
     'RECORDED': 'Đã ghi chép',
     'CONFIRMED': 'Đã xác nhận',
     'PENDING': 'Chờ xác nhận',
@@ -483,7 +503,7 @@ function getStatusLabel(status) {
     'UNKNOWN': 'Không xác định'
   };
 
-  return statusMap[status] || status;
+  return defaultMap[status] || status;
 }
 
 /**
@@ -609,7 +629,16 @@ function setVerifyPending(isPending) {
   }
 
   if (buttonText) {
-    buttonText.textContent = isPending ? 'Đang kiểm tra...' : 'Kiểm tra';
+    if (isPending) {
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const loadingTexts = { vi: 'Đang kiểm tra...', en: 'Verifying...', zh: '查询中...', ja: '確認中...' };
+      buttonText.textContent = loadingTexts[lang] || loadingTexts['vi'];
+    } else {
+      // Restore button text using current language translations
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const trans = (typeof verifyBookingTranslations !== 'undefined' && verifyBookingTranslations[lang]) || {};
+      buttonText.textContent = trans.verifyButton || 'Kiểm tra';
+    }
   }
 }
 

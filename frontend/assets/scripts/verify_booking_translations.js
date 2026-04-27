@@ -45,6 +45,12 @@ const verifyBookingTranslations = {
     'NONE': 'Chưa ghi chép',
     'CANCELLED': 'Đã hủy',
     'UNKNOWN': 'Không xác định',
+    
+    // Data Integrity
+    dataIntegrity: 'Tính toàn vẹn dữ liệu',
+    integrityValid: 'Dữ liệu hợp lệ và không bị thay đổi',
+    integrityAltered: 'Phát hiện dữ liệu đặt chỗ đã thay đổi trong database',
+    integrityNoData: 'Chưa có dữ liệu kiểm tra toàn vẹn',
 
     // Info Sections
     whatIsBlockchain: 'Blockchain là gì?',
@@ -57,7 +63,7 @@ const verifyBookingTranslations = {
     whereToFindBookingCode: 'Lấy mã đặt chỗ ở đâu?',
     findCodeStep1: 'Sau khi thanh toán thành công, mã đặt chỗ hiển thị ở trang xác nhận.',
     findCodeStep2: 'Bạn có thể xem lại trong mục Chuyến đi của tôi.',
-    findCodeStep3: 'Mã thường có dạng BK + dãy số/chữ.',
+    findCodeStep3: 'Mã thường có dạng SP2026 + dãy số.',
 
     // Shared Header/Footer Translations
     helpText: 'Trợ giúp',
@@ -133,6 +139,12 @@ const verifyBookingTranslations = {
     'NONE': 'Not Recorded',
     'CANCELLED': 'Cancelled',
     'UNKNOWN': 'Unknown',
+    
+    // Data Integrity
+    dataIntegrity: 'Data Integrity',
+    integrityValid: 'Data is valid and unaltered',
+    integrityAltered: 'Detected booking data alterations in the database',
+    integrityNoData: 'No integrity data available',
 
     // Info Sections
     whatIsBlockchain: 'What is Blockchain?',
@@ -145,7 +157,7 @@ const verifyBookingTranslations = {
     whereToFindBookingCode: 'Where can I find my booking code?',
     findCodeStep1: 'After successful payment, your booking code appears on the confirmation page.',
     findCodeStep2: 'You can also find it in My Trips.',
-    findCodeStep3: 'The code usually looks like BK followed by numbers/letters.',
+    findCodeStep3: 'The code usually looks like SP2026 followed by numbers.',
 
     // Shared Header/Footer Translations
     helpText: 'Help',
@@ -221,6 +233,12 @@ const verifyBookingTranslations = {
     'NONE': '未记录',
     'CANCELLED': '已取消',
     'UNKNOWN': '未知',
+    
+    // Data Integrity
+    dataIntegrity: '数据完整性',
+    integrityValid: '数据有效且未被篡改',
+    integrityAltered: '检测到数据库中的预订数据已被篡改',
+    integrityNoData: '没有可用的完整性数据',
 
     // Info Sections
     whatIsBlockchain: '什么是区块链？',
@@ -309,6 +327,12 @@ const verifyBookingTranslations = {
     'NONE': '記録なし',
     'CANCELLED': 'キャンセル済み',
     'UNKNOWN': '不明',
+    
+    // Data Integrity
+    dataIntegrity: 'データの整合性',
+    integrityValid: 'データは有効であり、改ざんされていません',
+    integrityAltered: 'データベース内で予約データの変更が検出されました',
+    integrityNoData: '整合性データがありません',
 
     // Info Sections
     whatIsBlockchain: 'ブロックチェーンとは？',
@@ -321,7 +345,7 @@ const verifyBookingTranslations = {
     whereToFindBookingCode: '予約コードはどこで確認できますか？',
     findCodeStep1: '支払い完了後、確認ページに予約コードが表示されます。',
     findCodeStep2: '「マイトリップ」からも確認できます。',
-    findCodeStep3: '通常、BK + 英数字の形式です。',
+    findCodeStep3: '通常、SP2026 + 数字の形式です。',
 
     // Shared Header/Footer Translations
     helpText: 'ヘルプ',

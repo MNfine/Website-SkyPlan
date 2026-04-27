@@ -45,23 +45,16 @@ class Config {
 
     switch (this.environment) {
       case 'development':
-        return 'http://localhost:5000';
+        return window.location.origin;
       case 'production':
         return window.location.origin;
       default:
-        return 'http://localhost:5000';
+        return window.location.origin;
     }
   }
 
   getFrontendUrl() {
-    switch (this.environment) {
-      case 'development':
-        return 'http://localhost:5000';
-      case 'production':
-        return window.location.origin;
-      default:
-        return window.location.origin;
-    }
+    return window.location.origin;
   }
 
   // VNPay specific configs
