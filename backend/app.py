@@ -13,6 +13,7 @@ import os
 from datetime import datetime
 import sys
 from pathlib import Path
+from threading import Thread
 
 # Add parent directory to path to allow imports from different directories
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -61,6 +62,27 @@ if not DATABASE_URL:
 
 # Create the SQLAlchemy engine
 engine = create_engine(DATABASE_URL)
+
+BOOTSTRAP_RUNNING_FILE = Path(root_dir) / '.db_bootstrap_running'
+BOOTSTRAP_DONE_FILE = Path(root_dir) / '.db_bootstrap_done'
+BOOTSTRAP_FAILED_FILE = Path(root_dir) / '.db_bootstrap_failed'
+_bootstrap_thread_started = False
+
+
+def _write_bootstrap_marker(path: Path, message: str = '') -> None:
+    try:
+        path.write_text(message, encoding='utf-8')
+    except Exception as exc:
+        print(f'[DB Bootstrap] Marker write failed for {path.name}: {exc}')
+
+
+def _clear_bootstrap_markers() -> None:
+    for marker in (BOOTSTRAP_RUNNING_FILE, BOOTSTRAP_DONE_FILE, BOOTSTRAP_FAILED_FILE):
+        try:
+            if marker.exists():
+                marker.unlink()
+        except Exception as exc:
+            print(f'[DB Bootstrap] Marker cleanup failed for {marker.name}: {exc}')
 
 
 def _is_render_environment() -> bool:
@@ -144,6 +166,58 @@ def bootstrap_database_scripts() -> None:
             raise
         print(f'[DB Bootstrap] Warning (local only): {exc}')
 
+
+def _run_render_bootstrap_in_background() -> None:
+    global _bootstrap_thread_started
+    if _bootstrap_thread_started:
+        return
+    _bootstrap_thread_started = True
+
+    def _worker() -> None:
+        lock_conn = None
+        try:
+            _clear_bootstrap_markers()
+            _write_bootstrap_marker(BOOTSTRAP_RUNNING_FILE, 'running')
+
+            if _is_render_environment():
+                from sqlalchemy import text
+
+                lock_conn = engine.connect()
+                lock_conn.execute(text('SELECT pg_advisory_lock(91720260427)'))
+
+            bootstrap_database_scripts()
+            _write_bootstrap_marker(BOOTSTRAP_DONE_FILE, 'done')
+            print('[DB Bootstrap] Background bootstrap completed.')
+        except Exception as exc:
+            _write_bootstrap_marker(BOOTSTRAP_FAILED_FILE, str(exc))
+            print(f'[DB Bootstrap] Background bootstrap failed: {exc}')
+        finally:
+            try:
+                if lock_conn is not None:
+                    lock_conn.close()
+            except Exception:
+                pass
+            try:
+                if BOOTSTRAP_RUNNING_FILE.exists():
+                    BOOTSTRAP_RUNNING_FILE.unlink()
+            except Exception:
+                pass
+
+    Thread(target=_worker, daemon=True, name='db-bootstrap').start()
+
+
+def bootstrap_status() -> dict:
+    if BOOTSTRAP_FAILED_FILE.exists():
+        return {
+            'state': 'failed',
+            'message': BOOTSTRAP_FAILED_FILE.read_text(encoding='utf-8', errors='ignore'),
+        }
+    if BOOTSTRAP_DONE_FILE.exists():
+        return {'state': 'done'}
+    if BOOTSTRAP_RUNNING_FILE.exists():
+        return {'state': 'running'}
+    return {'state': 'idle'}
+
 def create_app():
     """Create and configure Flask application"""
     
@@ -184,7 +258,10 @@ def create_app():
         try:
             init_db()
             print("[DB] Tables ensured.")
-            bootstrap_database_scripts()
+            if _is_render_environment():
+                _run_render_bootstrap_in_background()
+            else:
+                bootstrap_database_scripts()
         except Exception as e:
             print(f"[DB] Initialization failed: {e}")
             if _is_render_environment():
