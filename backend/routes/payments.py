@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 from decimal import Decimal
 from flask import Blueprint, jsonify, request, redirect
+from sqlalchemy.orm import joinedload
 from backend.models.db import session_scope
 from backend.models.payments import Payment
 from backend.models.booking import Booking, BookingStatus
@@ -225,7 +226,9 @@ def vnpay_return():
 			with session_scope() as session:
 				blockchain_result = None
 				tickets_generated = []
-				payment = session.query(Payment).filter_by(booking_code=vnp_txn_ref).first()
+				payment = session.query(Payment).options(
+					joinedload(Payment.booking).joinedload(Booking.user).joinedload(User.bookings)
+				).filter_by(booking_code=vnp_txn_ref).first()
 				if payment:
 					payment.status = 'SUCCESS'
 					payment.transaction_id = vnp_transaction_no
@@ -415,7 +418,9 @@ def confirm_payment():
 
 	with session_scope() as session:
 		# Find payment and verify ownership
-		payment = session.query(Payment).join(Booking).filter(
+		payment = session.query(Payment).join(Booking).options(
+			joinedload(Payment.booking).joinedload(Booking.user).joinedload(User.bookings)
+		).filter(
 			Payment.id == payment_id,
 			Booking.user_id == user_id
 		).first()
@@ -528,9 +533,17 @@ def mark_paid():
 		return jsonify({'success': False, 'message': 'booking_code is required'}), 400
 
 	with session_scope() as session:
-		booking = session.query(Booking).filter_by(booking_code=booking_code).first()
+		booking = session.query(Booking).options(
+			joinedload(Booking.user).joinedload(User.bookings),
+			joinedload(Booking.passengers),
+			joinedload(Booking.outbound_flight),
+		).filter_by(booking_code=booking_code).first()
 		if not booking:
-			booking = session.query(Booking).filter(Booking.booking_code.ilike(booking_code)).first()
+			booking = session.query(Booking).options(
+				joinedload(Booking.user).joinedload(User.bookings),
+				joinedload(Booking.passengers),
+				joinedload(Booking.outbound_flight),
+			).filter(Booking.booking_code.ilike(booking_code)).first()
 		if not booking:
 			return jsonify({'success': False, 'message': 'Booking not found'}), 404
 		blockchain_result = None
