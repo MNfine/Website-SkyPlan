@@ -4,7 +4,7 @@
  * Flow: Connect Wallet → Request Nonce → Sign Message → Verify Signature → Get JWT Token
  */
 
-(function() {
+(function () {
   'use strict';
 
   // Configuration
@@ -58,7 +58,7 @@
   }
 
   // Initialize on page load
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     initializeWalletLogin();
   });
 
@@ -67,19 +67,19 @@
    */
   function initializeWalletLogin() {
     console.log('[WalletLogin] Initializing...');
-    
+
     // Check if MetaMask is installed
     walletState.isMetaMaskInstalled = typeof window.ethereum !== 'undefined';
-    
+
     // Get DOM elements
     const elements = getWalletElements();
-    
+
     // Setup event listeners
     setupEventListeners(elements);
-    
+
     // Initial UI state
     updateMetaMaskStatus(elements);
-    
+
     // Check if wallet is already connected
     if (walletState.isMetaMaskInstalled) {
       checkConnectedAccounts();
@@ -112,7 +112,7 @@
   function setupEventListeners(elements) {
     // Tab switching
     elements.loginTabs.forEach(tab => {
-      tab.addEventListener('click', function(e) {
+      tab.addEventListener('click', function (e) {
         e.preventDefault();
         switchLoginTab(this.dataset.tab);
       });
@@ -199,10 +199,10 @@
       if (accounts && accounts.length > 0) {
         walletState.account = accounts[0];
         walletState.isConnected = true;
-        
+
         // Check network
         await checkAndSwitchNetwork();
-        
+
         // Update UI
         updateWalletUI();
         clearWalletError();
@@ -223,7 +223,7 @@
   async function handleDisconnectWallet() {
     walletState.isConnected = false;
     walletState.account = null;
-    
+
     // Clear stored auth state
     if (window.AuthState && typeof window.AuthState.clearAuth === 'function') {
       window.AuthState.clearAuth();
@@ -236,7 +236,7 @@
     localStorage.removeItem('walletConnected');
     localStorage.removeItem('skyplan_wallet_connected');
     localStorage.removeItem('skyplan_wallet_account');
-    
+
     updateWalletUI();
     console.log('[WalletLogin] Wallet disconnected');
   }
@@ -251,7 +251,7 @@
 
       if (chainId !== CONFIG.SEPOLIA_CHAIN_ID_HEX) {
         console.log('[WalletLogin] Requesting to switch to Sepolia network...');
-        
+
         try {
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
@@ -292,7 +292,7 @@
    */
   async function handleSignMessage() {
     const elements = getWalletElements();
-    
+
     if (!walletState.isConnected || !walletState.account) {
       showWalletError(getText('login.walletNotConnected', 'Wallet not connected'));
       return;
@@ -378,7 +378,7 @@
       if (typeof window.updateHeaderUserInfo === 'function') {
         window.updateHeaderUserInfo();
       }
-      
+
       console.log('[WalletLogin] ✓ Authentication successful!');
       showLoadingState(elements, false);
 
@@ -403,14 +403,14 @@
    */
   function updateWalletUI() {
     const elements = getWalletElements();
-    
+
     if (walletState.isConnected && walletState.account) {
       // Show connected state
       elements.connectBtn.style.display = 'none';
       elements.connectedInfo.style.display = 'block';
       elements.signSection.style.display = 'block';
       elements.networkInfo.style.display = 'block';
-      
+
       // Display formatted address
       elements.walletAddress.textContent = formatAddress(walletState.account);
       elements.walletAddress.title = walletState.account;
@@ -478,7 +478,7 @@
   function handleChainChanged(chainId) {
     console.log('[WalletLogin] Chain changed to:', chainId);
     walletState.networkId = chainId;
-    
+
     if (chainId !== CONFIG.SEPOLIA_CHAIN_ID_HEX) {
       console.warn('[WalletLogin] Not on Sepolia testnet!');
       const elements = getWalletElements();

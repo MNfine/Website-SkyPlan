@@ -23,6 +23,19 @@ from backend.utils.wallet_auth import (
 auth_bp = Blueprint('auth', __name__)
 
 
+def _is_wallet_placeholder_user(user):
+    if not user:
+        return False
+
+    email = str(getattr(user, 'email', '') or '').strip().lower()
+    fullname = str(getattr(user, 'fullname', '') or '').strip().lower()
+
+    if email.endswith('@wallet.skyplan.local'):
+        return True
+
+    return fullname.startswith('user 0x')
+
+
 def _calculate_member_tier(total_earned):
     try:
         earned = Decimal(str(total_earned or 0))
@@ -771,6 +784,28 @@ def connect_wallet_to_existing_user():
         existing = session.query(User).filter_by(wallet_address=wallet_address).first()
         
         if existing and existing.id != user.id:
+            # Auto-merge temporary wallet placeholder account into the current
+            # authenticated account so future wallet logins resolve to the
+            # user's real profile (fullname/email account).
+            if _is_wallet_placeholder_user(existing) and not _is_wallet_placeholder_user(user):
+                existing.wallet_address = None
+                existing.wallet_nonce = None
+                existing.updated_at = datetime.utcnow()
+
+                # Flush first so unique index on wallet_address is released
+                # before assigning the same wallet to current authenticated user.
+                session.flush()
+
+                user.wallet_address = wallet_address
+                user.updated_at = datetime.utcnow()
+                session.commit()
+
+                return jsonify({
+                    'success': True,
+                    'message': 'Wallet connected and merged with your existing profile',
+                    'user': user.as_dict()
+                }), 200
+
             return jsonify({
                 'success': False,
                 'message': 'Wallet address already connected to another account'
