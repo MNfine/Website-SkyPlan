@@ -1358,7 +1358,9 @@ def integrate_ticket_nft_no_gas():
 		return jsonify({'success': False, 'message': 'Invalid wallet_address'}), 400
 
 	with session_scope() as session:
-		booking = session.query(Booking).filter_by(
+		booking = session.query(Booking).options(
+			joinedload(Booking.user).joinedload(User.bookings)
+		).filter_by(
 			booking_code=booking_code,
 			user_id=user_id
 		).first()

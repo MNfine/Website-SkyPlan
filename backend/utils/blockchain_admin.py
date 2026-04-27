@@ -337,6 +337,7 @@ def _get_w3_and_signer(config: Dict[str, str]) -> tuple[Web3, Any]:
 
 
 def _send_tx(w3: Web3, signer: Any, function_call, nonce: int, gas_limit: int = 500000) -> str:
+    import time
     tx = function_call.build_transaction(
         {
             "from": signer.address,
@@ -348,13 +349,26 @@ def _send_tx(w3: Web3, signer: Any, function_call, nonce: int, gas_limit: int = 
     )
     signed = signer.sign_transaction(tx)
     tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
-    receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=240)
-    if receipt.get("status") != 1:
-        raise RuntimeError(f"On-chain tx failed: {tx_hash.hex()}")
-    return tx_hash.hex()
+    
+    # Retry logic for Sepolia RPC timeout
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=300)
+            if receipt.get("status") != 1:
+                raise RuntimeError(f"On-chain tx failed: {tx_hash.hex()}")
+            return tx_hash.hex()
+        except Exception as e:
+            if attempt < max_retries - 1 and "not in the chain" in str(e):
+                wait_time = 10 * (attempt + 1)  # 10s, 20s, 30s
+                _log_warning(f"[blockchain] TX receipt timeout (attempt {attempt + 1}/{max_retries}): retrying in {wait_time}s...")
+                time.sleep(wait_time)
+            else:
+                raise
 
 
 def _send_tx_with_receipt(w3: Web3, signer: Any, function_call, nonce: int, gas_limit: int = 500000) -> tuple[str, Any]:
+    import time
     tx = function_call.build_transaction(
         {
             "from": signer.address,
@@ -366,10 +380,22 @@ def _send_tx_with_receipt(w3: Web3, signer: Any, function_call, nonce: int, gas_
     )
     signed = signer.sign_transaction(tx)
     tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
-    receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=240)
-    if receipt.get("status") != 1:
-        raise RuntimeError(f"On-chain tx failed: {tx_hash.hex()}")
-    return tx_hash.hex(), receipt
+    
+    # Retry logic for Sepolia RPC timeout
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=300)
+            if receipt.get("status") != 1:
+                raise RuntimeError(f"On-chain tx failed: {tx_hash.hex()}")
+            return tx_hash.hex(), receipt
+        except Exception as e:
+            if attempt < max_retries - 1 and "not in the chain" in str(e):
+                wait_time = 10 * (attempt + 1)  # 10s, 20s, 30s
+                _log_warning(f"[blockchain] TX receipt timeout (attempt {attempt + 1}/{max_retries}): retrying in {wait_time}s...")
+                time.sleep(wait_time)
+            else:
+                raise
 
 
 def _extract_ticket_token_id(ticket_nft, receipt: Any, wallet: str, booking_code: str) -> str | None:
