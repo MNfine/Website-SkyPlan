@@ -6,6 +6,8 @@
 
 // Guard against multiple initializations
 let walletUIInitialized = false;
+let walletLinkInFlight = false;
+let lastWalletLinkKey = null;
 
 function walletT(key, fallback) {
   if (typeof window.getWalletTranslation === 'function') {
@@ -77,6 +79,94 @@ function isUserLoggedIn() {
   // Check if auth token exists in localStorage or sessionStorage
   const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
   return !!authToken;
+}
+
+function getAuthSnapshot() {
+  const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+  const rawUser = localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser');
+  let userId = null;
+
+  if (rawUser) {
+    try {
+      const parsed = JSON.parse(rawUser);
+      userId = parsed && parsed.id ? String(parsed.id) : null;
+    } catch (error) {
+      userId = null;
+    }
+  }
+
+  return { token, userId };
+}
+
+async function ensureWalletLinkedToCurrentUser() {
+  if (!isUserLoggedIn()) return;
+  let walletAddress = '';
+
+  if (typeof MetaMaskWallet !== 'undefined' && MetaMaskWallet.account) {
+    walletAddress = String(MetaMaskWallet.account).trim();
+  }
+
+  if (!walletAddress && window.ethereum && typeof window.ethereum.request === 'function') {
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+      if (Array.isArray(accounts) && accounts[0]) {
+        walletAddress = String(accounts[0]).trim();
+      }
+    } catch (error) {
+      console.warn('[WalletUI] Unable to read eth_accounts for wallet linking:', error);
+    }
+  }
+
+  if (!walletAddress) return;
+
+  const { token, userId } = getAuthSnapshot();
+  if (!token || !userId) return;
+
+  const currentLinkKey = `${userId}:${walletAddress.toLowerCase()}`;
+  if (walletLinkInFlight || lastWalletLinkKey === currentLinkKey) return;
+
+  walletLinkInFlight = true;
+  try {
+    const response = await fetch('/api/auth/wallet/connect', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ wallet_address: walletAddress }),
+    });
+
+    const data = await response.json().catch(() => null);
+    if (response.ok && data && data.success) {
+      lastWalletLinkKey = currentLinkKey;
+      if (data.user) {
+        const userJson = JSON.stringify(data.user);
+        if (localStorage.getItem('authToken')) {
+          localStorage.setItem('currentUser', userJson);
+        } else {
+          sessionStorage.setItem('currentUser', userJson);
+        }
+      }
+      console.log('[WalletUI] Wallet linked to current user account.');
+      return;
+    }
+
+    if (response.status === 409) {
+      console.warn('[WalletUI] Wallet belongs to another account:', data && data.message ? data.message : 'Conflict');
+      return;
+    }
+
+    if (response.status === 401) {
+      console.warn('[WalletUI] Cannot link wallet: auth token is invalid/expired.');
+      return;
+    }
+
+    console.warn('[WalletUI] Wallet link failed:', data && data.message ? data.message : response.statusText);
+  } catch (error) {
+    console.warn('[WalletUI] Wallet link request error:', error);
+  } finally {
+    walletLinkInFlight = false;
+  }
 }
 
 // Simple mobile detection used to prefer WalletConnect on mobile
@@ -643,6 +733,8 @@ function updateWalletUIState() {
     if (walletAddress && MetaMaskWallet.account) {
       walletAddress.textContent = MetaMaskWallet.account;
     }
+
+    ensureWalletLinkedToCurrentUser();
   } else {
     // Show as disconnected
     connectBtn.classList.remove('connected');
@@ -654,6 +746,8 @@ function updateWalletUIState() {
     if (walletMenu) {
       walletMenu.classList.remove('show');
     }
+
+    lastWalletLinkKey = null;
   }
 }
 

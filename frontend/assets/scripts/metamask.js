@@ -288,27 +288,31 @@ const MetaMaskWallet = (function () {
    */
   function restoreConnection() {
     try {
-      const wasConnected = localStorage.getItem('skyplan_wallet_connected') === 'true';
-      if (wasConnected && state.provider) {
-        // Try to get accounts silently
-        state.provider.request({
-          method: 'eth_accounts',
-        }).then(accounts => {
-          if (accounts && accounts.length > 0) {
-            state.account = accounts[0];
-            state.isConnected = true;
+      if (!state.provider) return;
 
-            // Get chain ID
-            state.provider.request({
-              method: 'eth_chainId',
-            }).then(chainId => {
-              state.chainId = chainId;
-              state.isCorrectNetwork = isSepoliaNetwork();
-              updateWalletUI();
-            });
-          }
-        }).catch(console.error);
-      }
+      // Always query currently authorized accounts from provider.
+      // This prevents stale disconnected state when the wallet was connected
+      // outside this specific page flow.
+      state.provider.request({
+        method: 'eth_accounts',
+      }).then(accounts => {
+        if (accounts && accounts.length > 0) {
+          state.account = accounts[0];
+          state.isConnected = true;
+
+          // Keep local restore hints in sync.
+          saveConnectionState();
+
+          // Get chain ID
+          state.provider.request({
+            method: 'eth_chainId',
+          }).then(chainId => {
+            state.chainId = chainId;
+            state.isCorrectNetwork = isSepoliaNetwork();
+            updateWalletUI();
+          });
+        }
+      }).catch(console.error);
     } catch (error) {
       console.error('Restore connection error:', error);
     }

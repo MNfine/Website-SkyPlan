@@ -378,9 +378,10 @@
       console.log('[WalletLogin] ✓ Authentication successful!');
       showLoadingState(elements, false);
 
-      // Redirect to dashboard or bookings page
+      // Redirect giống login email: ưu tiên returnUrl, fallback về trang chủ
       setTimeout(() => {
-        window.location.href = '/search.html';
+        const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
+        window.location.href = returnUrl || '/index.html';
       }, 1000);
 
     } catch (error) {
