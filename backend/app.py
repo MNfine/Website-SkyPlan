@@ -70,17 +70,12 @@ def _should_bootstrap_db() -> bool:
     explicit = os.getenv('BOOTSTRAP_DB_ON_STARTUP')
     if explicit is not None:
         return explicit.lower() in ('1', 'true', 'yes', 'on')
-    # On Render: bootstrap only if DB is truly empty (first startup)
-    # Don't bootstrap on every reload
+    # Render: bootstrap by default. The bootstrap flow itself is idempotent:
+    # - create_tables is safe to run repeatedly
+    # - demo seed only runs when flights table is empty
+    # - migration/backfill scripts are idempotent
     if _is_render_environment():
-        try:
-            from sqlalchemy import text
-            with engine.connect() as conn:
-                tables_exist = bool(conn.execute(text("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' LIMIT 1)")).scalar())
-            return not tables_exist  # Bootstrap only if no tables exist
-        except Exception as e:
-            print(f'[Bootstrap Check] Warning: {e}')
-            return False
+        return True
     return False
 
 
