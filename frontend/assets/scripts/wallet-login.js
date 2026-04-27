@@ -387,7 +387,7 @@
         if (verifyData.data && verifyData.data.needs_profile_update) {
           window.location.href = '/profile.html?setup=true';
         } else {
-          window.location.href = '/search.html';
+          window.location.href = '/index.html';
         }
       }, 1000);
 
