@@ -63,26 +63,7 @@ if not DATABASE_URL:
 # Create the SQLAlchemy engine
 engine = create_engine(DATABASE_URL)
 
-BOOTSTRAP_RUNNING_FILE = Path(root_dir) / '.db_bootstrap_running'
-BOOTSTRAP_DONE_FILE = Path(root_dir) / '.db_bootstrap_done'
-BOOTSTRAP_FAILED_FILE = Path(root_dir) / '.db_bootstrap_failed'
-_bootstrap_thread_started = False
-
-
-def _write_bootstrap_marker(path: Path, message: str = '') -> None:
-    try:
-        path.write_text(message, encoding='utf-8')
-    except Exception as exc:
-        print(f'[DB Bootstrap] Marker write failed for {path.name}: {exc}')
-
-
-def _clear_bootstrap_markers() -> None:
-    for marker in (BOOTSTRAP_RUNNING_FILE, BOOTSTRAP_DONE_FILE, BOOTSTRAP_FAILED_FILE):
-        try:
-            if marker.exists():
-                marker.unlink()
-        except Exception as exc:
-            print(f'[DB Bootstrap] Marker cleanup failed for {marker.name}: {exc}')
+_bootstrap_completed = False
 
 
 def _is_render_environment() -> bool:
@@ -168,55 +149,9 @@ def bootstrap_database_scripts() -> None:
 
 
 def _run_render_bootstrap_in_background() -> None:
-    global _bootstrap_thread_started
-    if _bootstrap_thread_started:
-        return
-    _bootstrap_thread_started = True
-
-    def _worker() -> None:
-        lock_conn = None
-        try:
-            _clear_bootstrap_markers()
-            _write_bootstrap_marker(BOOTSTRAP_RUNNING_FILE, 'running')
-
-            if _is_render_environment():
-                from sqlalchemy import text
-
-                lock_conn = engine.connect()
-                lock_conn.execute(text('SELECT pg_advisory_lock(91720260427)'))
-
-            bootstrap_database_scripts()
-            _write_bootstrap_marker(BOOTSTRAP_DONE_FILE, 'done')
-            print('[DB Bootstrap] Background bootstrap completed.')
-        except Exception as exc:
-            _write_bootstrap_marker(BOOTSTRAP_FAILED_FILE, str(exc))
-            print(f'[DB Bootstrap] Background bootstrap failed: {exc}')
-        finally:
-            try:
-                if lock_conn is not None:
-                    lock_conn.close()
-            except Exception:
-                pass
-            try:
-                if BOOTSTRAP_RUNNING_FILE.exists():
-                    BOOTSTRAP_RUNNING_FILE.unlink()
-            except Exception:
-                pass
-
-    Thread(target=_worker, daemon=True, name='db-bootstrap').start()
-
-
-def bootstrap_status() -> dict:
-    if BOOTSTRAP_FAILED_FILE.exists():
-        return {
-            'state': 'failed',
-            'message': BOOTSTRAP_FAILED_FILE.read_text(encoding='utf-8', errors='ignore'),
-        }
-    if BOOTSTRAP_DONE_FILE.exists():
-        return {'state': 'done'}
-    if BOOTSTRAP_RUNNING_FILE.exists():
-        return {'state': 'running'}
-    return {'state': 'idle'}
+    print('[DB Bootstrap] Running bootstrap synchronously on Render...')
+    bootstrap_database_scripts()
+    print('[DB Bootstrap] Bootstrap completed.')
 
 def create_app():
     """Create and configure Flask application"""

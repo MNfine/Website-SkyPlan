@@ -3,42 +3,12 @@ from backend.models.db import session_scope
 from backend.models.flights import Flight
 from sqlalchemy import and_, func
 from datetime import datetime, timedelta
-import os
-import time
 
 flights_bp = Blueprint('flights', __name__)
-
-
-def _wait_for_bootstrap_ready(timeout_seconds: int = 180) -> tuple[bool, str | None]:
-    if os.getenv('RENDER', '').lower() != 'true' and not os.getenv('RENDER_SERVICE_ID'):
-        return True, None
-
-    try:
-        from backend.app import bootstrap_status
-    except Exception:
-        return True, None
-
-    deadline = time.time() + timeout_seconds
-    while time.time() < deadline:
-        status = bootstrap_status()
-        if status.get('state') == 'done':
-            return True, None
-        if status.get('state') == 'failed':
-            return False, status.get('message')
-        time.sleep(2)
-
-    return False, 'Database bootstrap is still running'
 
 @flights_bp.route('/api/flights', methods=['GET'])
 def get_flights():
     """API trả về danh sách chuyến bay theo điều kiện from, to, date"""
-    ready, error_message = _wait_for_bootstrap_ready()
-    if not ready:
-        return jsonify({
-            'error': 'Bootstrap in progress',
-            'message': error_message or 'Database is not ready yet'
-        }), 503
-
     from_value = request.args.get('from')
     to_value = request.args.get('to')
     date = request.args.get('date')  # dạng yyyy-mm-dd
@@ -64,13 +34,6 @@ def get_flights():
 @flights_bp.route('/api/flights/price-trend', methods=['GET'])
 def get_price_trend():
     """Return daily minimum fare around a selected center date for a route."""
-    ready, error_message = _wait_for_bootstrap_ready()
-    if not ready:
-        return jsonify({
-            'error': 'Bootstrap in progress',
-            'message': error_message or 'Database is not ready yet'
-        }), 503
-
     from_value = request.args.get('from')
     to_value = request.args.get('to')
     center_date_raw = request.args.get('center_date')
