@@ -169,11 +169,16 @@ def reserve_seats():
         except Exception:
             pass
 
-        # Release stale temporary reservations for this flight (expired or malformed legacy rows)
+        # Release stale temporary reservations for this flight (expired, orphaned, or malformed legacy rows)
+        # Include: expired holds, NULL reserved_until, NULL reserved_by (corrupted state)
         stale_temp = session.query(Seat).filter(
             Seat.flight_id == flight_id,
             Seat.status == SeatStatus.TEMPORARILY_RESERVED.value,
-            (Seat.reserved_until < datetime.utcnow()) | (Seat.reserved_until.is_(None))
+            (
+                (Seat.reserved_until < datetime.utcnow()) |
+                (Seat.reserved_until.is_(None)) |
+                (Seat.reserved_by.is_(None))
+            )
         ).all()
 
         if stale_temp:
@@ -186,10 +191,17 @@ def reserve_seats():
             session.flush()
 
         # Get requested seats and enforce seat-flight consistency
-        seats = session.query(Seat).filter(
+        seats_query = session.query(Seat).filter(
             Seat.id.in_(seat_ids),
             Seat.flight_id == flight_id
-        ).all()
+        )
+        
+        # Try to use FOR UPDATE lock if DB supports it; fall back gracefully
+        try:
+            seats = seats_query.with_for_update().all()
+        except Exception:
+            # Fall back to non-locked query if DB doesn't support FOR UPDATE
+            seats = seats_query.all()
 
         if len(seats) != len(seat_ids):
             found_ids = {seat.id for seat in seats}
