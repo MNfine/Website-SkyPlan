@@ -102,6 +102,7 @@ def bootstrap_database_scripts() -> None:
         'generate_fake_flights',
         'import_flights',
         'create_all_seats',
+        'fix_seat_status_case',
         'add_booking_state_hash',
         'add_blockchain_idempotent_columns',
     ]
@@ -113,11 +114,13 @@ def bootstrap_database_scripts() -> None:
     }
 
     ordered_scripts = [name for name in preferred_order if name in discovered]
-    remaining = sorted(name for name in discovered if name not in ordered_scripts)
-    ordered_scripts.extend(remaining)
+    extra_scripts = sorted(name for name in discovered if name not in preferred_order)
 
     if not ordered_scripts:
         raise RuntimeError(f'No bootstrap scripts found in {db_dir}')
+
+    if extra_scripts:
+        print('[DB Bootstrap] Skipping non-bootstrap scripts:', ', '.join(extra_scripts))
 
     print('[DB Bootstrap] Scripts to run:', ', '.join(ordered_scripts))
 

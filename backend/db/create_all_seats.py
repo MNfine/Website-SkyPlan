@@ -132,7 +132,7 @@ def create_seats_for_flight(session, flight_id, flight_number):
                 'flight_id': flight_id,
                 'seat_number': seat_number,
                 'seat_class': seat_class,
-                'status': 'available',
+                'status': 'AVAILABLE',
                 'price_modifier': price_modifier,
                 'created_at': datetime.now()
             })

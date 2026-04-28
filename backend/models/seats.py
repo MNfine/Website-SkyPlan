@@ -29,7 +29,7 @@ class Seat(Base):
     flight_id = Column(Integer, ForeignKey('flights.id'), nullable=False)
     seat_number = Column(String(10), nullable=False)  # "1A", "12F", "23C"
     seat_class = Column(String(20), nullable=False, default="ECONOMY")
-    status = Column(String(20), nullable=False, default="AVAILABLE")
+    status = Column(String(20), nullable=False, default=SeatStatus.AVAILABLE.value)
     price_modifier = Column(Numeric(10,2), default=0)  # Extra cost for premium seats
     
     # Temporary reservation fields (no FK to avoid circular dependencies)
@@ -52,12 +52,18 @@ class Seat(Base):
         Index('idx_seats_reserved_until', 'reserved_until'),
         Index('idx_seats_reserved_by', 'reserved_by'),
     )
+
+    @property
+    def normalized_status(self):
+        """Return seat status normalized to uppercase string."""
+        return (self.status or "").upper()
     
     def is_available_for_user(self, user_id):
         """Check if seat is available for selection by this user."""
-        if self.status == SeatStatus.AVAILABLE.value:
+        status = self.normalized_status
+        if status == SeatStatus.AVAILABLE.value:
             return True
-        elif self.status == SeatStatus.TEMPORARILY_RESERVED.value:
+        elif status == SeatStatus.TEMPORARILY_RESERVED.value:
             # Available if reserved by same user or reservation expired
             if self.reserved_by == user_id:
                 return True
@@ -104,7 +110,7 @@ class Seat(Base):
             "flight_id": self.flight_id,
             "seat_number": self.seat_number,
             "seat_class": self.seat_class,
-            "status": self.status,
+            "status": self.normalized_status,
             "price_modifier": float(self.price_modifier or 0),
             "reserved_until": self.reserved_until.isoformat() if self.reserved_until else None,
             "is_window": self.is_window_seat,

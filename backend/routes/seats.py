@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
+from sqlalchemy import func
 try:
     from backend.models.db import session_scope
     from backend.models.seats import Seat, SeatStatus, SeatClass
@@ -62,7 +63,7 @@ def get_flight_seats(flight_id):
         # Auto-release expired reservations before returning seats
         expired_seats = session.query(Seat).filter(
             Seat.flight_id == flight_id,
-            Seat.status == SeatStatus.TEMPORARILY_RESERVED.value,
+            func.upper(Seat.status) == SeatStatus.TEMPORARILY_RESERVED.value,
             Seat.reserved_until < datetime.utcnow()
         ).all()
         
@@ -173,7 +174,7 @@ def reserve_seats():
         # Include: expired holds, NULL reserved_until, NULL reserved_by (corrupted state)
         stale_temp = session.query(Seat).filter(
             Seat.flight_id == flight_id,
-            Seat.status == SeatStatus.TEMPORARILY_RESERVED.value,
+            func.upper(Seat.status) == SeatStatus.TEMPORARILY_RESERVED.value,
             (
                 (Seat.reserved_until < datetime.utcnow()) |
                 (Seat.reserved_until.is_(None)) |
@@ -244,7 +245,7 @@ def reserve_seats():
             existing_reservations = session.query(Seat).filter(
                 Seat.flight_id == flight_id,
                 Seat.reserved_by == user_id,
-                Seat.status == SeatStatus.TEMPORARILY_RESERVED.value
+                func.upper(Seat.status) == SeatStatus.TEMPORARILY_RESERVED.value
             ).all()
             
             for existing_seat in existing_reservations:
@@ -255,12 +256,13 @@ def reserve_seats():
             unavailable_seats = []
             conflict_details = []
             for seat in seats:
-                if seat.status == SeatStatus.CONFIRMED.value or seat.status == SeatStatus.TEMPORARILY_RESERVED.value:
+                status = seat.normalized_status
+                if status == SeatStatus.CONFIRMED.value or status == SeatStatus.TEMPORARILY_RESERVED.value:
                     unavailable_seats.append(seat.seat_number)
                     conflict_details.append({
                         'seat_id': seat.id,
                         'seat_number': seat.seat_number,
-                        'status': seat.status,
+                        'status': status,
                         'reserved_by': seat.reserved_by,
                         'reserved_until': seat.reserved_until.isoformat() if seat.reserved_until else None
                     })
@@ -305,20 +307,20 @@ def release_seats():
             seats = session.query(Seat).filter(
                 Seat.id.in_(seat_ids),
                 Seat.reserved_by == user_id,
-                Seat.status == SeatStatus.TEMPORARILY_RESERVED.value
+                func.upper(Seat.status) == SeatStatus.TEMPORARILY_RESERVED.value
             ).all()
         elif flight_id:
             # Release all user's temporary reservations for this flight
             seats = session.query(Seat).filter(
                 Seat.flight_id == flight_id,
                 Seat.reserved_by == user_id,
-                Seat.status == SeatStatus.TEMPORARILY_RESERVED.value
+                func.upper(Seat.status) == SeatStatus.TEMPORARILY_RESERVED.value
             ).all()
         else:
             # Release all user's temporary reservations
             seats = session.query(Seat).filter(
                 Seat.reserved_by == user_id,
-                Seat.status == SeatStatus.TEMPORARILY_RESERVED.value
+                func.upper(Seat.status) == SeatStatus.TEMPORARILY_RESERVED.value
             ).all()
         
         for seat in seats:
@@ -341,7 +343,7 @@ def cleanup_expired_reservations():
     
     with session_scope() as session:
         expired_seats = session.query(Seat).filter(
-            Seat.status == SeatStatus.TEMPORARILY_RESERVED.value,
+            func.upper(Seat.status) == SeatStatus.TEMPORARILY_RESERVED.value,
             Seat.reserved_until < datetime.utcnow()
         ).all()
         
