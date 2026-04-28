@@ -146,52 +146,86 @@ def reserve_seats():
     data = request.get_json(silent=True) or {}
     seat_ids = data.get('seat_ids', [])
     flight_id = data.get('flight_id')
-    hold_minutes = min(data.get('hold_minutes', 5), 15)  # Max 15 minutes
+    hold_minutes_raw = data.get('hold_minutes', 5)
+    try:
+        hold_minutes = int(hold_minutes_raw)
+    except (TypeError, ValueError):
+        hold_minutes = 5
+    hold_minutes = max(1, min(hold_minutes, 15))  # Clamp 1..15 minutes
     
     if not seat_ids or not flight_id:
         return jsonify({'success': False, 'message': 'seat_ids and flight_id required'}), 400
+
+    try:
+        flight_id = int(flight_id)
+        seat_ids = [int(seat_id) for seat_id in seat_ids]
+    except (TypeError, ValueError):
+        return jsonify({'success': False, 'message': 'Invalid seat_ids or flight_id format'}), 400
     
     with session_scope() as session:
-        # Get seats and check availability
-        seats = session.query(Seat).filter(Seat.id.in_(seat_ids)).all()
-        
-        if len(seats) != len(seat_ids):
-            return jsonify({'success': False, 'message': 'Some seats not found'}), 404
-
         # Debug info: log request context to help trace 409 conflicts
         try:
             print(f"[DEBUG] /api/seats/reserve called by user_id={user_id} for seat_ids={seat_ids} flight_id={flight_id}")
         except Exception:
             pass
 
-        # Release expired temporary reservations for the requested seats
-        expired_temp = session.query(Seat).filter(
-            Seat.id.in_(seat_ids),
+        # Release stale temporary reservations for this flight (expired or malformed legacy rows)
+        stale_temp = session.query(Seat).filter(
+            Seat.flight_id == flight_id,
             Seat.status == SeatStatus.TEMPORARILY_RESERVED.value,
-            Seat.reserved_until < datetime.utcnow()
+            (Seat.reserved_until < datetime.utcnow()) | (Seat.reserved_until.is_(None))
         ).all()
 
-        if expired_temp:
-            for s in expired_temp:
+        if stale_temp:
+            for s in stale_temp:
                 try:
-                    print(f"[DEBUG] Releasing expired hold on seat id={s.id} number={s.seat_number} reserved_until={s.reserved_until}")
+                    print(f"[DEBUG] Releasing stale hold on seat id={s.id} number={s.seat_number} reserved_by={s.reserved_by} reserved_until={s.reserved_until}")
                 except Exception:
                     pass
                 s.release_reservation()
             session.flush()
+
+        # Get requested seats and enforce seat-flight consistency
+        seats = session.query(Seat).filter(
+            Seat.id.in_(seat_ids),
+            Seat.flight_id == flight_id
+        ).all()
+
+        if len(seats) != len(seat_ids):
+            found_ids = {seat.id for seat in seats}
+            missing_ids = [seat_id for seat_id in seat_ids if seat_id not in found_ids]
+            return jsonify({
+                'success': False,
+                'message': 'Some seats not found for this flight',
+                'missing_seat_ids': missing_ids,
+                'flight_id': flight_id
+            }), 404
         
         # For authenticated users: check if seats are available for them
         if user_id:
             unavailable_seats = []
+            conflict_details = []
             for seat in seats:
                 if not seat.is_available_for_user(user_id):
                     unavailable_seats.append(seat.seat_number)
+                    conflict_details.append({
+                        'seat_id': seat.id,
+                        'seat_number': seat.seat_number,
+                        'status': seat.status,
+                        'reserved_by': seat.reserved_by,
+                        'reserved_until': seat.reserved_until.isoformat() if seat.reserved_until else None
+                    })
             
             if unavailable_seats:
+                try:
+                    print(f"[DEBUG] reserve conflict user_id={user_id} flight_id={flight_id} details={conflict_details}")
+                except Exception:
+                    pass
                 return jsonify({
                     'success': False,
                     'message': f'Seats not available: {", ".join(unavailable_seats)}',
-                    'unavailable_seats': unavailable_seats
+                    'unavailable_seats': unavailable_seats,
+                    'conflict_details': conflict_details
                 }), 409
             
             # Release any existing reservations by this user on this flight
@@ -207,15 +241,24 @@ def reserve_seats():
         else:
             # For guest users: just check if seats are available (not reserved/occupied)
             unavailable_seats = []
+            conflict_details = []
             for seat in seats:
                 if seat.status == SeatStatus.CONFIRMED.value or seat.status == SeatStatus.TEMPORARILY_RESERVED.value:
                     unavailable_seats.append(seat.seat_number)
+                    conflict_details.append({
+                        'seat_id': seat.id,
+                        'seat_number': seat.seat_number,
+                        'status': seat.status,
+                        'reserved_by': seat.reserved_by,
+                        'reserved_until': seat.reserved_until.isoformat() if seat.reserved_until else None
+                    })
             
             if unavailable_seats:
                 return jsonify({
                     'success': False,
                     'message': f'Seats not available: {", ".join(unavailable_seats)}',
-                    'unavailable_seats': unavailable_seats
+                    'unavailable_seats': unavailable_seats,
+                    'conflict_details': conflict_details
                 }), 409
         
         # Reserve the new seats
