@@ -617,3 +617,134 @@ def mark_paid():
 
 		return jsonify({'success': True, 'booking_code': booking.booking_code, 'payment': payment.as_dict(), 'blockchain': blockchain_result}), 200
 
+
+# ==================== BLOCKCHAIN PAYMENT ENDPOINTS ====================
+
+@payment_bp.route('/blockchain/save-hash', methods=['POST'])
+def blockchain_save_hash():
+	"""Save blockchain transaction hash after MetaMask tx is submitted."""
+	data = request.get_json(silent=True) or {}
+	booking_id = str(data.get('bookingId') or '').strip()
+	tx_hash = str(data.get('txHash') or '').strip()
+	from_address = str(data.get('fromAddress') or '').strip()
+
+	if not booking_id or not tx_hash:
+		return jsonify({'success': False, 'message': 'bookingId and txHash are required'}), 400
+
+	print(f"[blockchain] save-hash: booking={booking_id} tx={tx_hash[:12]}... from={from_address[:10] if from_address else '?'}...")
+
+	try:
+		with session_scope() as session:
+			booking = session.query(Booking).filter_by(booking_code=booking_id).first()
+			if not booking:
+				print(f"[blockchain] save-hash: booking {booking_id} not found")
+			else:
+				# Save wallet address
+				if from_address and not getattr(booking, 'wallet_address', None):
+					booking.wallet_address = from_address
+
+				# Find or create a PENDING payment record for this booking
+				payment = session.query(Payment).filter_by(
+					booking_code=booking_id, status='PENDING'
+				).first()
+
+				if not payment:
+					payment = Payment(
+						booking_id=booking.id,
+						booking_code=booking_id,
+						amount=booking.total_amount or 0,
+						provider='blockchain',
+						status='PENDING',
+					)
+					session.add(payment)
+					session.flush()
+
+				payment.transaction_id = tx_hash
+				# session_scope auto-commits here
+				print(f"[blockchain] save-hash: DB updated for booking {booking_id}")
+	except Exception as exc:
+		print(f"[blockchain] save-hash: DB error (non-fatal): {exc}")
+		import traceback; traceback.print_exc()
+
+	return jsonify({'success': True, 'txHash': tx_hash, 'status': 'processing'}), 200
+
+
+@payment_bp.route('/blockchain/confirm', methods=['POST'])
+def blockchain_confirm_payment():
+	"""Confirm a blockchain payment after tx receipt is confirmed on-chain."""
+	data = request.get_json(silent=True) or {}
+	tx_hash = str(data.get('txHash') or '').strip()
+	status = str(data.get('status') or 'failed').lower()
+	details = data.get('details') or {}
+
+	if not tx_hash:
+		return jsonify({'success': False, 'message': 'txHash is required'}), 400
+
+	print(f"[blockchain] confirm: tx={tx_hash[:12]}... status={status} details={details}")
+
+	booking_id_for_chain = None
+
+	try:
+		with session_scope() as session:
+			# Query payment directly — no joinedload to avoid dirty-tracking issues
+			payment = session.query(Payment).filter_by(transaction_id=tx_hash).first()
+
+			if not payment:
+				print(f"[blockchain] confirm: no payment found for tx={tx_hash[:12]}")
+			else:
+				new_status = 'SUCCESS' if status == 'success' else 'FAILED'
+				payment.status = new_status
+
+				# Query booking directly by ID so SQLAlchemy tracks it as dirty
+				booking = session.query(Booking).filter_by(id=payment.booking_id).first()
+				if booking:
+					if status == 'success':
+						booking.status = BookingStatus.CONFIRMED
+						booking.confirmed_at = datetime.utcnow()
+						booking_id_for_chain = booking.id
+
+						# Auto-generate tickets
+						try:
+							tickets = _ensure_tickets_generated(session, booking)
+							print(f"[blockchain] confirm: tickets generated: {tickets}")
+						except Exception as te:
+							print(f"[blockchain] confirm: ticket gen failed (non-fatal): {te}")
+
+					elif status == 'failed':
+						booking.status = BookingStatus.PAYMENT_FAILED
+
+				# session_scope auto-commits when the with block exits
+				print(f"[blockchain] confirm: DB updated → {new_status}")
+
+	except Exception as exc:
+		print(f"[blockchain] confirm: DB error (non-fatal): {exc}")
+		import traceback; traceback.print_exc()
+
+	# Run NFT/SKY flow OUTSIDE session scope, in background thread
+	if booking_id_for_chain and status == 'success':
+		try:
+			from threading import Thread
+			from backend.models.db import session_scope as _ss
+			from backend.models.booking import Booking as _B
+			from sqlalchemy.orm import joinedload as _jl
+
+			def _post_payment_thread(bid):
+				try:
+					with _ss() as s:
+						b = s.query(_B).options(
+							_jl(_B.user),
+							_jl(_B.passengers).joinedload(BookingPassenger.passenger),
+							_jl(_B.outbound_flight),
+						).get(bid)
+						if b:
+							_run_blockchain_post_payment(b)
+				except Exception as e:
+					print(f"[blockchain] post-payment thread error: {e}")
+					import traceback; traceback.print_exc()
+
+			Thread(target=_post_payment_thread, args=(booking_id_for_chain,), daemon=True).start()
+		except Exception as be:
+			print(f"[blockchain] post-payment launch error (non-fatal): {be}")
+
+	return jsonify({'success': True, 'txHash': tx_hash, 'status': status}), 200
+

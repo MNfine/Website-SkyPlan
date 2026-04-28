@@ -76,8 +76,9 @@ class Config {
 
   // Blockchain configuration - fetch and cache from server
   async getBlockchainConfig() {
-    // Check if we already have cached config
-    const cached = sessionStorage.getItem('skyplan_blockchain_config');
+    // Force fetch fresh config to ensure new fields like receiverAddress are loaded
+    const cacheKey = 'skyplan_blockchain_config_v2';
+    const cached = sessionStorage.getItem(cacheKey);
     if (cached) {
       try {
         return JSON.parse(cached);
@@ -95,7 +96,7 @@ class Config {
       const result = await response.json();
       if (result.success && result.data) {
         // Cache for session
-        sessionStorage.setItem('skyplan_blockchain_config', JSON.stringify(result.data));
+        sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
         return result.data;
       }
 

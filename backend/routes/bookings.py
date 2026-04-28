@@ -773,6 +773,7 @@ def get_booking(booking_code):
 	with session_scope() as session:
 		booking = session.query(Booking).options(
 			joinedload(Booking.passengers).joinedload(BookingPassenger.passenger),
+			joinedload(Booking.passengers).joinedload(BookingPassenger.seat),
 			joinedload(Booking.outbound_flight),
 			joinedload(Booking.inbound_flight)
 		).filter_by(

@@ -11,7 +11,7 @@
         return dict[val] || val || '';
     }
     function fmtVND(v) { return new Intl.NumberFormat('vi-VN').format(Number(v) || 0) + ' VND'; }
-    function readJSON(key, fb) { return window.readJSON ? window.readJSON(key, fb) : (function() { try { return JSON.parse(localStorage.getItem(key)) || fb; } catch { return fb; } })(); }
+    function readJSON(key, fb) { return window.readJSON ? window.readJSON(key, fb) : (function () { try { return JSON.parse(localStorage.getItem(key)) || fb; } catch { return fb; } })(); }
     function parseDigits(text) { const n = String(text || '').replace(/[^0-9]/g, ''); return Number(n) || 0; }
 
     function resolveExtrasTotal(extras) {
@@ -52,12 +52,12 @@
             }
         } catch { return iso; }
     }
-            function getOT(lang){
-                try {
-                    const OVT = (typeof window !== 'undefined' && window.overviewTranslations) || (typeof overviewTranslations !== 'undefined' ? overviewTranslations : null);
-                    return (OVT && OVT[lang]) ? OVT[lang] : null;
-                } catch(_) { return null; }
-            }
+    function getOT(lang) {
+        try {
+            const OVT = (typeof window !== 'undefined' && window.overviewTranslations) || (typeof overviewTranslations !== 'undefined' ? overviewTranslations : null);
+            return (OVT && OVT[lang]) ? OVT[lang] : null;
+        } catch (_) { return null; }
+    }
 
     function fareClassLabel(fareClass, lang) {
         const vi = { 'economy': 'Phổ thông', 'premium-economy': 'Phổ thông đặc biệt', 'business': 'Thương gia' };
@@ -155,12 +155,12 @@
         const taxAmountEl = taxItemEl ? taxItemEl.querySelector('span:last-child') : null;
 
         if (ticketLabelEl) {
-        const ot = getOT(lang) || {};
-        const legs = shouldShowInbound ? (ot.ticketRoundTripSuffix || (lang === 'vi' ? '(2 chiều)' : '(round trip)')) : (ot.ticketOneWaySuffix || (lang === 'vi' ? '(1 chiều)' : '(one way)'));
-        // always own the label and prevent future overrides
-        ticketLabelEl.removeAttribute('data-i18n');
-        const base = ot.ticketLabelBase || (lang === 'vi' ? 'Vé máy bay' : 'Ticket');
-        ticketLabelEl.textContent = `${base} ${legs}`;
+            const ot = getOT(lang) || {};
+            const legs = shouldShowInbound ? (ot.ticketRoundTripSuffix || (lang === 'vi' ? '(2 chiều)' : '(round trip)')) : (ot.ticketOneWaySuffix || (lang === 'vi' ? '(1 chiều)' : '(one way)'));
+            // always own the label and prevent future overrides
+            ticketLabelEl.removeAttribute('data-i18n');
+            const base = ot.ticketLabelBase || (lang === 'vi' ? 'Vé máy bay' : 'Ticket');
+            ticketLabelEl.textContent = `${base} ${legs}`;
         }
         if (ticketAmountEl) ticketAmountEl.textContent = fmtVND(ticketAmount);
 
@@ -181,8 +181,8 @@
             }
             const extrasLabelEl = extrasRow.querySelector('.extras-label');
             const extrasAmountEl = extrasRow.querySelector('.extras-amount');
-        const ot = getOT(lang) || {};
-        if (extrasLabelEl) extrasLabelEl.textContent = ot.extrasLabel || (lang === 'vi' ? 'Dịch vụ thêm' : 'Extras');
+            const ot = getOT(lang) || {};
+            if (extrasLabelEl) extrasLabelEl.textContent = ot.extrasLabel || (lang === 'vi' ? 'Dịch vụ thêm' : 'Extras');
             if (extrasAmountEl) extrasAmountEl.textContent = fmtVND(extrasTotal);
         }
 
@@ -210,6 +210,21 @@
                 window.lastTxnRef = codeEl ? codeEl.textContent : undefined;
             } catch (_) { }
         }
+
+        // ── Sync window.PaymentState so payment.js & blockchain-payment.js
+        //    always have the correct total regardless of script execution order. ──
+        try {
+            if (!window.PaymentState) {
+                window.PaymentState = { discount: 0, discountPercent: 0 };
+            }
+            window.PaymentState.amount = total;
+            if (!window.PaymentState.bookingCode || window.PaymentState.bookingCode === '-') {
+                window.PaymentState.bookingCode = localStorage.getItem('currentBookingCode') || '-';
+            }
+            console.log('[payment_order] PaymentState.amount synced:', total);
+            // Notify payment.js that the total is ready
+            document.dispatchEvent(new CustomEvent('orderTotalReady', { detail: { total: total } }));
+        } catch (_) { }
     }
 
     document.addEventListener('DOMContentLoaded', render);

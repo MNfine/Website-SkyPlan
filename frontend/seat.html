@@ -713,12 +713,8 @@
       // Add click handlers to seats
       seats.forEach(seat => {
         seat.addEventListener('click', function() {
-          // Check if seat is restricted
-          if (this.classList.contains('restricted')) {
-            // Show restricted seat notification
-            if (typeof SeatNotifications !== 'undefined') {
-              SeatNotifications.showRestrictedSeat();
-            }
+          // Block click if seat is restricted OR has been marked occupied by API (CONFIRMED / TEMPORARILY_RESERVED)
+          if (this.classList.contains('restricted') || this.classList.contains('occupied')) {
             return;
           }
           

@@ -79,6 +79,7 @@ def blockchain_config():
             'bookingRegistryAddress': BlockchainConfig.BOOKING_REGISTRY_ADDRESS,
             'ticketNFTAddress': BlockchainConfig.TICKET_NFT_ADDRESS,
             'skyTokenAddress': BlockchainConfig.SKY_TOKEN_ADDRESS,
+            'receiverAddress': BlockchainConfig.RECEIVER_ADDRESS,
             'sepoliaChainId': '11155111',
             'sepoliaChainIdHex': '0xaa36a7',
         },

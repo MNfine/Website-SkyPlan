@@ -95,6 +95,7 @@ class BlockchainConfig:
     )
     SKY_TOKEN_ADDRESS = os.environ.get('SKY_TOKEN_ADDRESS')
     PRIVATE_KEY = os.environ.get('PRIVATE_KEY') or os.environ.get('CONTRACT_PRIVATE_KEY')
+    RECEIVER_ADDRESS = os.environ.get('RECEIVER_ADDRESS') or os.environ.get('BLOCKCHAIN_RECEIVER_ADDRESS')
     SKY_REWARD_AMOUNT = os.environ.get('SKY_REWARD_AMOUNT') or '100'
     
     @classmethod

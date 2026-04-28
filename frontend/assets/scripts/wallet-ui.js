@@ -9,6 +9,13 @@ let walletUIInitialized = false;
 let walletLinkInFlight = false;
 let lastWalletLinkKey = null;
 
+// Listen for global wallet state changes
+window.addEventListener('walletStateChanged', function() {
+  if (typeof updateWalletUIState === 'function') {
+    updateWalletUIState();
+  }
+});
+
 function walletT(key, fallback) {
   if (typeof window.getWalletTranslation === 'function') {
     return window.getWalletTranslation(key);

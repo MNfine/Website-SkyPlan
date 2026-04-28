@@ -340,3 +340,59 @@ window.addEventListener('resize', function() {
 // Make AuthState globally available
 window.AuthState = AuthState;
 window.updateHeaderUserInfo = updateHeaderUserInfo;
+
+/**
+ * Global entry point for authentication initialization
+ */
+window.initAuth = async function() {
+  console.log('[Auth] Initializing authentication system...');
+  try {
+    // 1. Initial UI sync from local state
+    if (typeof updateHeaderUserInfo === 'function') {
+      updateHeaderUserInfo();
+    }
+    
+    // 2. Setup event listeners
+    if (typeof setupLogoutButtons === 'function') {
+      setupLogoutButtons();
+    }
+
+    // 3. Verify token and refresh user profile with backend
+    const token = AuthState.getToken();
+    if (token) {
+      console.debug('[Auth] Token found, refreshing profile...');
+      try {
+        const response = await fetch('/api/auth/profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.data) {
+            // Update local user data
+            AuthState.setAuth(token, result.data, true);
+            if (typeof updateHeaderUserInfo === 'function') {
+              updateHeaderUserInfo();
+            }
+            console.log('[Auth] ✓ Profile refreshed');
+          }
+        } else if (response.status === 401) {
+          console.warn('[Auth] Token expired or invalid');
+          AuthState.clearAuth();
+          if (typeof updateHeaderUserInfo === 'function') {
+            updateHeaderUserInfo();
+          }
+        }
+      } catch (e) {
+        console.warn('[Auth] Profile refresh failed (offline?), using cached data');
+      }
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('[Auth] Initialization failed:', error);
+    return false;
+  }
+};

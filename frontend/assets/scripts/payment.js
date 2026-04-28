@@ -1,20 +1,210 @@
 // Payment page functionality
 
-document.addEventListener('DOMContentLoaded', function () {
-  bootstrapBookingCodeFromPending();
+document.addEventListener('DOMContentLoaded', async function () {
+  // Initialize Core Systems
+  await initPaymentUI();
+});
+
+async function initPaymentUI() {
+  console.log('[Payment] Initializing Payment UI...');
+
+  // 1. Initialize Booking Data from LocalStorage
+  initializeBookingSummary();
+
+  // 2. Bootstrap/Create Booking Code if missing
+  await bootstrapBookingCodeFromPending();
+
+  // 3. Initialize UI Components
   initializePaymentMethods();
   initializeCardFormatting();
   initializePaymentValidation();
+  initializeVoucher(); // Added voucher support
+
+  // Sync wallet UI initially
+  if (typeof updatePaymentUI === 'function') {
+    updatePaymentUI();
+  }
+
+  // Listen for global wallet state changes
+  window.addEventListener('walletStateChanged', function () {
+    if (typeof updatePaymentUI === 'function') {
+      updatePaymentUI();
+    }
+  });
+
+  console.log('[Payment] Payment UI initialized.');
+}
+
+function parseVND(value) {
+  if (!value) return 0;
+  if (typeof value === 'number') return value;
+
+  // Remove formatting (dots, commas, currency symbols) and convert to number
+  const cleaned = value.toString()
+    .replace(/\./g, '')
+    .replace(/,/g, '')
+    .replace(/[^\d]/g, '');
+
+  return Number(cleaned || 0);
+}
+
+function initializeBookingSummary() {
+  // ── Source-of-truth priority ──────────────────────────────────────────
+  // 1. #totalAmount DOM element written by payment_order.js  (most reliable)
+  // 2. window.lastAmount set by payment_order.js vnpay block
+  // 3. booking payload fields (various key names)
+  // ─────────────────────────────────────────────────────────────────────
+
+  function resolveAmount() {
+    // 1. DOM total already written by payment_order.js render()
+    var totalAmountEl = document.getElementById('totalAmount');
+    if (totalAmountEl) {
+      var domTotal = parseVND(totalAmountEl.textContent);
+      if (domTotal > 0) {
+        console.log('[Payment] Using DOM #totalAmount:', domTotal);
+        return domTotal;
+      }
+    }
+
+    // 2. window.lastAmount set by payment_order.js vnpay block
+    if (window.lastAmount && window.lastAmount > 0) {
+      console.log('[Payment] Using window.lastAmount:', window.lastAmount);
+      return window.lastAmount;
+    }
+
+    // 3. Booking payload – broad field coverage
+    var booking = getBookingCreatePayload();
+    if (booking) {
+      console.log('[Payment] FULL booking object:', JSON.stringify(booking, null, 2));
+      var result = calculateTotal(booking, 0);
+      if (result.total > 0) {
+        console.log('[Payment] Using calculateTotal from booking:', result.total);
+        return result.total;
+      }
+    }
+
+    console.warn('[Payment] Could not resolve total — defaulting to 0');
+    return 0;
+  }
+
+  var total = resolveAmount();
+
+  window.PaymentState = {
+    amount: total,
+    bookingCode: localStorage.getItem('currentBookingCode') || '-',
+    discount: 0,
+    discountPercent: 0
+  };
+
+  console.log('[Payment] PaymentState.amount set to:', total);
+  updateSummaryUI();
+}
+
+function calculateTotal(booking, discountPercent) {
+  discountPercent = discountPercent || 0;
+  if (!booking) return { subtotal: 0, discount: 0, total: 0 };
+
+  // Prefer a ready-made backend total
+  var backendTotal = parseVND(
+    booking.totalPrice || booking.total_price || booking.total ||
+    booking.totalAmount || booking.total_amount || 0
+  );
+  if (backendTotal > 0) {
+    var disc = backendTotal * (discountPercent / 100);
+    return { subtotal: backendTotal, discount: disc, total: backendTotal - disc };
+  }
+
+  // Sum individual components with broad field-name coverage
+  var ticket = parseVND(
+    booking.price || booking.ticket_price || booking.ticketPrice ||
+    booking.basePrice || booking.base_price || 0
+  );
+  var extras = parseVND(
+    booking.extras || booking.extraFees || booking.extra_fees || 0
+  );
+  var taxes = parseVND(
+    booking.tax || booking.taxes || booking.taxAmount || booking.tax_amount ||
+    booking.fees || 200000
+  );
+
+  var subtotal = ticket + extras + taxes;
+  var discount = subtotal * (discountPercent / 100);
+  var total = subtotal - discount;
+
+  console.log('[Payment] Calculation Detail:', { ticket: ticket, extras: extras, taxes: taxes, subtotal: subtotal, discount: discount, total: total });
+  return { subtotal: subtotal, discount: discount, total: total };
+}
+
+function formatVND(value) {
+  return value.toLocaleString('vi-VN') + " VND";
+}
+
+function updateSummaryUI() {
+  const totalAmountEl = document.getElementById('totalAmount');
+  if (totalAmountEl) totalAmountEl.textContent = formatVND(window.PaymentState.amount);
+
+  const finalAmountEl = document.getElementById('finalAmount');
+  if (finalAmountEl) finalAmountEl.textContent = formatVND(window.PaymentState.amount);
+
+  const discountAmountEl = document.getElementById('discountAmount');
+  if (discountAmountEl) {
+    discountAmountEl.textContent = "-" + formatVND(window.PaymentState.discount);
+  }
+
+  const bookingCodeEl = document.getElementById('bookingCode');
+  if (bookingCodeEl) bookingCodeEl.textContent = window.PaymentState.bookingCode;
+
+  const cryptoBookingCodeEl = document.getElementById('cryptoBookingCode');
+  if (cryptoBookingCodeEl) cryptoBookingCodeEl.textContent = window.PaymentState.bookingCode;
+}
+
+// ── AUTHORITATIVE TOTAL from payment_order.js ────────────────────────────────
+// payment_order.js reads skyplan_fare_selection from localStorage and is the
+// single source of truth for the correct total. It dispatches 'orderTotalReady'
+// after it finishes rendering. We listen here to always reflect the real total.
+document.addEventListener('orderTotalReady', function(e) {
+  var total = e && e.detail && e.detail.total;
+  if (!total || total <= 0) {
+    console.warn('[Payment] orderTotalReady: invalid total received:', total);
+    return;
+  }
+
+  if (!window.PaymentState) window.PaymentState = { discount: 0, discountPercent: 0, bookingCode: '-' };
+  window.PaymentState.amount = total;
+
+  console.log('[Payment] orderTotalReady: syncing total =>', formatVND(total));
+
+  // Re-render summary with the authoritative total
+  updateSummaryUI();
+
+  // Refresh the blockchain ETH estimate if panel is open
+  if (typeof BlockchainPayment !== 'undefined' && typeof BlockchainPayment.refreshAmount === 'function') {
+    BlockchainPayment.refreshAmount(total);
+  }
 });
+// ─────────────────────────────────────────────────────────────────────────────
+
+window.initPaymentUI = initPaymentUI;
+
+
+
+
+// Global source of truth for payment
+window.PaymentState = {
+  amount: 0,
+  bookingCode: null,
+  discount: 0,
+  discountPercent: 0
+};
 
 let paymentFlowInProgress = false;
 let bookingCreateInFlightPromise = null;
 
 function getPaymentLoadingMessage() {
-  const lang = localStorage.getItem('preferredLanguage') || 'vi';
+  const lang = localStorage.getItem('preferredLanguage') || 'en';
   return lang === 'en'
     ? 'Processing payment and preparing confirmation...'
-    : 'Đang xác nhận thanh toán và chuẩn bị trang xác nhận...';
+    : 'Processing payment and preparing confirmation...';
 }
 
 function setPayButtonLocked(locked) {
@@ -96,43 +286,43 @@ async function createBackendBookingFromLocalData() {
     return bookingCreateInFlightPromise;
   }
 
-  bookingCreateInFlightPromise = (async function() {
-  const payload = getBookingCreatePayload();
-  if (!payload) return null;
+  bookingCreateInFlightPromise = (async function () {
+    const payload = getBookingCreatePayload();
+    if (!payload) return null;
 
-  const wallet = window.MetaMaskWallet && window.MetaMaskWallet.account;
-  if (wallet && !payload.wallet_address && !payload.walletAddress) {
-    payload.wallet_address = wallet;
-  }
+    const wallet = window.MetaMaskWallet && window.MetaMaskWallet.account;
+    if (wallet && !payload.wallet_address && !payload.walletAddress) {
+      payload.wallet_address = wallet;
+    }
 
-  const token = getAuthTokenForPayment();
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-  };
+    const token = getAuthTokenForPayment();
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
 
-  try {
-    const resp = await fetch('/api/bookings/create', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(payload)
-    });
-    const data = await resp.json();
-    if (!resp.ok || !data.success || !data.booking_code) return null;
+    try {
+      const resp = await fetch('/api/bookings/create', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      });
+      const data = await resp.json();
+      if (!resp.ok || !data.success || !data.booking_code) return null;
 
-    localStorage.setItem('currentBookingCode', data.booking_code);
-    localStorage.setItem('lastBookingCode', data.booking_code);
-    try { localStorage.removeItem('pendingBookingPayload'); } catch (_) { }
+      localStorage.setItem('currentBookingCode', data.booking_code);
+      localStorage.setItem('lastBookingCode', data.booking_code);
+      try { localStorage.removeItem('pendingBookingPayload'); } catch (_) { }
 
-    const codeEl = document.getElementById('bookingCode');
-    if (codeEl) codeEl.textContent = data.booking_code;
+      const codeEl = document.getElementById('bookingCode');
+      if (codeEl) codeEl.textContent = data.booking_code;
 
-    return data.booking_code;
-  } catch (_) {
-    return null;
-  } finally {
-    bookingCreateInFlightPromise = null;
-  }
+      return data.booking_code;
+    } catch (_) {
+      return null;
+    } finally {
+      bookingCreateInFlightPromise = null;
+    }
   })();
 
   return bookingCreateInFlightPromise;
@@ -168,33 +358,30 @@ async function bootstrapBookingCodeFromPending() {
   }
 }
 
-function parseVndNumber(text) {
-  const digits = String(text || '').replace(/[^0-9]/g, '');
-  return Number(digits || 0);
-}
-
-function getConnectedWalletAddress() {
-  try {
-    if (window.MetaMaskWallet && window.MetaMaskWallet.account) {
-      const account = String(window.MetaMaskWallet.account).trim();
-      if (account) return account;
-    }
-  } catch (_) { }
-
-  const persisted = String(localStorage.getItem('skyplan_wallet_account') || '').trim();
-  return persisted || '';
-}
-
 function getEffectivePaymentAmount() {
+  if (window.PaymentState && window.PaymentState.amount > 0) {
+    return window.PaymentState.amount;
+  }
+
   const finalAmountEl = document.getElementById('finalAmount');
-  if (finalAmountEl && parseVndNumber(finalAmountEl.textContent) > 0) {
-    return parseVndNumber(finalAmountEl.textContent);
+  if (finalAmountEl) {
+    const amt = parseVND(finalAmountEl.textContent);
+    if (amt > 0) return amt;
   }
+
   const totalAmountEl = document.getElementById('totalAmount');
-  if (totalAmountEl && parseVndNumber(totalAmountEl.textContent) > 0) {
-    return parseVndNumber(totalAmountEl.textContent);
+  if (totalAmountEl) {
+    const amt = parseVND(totalAmountEl.textContent);
+    if (amt > 0) return amt;
   }
-  return Number(window.lastAmount || 0) || 1598000;
+
+  const booking = getBookingCreatePayload();
+  if (booking) {
+    const amt = parseVND(booking.total_amount || booking.totalAmount || 0);
+    if (amt > 0) return amt;
+  }
+
+  return 1598000; // Last resort fallback
 }
 
 async function markBookingPaidOnBackend(provider) {
@@ -354,27 +541,61 @@ function initializePaymentMethods() {
   const paymentMethods = document.querySelectorAll('.payment-method');
   const radioButtons = document.querySelectorAll('input[name="payment"]');
 
+  // Initial sync: set default based on checked radio
+  const initialChecked = document.querySelector('input[name="payment"]:checked');
+  if (initialChecked) {
+    console.log('[Payment] Initial method:', initialChecked.value);
+    paymentMethods.forEach(method => {
+      method.classList.remove('active');
+      const content = method.querySelector('.method-content');
+      if (content) content.style.display = 'none';
+    });
+    const selectedMethod = initialChecked.closest('.payment-method');
+    if (selectedMethod) {
+      selectedMethod.classList.add('active');
+      const content = selectedMethod.querySelector('.method-content');
+      if (content) content.style.display = 'block';
+    }
+  }
+
   radioButtons.forEach(radio => {
     radio.addEventListener('change', function () {
-      // Remove active class from all methods
+      console.log('[Payment] Method changed to:', this.value);
+      console.log("WalletState:", window.WalletState);
+      console.log("SelectedMethod:", this.value);
       paymentMethods.forEach(method => {
         method.classList.remove('active');
+        const content = method.querySelector('.method-content');
+        if (content) content.style.display = 'none';
       });
 
-      // Add active class to selected method
+      // Add active class to selected method and show its content
       const selectedMethod = this.closest('.payment-method');
-      selectedMethod.classList.add('active');
+      if (selectedMethod) {
+        selectedMethod.classList.add('active');
+        const content = selectedMethod.querySelector('.method-content');
+        if (content) content.style.display = 'block';
+      }
+
+      // Sync global UI (button visibility, etc.)
+      if (typeof updatePaymentUI === 'function') {
+        updatePaymentUI();
+      }
     });
   });
 
   // Make payment methods clickable
   paymentMethods.forEach(method => {
     const header = method.querySelector('.method-header');
-    header.addEventListener('click', function () {
-      const radio = method.querySelector('input[type="radio"]');
-      radio.checked = true;
-      radio.dispatchEvent(new Event('change'));
-    });
+    if (header) {
+      header.addEventListener('click', function () {
+        const radio = method.querySelector('input[type="radio"]');
+        if (radio) {
+          radio.checked = true;
+          radio.dispatchEvent(new Event('change'));
+        }
+      });
+    }
   });
 }
 
@@ -443,8 +664,8 @@ function initializePaymentValidation() {
       const selectedPayment = document.querySelector('input[name="payment"]:checked');
 
       if (!selectedPayment) {
-        const lang = localStorage.getItem('preferredLanguage') || 'vi';
-        const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('selectPaymentMethod', lang) : 'Vui lòng chọn phương thức thanh toán';
+        const lang = localStorage.getItem('preferredLanguage') || 'en';
+        const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('selectPaymentMethod', lang) : 'Please select a payment method';
         notify(msg, 'info', 4000);
         return;
       }
@@ -477,24 +698,24 @@ function validateCardForm() {
   const cardName = document.getElementById('cardName').value;
 
   if (!cardNumber || cardNumber.length < 13) {
-    const lang = localStorage.getItem('preferredLanguage') || 'vi';
-    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('invalidCardNumber', lang) : 'Vui lòng nhập số thẻ hợp lệ';
+    const lang = localStorage.getItem('preferredLanguage') || 'en';
+    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('invalidCardNumber', lang) : 'Please enter a valid card number';
     notify(msg, 'info', 4000);
     return false;
   }
 
   if (!expiryDate || !expiryDate.match(/^\d{2}\/\d{2}$/)) {
-    const lang = localStorage.getItem('preferredLanguage') || 'vi';
-    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('invalidExpiryDate', lang) : 'Vui lòng nhập ngày hết hạn hợp lệ (MM/YY)';
+    const lang = localStorage.getItem('preferredLanguage') || 'en';
+    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('invalidExpiryDate', lang) : 'Please enter a valid expiry date (MM/YY)';
     notify(msg, 'info', 4000);
     return false;
   }
   // Validate month range and expiration
-  const lang = localStorage.getItem('preferredLanguage') || 'vi';
+  const lang = localStorage.getItem('preferredLanguage') || 'en';
   const mm = parseInt(expiryDate.slice(0, 2), 10);
   const yy = parseInt(expiryDate.slice(3, 5), 10);
   if (mm < 1 || mm > 12) {
-    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('invalidMonth', lang) : 'Vui lòng nhập tháng hợp lệ (01-12)';
+    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('invalidMonth', lang) : 'Please enter a valid month (01-12)';
     notify(msg, 'info', 4000);
     return false;
   }
@@ -503,21 +724,21 @@ function validateCardForm() {
   const exp = new Date(fullYear, mm - 1, 1);
   // consider valid if current month or later
   if (exp.getFullYear() < now.getFullYear() || (exp.getFullYear() === now.getFullYear() && exp.getMonth() < now.getMonth())) {
-    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('cardExpired', lang) : 'Thẻ đã hết hạn';
+    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('cardExpired', lang) : 'Card expired';
     notify(msg, 'info', 4000);
     return false;
   }
 
   if (!cvv || cvv.length < 3) {
-    const lang = localStorage.getItem('preferredLanguage') || 'vi';
-    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('invalidCVV', lang) : 'Vui lòng nhập mã CVV hợp lệ';
+    const lang = localStorage.getItem('preferredLanguage') || 'en';
+    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('invalidCVV', lang) : 'Please enter a valid CVV code';
     notify(msg, 'info', 4000);
     return false;
   }
 
   if (!cardName.trim()) {
-    const lang = localStorage.getItem('preferredLanguage') || 'vi';
-    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('invalidCardName', lang) : 'Vui lòng nhập tên trên thẻ';
+    const lang = localStorage.getItem('preferredLanguage') || 'en';
+    const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('invalidCardName', lang) : 'Please enter name on card';
     notify(msg, 'info', 4000);
     return false;
   }
@@ -574,10 +795,56 @@ async function processBankTransfer() {
   await showPaymentSuccess('bank');
 }
 
+// Processing flag to prevent double clicks
+let isProcessing = false;
+
+let cachedETHPrice = null;
+let lastPriceFetchTime = 0;
+const PRICE_CACHE_TTL = 300000; // 5 minutes
+
+/**
+ * Fetch real-time ETH price from CoinGecko
+ */
+async function getETHPrice() {
+  try {
+    const now = Date.now();
+    if (cachedETHPrice && (now - lastPriceFetchTime < PRICE_CACHE_TTL)) {
+      return cachedETHPrice;
+    }
+
+    console.log("[Blockchain] Fetching real-time ETH price...");
+    const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=vnd");
+    const data = await res.json();
+
+    if (data && data.ethereum && data.ethereum.vnd) {
+      cachedETHPrice = data.ethereum.vnd;
+      lastPriceFetchTime = now;
+      console.log("[Blockchain] Current ETH Price:", cachedETHPrice, "VND");
+      return cachedETHPrice;
+    }
+    throw new Error("Invalid price data");
+  } catch (e) {
+    console.error("[Blockchain] ETH API failed, using fallback:", e);
+    return 32000000; // Fallback rate
+  }
+}
+
+/**
+ * Calculate ETH from VND using real-time price
+ */
+async function calculateETH(amountVND) {
+  const price = await getETHPrice();
+  if (!amountVND || amountVND <= 0) {
+    return "0.000000";
+  }
+  const eth = amountVND / price;
+  return eth.toFixed(6);
+}
+
 // Process e-wallet payment
 function processEWalletPayment() {
-  const lang = localStorage.getItem('preferredLanguage') || 'vi';
-  const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('selectEwallet', lang) : 'Vui lòng chọn ví điện tử để tiếp tục';
+  const lang = localStorage.getItem('preferredLanguage') || 'en';
+  const msg = (typeof getPaymentTranslation === 'function') ? getPaymentTranslation('selectEwallet', lang) : 'Please select an e-wallet to continue';
   notify(msg, 'info', 4000);
 }
 
@@ -662,18 +929,18 @@ async function showPaymentSuccess(provider = 'manual') {
         ? current.filter((item) => String(item?.code || '').toUpperCase() !== String(window.__skyplanAppliedVoucherCode).toUpperCase())
         : [];
       localStorage.setItem(key, JSON.stringify(filtered));
-    } catch (_) {}
+    } catch (_) { }
     window.__skyplanAppliedVoucherCode = null;
     localStorage.removeItem('skyplanAppliedVoucherCode');
   }
   localStorage.setItem('lastTxnRef', bookingCode);
   localStorage.setItem('lastAmount', amount);
-  try { localStorage.removeItem('pendingBookingPayload'); } catch (_) {}
-  
+  try { localStorage.removeItem('pendingBookingPayload'); } catch (_) { }
+
   // Show loader before redirect
   if (window.Loader) {
     window.Loader.show();
-    setTimeout(function() {
+    setTimeout(function () {
       window.location.href = 'confirmation.html';
     }, 1500);
   } else {
@@ -949,7 +1216,7 @@ function initializeVoucher() {
   const voucherMessage = document.getElementById('voucherMessage');
   const voucherDiscount = document.getElementById('voucherDiscount');
   const voucherListEl = document.getElementById('dynamicVoucherList');
-  
+
   if (!voucherInput || !applyBtn) return;
 
   function getVoucherLang() {
@@ -961,7 +1228,7 @@ function initializeVoucher() {
     if (preferred === 'en' || preferred === 'vi') return preferred;
     return String(document.documentElement.lang || 'vi').toLowerCase() === 'en' ? 'en' : 'vi';
   }
-  
+
   // Voucher codes and their conditions
   const baseVouchers = {
     'XMAS10': {
@@ -1124,7 +1391,7 @@ function initializeVoucher() {
 
       try {
         localStorage.setItem('skyplanRedeemVouchers', JSON.stringify(normalizedList.slice(0, 50)));
-      } catch (_) {}
+      } catch (_) { }
 
       vouchers = {
         ...vouchers,
@@ -1138,51 +1405,51 @@ function initializeVoucher() {
   }
 
   syncServerVouchers();
-  
+
   let appliedVoucher = null;
   const originalAmount = parseFloat(document.getElementById('totalAmount').textContent.replace(/[^\d]/g, ''));
-  
-  applyBtn.addEventListener('click', function() {
+
+  applyBtn.addEventListener('click', function () {
     const code = voucherInput.value.trim().toUpperCase();
-    
+
     if (!code) {
       showVoucherMessage('Vui lòng nhập mã voucher', 'error');
       return;
     }
-    
+
     const voucher = vouchers[code];
     if (!voucher) {
       showVoucherMessage('Mã voucher không hợp lệ', 'error');
       return;
     }
-    
+
     if (originalAmount < voucher.minAmount) {
       const minAmountText = formatCurrency(voucher.minAmount);
       showVoucherMessage(`Đơn hàng phải từ ${minAmountText} để áp dụng mã này`, 'error');
       return;
     }
-    
+
     // Apply voucher
     appliedVoucher = { code, ...voucher };
     window.__skyplanAppliedVoucherCode = code;
     localStorage.setItem('skyplanAppliedVoucherCode', code);
     const discount = calculateDiscount(originalAmount, voucher);
     const finalAmount = originalAmount - discount;
-    
+
     // Update UI
     document.getElementById('discountAmount').textContent = `-${formatCurrency(discount)}`;
     document.getElementById('finalAmount').textContent = formatCurrency(finalAmount);
     voucherDiscount.classList.remove('hidden');
-    
+
     showVoucherMessage(`✓ Áp dụng thành công: ${voucher.description}`, 'success');
     voucherInput.disabled = true;
     applyBtn.textContent = 'Đã áp dụng';
     applyBtn.disabled = true;
-    
+
     // Add remove button
     addRemoveVoucherButton();
   });
-  
+
   function calculateDiscount(amount, voucher) {
     if (voucher.type === 'percentage') {
       return Math.round(amount * voucher.value / 100);
@@ -1190,12 +1457,12 @@ function initializeVoucher() {
       return Math.min(amount, voucher.value);
     }
   }
-  
+
   function showVoucherMessage(message, type) {
     voucherMessage.textContent = message;
     voucherMessage.className = `voucher-message ${type}`;
   }
-  
+
   function formatCurrency(amount) {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
@@ -1203,7 +1470,7 @@ function initializeVoucher() {
       minimumFractionDigits: 0
     }).format(amount).replace(/₫/g, ' VND');
   }
-  
+
   function addRemoveVoucherButton() {
     const removeBtn = document.createElement('button');
     removeBtn.textContent = 'Hủy mã';
@@ -1218,8 +1485,8 @@ function initializeVoucher() {
       font-size: 12px;
       cursor: pointer;
     `;
-    
-    removeBtn.addEventListener('click', function() {
+
+    removeBtn.addEventListener('click', function () {
       // Reset voucher
       appliedVoucher = null;
       window.__skyplanAppliedVoucherCode = null;
@@ -1232,7 +1499,7 @@ function initializeVoucher() {
       showVoucherMessage('', '');
       removeBtn.remove();
     });
-    
+
     applyBtn.parentNode.appendChild(removeBtn);
   }
 }
@@ -1244,28 +1511,28 @@ function initializeVoucher() {
  */
 function processBlockchainPayment() {
   const lang = localStorage.getItem('preferredLanguage') || 'vi';
-  
+
   // Check if MetaMask is initialized and connected
   if (typeof MetaMaskWallet === 'undefined') {
     const msg = (lang === 'vi') ? 'Lỗi: MetaMask chưa được khởi tạo' : 'Error: MetaMask not initialized';
     notify(msg, 'error', 5000);
     return;
   }
-  
+
   if (!MetaMaskWallet.isConnected) {
     const msg = (lang === 'vi') ? 'Vui lòng kết nối ví MetaMask trước tiên' : 'Please connect MetaMask wallet first';
     notify(msg, 'warning', 5000);
     return;
   }
-  
+
   // Show blockchain payment details
   const cryptoPaymentDetails = document.getElementById('cryptoPaymentDetails');
   const transactionStatusContainer = document.getElementById('transactionStatusContainer');
-  
+
   if (cryptoPaymentDetails) {
     cryptoPaymentDetails.style.display = 'block';
   }
-  
+
   // Call blockchain payment handler from blockchain-payment.js
   if (typeof BlockchainPayment !== 'undefined' && typeof BlockchainPayment.initiatePayment === 'function') {
     BlockchainPayment.initiatePayment();
@@ -1277,3 +1544,137 @@ function processBlockchainPayment() {
 
 // Export function globally
 window.processBlockchainPayment = processBlockchainPayment;
+
+/**
+ * Synchronize payment section UI with global wallet state
+ */
+// Initialize voucher functionality
+function initializeVoucher() {
+  const applyBtn = document.getElementById('applyVoucherBtn');
+  const voucherInput = document.getElementById('voucherInput');
+  const voucherMessage = document.getElementById('voucherMessage');
+
+  if (!applyBtn || !voucherInput) return;
+
+  applyBtn.addEventListener('click', function () {
+    const code = voucherInput.value.trim().toUpperCase();
+    if (!code) return;
+
+    console.log("[Voucher] Applying code:", code);
+
+    const booking = getBookingCreatePayload();
+    if (!booking) {
+      notify('Missing booking data', 'error');
+      return;
+    }
+
+    let discountPercent = 0;
+    let message = "";
+    let isSuccess = false;
+
+    if (code === "XMAS10") {
+      discountPercent = 10;
+      message = "Applied successfully: 10% discount";
+      isSuccess = true;
+    } else {
+      message = "Invalid voucher code";
+      isSuccess = false;
+    }
+
+    if (isSuccess) {
+      const result = calculateTotal(booking, discountPercent);
+      window.PaymentState.amount = result.total;
+      window.PaymentState.discount = result.discount;
+      window.PaymentState.discountPercent = discountPercent;
+
+      console.log("Discount:", window.PaymentState.discount);
+      console.log("Total VND:", window.PaymentState.amount);
+
+      updateSummaryUI();
+
+      const voucherDiscountEl = document.getElementById('voucherDiscount');
+      if (voucherDiscountEl) voucherDiscountEl.classList.remove('hidden');
+
+      voucherMessage.textContent = message;
+      voucherMessage.className = 'voucher-message success';
+      voucherMessage.style.color = '#16a34a';
+
+      // Update blockchain UI if active
+      if (typeof updatePaymentUI === 'function') {
+        updatePaymentUI();
+      }
+    } else {
+      voucherMessage.textContent = message;
+      voucherMessage.className = 'voucher-message error';
+      voucherMessage.style.color = '#ef4444';
+    }
+  });
+}
+
+function updatePaymentUI() {
+  const connectBtn = document.getElementById("connectWalletBtn");
+  const payWithCryptoBtn = document.getElementById("payWithCryptoBtn");
+  const mainPayBtn = document.getElementById("mainPayBtn");
+  const walletStatus = document.getElementById("walletStatus");
+  const walletAddress = document.getElementById("walletAddress");
+  const cryptoDetails = document.getElementById("cryptoPaymentDetails");
+
+  const selectedRadio = document.querySelector('input[name="payment"]:checked');
+  const selectedMethod = selectedRadio ? selectedRadio.value : 'card';
+
+  const isConnected = !!(window.WalletState && window.WalletState.isConnected);
+  const account = window.WalletState && window.WalletState.account;
+
+  console.log("Method:", selectedMethod);
+  console.log("Wallet connected:", isConnected);
+
+  // Hide all by default
+  if (mainPayBtn) mainPayBtn.style.display = 'none';
+  if (connectBtn) connectBtn.style.display = 'none';
+  if (payWithCryptoBtn) payWithCryptoBtn.style.display = 'none';
+  if (walletStatus) walletStatus.style.display = 'none';
+  if (cryptoDetails) cryptoDetails.style.display = 'none';
+
+  if (selectedMethod === 'blockchain') {
+    // CRYPTO METHOD
+    if (isConnected) {
+      if (walletStatus) walletStatus.style.display = 'block';
+      if (walletAddress) walletAddress.textContent = account || '0x...';
+      if (cryptoDetails) cryptoDetails.style.display = 'block';
+      // Show the Send Transaction button immediately; blockchain-payment.js
+      // will also show/configure it after its async ETH fetch completes.
+      if (payWithCryptoBtn) payWithCryptoBtn.style.display = 'block';
+
+      // Ensure PaymentState.amount is in sync with the DOM total written by payment_order.js.
+      // Both scripts fire on DOMContentLoaded and payment_order.js may finish its render()
+      // after initializeBookingSummary() already ran with amount=0.
+      if (!window.PaymentState || window.PaymentState.amount <= 0) {
+        const totalEl = document.getElementById('totalAmount');
+        const domTotal = totalEl ? parseVND(totalEl.textContent) : 0;
+        if (domTotal > 0) {
+          if (!window.PaymentState) window.PaymentState = { bookingCode: '-', discount: 0, discountPercent: 0 };
+          window.PaymentState.amount = domTotal;
+          console.log('[Payment] updatePaymentUI synced PaymentState.amount from DOM:', domTotal);
+        }
+      }
+
+      // Sync booking code in case it was set after PaymentState was initialised
+      if (window.PaymentState && (!window.PaymentState.bookingCode || window.PaymentState.bookingCode === '-')) {
+        window.PaymentState.bookingCode = localStorage.getItem('currentBookingCode') || '-';
+      }
+
+      // Trigger blockchain payment flow (populates ETH, VND, booking code labels)
+      if (typeof BlockchainPayment !== 'undefined' && typeof BlockchainPayment.initiatePayment === 'function') {
+        BlockchainPayment.initiatePayment();
+      }
+    } else {
+      if (connectBtn) connectBtn.style.display = 'block';
+    }
+  } else {
+    // STANDARD METHODS
+    if (mainPayBtn) mainPayBtn.style.display = 'block';
+  }
+}
+
+// Export globally
+window.updatePaymentUI = updatePaymentUI;

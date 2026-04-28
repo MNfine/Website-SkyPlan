@@ -105,152 +105,261 @@
 .crypto-payment-details {
   margin: 20px 0;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid rgba(10, 150, 157, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .crypto-payment-details h4 {
   margin: 0 0 15px 0;
   font-size: 15px;
-  font-weight: 600;
-  color: white;
+  font-weight: 700;
+  color: #0a969d;
 }
 
 .payment-details {
   margin: 15px 0;
 }
 
-.detail-row {
+/* Scoped to crypto panel only to avoid colliding with .price-breakdown .detail-row */
+.crypto-payment-details .detail-row {
   display: flex;
   justify-content: space-between;
-  padding: 8px 0;
+  align-items: center;
+  padding: 10px 0;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.9);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #444444;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.detail-row:last-child {
+.crypto-payment-details .detail-row:last-child {
   border-bottom: none;
 }
 
-.detail-row strong {
-  color: white;
+.crypto-payment-details .detail-row strong {
+  color: #111111;
   font-weight: 600;
 }
 
 .crypto-checkout-btn {
   width: 100%;
-  padding: 14px 20px;
-  background: white;
-  color: #0a969d;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #0a969d 0%, #065f63 100%);
+  color: #ffffff;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 700;
   cursor: pointer;
-  margin-top: 15px;
+  margin-top: 20px;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
+  box-shadow: 0 6px 20px rgba(10, 150, 157, 0.35);
+  letter-spacing: 0.3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.crypto-checkout-btn::before {
+  content: '\f0ec';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  font-size: 16px;
 }
 
 .crypto-checkout-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(10, 150, 157, 0.45);
+  background: linear-gradient(135deg, #0cb3bb 0%, #0a969d 100%);
+}
+
+.crypto-checkout-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(10, 150, 157, 0.3);
 }
 
 .crypto-checkout-btn:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
+  background: #94a3b8;
+  box-shadow: none;
+}
+
+.crypto-checkout-btn.loading {
+  pointer-events: none;
+  animation: pulseBtn 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseBtn {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 /* Transaction Status Container */
 .transaction-status-container {
-  margin: 20px 0;
-  padding: 20px;
-  background: #f5f5f5;
-  border-radius: 12px;
+  margin: 24px 0;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(10, 150, 157, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
   display: none;
+  animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .status-header {
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #ddd;
+  padding: 18px 24px;
+  background: rgba(10, 150, 157, 0.05);
+  border-bottom: 1px solid rgba(10, 150, 157, 0.1);
 }
 
 .status-header h4 {
   margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0a969d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .status-box {
-  padding: 30px 20px;
-  border-radius: 8px;
-  text-align: center;
+  padding: 24px;
   display: none;
-  border: 1px solid;
+  align-items: flex-start;
+  gap: 20px;
+  text-align: left;
 }
 
 .status-box.pending {
-  background: #fff9e6;
-  border-color: #ffc107;
-  color: #2d2d2d;
-}
-
-.status-box.pending .status-text h5,
-.status-box.pending .status-text p {
-  color: #2d2d2d;
+  background: linear-gradient(135deg, rgba(255, 249, 230, 0.5) 0%, rgba(255, 243, 204, 0.5) 100%);
 }
 
 .status-box.success {
-  background: #e8f5e9;
-  border-color: #4CAF50;
-  color: #1b5e20;
-}
-
-.status-box.success .status-text h5,
-.status-box.success .status-text p {
-  color: #1b5e20;
+  background: linear-gradient(135deg, rgba(232, 245, 233, 0.5) 0%, rgba(200, 230, 201, 0.5) 100%);
 }
 
 .status-box.failed {
-  background: #ffebee;
-  border-color: #f44336;
-  color: #c62828;
-}
-
-.status-box.failed .status-text h5,
-.status-box.failed .status-text p {
-  color: #c62828;
-}
-
-.status-spinner {
-  display: none;
+  background: linear-gradient(135deg, rgba(255, 235, 238, 0.6) 0%, rgba(255, 205, 210, 0.6) 100%);
 }
 
 .status-icon {
-  display: none;
+  flex-shrink: 0;
+  font-size: 42px;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.status-box.pending .status-icon i { color: #f59e0b; }
+.status-box.success .status-icon i { color: #10b981; }
+.status-box.failed .status-icon i { color: #ef4444; }
+
+.status-text {
+  flex: 1;
+}
+
+.status-text h5 {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.status-box.pending .status-text h5 { color: #92400e; }
+.status-box.success .status-text h5 { color: #065f46; }
+.status-box.failed .status-text h5 { color: #991b1b; }
+
+.status-text p {
+  margin: 4px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #4b5563;
+}
+
+.tx-hash-display, .error-code {
+  margin-top: 14px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  font-size: 13px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  word-break: break-all;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.tx-hash-display strong, .error-code strong {
+  color: #6b7280;
+  margin-right: 8px;
+}
+
+.tx-hash-display a {
+  color: #0a969d;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px dashed rgba(10, 150, 157, 0.4);
+  transition: all 0.2s;
+}
+
+.tx-hash-display a:hover {
+  color: #088a91;
+  border-bottom-style: solid;
+}
+
+.redirect-btn,
+.retry-btn {
+  margin-top: 18px;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(10, 150, 157, 0.2);
+}
+
+.redirect-btn {
+  background: linear-gradient(135deg, #0a969d 0%, #065f63 100%);
+  color: white;
+}
+
+.retry-btn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.redirect-btn:hover, .retry-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  filter: brightness(1.1);
+}
+
+.redirect-btn:active, .retry-btn:active {
+  transform: translateY(0);
 }
 
 .status-spinner i {
-  animation: spin 1s linear infinite;
-  color: #ffc107;
-}
-
-.status-box.success .status-icon i {
-  color: #4CAF50;
-  animation: none;
-}
-
-.status-box.failed .status-icon i {
-  color: #f44336;
-  animation: none;
+  animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
 }
 
 @keyframes spin {
@@ -258,174 +367,6 @@
   to { transform: rotate(360deg); }
 }
 
-.status-text h5 {
-  margin: 0 0 8px 0;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.status-text p {
-  margin: 8px 0;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.tx-hash-display {
-  margin-top: 15px;
-  padding: 10px 12px;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
-  font-size: 12px;
-  word-break: break-all;
-  text-align: left;
-  font-family: 'Courier New', monospace;
-}
-
-.tx-hash-display a {
-  color: #0a969d;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.tx-hash-display a:hover {
-  text-decoration: underline;
-}
-
-.redirect-btn,
-.retry-btn {
-  margin-top: 15px;
-  padding: 12px 24px;
-  background: #0a969d;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.redirect-btn:hover,
-.retry-btn:hover {
-  background: #0a969d;
-  opacity: 0.92;
-  transform: translateY(-2px);
-}
-
-.error-code {
-  margin-top: 10px;
-  padding: 10px 12px;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
-  font-size: 13px;
-  color: #d32f2f;
-  font-family: 'Courier New', monospace;
-  text-align: left;
-}
-
-/* UI-only demo controls for reviewing status layout without real chain tx */
-.transaction-demo-panel {
-  margin: 14px 0 0;
-  padding: 14px;
-  border: 1px dashed rgba(255, 255, 255, 0.45);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.transaction-demo-title {
-  margin-bottom: 10px;
-  font-size: 13px;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.95);
-  font-weight: 600;
-}
-
-.transaction-demo-subtitle {
-  margin: 0 0 10px;
-  font-size: 12px;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.86);
-}
-
-.transaction-demo-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.demo-btn {
-  border: none;
-  border-radius: 999px;
-  padding: 8px 12px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
-  color: #0a969d;
-  background: rgba(255, 255, 255, 0.9);
-}
-
-.demo-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
-}
-
-.demo-btn:active {
-  transform: translateY(0);
-}
-
-.demo-run {
-  background: #ffffff;
-  color: #0a969d;
-  min-width: 170px;
-}
-
-.demo-connect {
-  background: #ffffff;
-  color: #0a969d;
-  min-width: 145px;
-}
-
-.demo-run.is-running {
-  background: #fff2cc;
-  color: #7a550e;
-}
-
-.demo-reset { background: #e8edf2; color: #304153; }
-
-/* State view buttons - for reviewing individual UI states */
-.transaction-demo-state-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px dashed rgba(255, 255, 255, 0.25);
-}
-
-.demo-state-btn {
-  border: none;
-  border-radius: 6px;
-  padding: 5px 10px;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.8);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.demo-state-btn:hover {
-  background: rgba(255, 255, 255, 0.18);
-  transform: translateY(-1px);
-}
-
-.demo-state-btn:active {
-  transform: translateY(0);
-  opacity: 0.8;
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

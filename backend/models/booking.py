@@ -106,9 +106,22 @@ class Booking(Base):
                     p = { 'id': bp.passenger_id }
 
                 # normalize passenger fields for frontend expectations
-                if getattr(bp, 'seat_number', None):
-                    p['seat_number'] = bp.seat_number
-                    p['seatNumber'] = bp.seat_number
+                # Try seat_number string column first, then fall back to seat relationship
+                seat_num = getattr(bp, 'seat_number', None)
+                if not seat_num:
+                    try:
+                        seat_obj = getattr(bp, 'seat', None)
+                        if seat_obj:
+                            seat_num = getattr(seat_obj, 'seat_number', None) or getattr(seat_obj, 'seat_code', None)
+                            # Also expose seat class/type if available
+                            if seat_obj:
+                                p['seat_class'] = getattr(seat_obj, 'seat_class', None)
+                                p['seatClass'] = p['seat_class']
+                    except Exception:
+                        pass
+                if seat_num:
+                    p['seat_number'] = seat_num
+                    p['seatNumber'] = seat_num
 
                 # provide full name aliases used across frontend
                 try:

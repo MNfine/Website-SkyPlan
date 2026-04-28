@@ -57,7 +57,7 @@ const SeatManager = {
         }
     },
     
-    // Update existing seat elements with API data - không thay đổi HTML structure
+    // Update existing seat elements with API data
     updateExistingSeats: function() {
         const existingSeats = document.querySelectorAll('.seat[data-seat]');
         
@@ -69,10 +69,25 @@ const SeatManager = {
                 // Remove existing status classes
                 seatElement.classList.remove('available', 'occupied', 'selected');
                 
-                // Update seat status based on API data
-                if (apiSeat.status === 'CONFIRMED') {
+                const status = apiSeat.status || 'AVAILABLE';
+
+                if (status === 'CONFIRMED') {
+                    // Permanently booked — always occupied for everyone
                     seatElement.classList.add('occupied');
                     seatElement.style.cursor = 'not-allowed';
+                } else if (status === 'TEMPORARILY_RESERVED') {
+                    if (apiSeat.reserved_by_current_user) {
+                        // Current user's own hold — show as selected
+                        seatElement.classList.add('selected');
+                        seatElement.style.cursor = 'pointer';
+                    } else {
+                        // Someone else is holding this seat — show as occupied
+                        seatElement.classList.add('occupied');
+                        seatElement.style.cursor = 'not-allowed';
+                        seatElement.title = apiSeat.reserved_until
+                            ? `Held until ${new Date(apiSeat.reserved_until).toLocaleTimeString()}`
+                            : 'Temporarily reserved';
+                    }
                 } else {
                     seatElement.classList.add('available');
                     seatElement.style.cursor = 'pointer';
@@ -80,7 +95,7 @@ const SeatManager = {
                 
                 // Add seat data attributes for future use
                 seatElement.setAttribute('data-seat-id', apiSeat.id);
-                seatElement.setAttribute('data-seat-status', apiSeat.status);
+                seatElement.setAttribute('data-seat-status', status);
                 seatElement.setAttribute('data-seat-class', apiSeat.seat_class);
                 seatElement.setAttribute('data-price-modifier', apiSeat.price_modifier || 0);
             }
