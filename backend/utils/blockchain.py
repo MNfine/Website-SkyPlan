@@ -40,9 +40,7 @@ def _normalize_wallet(value) -> str:
 
 def _normalize_passenger_token(passenger) -> str:
     passenger_id = _get_value(passenger, 'passenger_id', _get_value(passenger, 'id', ''))
-    seat_number = _get_value(passenger, 'seat_number', _get_value(passenger, 'seatNumber', ''))
-    seat_token = _normalize_text(seat_number)
-    return f"{passenger_id}:{seat_token}"
+    return str(passenger_id)
 
 
 def generate_booking_hash(booking_code: str, flight_ids: list, passenger_count: int, timestamp: str) -> str:
@@ -89,8 +87,10 @@ def generate_booking_state_hash(booking) -> str:
     """Generate a canonical hash for booking integrity checks.
 
     This hash includes the booking snapshot that should remain stable after
-    creation: code, trip type, fare class, flight ids, amount, wallet address,
-    and the booked passenger/seat mapping.
+    creation: code, trip type, fare class, flight ids, amount, and passenger
+    identity. Mutable fields like wallet address, seat assignment, status, and
+    confirmation timestamps are intentionally excluded because they may change
+    after creation without meaning the booking data was tampered with.
     """
     booking_code = _get_value(booking, 'booking_code', '')
     trip_type = _normalize_text(_get_value(booking, 'trip_type', ''))
@@ -98,7 +98,6 @@ def generate_booking_state_hash(booking) -> str:
     outbound_flight_id = _get_value(booking, 'outbound_flight_id', '')
     inbound_flight_id = _get_value(booking, 'inbound_flight_id', '') or ''
     total_amount = _normalize_amount(_get_value(booking, 'total_amount', '0'))
-    wallet_address = _normalize_wallet(_get_value(booking, 'wallet_address', ''))
 
     passengers = _get_value(booking, 'passengers', []) or []
     passenger_tokens = sorted(_normalize_passenger_token(passenger) for passenger in passengers)
@@ -110,7 +109,6 @@ def generate_booking_state_hash(booking) -> str:
         str(outbound_flight_id),
         str(inbound_flight_id),
         total_amount,
-        wallet_address,
         ','.join(passenger_tokens),
     ])
 
