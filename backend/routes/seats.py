@@ -157,6 +157,28 @@ def reserve_seats():
         
         if len(seats) != len(seat_ids):
             return jsonify({'success': False, 'message': 'Some seats not found'}), 404
+
+        # Debug info: log request context to help trace 409 conflicts
+        try:
+            print(f"[DEBUG] /api/seats/reserve called by user_id={user_id} for seat_ids={seat_ids} flight_id={flight_id}")
+        except Exception:
+            pass
+
+        # Release expired temporary reservations for the requested seats
+        expired_temp = session.query(Seat).filter(
+            Seat.id.in_(seat_ids),
+            Seat.status == SeatStatus.TEMPORARILY_RESERVED.value,
+            Seat.reserved_until < datetime.utcnow()
+        ).all()
+
+        if expired_temp:
+            for s in expired_temp:
+                try:
+                    print(f"[DEBUG] Releasing expired hold on seat id={s.id} number={s.seat_number} reserved_until={s.reserved_until}")
+                except Exception:
+                    pass
+                s.release_reservation()
+            session.flush()
         
         # For authenticated users: check if seats are available for them
         if user_id:
