@@ -4,19 +4,105 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-  // VNPay Integration
-  function processVNPayPayment() {
-    const amount = 1598000; // Amount in VND
-    const orderInfo = 'Ve may bay HAN-SGN';
-
-    let bookingCode = 'SP';
+  function getAuthToken() {
     try {
-      bookingCode = document.getElementById('bookingCode').textContent || 'SP';
-    } catch (e) {
-      if (window.SkyPlanDebug) console.error('Booking code element not found, using default');
+      if (window.AuthState && typeof window.AuthState.getToken === 'function') {
+        const token = window.AuthState.getToken();
+        if (token) return token;
+      }
+    } catch (_) { }
+    return localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || null;
+  }
+
+  async function ensureBackendBookingCode() {
+    const existing = localStorage.getItem('currentBookingCode') || localStorage.getItem('lastBookingCode');
+    if (existing && /^SP\d+/i.test(existing)) return existing;
+
+    const pending = localStorage.getItem('pendingBookingPayload');
+    if (!pending) return existing || null;
+
+    const payload = JSON.parse(pending);
+    const wallet = window.MetaMaskWallet && window.MetaMaskWallet.account;
+    if (wallet && !payload.wallet_address && !payload.walletAddress) {
+      payload.wallet_address = wallet;
     }
 
-    const btnElement = event.target.closest('.vnpay-checkout-btn');
+    const token = getAuthToken();
+    const res = await fetch('/api/bookings/create', {
+      method: 'POST',
+      headers: Object.assign({ 'Content-Type': 'application/json' }, (token ? { 'Authorization': `Bearer ${token}` } : {})),
+      body: JSON.stringify(payload)
+    });
+
+    const json = await res.json();
+    if (!res.ok || !json || !json.success || !json.booking_code) return existing || null;
+
+    const code = json.booking_code;
+    localStorage.setItem('currentBookingCode', code);
+    localStorage.setItem('lastBookingCode', code);
+    localStorage.setItem('bookingSource', 'backend');
+    try { localStorage.removeItem('pendingBookingPayload'); } catch (_) {}
+    return code;
+  }
+
+  // VNPay Integration
+  async function processVNPayPayment(eventArg) {
+    // Get final amount from DOM - check if voucher was applied
+    let amount = 1598000; // Default fallback
+    
+    // Check global PaymentState first (synced with payment_order.js)
+    if (window.PaymentState && window.PaymentState.amount > 0) {
+      amount = Math.round(window.PaymentState.amount);
+      console.log('VNPay using PaymentState.amount:', amount);
+    } else {
+      // Fallback to DOM elements
+      const finalAmountEl = document.getElementById('finalAmount');
+      const totalAmountEl = document.getElementById('totalAmount');
+      
+      if (finalAmountEl && finalAmountEl.textContent) {
+        // Parse amount from finalAmount (after voucher). Replace removes everything except digits
+        const parsedFinal = parseInt(finalAmountEl.textContent.replace(/[^\d]/g, ''), 10);
+        if (!isNaN(parsedFinal) && parsedFinal > 0) {
+          amount = parsedFinal;
+          console.log('VNPay using finalAmount (after voucher):', amount);
+        }
+      } else if (totalAmountEl && totalAmountEl.textContent) {
+        // Fallback to totalAmount (before voucher)
+        const parsedTotal = parseInt(totalAmountEl.textContent.replace(/[^\d]/g, ''), 10);
+        if (!isNaN(parsedTotal) && parsedTotal > 0) {
+          amount = parsedTotal;
+          console.log('VNPay using totalAmount (no voucher):', amount);
+        }
+      }
+    }
+    
+    // Save final payment amount to localStorage for confirmation page
+    localStorage.setItem('finalPaymentAmount', amount.toString());
+    console.log('Saved finalPaymentAmount to localStorage:', amount);
+    
+    const orderInfo = 'Ve may bay HAN-SGN';
+
+    // Get booking code consistently with other payment methods
+    const bookingCodeFromStorage = await ensureBackendBookingCode();
+    const bookingCodeFromDOM = document.querySelector('.booking-code-text')?.textContent;
+    let bookingCode = bookingCodeFromDOM || bookingCodeFromStorage;
+    if (!bookingCode) {
+      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const msg = (lang === 'vi')
+        ? 'Không tạo được booking code từ hệ thống. Vui lòng quay lại bước trước và thử lại.'
+        : 'Could not create booking code from backend. Please go back and try again.';
+      notify(msg, 'error', 6000);
+      return;
+    }
+
+    // Save booking code for confirmation page (ensure we have at least a client code stored)
+    localStorage.setItem('currentBookingCode', bookingCode);
+    localStorage.setItem('lastBookingCode', bookingCode);
+    console.log('VNPay using booking code:', bookingCode);
+
+    const btnElement = (eventArg && eventArg.target && eventArg.target.closest('.vnpay-checkout-btn'))
+      || document.querySelector('.vnpay-checkout-btn');
+    if (!btnElement) return;
     const originalContent = btnElement.innerHTML;
     try {
       const lang = localStorage.getItem('preferredLanguage') || 'vi';
@@ -25,13 +111,44 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch { btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Đang kết nối VNPay...</span>'; }
     btnElement.disabled = true;
 
+    const txnRef = bookingCode; // use booking code as txnRef to match backend
+
     const paymentData = {
       orderInfo: orderInfo,
       amount: amount,
-      txnRef: bookingCode + '_' + Date.now()
+      txnRef: txnRef,
+      voucher_code: localStorage.getItem('skyplanAppliedVoucherCode') || window.__skyplanAppliedVoucherCode || null
     };
 
-    const apiEndpoint = window.SkyPlanConfig?.getApiEndpoints().vnpayCreate || 'http://localhost:5000/api/payment/vnpay/create';
+    // Create a Payment record on backend first so VNPay return can reconcile
+    (async function createPaymentRecord() {
+      try {
+        const createUrl = (window.SkyPlanConfig?.getApiEndpoints().paymentCreate) || '/api/payment/create';
+        const token = getAuthToken();
+        const res = await fetch(createUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({
+            booking_code: bookingCode,
+            amount: amount,
+            provider: 'vnpay',
+            voucher_code: localStorage.getItem('skyplanAppliedVoucherCode') || window.__skyplanAppliedVoucherCode || null
+          })
+        });
+        const body = await res.json();
+        if (!res.ok || !body.success) {
+          console.warn('Failed to create Payment record before VNPay:', body);
+          // proceed anyway to allow VNPay sandbox to run, but backend may not reconcile
+        }
+      } catch (err) {
+        console.warn('Error creating payment record for VNPay:', err);
+      }
+    })();
+
+  const apiEndpoint = window.SkyPlanConfig?.getApiEndpoints().vnpayCreate || '/api/payment/vnpay/create';
 
     fetch(apiEndpoint, {
       method: 'POST',
@@ -67,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (vnpayBtn) {
     vnpayBtn.addEventListener('click', function(event) {
       event.preventDefault();
-      processVNPayPayment();
+      processVNPayPayment(event);
     });
   }
 });

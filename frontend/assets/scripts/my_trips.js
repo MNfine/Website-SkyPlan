@@ -1,873 +1,718 @@
-// My Trips page functionality
-
-// State management
 let currentTab = 'all';
-let currentTripToCancel = null;
+let tripsData = [];
+let blockchainLoadingState = {
+  visible: false,
+  startedAt: 0,
+  timer: null,
+};
 
-// Helper function to get translated text
-function getTranslation(key) {
-  const currentLang = localStorage.getItem('selectedLanguage') || 'vi';
-  return window.myTripsTranslations && window.myTripsTranslations[currentLang] && window.myTripsTranslations[currentLang][key] 
-    ? window.myTripsTranslations[currentLang][key] 
-    : key;
+function ensureBlockchainLoadingOverlay() {
+  let overlay = document.getElementById('blockchain-loading-overlay');
+  if (overlay) return overlay;
+
+  overlay = document.createElement('div');
+  overlay.id = 'blockchain-loading-overlay';
+  overlay.className = 'blockchain-loading-overlay';
+  overlay.setAttribute('aria-hidden', 'true');
+  overlay.innerHTML = [
+    '<div class="blockchain-loading-card" role="status" aria-live="polite">',
+    '  <div class="blockchain-chain">',
+    '    <span></span><span></span><span></span>',
+    '  </div>',
+    '  <h3 class="blockchain-loading-title"></h3>',
+    '  <p class="blockchain-loading-desc"></p>',
+    '  <div class="blockchain-progress">',
+    '    <div class="blockchain-progress-bar"></div>',
+    '  </div>',
+    '  <p class="blockchain-loading-hint"></p>',
+    '</div>'
+  ].join('');
+
+  document.body.appendChild(overlay);
+  return overlay;
 }
 
-// Helper function to format date based on language
-function formatDate(dateString, lang) {
-  // Handle different input formats
-  let date;
-  
-  // Try to parse various date formats
-  if (dateString.includes('/')) {
-    // DD/MM/YYYY format
-    const parts = dateString.split('/');
-    if (parts.length === 3) {
-      date = new Date(parts[2], parts[1] - 1, parts[0]);
+function setBlockchainLoadingText() {
+  const overlay = ensureBlockchainLoadingOverlay();
+  const titleEl = overlay.querySelector('.blockchain-loading-title');
+  const descEl = overlay.querySelector('.blockchain-loading-desc');
+  const hintEl = overlay.querySelector('.blockchain-loading-hint');
+  if (titleEl) titleEl.textContent = t('blockchainLoadingTitle');
+  if (descEl) descEl.textContent = t('blockchainLoadingDesc');
+  if (hintEl) hintEl.textContent = t('blockchainLoadingHint');
+}
+
+function showBlockchainLoading() {
+  const overlay = ensureBlockchainLoadingOverlay();
+  setBlockchainLoadingText();
+  overlay.classList.add('active');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('blockchain-loading-open');
+  blockchainLoadingState.visible = true;
+  blockchainLoadingState.startedAt = Date.now();
+}
+
+function hideBlockchainLoading() {
+  const overlay = document.getElementById('blockchain-loading-overlay');
+  if (!overlay) return;
+
+  if (blockchainLoadingState.timer) {
+    clearTimeout(blockchainLoadingState.timer);
+    blockchainLoadingState.timer = null;
+  }
+
+  overlay.classList.remove('active');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('blockchain-loading-open');
+  blockchainLoadingState.visible = false;
+}
+
+function hideBlockchainLoadingSafely() {
+  if (!blockchainLoadingState.visible) return;
+  const elapsed = Date.now() - (blockchainLoadingState.startedAt || Date.now());
+  const minVisibleMs = 900;
+  if (elapsed >= minVisibleMs) {
+    hideBlockchainLoading();
+    return;
+  }
+
+  const remaining = minVisibleMs - elapsed;
+  blockchainLoadingState.timer = setTimeout(hideBlockchainLoading, remaining);
+}
+
+function toFriendlyIntegrateError() {
+  return t('integrateNftFailedFriendly');
+}
+
+function getMetaMaskWallet() {
+  if (window.MetaMaskWallet) return window.MetaMaskWallet;
+  try {
+    if (typeof MetaMaskWallet !== 'undefined') return MetaMaskWallet;
+  } catch (_) { }
+  return null;
+}
+
+function getLang() {
+  const raw = (localStorage.getItem('preferredLanguage') || localStorage.getItem('language') || 'vi').toLowerCase();
+  return raw === 'en' ? 'en' : 'vi';
+}
+
+function t(key) {
+  const lang = getLang();
+  const dict = window.myTripsTranslations && window.myTripsTranslations[lang];
+  if (!dict) return key;
+  return dict[key] || key;
+}
+
+function formatVnd(amount) {
+  return Number(amount || 0).toLocaleString('vi-VN') + ' VND';
+}
+
+function statusLabel(status) {
+  if (status === 'upcoming') return t('statusUpcoming');
+  if (status === 'completed') return t('statusCompleted');
+  return t('statusCancelled');
+}
+
+function escapeHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function toDate(value) {
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function formatTime(value) {
+  const d = toDate(value);
+  if (!d) return '--:--';
+  return d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false });
+}
+
+function formatDate(value) {
+  const d = toDate(value);
+  if (!d) return '--/--/----';
+  return d.toLocaleDateString('vi-VN');
+}
+
+function formatDuration(start, end) {
+  const from = toDate(start);
+  const to = toDate(end);
+  if (!from || !to) return '--';
+  const diffMs = to.getTime() - from.getTime();
+  if (diffMs <= 0) return '--';
+  const totalMin = Math.floor(diffMs / 60000);
+  const hours = Math.floor(totalMin / 60);
+  const mins = totalMin % 60;
+  return hours + 'h ' + mins + 'm';
+}
+
+function mapStatus(rawStatus, departureIso) {
+  const status = String(rawStatus || '').toUpperCase();
+  if (status === 'CANCELLED' || status === 'EXPIRED' || status === 'PAYMENT_FAILED') {
+    return 'cancelled';
+  }
+  if (status === 'COMPLETED') {
+    return 'completed';
+  }
+
+  const departureDate = toDate(departureIso);
+  if (departureDate && departureDate.getTime() < Date.now()) {
+    return 'completed';
+  }
+
+  return 'upcoming';
+}
+
+function mapBookingToTrip(booking) {
+  const outbound = booking && booking.outbound_flight ? booking.outbound_flight : {};
+  const passengers = Array.isArray(booking && booking.passengers) ? booking.passengers : [];
+  const firstPassenger = passengers[0] || {};
+
+  const origin = outbound.origin_code || outbound.departure_airport || '---';
+  const destination = outbound.destination_code || outbound.arrival_airport || '---';
+  const departureIso = outbound.departure_time;
+  const arrivalIso = outbound.arrival_time;
+
+  const nftInfo = booking && booking.nft ? booking.nft : null;
+  const nftMintedFlag = !!(
+    (nftInfo && nftInfo.minted) ||
+    booking.nft_minted ||
+    booking.nft_mint_tx_hash
+  );
+
+  return {
+    id: booking.booking_code || String(booking.id || ''),
+    bookingCode: booking.booking_code || '',
+    departureIso: departureIso,
+    status: mapStatus(booking.status, departureIso),
+    route: origin + ' -> ' + destination,
+    airline: [outbound.airline_name || outbound.airline || 'SkyPlan', outbound.flight_number].filter(Boolean).join(' - '),
+    departureTime: formatTime(departureIso),
+    arrivalTime: formatTime(arrivalIso),
+    duration: formatDuration(departureIso, arrivalIso),
+    flightDate: formatDate(departureIso),
+    passengerName: firstPassenger.full_name || firstPassenger.fullName || [firstPassenger.firstname, firstPassenger.lastname].filter(Boolean).join(' ') || '-',
+    seat: firstPassenger.seat_number || firstPassenger.seatNumber || '-',
+    amountVnd: Number(booking.total_amount || 0),
+    isVerified: !!(booking.isVerified || booking.onchain_recorded),
+    nft: {
+      minted: nftMintedFlag,
+      tokenId: (nftInfo && nftInfo.tokenId) || booking.nft_token_id || null,
+      contract: (nftInfo && nftInfo.contract) || booking.nft_contract || null,
+      txHash: booking.nft_mint_tx_hash || null
+    },
+    rewardSky: Number(booking.rewardSky || booking.sky_reward_amount || 0)
+  };
+}
+
+async function loadUserTrips() {
+  if (!window.AuthState || !AuthState.isAuthenticated()) {
+    tripsData = [];
+    if (window.AuthState && typeof AuthState.requireAuth === 'function') {
+      AuthState.requireAuth(window.location.pathname + window.location.search);
     }
-  } else {
-    // Try standard date parsing
-    date = new Date(dateString);
+    return;
   }
-  
-  if (isNaN(date.getTime())) {
-    return dateString; // Return original if parsing fails
-  }
-  
-  if (lang === 'en') {
-    // English format: MMM DD YYYY (e.g., "Nov 08 2025")
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit'
-    }).replace(',', '');
-  } else {
-    // Vietnamese format: DD/MM/YYYY (e.g., "08/11/2025")
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+
+  try {
+    const params = new URLSearchParams(window.location.search || '');
+    const codeFromUrl = (params.get('booking_code') || '').trim();
+    const codeFromStorage = String(localStorage.getItem('lastBookingCode') || localStorage.getItem('currentBookingCode') || '').trim();
+    const bookingCode = codeFromUrl || codeFromStorage;
+    const endpoint = bookingCode
+      ? '/api/bookings/my-trips?booking_code=' + encodeURIComponent(bookingCode)
+      : '/api/bookings/my-trips';
+
+    const resp = await AuthState.fetchWithAuth(endpoint, { method: 'GET' });
+    const payload = await resp.json().catch(function () { return {}; });
+
+    if (!resp.ok || !payload.success) {
+      throw new Error(payload.message || 'Failed to load trips');
+    }
+
+    const bookings = Array.isArray(payload.bookings) ? payload.bookings : [];
+    tripsData = bookings.map(mapBookingToTrip);
+
+    // Fallback: if redirected with booking_code and list doesn't contain it yet,
+    // fetch that booking directly so users can see immediate result.
+    if (bookingCode && !tripsData.some(function (t) { return t.bookingCode === bookingCode; })) {
+      try {
+        const directResp = await AuthState.fetchWithAuth('/api/bookings/status/' + encodeURIComponent(bookingCode), { method: 'GET' });
+        const directPayload = await directResp.json().catch(function () { return {}; });
+        if (directResp.ok && directPayload && directPayload.success && directPayload.booking) {
+          tripsData.unshift(mapBookingToTrip(directPayload.booking));
+        } else if (directResp.status === 404) {
+          try {
+            showNotification(t('bookingNotInAccount').replace('{code}', bookingCode), 'warning', 3800);
+          } catch (e) {
+            showNotification('Booking ' + bookingCode + ' không thuộc tài khoản đang đăng nhập.', 'warning', 3800);
+          }
+        }
+      } catch (_) {
+        // no-op
+      }
+    }
+
+    renderTrips();
+  } catch (error) {
+    console.error('Failed to load real my-trips data:', error);
+    tripsData = [];
+    renderTrips();
+    const defaultMsg = t('failedToLoadTrips') || 'Không thể tải danh sách chuyến đi.';
+    showNotification(error && error.message ? error.message : defaultMsg, 'error', 2800);
   }
 }
 
-// Initialize page
-document.addEventListener('DOMContentLoaded', function() {
-  initializeTabs();
-  loadTripsData();
-  
-  // Apply translations based on current language
-  const currentLang = localStorage.getItem('selectedLanguage') || 'vi';
-  
-  // Function to apply translations when ready
-  function tryApplyTranslations() {
-    if (typeof window.myTripsTranslations !== 'undefined') {
-      applyMyTripsTranslations(currentLang);
-    } else {
-      // If translations not loaded yet, try again after a short delay
-      setTimeout(tryApplyTranslations, 100);
-    }
-  }
-  
-  tryApplyTranslations();
-});
+async function claimBookingFromContextIfNeeded() {
+  if (!window.AuthState || !AuthState.isAuthenticated()) return;
 
-// Tab functionality
-function initializeTabs() {
-  const tabButtons = document.querySelectorAll('.tab-btn');
-  const tabContents = document.querySelectorAll('.tab-content');
+  const params = new URLSearchParams(window.location.search || '');
+  const fromUrl = (params.get('booking_code') || '').trim();
+  const fromStorage = String(localStorage.getItem('lastBookingCode') || localStorage.getItem('currentBookingCode') || '').trim();
+  const bookingCode = fromUrl || fromStorage;
 
-  tabButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      const status = this.dataset.status;
-      switchTab(status);
+  if (!bookingCode) return;
+
+  try {
+    await AuthState.fetchWithAuth('/api/bookings/' + encodeURIComponent(bookingCode) + '/claim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
     });
+  } catch (_) {
+    // Ignore claim errors (already claimed / not found) and continue loading trips.
+  }
+}
+
+async function autoIntegrateFromRedirectIfNeeded() {
+  if (!window.AuthState || !AuthState.isAuthenticated()) return;
+
+  const params = new URLSearchParams(window.location.search || '');
+  const action = String(params.get('action') || '').trim().toLowerCase();
+  const codeFromUrl = String(params.get('booking_code') || '').trim();
+  if (action !== 'integrate' || !codeFromUrl) return;
+
+  const onceKey = 'autoIntegrateDone:' + codeFromUrl;
+  if (sessionStorage.getItem(onceKey) === '1') return;
+  sessionStorage.setItem(onceKey, '1');
+
+  const target = tripsData.find(function (trip) { return trip.bookingCode === codeFromUrl; });
+  if (!target) {
+    try {
+      showNotification(t('bookingNotFoundInAccount').replace('{code}', codeFromUrl), 'warning', 3200);
+    } catch (e) {
+      showNotification('Không tìm thấy booking ' + codeFromUrl + ' trong tài khoản hiện tại.', 'warning', 3200);
+    }
+    return;
+  }
+
+  if (target.nft && target.nft.minted) {
+    showNotification(getLang() === 'vi' ? 'Booking này đã được tích hợp.' : 'This booking is already integrated.', 'success', 2500);
+    return;
+  }
+
+  showNotification('Đang xử lý tích hợp vé cho booking ' + codeFromUrl + '...', 'info', 2200);
+  await integrateNftTicket(codeFromUrl, true);
+}
+
+function buildTripCard(trip) {
+  const nftMinted = !!(trip.nft && trip.nft.minted);
+  const routeText = escapeHtml(trip.route || '--- -> ---');
+  const bookingCode = escapeHtml(trip.bookingCode || '-');
+  const airlineText = escapeHtml(trip.airline || 'SkyPlan');
+  const departureTime = escapeHtml(trip.departureTime || '--:--');
+  const arrivalTime = escapeHtml(trip.arrivalTime || '--:--');
+  const flightDate = escapeHtml(trip.flightDate || '--/--/----');
+  const passengerName = escapeHtml(trip.passengerName || '-');
+  const seatText = escapeHtml(trip.seat || '-');
+  const statusClass = escapeHtml(trip.status || 'upcoming');
+  const safeId = escapeHtml(trip.id || trip.bookingCode || '');
+
+  let nftAction = '';
+  if (nftMinted) {
+    nftAction = '<button class="btn btn-outline" onclick="event.stopPropagation(); viewNftTicket(\'' + safeId + '\')"><i class="fas fa-ticket"></i><span>' + t('viewNftTicket') + '</span></button>';
+  } else if (trip.status === 'upcoming') {
+    nftAction = '<button class="btn btn-outline" onclick="event.stopPropagation(); integrateNftTicket(\'' + bookingCode + '\')"><i class="fas fa-link"></i><span>' + t('integrateNft') + '</span></button>';
+  }
+
+  const cancelAction = trip.status === 'upcoming'
+    ? '<button class="btn btn-danger" onclick="event.stopPropagation(); cancelTrip(\'' + bookingCode + '\')"><i class="fas fa-times-circle"></i><span>' + t('cancelTrip') + '</span></button>'
+    : '';
+
+  return [
+    '<div class="trip-card" data-trip-id="' + safeId + '" onclick="goToOverview(\'' + bookingCode + '\')">',
+    '  <div class="trip-status ' + statusClass + '"><span>' + statusLabel(trip.status) + '</span></div>',
+    '  <div class="trip-header">',
+    '    <div class="route-info">',
+    '      <div class="route-title"><h3><span class="route-text">' + routeText + '</span></h3></div>',
+    '      <p class="booking-ref">' + t('bookingCode') + ' <strong>' + bookingCode + '</strong></p>',
+    '    </div>',
+    '    <div class="trip-price">',
+    '      <span class="price">' + formatVnd(trip.amountVnd) + '</span>',
+    '      <span class="passengers">1 ' + t('passenger') + '</span>',
+    '    </div>',
+    '  </div>',
+    '  <div class="trip-details">',
+    '    <div class="flight-segment">',
+    '      <div class="flight-info">',
+    '        <div class="airline"><i class="fas fa-plane"></i><span>' + airlineText + '</span></div>',
+    '        <div class="flight-time">',
+    '          <span class="departure"><strong>' + departureTime + '</strong><small>' + t('flightDate') + ' ' + flightDate + '</small></span>',
+    '          <div class="duration"><div class="line"></div><span>' + trip.duration + '</span></div>',
+    '          <span class="arrival"><strong>' + arrivalTime + '</strong><small>' + t('passengerLabel') + ' ' + passengerName + '</small></span>',
+    '        </div>',
+    '      </div>',
+    '    </div>',
+    '    <div class="booking-details">',
+    '      <div class="detail-item"><i class="fas fa-chair"></i><span>' + t('seat') + ' <strong>' + seatText + '</strong></span></div>',
+    '    </div>',
+    '  </div>',
+    '  <div class="trip-actions">',
+    '    <div class="trip-buttons">',
+    '      <button class="btn btn-outline" onclick="event.stopPropagation(); viewTicket(\'' + bookingCode + '\')"><i class="fas fa-ticket-alt"></i><span>' + t('viewTicket') + '</span></button>',
+    '      ' + nftAction,
+    '      <button class="btn btn-primary" onclick="event.stopPropagation(); goToOverview(\'' + bookingCode + '\')"><i class="fas fa-eye"></i><span>' + t('tripDetails') + '</span></button>',
+    '      ' + cancelAction,
+    '    </div>',
+    '  </div>',
+    '</div>'
+  ].join('');
+}
+
+const _integratingBookings = new Set();
+
+async function integrateNftTicket(bookingCode, isAuto = false) {
+  const code = String(bookingCode || '').trim();
+  if (!code) return;
+
+  // Unified UX: always confirm integration intent first.
+  if (!isAuto && typeof window.showBlockchainIntegrationPopup === 'function') {
+    const choice = await window.showBlockchainIntegrationPopup();
+    if (choice === 'guide') {
+      window.location.href = 'support.html#blockchain-ticket-guide';
+      return;
+    }
+    if (choice !== 'integrate') return;
+  }
+
+  if (!window.AuthState || !AuthState.isAuthenticated()) {
+    if (window.AuthState && typeof AuthState.requireAuth === 'function') {
+      AuthState.requireAuth('my_trips.html');
+    }
+    return;
+  }
+
+  if (_integratingBookings.has(code)) {
+    showNotification(t('integratingNft'), 'info', 2000);
+    return;
+  }
+
+  const walletApi = getMetaMaskWallet();
+  if (!walletApi) {
+    showNotification(t('walletUnavailable'), 'error', 3000);
+    return;
+  }
+
+  try {
+    _integratingBookings.add(code);
+
+    // Ensure wallet connected (no on-chain tx required)
+    if (!walletApi.isConnected) {
+      showNotification(t('connectWalletFirst'), 'info', 2500);
+      const ok = await walletApi.connect();
+      if (!ok) return;
+    }
+
+    const wallet = walletApi.account;
+    if (!wallet) {
+      showNotification(t('walletUnavailable'), 'error', 3000);
+      return;
+    }
+
+    showBlockchainLoading();
+    showNotification(t('integratingNft'), 'info', 2000);
+
+    const resp = await AuthState.fetchWithAuth('/api/bookings/blockchain/integrate-nft', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ booking_code: code, wallet_address: wallet })
+    });
+
+    const payload = await resp.json().catch(function () { return {}; });
+    if (!resp.ok || !payload.success) {
+      throw new Error(payload && payload.message ? payload.message : 'Integrate failed');
+    }
+
+    showNotification(t('integrateNftSuccess'), 'success', 3000);
+    await loadUserTrips();
+  } catch (err) {
+    console.warn('Integrate ticket failed:', err && err.message ? err.message : err);
+    showNotification((err && err.message) ? err.message : toFriendlyIntegrateError(), 'error', 3200);
+  } finally {
+    hideBlockchainLoadingSafely();
+    _integratingBookings.delete(code);
+  }
+}
+
+function renderTrips() {
+  const tabs = ['all', 'upcoming', 'completed', 'cancelled'];
+
+  tabs.forEach(function (tab) {
+    const list = document.querySelector('#' + tab + '-content .trips-list');
+    if (!list) return;
+
+    let trips = tripsData.slice();
+    if (tab !== 'all') {
+      trips = trips.filter(function (trip) { return trip.status === tab; });
+    }
+
+    list.innerHTML = trips.map(buildTripCard).join('');
   });
+
+  checkEmptyState();
 }
 
 function switchTab(status) {
-  // Update tab buttons
-  document.querySelectorAll('.tab-btn').forEach(btn => {
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
     btn.classList.remove('active');
   });
-  document.querySelector(`[data-status="${status}"]`).classList.add('active');
+  const selectedBtn = document.querySelector('[data-status="' + status + '"]');
+  if (selectedBtn) selectedBtn.classList.add('active');
 
-  // Update content
-  document.querySelectorAll('.tab-content').forEach(content => {
+  document.querySelectorAll('.tab-content').forEach(function (content) {
     content.classList.remove('active');
   });
-  document.getElementById(`${status}-content`).classList.add('active');
+  const activeContent = document.getElementById(status + '-content');
+  if (activeContent) activeContent.classList.add('active');
 
   currentTab = status;
   checkEmptyState();
 }
 
-// Check if current tab is empty and show empty state
 function checkEmptyState() {
   const activeContent = document.querySelector('.tab-content.active');
-  const tripsList = activeContent.querySelector('.trips-list');
   const emptyState = document.getElementById('empty-state');
-  
-  if (tripsList && tripsList.children.length === 0) {
-    tripsList.style.display = 'none';
-    emptyState.style.display = 'block';
-    
-    // Update empty state message based on current tab
-    const title = emptyState.querySelector('h3');
-    const message = emptyState.querySelector('p');
-    
-    switch(currentTab) {
-      case 'all':
-        title.textContent = getTranslation('noAllTripsTitle');
-        message.textContent = getTranslation('noAllTripsMessage');
-        break;
-      case 'upcoming':
-        title.textContent = getTranslation('noUpcomingTripsTitle');
-        message.textContent = getTranslation('noUpcomingTripsMessage');
-        break;
-      case 'completed':
-        title.textContent = getTranslation('noCompletedTripsTitle');
-        message.textContent = getTranslation('noCompletedTripsMessage');
-        break;
-      case 'cancelled':
-        title.textContent = getTranslation('noCancelledTripsTitle');
-        message.textContent = getTranslation('noCancelledTripsMessage');
-        break;
-    }
-  } else {
-    if (tripsList) tripsList.style.display = 'flex';
-    emptyState.style.display = 'none';
-  }
+  if (!activeContent || !emptyState) return;
+
+  const list = activeContent.querySelector('.trips-list');
+  const hasTrips = !!(list && list.children.length > 0);
+
+  if (list) list.style.display = hasTrips ? 'flex' : 'none';
+  emptyState.style.display = hasTrips ? 'none' : 'block';
 }
 
-// Load trips data (mock data for demo)
-function loadTripsData() {
-  // In a real application, this would fetch from API
-  // For demo purposes, we'll use the static HTML data
-  checkEmptyState();
-}
-
-// Trip actions
-function goToOverview(tripId) {
-  showNotification(getTranslation('goingToOverview'), 'info', 2000);
-  setTimeout(() => {
-    window.location.href = `overview.html?tripId=${tripId}`;
-  }, 1000);
-}
-
-function downloadTicket(tripId) {
-  showNotification(getTranslation('downloadingTicket'), 'info', 2000);
-  
-  // In real app, this would download the ticket file
-  setTimeout(() => {
-    showNotification(getTranslation('ticketDownloaded'), 'success', 3000);
-  }, 2000);
-}
-
-function viewTicket(tripId) {
-  // Show notification
-  showNotification(getTranslation('openingTicket'), 'info', 2000);
-  
-  // In real app, this would navigate to ticket view
-  setTimeout(() => {
-    showNotification(getTranslation('ticketOpened'), 'success', 3000);
-  }, 1000);
-}
-
-function modifyTrip(tripId) {
-  showNotification(getTranslation('modifyFeatureDev'), 'info', 4000);
-}
-
-function downloadInvoice(tripId) {
-  showNotification(getTranslation('downloadingInvoice'), 'info', 2000);
-  
-  // Simulate download
-  setTimeout(() => {
-    showNotification(getTranslation('invoiceDownloaded'), 'success', 3000);
-  }, 1500);
-}
-
-function rebookTrip(tripId) {
-  showNotification(getTranslation('goingToSearch'), 'info', 3000);
-  
-  // In real app, this would pre-fill search form
-  setTimeout(() => {
-    window.location.href = 'search.html';
-  }, 1000);
-}
-
-function rebookSimilarTrip(tripId) {
-  showNotification(getTranslation('findingSimilarFlights'), 'info', 3000);
-  
-  setTimeout(() => {
-    window.location.href = 'search.html';
-  }, 1000);
-}
-
-function viewCancellationDetails(tripId) {
-  const trip = getTripById(tripId);
-  if (!trip) return;
-  
-  showNotification(getTranslation('showingCancellationDetails'), 'info', 2000);
-  
-  // Create and show a custom modal for cancellation details
-  setTimeout(() => {
-    showCancellationModal(tripId);
-  }, 500);
-}
-
-function showCancellationModal(tripId) {
-  // Remove existing modal if any
-  const existingModal = document.getElementById('cancellationDetailsModal');
-  if (existingModal) {
-    existingModal.remove();
-  }
-  
-  // Create modal HTML
-  const modalHTML = `
-    <div id="cancellationDetailsModal" class="modal-overlay" style="display: flex;">
-      <div class="modal-content cancellation-modal" style="max-width: 600px; width: 90%;">
-        <div class="modal-header">
-          <h3><i class="fas fa-info-circle"></i> Chi tiết hủy vé ${tripId}</h3>
-          <button class="close-btn" onclick="closeCancellationModal()">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="cancellation-details-grid">
-            <div class="detail-row">
-              <div class="detail-label">
-                <i class="fas fa-clock"></i>
-                <span>Thời gian hủy</span>
-              </div>
-              <div class="detail-value">08/11/2025 14:30</div>
-            </div>
-            <div class="detail-row">
-              <div class="detail-label">
-                <i class="fas fa-comment"></i>
-                <span>Lý do hủy</span>
-              </div>
-              <div class="detail-value">Thay đổi kế hoạch cá nhân</div>
-            </div>
-            <div class="detail-row">
-              <div class="detail-label">
-                <i class="fas fa-receipt"></i>
-                <span>Phí hủy</span>
-              </div>
-              <div class="detail-value cancellation-fee">390.000 VND</div>
-            </div>
-            <div class="detail-row">
-              <div class="detail-label">
-                <i class="fas fa-money-bill-wave"></i>
-                <span>Số tiền hoàn</span>
-              </div>
-              <div class="detail-value refund-amount">1.560.000 VND</div>
-            </div>
-            <div class="detail-row">
-              <div class="detail-label">
-                <i class="fas fa-credit-card"></i>
-                <span>Trạng thái hoàn tiền</span>
-              </div>
-              <div class="detail-value status-completed">
-                <span class="status-badge">Đã hoàn vào thẻ</span>
-              </div>
-            </div>
-          </div>
-          <div class="refund-note">
-            <i class="fas fa-info-circle"></i>
-            <span>Tiền hoàn đã được chuyển vào tài khoản thanh toán gốc trong vòng 3-5 ngày làm việc</span>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-primary" onclick="closeCancellationModal()">
-            <i class="fas fa-check"></i>
-            Đã hiểu
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-  
-  // Add modal to page
-  document.body.insertAdjacentHTML('beforeend', modalHTML);
-  
-  // Add enhanced CSS for cancellation details
-  const style = document.createElement('style');
-  style.textContent = `
-    .cancellation-modal .modal-header {
-      padding: 20px 24px 16px 24px;
-      border-bottom: 1px solid #e9ecef;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .cancellation-modal .modal-header h3 {
-      color: #212529;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0;
-      font-size: 1.25rem;
-      font-weight: 600;
-      flex: 1;
-    }
-    
-    .cancellation-modal .close-btn {
-      background: none;
-      border: none;
-      color: #6c757d;
-      font-size: 1.25rem;
-      cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
-      transition: all 0.2s;
-      flex-shrink: 0;
-    }
-    
-    .cancellation-modal .close-btn:hover {
-      background: #f8f9fa;
-      color: #495057;
-    }
-    
-    .cancellation-details-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-    
-    .detail-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 16px;
-      background: #f8f9fa;
-      border-radius: 8px;
-      border-left: 4px solid var(--primary-color);
-    }
-    
-    .detail-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 600;
-      color: #212529;
-      min-width: 160px;
-      flex-shrink: 0;
-    }
-    
-    .detail-label i {
-      color: var(--primary-color);
-      width: 16px;
-      text-align: center;
-    }
-    
-    .detail-value {
-      color: #212529;
-      font-weight: 600;
-      text-align: right;
-    }
-    
-    .cancellation-fee {
-      color: #dc3545;
-      font-weight: 600;
-    }
-    
-    .refund-amount {
-      color: #28a745;
-      font-weight: 600;
-      font-size: 1.1rem;
-    }
-    
-    .status-badge {
-      background: #28a745;
-      color: white;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.875rem;
-      font-weight: 500;
-    }
-    
-    .refund-note {
-      background: #e3f2fd;
-      border: 1px solid #90caf9;
-      border-radius: 8px;
-      padding: 12px;
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      color: #1976d2;
-      font-size: 0.9rem;
-      line-height: 1.4;
-    }
-    
-    .refund-note i {
-      color: #1976d2;
-      margin-top: 2px;
-      flex-shrink: 0;
-    }
-    
-    .cancellation-modal .modal-footer {
-      border-top: 1px solid #e9ecef;
-      padding-top: 16px;
-      display: flex;
-      justify-content: center;
-    }
-    
-    .cancellation-modal .btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 24px;
-      min-width: 120px;
-      justify-content: center;
-    }
-    
-    @media (max-width: 768px) {
-      .detail-row {
-        flex-direction: column;
-        gap: 8px;
-      }
-      
-      .detail-label {
-        min-width: auto;
-      }
-      
-      .detail-value {
-        text-align: left;
-      }
-    }
-  `;
-  document.head.appendChild(style);
-}
-
-function closeCancellationModal() {
-  const modal = document.getElementById('cancellationDetailsModal');
-  if (modal) {
-    modal.remove();
-  }
-}
-
-// Cancel trip functionality
-function cancelTrip(tripId) {
-  currentTripToCancel = tripId;
-  const trip = getTripById(tripId);
-  
-  if (!trip) {
-    showNotification('Không tìm thấy thông tin chuyến đi!', 'error', 4000);
-    return;
-  }
-  
-  // Populate modal with trip details
-  populateCancelModal(trip);
-  
-  // Show modal
-  document.getElementById('cancelModal').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
-function populateCancelModal(trip) {
-  const summary = document.getElementById('cancelTripSummary');
-  const route = trip.querySelector('.route-info h3').textContent;
-  const bookingRef = trip.querySelector('.booking-ref strong').textContent;
-  const price = trip.querySelector('.trip-price .price').textContent;
-  
-  summary.innerHTML = `
-    <h4>Thông tin chuyến đi</h4>
-    <div class="detail-item">
-      <i class="fas fa-route"></i>
-      <span>Tuyến bay: <strong>${route}</strong></span>
-    </div>
-    <div class="detail-item">
-      <i class="fas fa-ticket-alt"></i>
-      <span>Mã đặt chỗ: <strong>${bookingRef}</strong></span>
-    </div>
-    <div class="detail-item">
-      <i class="fas fa-money-bill-wave"></i>
-      <span>Giá vé: <strong>${price}</strong></span>
-    </div>
-  `;
-}
-
-function closeCancelModal() {
-  document.getElementById('cancelModal').style.display = 'none';
-  document.body.style.overflow = 'auto';
-  currentTripToCancel = null;
-  
-  // Reset form
-  document.getElementById('cancelReason').value = '';
-  document.getElementById('cancelNote').value = '';
-}
-
-function confirmCancelTrip() {
-  if (!currentTripToCancel) return;
-  
-  const reason = document.getElementById('cancelReason').value;
-  const note = document.getElementById('cancelNote').value;
-  
-  // Show loading
-  showNotification('Đang xử lý yêu cầu hủy...', 'info', 2000);
-  
-  // Simulate API call
-  setTimeout(() => {
-    // Move trip to cancelled tab
-    const tripCard = getTripById(currentTripToCancel);
-    if (tripCard) {
-      // Update trip status
-      const statusElement = tripCard.querySelector('.trip-status');
-      statusElement.className = 'trip-status cancelled';
-      statusElement.innerHTML = '<span>Đã hủy</span>';
-      
-      // Update price info
-      const priceContainer = tripCard.querySelector('.trip-price');
-      const originalPrice = priceContainer.querySelector('.price').textContent;
-      priceContainer.innerHTML = `
-        <span class="price">${originalPrice}</span>
-        <span class="refund-info">Hoàn tiền: ${calculateRefund(originalPrice)}</span>
-      `;
-      
-      // Update actions
-      const actionsContainer = tripCard.querySelector('.trip-actions');
-      actionsContainer.innerHTML = `
-        <button class="btn btn-outline" onclick="viewCancellationDetails('${currentTripToCancel}')">
-          <i class="fas fa-info-circle"></i>
-          <span>Chi tiết hủy</span>
-        </button>
-        <button class="btn btn-primary" onclick="rebookSimilarTrip('${currentTripToCancel}')">
-          <i class="fas fa-repeat"></i>
-          <span>Đặt tương tự</span>
-        </button>
-      `;
-      
-      // Move to cancelled section
-      const cancelledList = document.querySelector('#cancelled-content .trips-list');
-      const upcomingList = document.querySelector('#upcoming-content .trips-list');
-      
-      if (cancelledList && upcomingList) {
-        cancelledList.appendChild(tripCard);
-      }
-    }
-    
-    closeCancelModal();
-    showNotification(getTranslation('tripCancelledSuccess') + ' ' + getTranslation('refundProcessing'), 'success', 5000);
-    
-    // Check if upcoming tab is now empty
-    if (currentTab === 'upcoming') {
-      checkEmptyState();
-    }
-  }, 2000);
-}
-
-// Helper functions
-function getTripById(tripId) {
-  return document.querySelector(`[data-trip-id="${tripId}"]`);
-}
-
-function calculateRefund(priceText) {
-  // Extract number from price text and calculate 80% refund
-  const priceNumber = parseInt(priceText.replace(/\D/g, ''));
-  const refund = Math.floor(priceNumber * 0.8);
-  return refund.toLocaleString('vi-VN') + ' VND';
-}
-
-// Notification system
-function showNotification(message, type = 'info', duration = 3000) {
-  // Try to use toast system first
-  if (typeof window.showToast === 'function') {
-    window.showToast(message, { type: type, duration: duration });
-    return;
-  }
-  
-  // Try alternative notify function
-  if (typeof window.notify === 'function') {
-    window.notify(message, type, duration);
-    return;
-  }
-  
-  // Try to load toast.js dynamically if not available
-  if (!window.toastLoadAttempted) {
-    window.toastLoadAttempted = true;
-    const script = document.createElement('script');
-    script.src = 'assets/scripts/toast.js';
-    script.onload = function() {
-      // Retry notification after toast.js is loaded
-      if (typeof window.showToast === 'function') {
-        window.showToast(message, { type: type, duration: duration });
-      } else {
-        console.log('Toast notification:', message);
-      }
-    };
-    script.onerror = function() {
-      console.log('Toast notification:', message);
-    };
-    document.head.appendChild(script);
-  } else {
-    // Toast.js load was attempted but failed, just log
-    console.log('Toast notification:', message);
-  }
-}
-
-// Language support
-function initializeLanguage() {
-  const lang = localStorage.getItem('preferredLanguage') || 'vi';
-  applyMyTripsTranslations(lang);
+function initializeTabs() {
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  tabButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      switchTab(this.dataset.status || 'all');
+    });
+  });
 }
 
 function applyMyTripsTranslations(lang) {
-  if (typeof window.myTripsTranslations === 'undefined') {
-    return;
-  }
-  
-  const translations = window.myTripsTranslations[lang] || window.myTripsTranslations.vi;
-  
-  // Update page title
+  const normalized = (lang || getLang()).toLowerCase() === 'en' ? 'en' : 'vi';
+  // DON'T write to localStorage here - this function should only APPLY translations, not SAVE language preference
+  // Language should only be saved via initializeLanguage() or window.broadcastLanguageChange()
+
+  const currentLang = normalized;
+  const translations = (window.myTripsTranslations && window.myTripsTranslations[currentLang]) || {};
+
   if (translations.myTripsTitle) {
     document.title = translations.myTripsTitle;
   }
-  
-  // Apply translations to elements with data-i18n
-  document.querySelectorAll('[data-i18n]').forEach(element => {
+
+  document.querySelectorAll('[data-i18n]').forEach(function (element) {
     const key = element.getAttribute('data-i18n');
     if (translations[key]) {
       element.textContent = translations[key];
     }
   });
-  
-  // Apply placeholder translations
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
-    const key = element.getAttribute('data-i18n-placeholder');
-    if (translations[key]) {
-      element.placeholder = translations[key];
-    }
-  });
-  
-  // Translate booking code labels
-  document.querySelectorAll('.booking-ref').forEach(element => {
-    const strong = element.querySelector('strong');
-    if (strong) {
-      const code = strong.textContent;
-      element.innerHTML = `${translations.bookingCode || 'Mã đặt chỗ:'} <strong>${code}</strong>`;
-    }
-  });
-  
-  // Translate passenger count
-  document.querySelectorAll('.passengers').forEach(element => {
-    const match = element.textContent.match(/(\d+)/);
-    if (match) {
-      const count = match[1];
-      const passengerText = count === '1' ? translations.passenger : translations.passengers;
-      element.textContent = `${count} ${passengerText}`;
-    }
-  });
-  
-  // Translate detail items (only those without data-i18n nested elements)
-  document.querySelectorAll('.detail-item span').forEach(element => {
-    // Handle elements with data-i18n children (new structure)
-    const dataI18nChild = element.querySelector('[data-i18n]');
-    if (dataI18nChild) {
-      // This is the new structure with data-i18n
-      const key = dataI18nChild.getAttribute('data-i18n');
-      if (translations[key]) {
-        dataI18nChild.textContent = translations[key];
-      }
-      
-      // Also translate and format the content based on the key
-      const strong = element.querySelector('strong');
-      if (strong && key === 'cancelReason') {
-        const reasonText = strong.textContent;
-        let translatedReason = reasonText;
-        
-        // Translate common cancellation reasons
-        if (reasonText.includes('Thay đổi kế hoạch cá nhân') || reasonText.includes('Personal plan change')) {
-          translatedReason = translations.personalPlanChange || reasonText;
-        } else if (reasonText.includes('Xung đột lịch trình') || reasonText.includes('Schedule conflict')) {
-          translatedReason = translations.scheduleConflict || reasonText;
-        } else if (reasonText.includes('Trường hợp khẩn cấp') || reasonText.includes('Emergency')) {
-          translatedReason = translations.emergencyReason || reasonText;
-        } else if (reasonText.includes('Điều kiện thời tiết') || reasonText.includes('Weather condition')) {
-          translatedReason = translations.weatherCondition || reasonText;
-        } else if (reasonText.includes('Vấn đề sức khỏe') || reasonText.includes('Health issue')) {
-          translatedReason = translations.healthIssue || reasonText;
-        }
-        
-        strong.textContent = translatedReason;
-      } else if (strong && (key === 'flightDate' || element.textContent.includes('Ngày bay:') || element.textContent.includes('Flight date:'))) {
-        // Format flight date
-        const formattedDate = formatDate(strong.textContent, lang);
-        strong.textContent = formattedDate;
-      } else if (strong && (key === 'cancelledAt' || element.textContent.includes('Hủy lúc:') || element.textContent.includes('Cancelled at:'))) {
-        // Format cancellation datetime
-        let formattedDateTime = strong.textContent;
-        if (strong.textContent.includes('/') && strong.textContent.includes(':')) {
-          const parts = strong.textContent.split(' ');
-          if (parts.length >= 2) {
-            const datePart = formatDate(parts[0], lang);
-            const timePart = parts[1];
-            formattedDateTime = `${datePart} ${timePart}`;
-          }
-        }
-        strong.textContent = formattedDateTime;
-      }
-      return; // Skip further processing
-    }
-    
-    // Handle old structure without data-i18n
-    const text = element.textContent;
-    
-    if (text.includes('Ngày bay:') || text.includes('Flight date:')) {
-      const strong = element.querySelector('strong');
-      if (strong) {
-        const formattedDate = formatDate(strong.textContent, lang);
-        element.innerHTML = `${translations.flightDate || 'Ngày bay:'} <strong>${formattedDate}</strong>`;
-      }
-    } else if (text.includes('Hành khách:') || text.includes('Passenger:')) {
-      const strong = element.querySelector('strong');
-      if (strong) {
-        element.innerHTML = `${translations.passengerLabel || 'Hành khách:'} <strong>${strong.textContent}</strong>`;
-      }
-    } else if (text.includes('Ghế:') || text.includes('Seat:')) {
-      const strong = element.querySelector('strong');
-      if (strong) {
-        element.innerHTML = `${translations.seat || 'Ghế:'} <strong>${strong.textContent}</strong>`;
-      }
-    } else if (text.includes('Hủy lúc:') || text.includes('Cancelled at:')) {
-      const strong = element.querySelector('strong');
-      if (strong) {
-        // Format datetime for cancellation
-        let formattedDateTime = strong.textContent;
-        if (strong.textContent.includes('/') && strong.textContent.includes(':')) {
-          // Split date and time parts
-          const parts = strong.textContent.split(' ');
-          if (parts.length >= 2) {
-            const datePart = formatDate(parts[0], lang);
-            const timePart = parts[1];
-            formattedDateTime = `${datePart} ${timePart}`;
-          }
-        }
-        element.innerHTML = `${translations.cancelledAt || 'Hủy lúc:'} <strong>${formattedDateTime}</strong>`;
-      }
-    } else if (text.includes('Lý do hủy:') || text.includes('Cancellation reason:')) {
-      const strong = element.querySelector('strong');
-      if (strong) {
-        const reasonText = strong.textContent;
-        let translatedReason = reasonText;
-        
-        // Translate common cancellation reasons
-        if (reasonText.includes('Thay đổi kế hoạch cá nhân') || reasonText.includes('Personal plan change')) {
-          translatedReason = translations.personalPlanChange || reasonText;
-        } else if (reasonText.includes('Xung đột lịch trình') || reasonText.includes('Schedule conflict')) {
-          translatedReason = translations.scheduleConflict || reasonText;
-        } else if (reasonText.includes('Trường hợp khẩn cấp') || reasonText.includes('Emergency')) {
-          translatedReason = translations.emergencyReason || reasonText;
-        } else if (reasonText.includes('Điều kiện thời tiết') || reasonText.includes('Weather condition')) {
-          translatedReason = translations.weatherCondition || reasonText;
-        } else if (reasonText.includes('Vấn đề sức khỏe') || reasonText.includes('Health issue')) {
-          translatedReason = translations.healthIssue || reasonText;
-        }
-        
-        element.innerHTML = `${translations.cancelReason || 'Lý do hủy:'} <strong>${translatedReason}</strong>`;
-      }
-    } else if (text.includes('Trạng thái:') || text.includes('Status:')) {
-      const strong = element.querySelector('strong');
-      if (strong) {
-        const statusText = strong.textContent.includes('thành công') || strong.textContent.includes('successfully') 
-          ? translations.flightCompleted 
-          : strong.textContent;
-        element.innerHTML = `${translations.status || 'Trạng thái:'} <strong>${statusText}</strong>`;
-      }
-    }
-  });
-  
-  // Translate refund info
-  document.querySelectorAll('.refund-info').forEach(element => {
-    const match = element.textContent.match(/[\d.,]+\s*VND/);
-    if (match) {
-      element.textContent = `${translations.refundInfo || 'Hoàn tiền:'} ${match[0]}`;
-    }
-  });
-  
-  // Translate airport names
-  document.querySelectorAll('.departure small, .arrival small').forEach(element => {
-    const text = element.textContent;
-    if (text.includes('Nội Bài') || text.includes('Noi Bai')) {
-      element.textContent = `${translations.noibaAirport || 'Sân bay Nội Bài'} (HAN)`;
-    } else if (text.includes('Tân Sơn Nhất') || text.includes('Tan Son Nhat')) {
-      element.textContent = `${translations.tansonnhatAirport || 'Sân bay Tân Sơn Nhất'} (SGN)`;
-    } else if (text.includes('Đà Nẵng') || text.includes('Da Nang')) {
-      element.textContent = `${translations.danangAirport || 'Sân bay Đà Nẵng'} (DAD)`;
-    } else if (text.includes('Cam Ranh')) {
-      element.textContent = `${translations.camranhAirport || 'Sân bay Cam Ranh'} (CXR)`;
-    }
-  });
-  
-  // Translate city names in route titles
-  if (typeof window.cityTranslations !== 'undefined') {
-    const cities = window.cityTranslations[lang] || window.cityTranslations.vi;
-    document.querySelectorAll('.route-text').forEach(element => {
-      let text = element.textContent;
-      
-      // Replace city names
-      Object.keys(cities).forEach(cityKey => {
-        const viName = window.cityTranslations.vi[cityKey];
-        const enName = window.cityTranslations.en[cityKey];
-        const targetName = cities[cityKey];
-        
-        // Replace both VI and EN versions with target language
-        text = text.replace(new RegExp(viName, 'g'), targetName);
-        text = text.replace(new RegExp(enName, 'g'), targetName);
-      });
-      
-      element.textContent = text;
-    });
+
+  setBlockchainLoadingText();
+
+  renderTrips();
+}
+
+function showNotification(message, type, duration) {
+  if (typeof window.showToast === 'function') {
+    window.showToast(message, { type: type || 'info', duration: duration || 2500 });
+    return;
+  }
+  if (typeof window.notify === 'function') {
+    window.notify(message, type || 'info', duration || 2500);
+    return;
   }
 }
 
-// Modal click outside to close
-document.addEventListener('click', function(e) {
-  const modal = document.getElementById('cancelModal');
-  const cancellationModal = document.getElementById('cancellationDetailsModal');
-  
-  if (e.target === modal) {
-    closeCancelModal();
-  }
-  
-  if (e.target === cancellationModal) {
-    closeCancellationModal();
-  }
-});
+function goToOverview(tripId) {
+  showNotification(t('goingToOverview'), 'info', 1500);
+  setTimeout(function () {
+    window.location.href = 'overview.html?booking_code=' + encodeURIComponent(tripId || '');
+  }, 700);
+}
 
-// ESC key to close modal
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    const modal = document.getElementById('cancelModal');
-    const cancellationModal = document.getElementById('cancellationDetailsModal');
-    
-    if (modal && modal.style.display === 'flex') {
-      closeCancelModal();
-    }
-    
-    if (cancellationModal) {
-      closeCancellationModal();
-    }
-  }
-});
+function viewTicket(tripId) {
+  showNotification(t('openingTicket'), 'info', 1200);
+  setTimeout(function () {
+    window.location.href = 'overview.html?booking_code=' + encodeURIComponent(tripId || '');
+  }, 500);
+}
 
-// Export functions for global access
-window.goToOverview = goToOverview;
-window.downloadTicket = downloadTicket;
-window.viewTicket = viewTicket;
-window.modifyTrip = modifyTrip;
-window.downloadInvoice = downloadInvoice;
-window.rebookTrip = rebookTrip;
-window.rebookSimilarTrip = rebookSimilarTrip;
-window.viewCancellationDetails = viewCancellationDetails;
-window.closeCancellationModal = closeCancellationModal;
-window.cancelTrip = cancelTrip;
-window.closeCancelModal = closeCancelModal;
-window.confirmCancelTrip = confirmCancelTrip;
-window.initializeLanguage = initializeLanguage;
+function viewNftTicket(tripId) {
+  const trip = tripsData.find(function (item) { return item.id === tripId; });
+  if (!trip || !trip.nft || !trip.nft.minted) {
+    showNotification(t('nftNotMinted'), 'warning', 2500);
+    return;
+  }
+  if (trip.nft.contract && trip.nft.tokenId) {
+    showNotification(t('nftOpenExplorerHint'), 'success', 2500);
+    window.open('https://sepolia.etherscan.io/token/' + trip.nft.contract + '?a=' + trip.nft.tokenId, '_blank');
+    return;
+  }
+
+  if (trip.nft.txHash) {
+    showNotification(t('nftOpenTxHint'), 'info', 2600);
+    window.open('https://sepolia.etherscan.io/tx/' + trip.nft.txHash, '_blank');
+    return;
+  }
+
+  if (trip.nft.contract) {
+    showNotification(t('nftOpenContractHint'), 'info', 2600);
+    window.open('https://sepolia.etherscan.io/token/' + trip.nft.contract, '_blank');
+    return;
+  }
+
+  showNotification(t('nftDataPendingHint'), 'info', 2600);
+}
+
 window.applyMyTripsTranslations = applyMyTripsTranslations;
+window.goToOverview = goToOverview;
+window.viewTicket = viewTicket;
+window.viewNftTicket = viewNftTicket;
+window.integrateNftTicket = integrateNftTicket;
 
-// Listen for language change events
-document.addEventListener('languageChanged', function(e) {
-  applyMyTripsTranslations(e.detail.language);
+// Keep old handlers as no-op compatible functions for existing inline attributes.
+window.downloadTicket = viewTicket;
+window.modifyTrip = function () { showNotification(t('modifyFeatureDev'), 'info', 2500); };
+window.cancelTrip = function (bookingCode) {
+  const trip = tripsData.find(function (t) { return t.bookingCode === bookingCode; });
+  if (!trip) return;
+
+  const departureDate = toDate(trip.departureIso);
+  const now = new Date();
+  const hoursDiff = (departureDate - now) / (1000 * 60 * 60);
+
+  let cancelModal = document.getElementById('cancel-modal');
+  if (!cancelModal) {
+    // Inject modal dynamically if HTML is cached
+    const modalHtml = `
+      <div id="cancel-modal" class="modal-overlay" style="display: none;">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 data-i18n="cancelTripTitle">Hủy vé máy bay</h3>
+            <button class="close-btn" onclick="document.getElementById('cancel-modal').style.display='none'">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="cancel-warning">
+              <i class="fas fa-exclamation-triangle" style="color: #f59e0b; font-size: 1.5rem;"></i>
+              <p id="cancel-policy-text" style="margin: 0;"></p>
+            </div>
+            <div class="policy-details" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #e5e7eb;">
+              <h4 style="margin: 0 0 10px 0; font-size: 1rem; color: #374151;">Chính sách hủy vé</h4>
+              <ul style="margin: 0 0 0 20px; padding: 0; line-height: 1.6; font-size: 0.95rem; color: #4b5563;">
+                <li data-i18n="cancelPolicy1"><strong>Trước 48h khởi hành:</strong> Hoàn 90% giá vé (phí 10%). Số tiền hoàn sẽ được quy đổi thành SKY Token.</li>
+                <li data-i18n="cancelPolicy2"><strong>Trong vòng 48h khởi hành:</strong> Không hỗ trợ hoàn vé.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline" onclick="document.getElementById('cancel-modal').style.display='none'">Đóng</button>
+            <button id="confirm-cancel-btn" class="btn btn-danger">Xác nhận hủy</button>
+          </div>
+        </div>
+      </div>
+    `;
+    const container = document.querySelector('.my-trips-page') || document.body;
+    container.insertAdjacentHTML('beforeend', modalHtml);
+    cancelModal = document.getElementById('cancel-modal');
+  }
+
+  const policyText = document.getElementById('cancel-policy-text');
+  const confirmBtn = document.getElementById('confirm-cancel-btn');
+
+  const lang = getLang();
+
+  if (hoursDiff >= 48) {
+    const refundAmount = trip.amountVnd * 0.9;
+    policyText.innerHTML = lang === 'vi'
+      ? 'Chuyến bay của bạn khởi hành sau hơn 48 giờ. Bạn sẽ bị trừ 10% phí hủy và nhận lại tương đương <strong>' + formatVnd(refundAmount) + '</strong> dưới dạng SKY Token.'
+      : 'Your flight departs in more than 48 hours. A 10% cancellation fee applies. You will receive <strong>' + formatVnd(refundAmount) + '</strong> in SKY Tokens.';
+    confirmBtn.disabled = false;
+    confirmBtn.style.opacity = '1';
+    confirmBtn.style.cursor = 'pointer';
+  } else {
+    policyText.innerHTML = lang === 'vi'
+      ? 'Chuyến bay của bạn khởi hành trong vòng 48 giờ. <strong>Không hỗ trợ hoàn vé</strong> theo quy định.'
+      : 'Your flight departs within 48 hours. <strong>No refund is supported</strong> per policy.';
+    confirmBtn.disabled = true;
+    confirmBtn.style.opacity = '0.5';
+    confirmBtn.style.cursor = 'not-allowed';
+  }
+
+  confirmBtn.onclick = function () {
+    executeCancelTrip(bookingCode);
+  };
+
+  document.getElementById('cancel-modal').style.display = 'flex';
+};
+
+async function executeCancelTrip(bookingCode) {
+  const lang = getLang();
+  document.getElementById('cancel-modal').style.display = 'none';
+
+  try {
+    showNotification(lang === 'vi' ? 'Đang hủy vé...' : 'Cancelling booking...', 'info', 2000);
+    const resp = await AuthState.fetchWithAuth('/api/bookings/' + encodeURIComponent(bookingCode) + '/cancel', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await resp.json().catch(function () { return {}; });
+    if (resp.ok && data.success) {
+      showNotification(
+        (lang === 'vi' ? 'Hủy vé ' + bookingCode + ' thành công!' : 'Booking ' + bookingCode + ' cancelled successfully!'),
+        'success', 3500
+      );
+      await loadUserTrips();
+    } else {
+      showNotification(data.message || (lang === 'vi' ? 'Hủy vé thất bại' : 'Failed to cancel booking'), 'error', 3500);
+    }
+  } catch (err) {
+    showNotification(lang === 'vi' ? 'Lỗi kết nối khi hủy vé' : 'Network error while cancelling', 'error', 3000);
+  }
+}
+window.downloadInvoice = function () { showNotification(t('downloadingInvoice'), 'info', 2200); };
+window.rebookTrip = function () { window.location.href = 'search.html'; };
+window.rebookSimilarTrip = function () { window.location.href = 'search.html'; };
+window.viewCancellationDetails = function () { showNotification(t('cancellationFeatureDev'), 'info', 2500); };
+window.closeCancelModal = function () { };
+window.confirmCancelTrip = function () { };
+
+// Initialize page
+window.addEventListener('DOMContentLoaded', function () {
+  ensureBlockchainLoadingOverlay();
+  initializeTabs();
+  claimBookingFromContextIfNeeded().finally(function () {
+    loadUserTrips().finally(function () {
+      autoIntegrateFromRedirectIfNeeded();
+    });
+  });
 });

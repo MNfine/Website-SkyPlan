@@ -39,6 +39,75 @@
   opacity: 0.9;
 }
 
+.my-trips-page .wallet-link-panel {
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--box-shadow);
+  padding: 18px;
+  margin-bottom: 24px;
+  border: 1px solid #d9eef0;
+}
+
+.my-trips-page .wallet-link-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--dark-color);
+}
+
+.my-trips-page .wallet-link-header p {
+  margin: 8px 0 0;
+  color: #5f6b7a;
+  font-size: 0.92rem;
+}
+
+.my-trips-page .wallet-filter-row {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.my-trips-page .wallet-filter-row label {
+  font-weight: 600;
+  color: #334155;
+}
+
+.my-trips-page .wallet-filter-row select {
+  min-width: 260px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.my-trips-page .wallet-summary-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.my-trips-page .wallet-summary-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fcfeff;
+}
+
+.my-trips-page .wallet-summary-card .summary-label {
+  display: block;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.my-trips-page .wallet-summary-card .summary-value {
+  margin-top: 4px;
+  display: block;
+  font-size: 1.05rem;
+  color: #0f172a;
+}
+
 /* Tabs */
 .my-trips-page .trips-tabs {
   display: flex;
@@ -274,6 +343,126 @@
   display: block;
 }
 
+body.blockchain-loading-open {
+  overflow: hidden;
+}
+
+.blockchain-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.2), transparent 45%),
+    radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.18), transparent 42%),
+    rgba(2, 6, 23, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+.blockchain-loading-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.blockchain-loading-card {
+  width: min(560px, 100%);
+  border-radius: 18px;
+  padding: 24px 22px;
+  color: #e2e8f0;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 24px 60px rgba(2, 132, 199, 0.25);
+  background:
+    linear-gradient(160deg, rgba(15, 23, 42, 0.98), rgba(12, 74, 110, 0.92));
+}
+
+.blockchain-chain {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.blockchain-chain span {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(125, 211, 252, 0.9);
+  background: rgba(2, 132, 199, 0.25);
+  box-shadow: 0 0 14px rgba(125, 211, 252, 0.35);
+  animation: chainPulse 1.1s infinite ease-in-out;
+}
+
+.blockchain-chain span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.blockchain-chain span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.blockchain-loading-title {
+  margin: 0;
+  font-size: 1.16rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.blockchain-loading-desc {
+  margin: 8px 0 0;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.blockchain-progress {
+  margin-top: 16px;
+  width: 100%;
+  height: 7px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(148, 163, 184, 0.22);
+}
+
+.blockchain-progress-bar {
+  width: 45%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #22d3ee, #0ea5e9, #38bdf8);
+  box-shadow: 0 0 18px rgba(14, 165, 233, 0.45);
+  animation: blockchainProgress 1.35s infinite ease-in-out;
+}
+
+.blockchain-loading-hint {
+  margin: 12px 0 0;
+  color: #94a3b8;
+  font-size: 0.92rem;
+}
+
+@keyframes chainPulse {
+  0%,
+  100% {
+    transform: translateY(0) scale(0.95);
+    opacity: 0.72;
+  }
+  50% {
+    transform: translateY(-4px) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes blockchainProgress {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(260%);
+  }
+}
+
 /* Trip Details */
 .my-trips-page .trip-details {
   margin-bottom: 24px;
@@ -398,16 +587,28 @@
   color: var(--dark-color);
 }
 
+.my-trips-page .detail-item.verified-yes strong {
+  color: #166534;
+}
+
+.my-trips-page .detail-item.verified-no strong {
+  color: #b45309;
+}
+
 /* Trip Actions */
 .my-trips-page .trip-actions {
   width: 100%;
   box-sizing: border-box;
+  position: relative;
+  z-index: 10;
 }
 
 .my-trips-page .trip-buttons {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
+  position: relative;
+  z-index: 10;
 }
 
 .my-trips-page .trip-buttons .btn {
@@ -734,6 +935,20 @@
     padding: 8px;
     margin: 0 0 20px 0;
     gap: 8px;
+  }
+
+  .my-trips-page .wallet-link-panel {
+    padding: 14px;
+  }
+
+  .my-trips-page .wallet-filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .my-trips-page .wallet-filter-row select {
+    min-width: 0;
+    width: 100%;
   }
 
   .my-trips-page .trips-tabs .tab-btn {

@@ -149,6 +149,43 @@ body {
   flex-wrap: wrap;
   gap: 4px;
 }
+
+.info-value.tier-registered,
+.info-value.tier-silver,
+.info-value.tier-gold,
+.info-value.tier-platinum {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.85rem;
+  letter-spacing: 0.2px;
+}
+
+.info-value.tier-registered {
+  background: #f3f4f6;
+  color: #4b5563;
+  border-color: #e5e7eb;
+}
+
+.info-value.tier-silver {
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+  color: #64748b;
+  border-color: #cbd5e1;
+}
+
+.info-value.tier-gold {
+  background: linear-gradient(180deg, #fff9e6 0%, #fff0b3 100%);
+  color: #8a5b00;
+  border-color: #f5d47a;
+}
+
+.info-value.tier-platinum {
+  background: linear-gradient(180deg, #eefcfb 0%, #d9fffb 100%);
+  color: #0b7f79;
+  border-color: #8ce4dc;
+}
 .profile-header {
   margin-bottom: 20px;
   padding-bottom: 0;

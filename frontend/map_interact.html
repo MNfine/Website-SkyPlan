@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>SkyPlan Airport Explorer</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.33/esri/themes/light/main.css" />
+    <link rel="stylesheet" href="assets/styles/map_interact.css" />
+    <script src="https://js.arcgis.com/4.33/"></script>
+    <script src="assets/scripts/map_interact_translations.js"></script>
+  </head>
+
+  <body>
+    <div class="map-shell">
+      <div id="viewDiv"></div>
+      <div class="map-top-controls">
+        <a id="mapBackButton" class="map-back-button" href="index.html" aria-label="Quay về trang chủ">
+          <span aria-hidden="true">←</span>
+          Quay lại trang chủ
+        </a>
+        <div id="mapLanguageSwitcher" class="map-language-switch" aria-live="polite">
+          <label id="mapLanguageLabel" class="map-language-label" for="mapLanguageSelect">Ngôn ngữ</label>
+          <select id="mapLanguageSelect" class="map-language-select">
+            <option id="mapLanguageOptionVi" value="vi">Việt</option>
+            <option id="mapLanguageOptionEn" value="en">Anh</option>
+          </select>
+        </div>
+      </div>
+      <aside id="sidebar">
+        <div class="sidebar-header">
+          <h2 id="sidebarTitle" class="sidebar-title">Flights from SGN</h2>
+          <div class="sidebar-meta">
+            <span id="flightCount" class="count-pill">0 flights</span>
+            <input id="dateFilter" class="date-picker" type="date" />
+          </div>
+        </div>
+        <div id="flightList"></div>
+      </aside>
+    </div>
+    <script type="module" src="assets/scripts/map_interact.js"></script>
+  </body>
+</html>

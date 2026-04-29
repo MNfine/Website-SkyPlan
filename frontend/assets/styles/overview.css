@@ -118,6 +118,11 @@ body {
   padding-bottom: 50px;
 }
 
+/* In ticket-view mode, progress flow is hidden so we need manual top offset below fixed header. */
+body.overview-existing-trip .overview-content {
+  padding-top: calc(var(--header-height, 80px) + 30px);
+}
+
 .trip-summary {
   background-color: transparent;
   border-radius: 0;

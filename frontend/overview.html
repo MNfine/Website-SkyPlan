@@ -8,6 +8,7 @@
 
   <!-- Favicon -->
   <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
 
   <!-- Font Awesome CDN for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -17,6 +18,7 @@
   <link rel="stylesheet" href="assets/styles/index.css">
   <link rel="stylesheet" href="assets/styles/flags.css">
   <link rel="stylesheet" href="assets/styles/header.css">
+<link rel="stylesheet" href="assets/styles/wallet.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/overview.css">
 </head>
@@ -71,7 +73,7 @@
         <div class="flight-info">
           <div class="flight-segment">
             <div class="flight-header">
-              <span class="flight-date"><span class="date-text" data-iso="2023-06-10">Ngày 10 thg 6, 2023</span> -
+              <span class="flight-date"><span class="date-text" data-iso="">Loading...</span> -
                 <span data-i18n="outboundLabel">Chiều đi</span></span>
               <span class="flight-type" data-i18n="passengerClass">Phổ thông</span>
               </div>
@@ -100,7 +102,7 @@
 
           <div class="flight-segment">
             <div class="flight-header">
-              <span class="flight-date"><span class="date-text" data-iso="2023-08-18">Ngày 18 thg 8, 2023</span> -
+              <span class="flight-date"><span class="date-text" data-iso="">Loading...</span> -
                 <span data-i18n="inboundLabel">Chiều về</span></span>
               <span class="flight-type" data-i18n="passengerClass">Phổ thông</span>
               </div>
@@ -164,10 +166,10 @@
             <span class="price-label" data-i18n="totalLabel">Tổng cộng</span>
             <span class="price-amount">1.598.000 VND</span>
           </div>
-          <a href="payment.html" class="confirm-btn pay-btn">
+          <button id="confirmBookingBtn" class="confirm-btn pay-btn">
             <span data-i18n="confirmBooking">Xác nhận đặt vé</span>
             <i class="fas fa-arrow-right"></i>
-          </a>
+          </button>
         </div>
       </div>
     </div>
@@ -178,9 +180,14 @@
 
   <!-- JavaScript -->
   <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/wallet-ui.js"></script>
+<script src="assets/scripts/wallet_translations.js"></script>
+<script src="assets/scripts/metamask.js"></script>
   <script src="assets/scripts/overview_translations.js"></script>
   <script src="assets/scripts/extras_translations.js"></script>
+  <script src="assets/scripts/toast.js"></script>
   <script src="assets/scripts/overview.js"></script>
+  <script src="assets/scripts/auth-utils.js"></script>
 
   <!-- Load Components -->
   <script>
@@ -207,6 +214,11 @@
         if (typeof initializeMobileMenu === 'function') {
           initializeMobileMenu();
         }
+        // Initialize wallet UI
+        if (typeof initWalletUI === 'function') {
+          initWalletUI();
+        }
+        document.dispatchEvent(new CustomEvent('header-loaded'));
         // Re-apply translations and sync header UI with saved language
         const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
         if (typeof applyOverviewTranslations === 'function') {
@@ -231,6 +243,7 @@
       })
       .then(data => {
         document.getElementById('footer-container').innerHTML = data;
+
         // Re-apply all translations to include footer
         const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
         if (typeof applyOverviewTranslations === 'function') {
@@ -240,6 +253,17 @@
       .catch(error => {
         handleComponentError('footer');
       });
+
+    // Re-translate footer when language changes
+    document.addEventListener('languageChanged', function(e) {
+      const lang = (e && e.detail && e.detail.lang) || localStorage.getItem('preferredLanguage') || 'vi';
+      // Force re-apply all translations including footer
+      if (typeof applyOverviewTranslations === 'function') {
+        setTimeout(() => {
+          applyOverviewTranslations(lang);
+        }, 50);
+      }
+    });
   </script>
 
   <script>
@@ -254,31 +278,6 @@
   </script>
 
   <script>
-    // Ẩn nút thanh toán cho từng vé đã thanh toán thành công
-    (function () {
-      // Giả sử mỗi vé có 1 container với id hoặc class chứa bookingCode
-      document.querySelectorAll('[data-booking-code]').forEach(function (ticket) {
-        const code = ticket.getAttribute('data-booking-code');
-        if (code && localStorage.getItem('paid_' + code) === 'true') {
-          const payBtn = ticket.querySelector('.pay-btn');
-          if (payBtn) payBtn.style.display = 'none';
-        }
-      });
-    })();
-  </script>
-
-  <script>
-    // Tự động dịch khi trang load
-    document.addEventListener('DOMContentLoaded', function () {
-      const lang = localStorage.getItem('preferredLanguage') || 'vi';
-      if (typeof applyOverviewTranslations === 'function') {
-        applyOverviewTranslations(lang);
-      }
-    });
-  </script>
-
-  <script>
-    // Read fare selection and extras, render services summary and total
   (function(){
       const EXTRAS_KEY = 'skyplan_extras_v2';
       const FARE_KEY = 'skyplan_fare_selection';
@@ -427,10 +426,9 @@
           card.classList.remove('has-extras');
           // keep default "no extras" card; ensure image is visible
           const title = card.querySelector('h3');
-          title.setAttribute('data-i18n','noExtras');
-          // Re-apply translation for this title only
-          if (typeof applyOverviewTranslations==='function'){
-            applyOverviewTranslations(lang);
+          if (title) {
+            title.removeAttribute('data-i18n');
+            title.textContent = getOT(lang)?.noExtras || (lang === 'vi' ? 'Không có dịch vụ thêm' : 'No additional services');
           }
           // Render 0 VND for extras subtotal even when none selected
           let priceRow = card.querySelector('.card-price');
@@ -452,16 +450,75 @@
         // safety re-render after header/footer async work
         setTimeout(()=>{ try { render(); } catch(_) {} }, 50);
       });
-
-      // Ensure render runs after overview translations (which may reset the title)
-      try {
-        const orig = window.applyOverviewTranslations;
-        window.applyOverviewTranslations = function(lang){
-          if (typeof orig === 'function') orig(lang);
-          try { render(); } catch(_){}
-        }
-      } catch(_) {}
     })();
+
+    // Handle confirm booking button
+    document.addEventListener('DOMContentLoaded', function() {
+      const confirmBtn = document.getElementById('confirmBookingBtn');
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', function() {
+          // Validate booking data
+          if (typeof window.OverviewState === 'undefined') {
+            console.error('OverviewState not available');
+            if (window.showToast) {
+              window.showToast('Có lỗi xảy ra. Vui lòng thử lại.', 'error');
+            } else {
+              alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            }
+            return;
+          }
+
+          const bookingData = window.OverviewState.getBookingData();
+          console.log('🔍 Confirm booking - booking data:', bookingData);
+          
+          // Check if we have required trip data (most critical)
+          if (!bookingData || !bookingData.flights) {
+            const message = 'Thông tin chuyến bay bị thiếu. Vui lòng chọn lại chuyến bay.';
+            if (window.showToast) {
+              window.showToast(message, 'error');
+            } else {
+              alert(message);
+            }
+            setTimeout(() => {
+              window.location.href = 'search.html';
+            }, 2000);
+            return;
+          }
+
+          // For passenger info, we'll be more lenient since this seems to be optional in this flow
+          // Just warn user but still allow to proceed
+          if (!bookingData.passenger) {
+            console.log('⚠️ No passenger info yet, but allowing to proceed');
+            // Create minimal passenger data
+            bookingData.passenger = {
+              name: '',
+              email: '',
+              phone: '',
+              isIncomplete: true
+            };
+          }
+
+          // Save complete booking data for payment page
+          try {
+            localStorage.setItem('completeBookingData', JSON.stringify(bookingData));
+            localStorage.setItem('bookingTimestamp', Date.now().toString());
+            
+            console.log('✅ Booking data saved, navigating to payment...');
+            
+            // Navigate to payment page
+            window.location.href = 'payment.html';
+          } catch (error) {
+            console.error('Error saving booking data:', error);
+            const message = 'Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.';
+            if (window.showToast) {
+              window.showToast(message, 'error');
+            } else {
+              alert(message);
+            }
+          }
+        });
+      }
+    });
   </script>
 </body>
 

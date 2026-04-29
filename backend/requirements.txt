@@ -3,9 +3,13 @@
 # Flask Framework
 Flask==2.3.3
 flask-cors==4.0.0
+flask-mail==0.10.0
 
 # HTTP Requests
 requests==2.31.0
+
+# Google Gemini AI
+google-generativeai==0.8.1
 
 # Date/Time handling
 python-dateutil==2.8.2
@@ -13,6 +17,25 @@ python-dateutil==2.8.2
 # Environment variables
 python-dotenv==1.0.0
 
+# Database / ORM
+SQLAlchemy==2.0.46
+psycopg2-binary==2.9.11
+alembic==1.12.0
+
+# Authentication
+PyJWT==2.8.0
+Werkzeug==2.3.7
+
 # Development dependencies
 pytest==7.4.2
 pytest-flask==1.2.0
+flask-socketio==5.6.0
+eventlet==0.40.4
+
+# Blockchain (custodial no-gas integration)
+web3==7.13.0
+eth-account==0.13.7
+pycryptodome==3.23.0
+
+# Production WSGI Server
+gunicorn==23.0.0

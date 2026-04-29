@@ -7,12 +7,14 @@
   <meta name="description" content="Quản lý thông tin tài khoản SkyPlan của bạn.">
   
   <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="assets/styles/reset.css">
   <link rel="stylesheet" href="assets/styles/flags.css">
   <link rel="stylesheet" href="assets/styles/index.css">
   <link rel="stylesheet" href="assets/styles/header.css">
+<link rel="stylesheet" href="assets/styles/wallet.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/profile.css">
 </head>
@@ -54,7 +56,7 @@
                   </div>
                   <div class="info-item">
                     <div class="info-label" data-i18n="profile.account.tier">Hạng thẻ</div>
-                    <div class="info-value" id="memberTier">REGISTERED</div>
+                    <div class="info-value" id="memberTier">Registered</div>
                   </div>
                   <div class="info-item">
                     <div class="info-label" data-i18n="profile.account.points">Điểm tích luỹ</div>
@@ -67,6 +69,10 @@
                   <div class="info-item">
                     <div class="info-label" data-i18n="profile.account.email">Email</div>
                     <div class="info-value" id="accountEmail">nguyenvana@email.com</div>
+                  </div>
+                  <div class="info-item" id="walletAddressItem" style="display: none;">
+                    <div class="info-label" data-i18n="profile.account.wallet">Địa chỉ ví</div>
+                    <div class="info-value" id="accountWallet">0x...</div>
                   </div>
                 </div>
               </div>
@@ -127,13 +133,19 @@
   <script src="assets/scripts/index_translations.js"></script>
   <script src="assets/scripts/profile_translations.js"></script>
   <script src="assets/scripts/common.js"></script>
+<script src="assets/scripts/wallet_translations.js"></script>
+<script src="assets/scripts/metamask.js"></script>
+  <script src="assets/scripts/wallet-ui.js"></script>
   <script src="assets/scripts/profile.js"></script>
+  <script src="assets/scripts/auth-utils.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       function handleComponentError(name) { console.error('Failed to load ' + name); }
 
-      const lang = localStorage.getItem('preferredLanguage') || 'vi';
+      const lang = (typeof window.getPersistedLanguage === 'function')
+        ? window.getPersistedLanguage()
+        : (localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi');
       document.documentElement.lang = lang;
 
       fetch('components/header.html')
@@ -145,6 +157,24 @@
           if (typeof updateSelectedLanguage === 'function') {
             updateSelectedLanguage(lang);
           }
+
+          // Ensure user dropdown and header user info are initialized after header injection
+          if (typeof initializeUserDropdown === 'function') {
+            initializeUserDropdown();
+          }
+          if (typeof updateHeaderUserInfo === 'function') {
+            // slight delay to let any header scripts settle
+            setTimeout(() => updateHeaderUserInfo(), 50);
+          }
+
+          // Initialize wallet UI after header loads
+          if (typeof initWalletUI === 'function') {
+            initWalletUI();
+          }
+
+          // Emit header-loaded event
+          document.dispatchEvent(new CustomEvent('header-loaded'));
+
           // Apply translations to header using common.js
           if (typeof applyTranslations === 'function') {
             applyTranslations(lang);

@@ -14,7 +14,7 @@ const seatTranslations = {
         termsOfService: "Terms of Service",
         supportTitle: "Support",
         helpCenter: "Help Center",
-        customerService: "Customer Service",
+        blogLink: "Blog",
         bookingHelp: "Booking Help",
         faq: "FAQ",
         paymentMethodsTitle: "Payment Methods",
@@ -42,6 +42,7 @@ const seatTranslations = {
         occupied: "Occupied",
         selecting: "Selecting",
         notAvailable: "Not Available",
+        back: "Back",
         continue: "Continue",
         
         // Fare classes
@@ -53,7 +54,7 @@ const seatTranslations = {
         seatReserved: "Seat reserved for:",
         pleaseComplete: "Please complete your selection quickly!",
         timeExpired: "Time expired! Please select your seats again.",
-        selectAtLeastOne: "Please select at least one seat before continuing.",
+        selectAtLeastOne: "Please select a seat before continuing.",
         seatReservedNotification: "Seat {seat} reserved for 30 seconds"
     },
     vi: {
@@ -74,7 +75,7 @@ const seatTranslations = {
         termsOfService: "Điều khoản dịch vụ",
         supportTitle: "Hỗ trợ",
         helpCenter: "Trung tâm trợ giúp",
-        customerService: "Dịch vụ khách hàng",
+        blogLink: "Blog",
         bookingHelp: "Hỗ trợ đặt vé",
         faq: "Câu hỏi thường gặp",
         paymentMethodsTitle: "Phương thức thanh toán",
@@ -97,6 +98,7 @@ const seatTranslations = {
         occupied: "Đã có người",
         selecting: "Đang chọn",
         notAvailable: "Không khả dụng",
+        back: "Quay lại",
         continue: "Tiếp tục",
         
         // Fare classes
@@ -108,7 +110,7 @@ const seatTranslations = {
         seatReserved: "Ghế được giữ trong:",
         pleaseComplete: "Vui lòng hoàn thành việc chọn ghế!",
         timeExpired: "Hết thời gian! Vui lòng chọn ghế lại.",
-        selectAtLeastOne: "Vui lòng chọn ít nhất một ghế trước khi tiếp tục.",
+        selectAtLeastOne: "Vui lòng chọn một ghế trước khi tiếp tục.",
         seatReservedNotification: "Ghế {seat} được giữ trong 30 giây"
     }
 };
@@ -145,7 +147,20 @@ function changeSeatLanguage(lang) {
     localStorage.setItem('preferredLanguage', lang);
     document.documentElement.lang = lang;
     applySeatTranslations(lang);
+    
+    // Use global broadcaster if available, otherwise dispatch directly
+    if (typeof window.broadcastLanguageChange === 'function') {
+        window.broadcastLanguageChange(lang);
+    } else {
+        window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: lang } }));
+    }
 }
+
+// Listen for language changes from header
+window.addEventListener('languageChanged', function(event) {
+    const newLang = event.detail.language;
+    applySeatTranslations(newLang);
+});
 
 // Ensure Vietnamese is set as default on first visit
 if (!localStorage.getItem('preferredLanguage')) {

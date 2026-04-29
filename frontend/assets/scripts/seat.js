@@ -1,5 +1,107 @@
 // Seat Page Notifications and Interactions
-// This file handles toast notifications and seat-specific interactions
+
+// Quiet mode: suppress non-essential console output unless debugging flag is enabled.
+// Set window.SKYPLAN_DEBUG = true in the console to re-enable logs.
+(function(){
+  try {
+    if (!window.SKYPLAN_DEBUG) {
+      console._orig = console._orig || {};
+      ['log','info','debug'].forEach(function(m){ if (!console._orig[m]) console._orig[m]=console[m]; console[m]=function(){}; });
+    }
+  } catch(e){}
+})();
+// This file handles toast notifications, seat-specific interactions, and API data loading
+
+// Simplified Seat Manager for API data loading
+const SeatManager = {
+    flightId: null,
+    availableSeats: [],
+    seatMap: new Map(),
+    
+    // Initialize seat management - load data and update existing HTML
+    init: async function(flightId) {
+        this.flightId = flightId;
+        await this.loadSeats();
+        this.updateExistingSeats();
+    },
+    
+    // Load seats from API
+    loadSeats: async function() {
+        try {
+            console.log(`Loading seats for flight ID: ${this.flightId}`);
+            const response = await fetch(`/api/seats/flight/${this.flightId}/seats`);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to load seats: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.availableSeats = data.seats;
+                this.seatMap.clear();
+                
+                data.seats.forEach(seat => {
+                    this.seatMap.set(seat.seat_number, seat); // Use seat_number as key
+                });
+                
+                console.log(`Loaded ${data.seats.length} seats for flight ${this.flightId}`);
+            } else {
+                throw new Error(data.message || 'API returned success: false');
+            }
+        } catch (error) {
+            console.error('Error loading seats:', error);
+            if (typeof showToast === 'function') {
+                showToast('Failed to load seat information', 'error');
+            }
+        }
+    },
+    
+    // Update existing seat elements with API data
+    updateExistingSeats: function() {
+        const existingSeats = document.querySelectorAll('.seat[data-seat]');
+        
+        existingSeats.forEach(seatElement => {
+            const seatNumber = seatElement.getAttribute('data-seat');
+            const apiSeat = this.seatMap.get(seatNumber);
+            
+            if (apiSeat) {
+                // Remove existing status classes
+                seatElement.classList.remove('available', 'occupied', 'selected');
+                
+                const status = apiSeat.status || 'AVAILABLE';
+
+                if (status === 'CONFIRMED') {
+                    // Permanently booked — always occupied for everyone
+                    seatElement.classList.add('occupied');
+                    seatElement.style.cursor = 'not-allowed';
+                } else if (status === 'TEMPORARILY_RESERVED') {
+                    if (apiSeat.reserved_by_current_user) {
+                        // Current user's own hold — show as selected
+                        seatElement.classList.add('selected');
+                        seatElement.style.cursor = 'pointer';
+                    } else {
+                        // Someone else is holding this seat — show as occupied
+                        seatElement.classList.add('occupied');
+                        seatElement.style.cursor = 'not-allowed';
+                        seatElement.title = apiSeat.reserved_until
+                            ? `Held until ${new Date(apiSeat.reserved_until).toLocaleTimeString()}`
+                            : 'Temporarily reserved';
+                    }
+                } else {
+                    seatElement.classList.add('available');
+                    seatElement.style.cursor = 'pointer';
+                }
+                
+                // Add seat data attributes for future use
+                seatElement.setAttribute('data-seat-id', apiSeat.id);
+                seatElement.setAttribute('data-seat-status', status);
+                seatElement.setAttribute('data-seat-class', apiSeat.seat_class);
+                seatElement.setAttribute('data-price-modifier', apiSeat.price_modifier || 0);
+            }
+        });
+    }
+};
 
 // Toast notification functions for seat page
 const SeatNotifications = {
@@ -74,7 +176,7 @@ const SeatNotifications = {
   showNoSeatsSelected: function() {
     const currentLang = localStorage.getItem('preferredLanguage') || 'vi';
     const selectAtLeastOneMsg = seatTranslations[currentLang]['selectAtLeastOne'] || 
-      (currentLang === 'vi' ? 'Vui lòng chọn ít nhất một ghế trước khi tiếp tục.' : 'Please select at least one seat before continuing.');
+      (currentLang === 'vi' ? 'Vui lòng chọn một ghế trước khi tiếp tục.' : 'Please select a seat before continuing.');
     
     if (typeof showToast === 'function') {
       showToast(selectAtLeastOneMsg, {type: 'error', duration: 3000});
@@ -88,6 +190,78 @@ const SeatNotifications = {
 function showWelcomeMessage() {
   const fareClass = new URLSearchParams(window.location.search).get('class');
   SeatNotifications.showWelcomeMessage(fareClass);
+}
+
+// Update flight information from real trip data
+function updateFlightInfo() {
+  try {
+    const trip = JSON.parse(localStorage.getItem('skyplan_trip_selection') || 'null');
+    if (!trip) return;
+
+    // Airport mapping with city and airport names
+    const airportData = {
+      'HAN': {
+        city: { vi: 'Hà Nội', en: 'Hanoi' },
+        airport: { vi: 'Sân bay Nội Bài', en: 'Noi Bai Airport' }
+      },
+      'SGN': {
+        city: { vi: 'Hồ Chí Minh', en: 'Ho Chi Minh' },
+        airport: { vi: 'Sân bay Tân Sơn Nhất', en: 'Tan Son Nhat Airport' }
+      },
+      'DAD': {
+        city: { vi: 'Đà Nẵng', en: 'Da Nang' },
+        airport: { vi: 'Sân bay Đà Nẵng', en: 'Da Nang Airport' }
+      },
+      'CXR': {
+        city: { vi: 'Nha Trang', en: 'Nha Trang' },
+        airport: { vi: 'Sân bay Cam Ranh', en: 'Cam Ranh Airport' }
+      },
+      'PQC': {
+        city: { vi: 'Phú Quốc', en: 'Phu Quoc' },
+        airport: { vi: 'Sân bay Phú Quốc', en: 'Phu Quoc Airport' }
+      },
+      'VCA': {
+        city: { vi: 'Cần Thơ', en: 'Can Tho' },
+        airport: { vi: 'Sân bay Cần Thơ', en: 'Can Tho Airport' }
+      },
+      'HUI': {
+        city: { vi: 'Huế', en: 'Hue' },
+        airport: { vi: 'Sân bay Phú Bài', en: 'Phu Bai Airport' }
+      },
+      'VII': {
+        city: { vi: 'Vinh', en: 'Vinh' },
+        airport: { vi: 'Sân bay Vinh', en: 'Vinh Airport' }
+      }
+    };
+
+    const lang = localStorage.getItem('preferredLanguage') || 'vi';
+    const flightNumber = trip.outbound_flight_number || trip.flight_number || '';
+    const depAirportCode = trip.outbound_departure_airport || trip.fromCode || '';
+    const arrAirportCode = trip.outbound_arrival_airport || trip.toCode || '';
+
+    if (!flightNumber || !depAirportCode || !arrAirportCode) return;
+
+    // Get city names from airport mapping
+    const depData = airportData[depAirportCode];
+    const arrData = airportData[arrAirportCode];
+    
+    const depCityName = depData ? (depData.city[lang] || depData.city.vi) : depAirportCode;
+    const arrCityName = arrData ? (arrData.city[lang] || arrData.city.vi) : arrAirportCode;
+
+    // Update flight info element
+    const flightInfoEl = document.querySelector('.flight-info');
+    if (flightInfoEl) {
+      if (lang === 'vi') {
+        flightInfoEl.textContent = `Chọn ghế cho chuyến bay ${flightNumber} từ ${depCityName} đến ${arrCityName}`;
+      } else {
+        flightInfoEl.textContent = `Select seats for flight ${flightNumber} from ${depCityName} to ${arrCityName}`;
+      }
+    }
+
+    console.log('Flight info updated:', { flightNumber, depCityName, arrCityName });
+  } catch (e) {
+    console.warn('Error updating flight info:', e);
+  }
 }
 
 // Enhance countdown timer with notifications
@@ -105,12 +279,43 @@ function enhanceCountdownNotifications() {
 // Note: Continue button click handler is now in seat.html inline script
 // to avoid duplicate event listeners and duplicate toast notifications
 
+// Initialize seat data loading
+function initializeSeatData() {
+  // Get flight ID from URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  let flightId = urlParams.get('flight_id') || urlParams.get('outbound_flight_id');
+
+  // If not provided in URL, try reading from localStorage `skyplan_trip_selection`
+  if (!flightId) {
+    try {
+      const trip = JSON.parse(localStorage.getItem('skyplan_trip_selection') || 'null');
+      if (trip && (trip.outbound_flight_id || trip.flightId || trip.flight_id)) {
+        flightId = String(trip.outbound_flight_id || trip.flightId || trip.flight_id);
+        console.log('Seat page: resolved flightId from skyplan_trip_selection:', flightId);
+      }
+    } catch (e) {
+      console.warn('Seat page: error reading skyplan_trip_selection', e);
+    }
+  }
+
+  if (!flightId) {
+    console.error('Seat page: no flight_id found in URL or localStorage; cannot load seats');
+    if (typeof showToast === 'function') showToast('Flight ID not found. Vui lòng quay lại trang chọn chuyến.', {type: 'error'});
+    return;
+  }
+  
+  // Initialize seat manager to load API data
+  SeatManager.init(flightId);
+}
+
 // Initialize all seat page enhancements
 function initializeSeatEnhancements() {
   // Wait for DOM and other scripts to load
   setTimeout(() => {
+    updateFlightInfo(); // Update flight info from real trip data
     showWelcomeMessage();
     enhanceCountdownNotifications();
+    initializeSeatData(); // Load API data và update existing HTML
     // Note: enhanceContinueButton() removed - handler is in seat.html to avoid duplicate listeners
   }, 500);
 }
@@ -121,3 +326,8 @@ if (document.readyState === 'loading') {
 } else {
   initializeSeatEnhancements();
 }
+
+// Listen for language changes and update flight info
+document.addEventListener('languageChanged', function(e) {
+  updateFlightInfo();
+});

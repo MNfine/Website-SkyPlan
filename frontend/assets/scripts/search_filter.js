@@ -1,5 +1,19 @@
 /* SkyPlane Filters — ORDER: PRICE -> TIME, scroll to top after ~1s */
 (function() {
+    function getSearchFilterLanguage() {
+        if (typeof window.getPersistedLanguage === 'function') {
+            return window.getPersistedLanguage() === 'en' ? 'en' : 'vi';
+        }
+
+        const languageRaw = (localStorage.getItem('language') || '').toLowerCase();
+        if (languageRaw === 'en' || languageRaw === 'vi') return languageRaw;
+
+        const preferredRaw = (localStorage.getItem('preferredLanguage') || '').toLowerCase();
+        if (preferredRaw === 'en' || preferredRaw === 'vi') return preferredRaw;
+
+        return (document.documentElement.lang || 'vi').toLowerCase() === 'en' ? 'en' : 'vi';
+    }
+
     // ---------- Shorthands ----------
     const $ = (sel, ctx) => (ctx || document).querySelector(sel);
     const $all = (sel, ctx) => Array.prototype.slice.call((ctx || document).querySelectorAll(sel));
@@ -17,7 +31,7 @@
         return toNumber(n ? n.textContent : 0);
     };
 
-    // lấy giờ khởi hành chiều đi (cột đầu tiên trong .sp-itinerary)
+    // get departure time of outbound flight (first column in .sp-itinerary)
     const timeOfCard = (card) => {
         const itin = card.querySelector(".sp-itinerary");
         const t = itin ? txt(itin.querySelectorAll(".sp-time")[0]) : "00:00";
@@ -33,14 +47,14 @@
 
     // ---------- Current selections ----------
     function getTimeRange() {
-        // Ưu tiên data-start/data-end trên radio (định dạng "HH:MM")
+        // Prioritize data-start/data-end on radio (format "HH:MM")
         const r = timeRadios.find((x) => x.checked);
         if (r) {
             const ds = r.dataset.start,
                 de = r.dataset.end;
             if (ds && de) return [hhmmToMin(ds), hhmmToMin(de)];
-            // fallback đọc text hiển thị
-            // lấy text trong .sp-choice hoặc text node kế bên
+            // fallback read display text
+            // get text in .sp-choice or adjacent text node
             let label = "";
             const wrap = r.closest(".sp-choice");
             if (wrap) label = txt(wrap).replace(/\s+/g, " ");
@@ -50,7 +64,7 @@
             const m = /(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/.exec(label);
             if (m) return [hhmmToMin(m[1]), hhmmToMin(m[2])];
         }
-        // mặc định: 00:00–23:59 (không giới hạn)
+        // default: 00:00–23:59 (no limit)
         return [0, hhmmToMin("23:59")];
     }
 
@@ -64,7 +78,7 @@
         const priceMax = getPriceMax();
 
         let anyVisible = false;
-        // lấy lại danh sách card mỗi lần (phòng khi render động)
+        // re-get card list each time (in case of dynamic rendering)
         const cards = $all(".sp-results .sp-card");
 
         for (let i = 0; i < cards.length; i++) {
@@ -89,7 +103,7 @@
         }
 
         // empty state
-        // helper nhỏ để lấy chuỗi theo ngôn ngữ hiện tại
+        // small helper to get string according to current language
         function t(key, fallbackVi, fallbackEn) {
             const lang = document.documentElement.lang === 'vi' ? 'vi' : 'en';
             try { return _t(lang)[key] || (lang === 'vi' ? (fallbackEn || '') : (fallbackVi || '')); } catch (_) { return (lang === 'vi' ? (fallbackEn || '') : (fallbackVi || '')); }
@@ -110,8 +124,8 @@
                 results.appendChild(empty);
             }
 
-            // lấy ngôn ngữ hiện tại
-            const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+            // get current language
+            const lang = getSearchFilterLanguage();
             const messages = {
                 vi: "Không có chuyến bay phù hợp với bộ lọc.",
                 en: "No flights match your filters."
@@ -153,7 +167,7 @@
     let __emptyLangBound = false;
     if (!__emptyLangBound) {
         document.addEventListener('languageChanged', (e) => {
-            const lang = (e && e.detail && e.detail.lang) || localStorage.getItem('preferredLanguage') || 'vi';
+            const lang = (e && e.detail && e.detail.lang) || getSearchFilterLanguage();
             const empty = document.getElementById('sp-empty');
             if (empty) {
                 const messages = { vi: 'Không có chuyến bay phù hợp với bộ lọc.', en: 'No flights match your filters.' };
@@ -191,7 +205,7 @@
     }
 
     document.addEventListener('languageChanged', () => {
-        const lang = localStorage.getItem('preferredLanguage') || 'vi';
+        const lang = getSearchFilterLanguage();
         const t = MODAL_I18N[lang] || MODAL_I18N.vi;
 
         const shareBtn = document.querySelector('.sp-modal__footer .sp-btn--ghost');
@@ -206,5 +220,8 @@
         if (titleEl) titleEl.textContent = t.title;
     });
 
+    // Export function để search.js có thể gọi
+    window.applyFilters = applyFilters;
+    
     applyFilters();
 })();

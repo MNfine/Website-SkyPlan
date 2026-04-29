@@ -5,15 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-i18n="confirmationTitle">SkyPlan - Xác nhận thanh toán</title>
   <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="assets/styles/reset.css">
   <link rel="stylesheet" href="assets/styles/index.css">
   <link rel="stylesheet" href="assets/styles/header.css">
+<link rel="stylesheet" href="assets/styles/wallet.css">
   <link rel="stylesheet" href="assets/styles/flags.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/confirmation.css">
   <link rel="stylesheet" href="assets/styles/loader.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="assets/scripts/auth-utils.js"></script>
   <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/wallet-ui.js"></script>
+<script src="assets/scripts/wallet_translations.js"></script>
+<script src="assets/scripts/metamask.js"></script>
   <script src="assets/scripts/confirmation_translations.js"></script>
 </head>
 <body>
@@ -28,23 +34,45 @@
       <span data-i18n="thanksLine2">Thông tin đặt vé của bạn đã được xác nhận.</span>
     </div>
     <div class="confirmation-details" id="confirmationDetails">
-      <div><strong data-i18n="bookingCodeLabel">Mã vé:</strong> <span id="bookingCode" data-i18n="bookingCodeValue">Đang cập nhật...</span></div>
-      <div><strong data-i18n="txnRefLabel">Mã giao dịch:</strong> <span id="txnRef" data-i18n="txnRefValue">Đang cập nhật...</span></div>
-      <div><strong data-i18n="amountLabel">Số tiền:</strong> <span id="amount" data-i18n="amountValue">Đang cập nhật...</span></div>
+      <div><strong data-i18n="bookingCodeLabel">Mã vé:</strong> <span id="bookingCode">Đang cập nhật...</span></div>
+      <div><strong data-i18n="txnRefLabel">Mã giao dịch:</strong> <span id="txnRef">Đang cập nhật...</span></div>
+      <div><strong data-i18n="amountLabel">Số tiền:</strong> <span id="amount">Đang cập nhật...</span></div>
     </div>
+
+    <div class="confirmation-upgrade" id="confirmationUpgradeCta">
+      <div class="confirmation-upgrade-head">
+        <i class="fas fa-shield-halved" aria-hidden="true"></i>
+        <span data-i18n="upgradeTitle">Nâng cấp vé thành Blockchain Ticket</span>
+      </div>
+      <p class="confirmation-upgrade-desc" data-i18n="upgradeDesc">Minh bạch, an toàn, thao tác nhanh chóng. Nhận vé NFT và ưu đãi SKY, không cần trả gas.</p>
+      <div class="confirmation-upgrade-pills">
+        <span data-i18n="upgradePillar1">Minh bạch</span>
+        <span data-i18n="upgradePillar2">An toàn</span>
+        <span data-i18n="upgradePillar3">Nhanh chóng</span>
+      </div>
+      <div class="confirmation-upgrade-actions">
+        <a href="support.html#blockchain-ticket-guide" class="upgrade-guide" data-i18n="upgradeGuide">Xem hướng dẫn</a>
+        <a href="my_trips.html" class="upgrade-now" data-i18n="upgradeNow">Tích hợp ngay</a>
+      </div>
+    </div>
+
     <div class="confirmation-actions">
+      <button id="downloadTicketBtn" class="download-btn"><i class="fas fa-download"></i> <span data-i18n="downloadTicket">Tải vé</span></button>
       <a href="index.html"><i class="fas fa-home"></i> <span data-i18n="backHome">Về trang chủ</span></a>
-      <a href="overview.html"><i class="fas fa-ticket-alt"></i> <span data-i18n="viewMyTicket">Xem vé của tôi</span></a>
+      <a href="overview.html" id="viewMyTicketLink"><i class="fas fa-ticket-alt"></i> <span data-i18n="viewMyTicket">Xem vé của tôi</span></a>
     </div>
   </div>
   <div id="footer-container"></div>
   <script src="assets/scripts/config.js"></script>
+  <script src="assets/scripts/confirmation.js"></script>
   <script>
     // Load header/footer
     fetch('components/header.html').then(r=>r.text()).then(html=>{
       document.getElementById('header-container').innerHTML = html;
       if (typeof initializeLanguageSelector === 'function') initializeLanguageSelector();
       if (typeof initializeMobileMenu === 'function') initializeMobileMenu();
+      if (typeof initWalletUI === 'function') initWalletUI();
+      document.dispatchEvent(new CustomEvent('header-loaded'));
       const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
       if (typeof applyConfirmationTranslations === 'function') applyConfirmationTranslations(lang);
       if (typeof updateSelectedLanguage === 'function') updateSelectedLanguage(lang);
@@ -54,32 +82,12 @@
       const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
       if (typeof applyConfirmationTranslations === 'function') applyConfirmationTranslations(lang);
     });
-    // Lấy thông tin từ query string
-    function getQueryParam(name) {
-      const url = new URL(window.location.href);
-      return url.searchParams.get(name);
-    }
-    // Nếu không có trên URL, lấy từ localStorage (lưu từ payment.js)
-    let txnRef = getQueryParam('txnRef');
-    let amount = getQueryParam('amount');
-    if (!txnRef || !amount) {
-      txnRef = localStorage.getItem('lastTxnRef') || 'None';
-      amount = localStorage.getItem('lastAmount') || 'None';
-    }
-    document.getElementById('txnRef').textContent = txnRef;
-    document.getElementById('amount').textContent = amount !== 'None' ? Number(amount).toLocaleString('vi-VN') + ' VND' : 'None';
-    // Lấy mã vé từ localStorage (ưu tiên), hoặc từ URL nếu có
-    let bookingCode = getQueryParam('bookingCode');
-    if (!bookingCode) {
-      bookingCode = localStorage.getItem('lastTxnRef') || 'None';
-    }
-    document.getElementById('bookingCode').textContent = bookingCode;
     // Apply i18n on initial load
     document.addEventListener('DOMContentLoaded', function() {
       const lang = localStorage.getItem('preferredLanguage') || 'vi';
       if (typeof applyConfirmationTranslations === 'function') applyConfirmationTranslations(lang);
       
-      // Thêm loader cho các link navigation
+      // Add loader for navigation links
       const links = document.querySelectorAll('.confirmation-actions a');
       links.forEach(function(link) {
         link.addEventListener('click', function(e) {
@@ -101,24 +109,24 @@
   <!-- Loader component (JS) -->
   <script src="assets/scripts/loader.js"></script>
   <script>
-    // Import loader HTML vào DOM càng sớm càng tốt
+    // Import loader HTML into DOM as early as possible
     fetch('components/loader.html').then(r => r.text()).then(html => {
       document.body.insertAdjacentHTML('afterbegin', html);
-      // Show loader ngay khi vừa insert vào DOM (cho F5/reload)
+      // Show loader immediately after inserting into DOM (for F5/reload)
       if (window.Loader) {
         window.Loader.show();
         document.body.style.overflow = 'hidden';
       }
     });
     
-    // Ẩn loader khi tất cả resources đã load xong (window.load)
+    // Hide loader when all resources are loaded (window.load)
     window.addEventListener('load', function() {
       setTimeout(function() {
         if (window.Loader) {
           window.Loader.hide();
           document.body.style.overflow = '';
         }
-      }, 500); // Delay 500ms để smooth
+      }, 500); // Delay 500ms for smoothness
     });
   </script>
 </body>

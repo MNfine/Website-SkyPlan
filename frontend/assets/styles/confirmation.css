@@ -54,31 +54,128 @@ body {
 .confirmation-details strong {
   color: #0a969d;
 }
+
+.confirmation-upgrade {
+  margin: 0 0 22px;
+  padding: 16px;
+  border: 1px solid #cfe9ea;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f9ffff 0%, #edf8f8 100%);
+  text-align: left;
+}
+
+.confirmation-upgrade-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #103540;
+}
+
+.confirmation-upgrade-head i {
+  color: #0a969d;
+}
+
+.confirmation-upgrade-desc {
+  margin: 10px 0 10px;
+  color: #4b6670;
+  line-height: 1.45;
+  font-size: 0.95rem;
+}
+
+.confirmation-upgrade-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.confirmation-upgrade-pills span {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #b9dfe1;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #0f2b35;
+  background: #fff;
+}
+
+.confirmation-upgrade-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.confirmation-upgrade-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.86rem;
+  padding: 10px 12px;
+}
+
+.confirmation-upgrade-actions .upgrade-guide {
+  color: #103540;
+  background: #f4fbfb;
+  border: 1px solid #cfe9ea;
+}
+
+.confirmation-upgrade-actions .upgrade-now {
+  color: #fff;
+  background: linear-gradient(135deg, #0a969d 0%, #0c7f86 100%);
+  border: 1px solid #0a969d;
+}
 .confirmation-actions {
   margin-top: 18px;
   display: flex;
-  gap: 12px;
+  gap: 8px;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
-.confirmation-actions a {
+.confirmation-actions a,
+.confirmation-actions .download-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: #1fb6a0;
   color: #fff;
-  padding: 12px 28px;
+  padding: 12px 16px;
   border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
-  font-size: 1rem;
-  transition: background 0.2s;
-  white-space: nowrap;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  white-space: normal;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+  justify-content: center;
+  line-height: 1.3;
 }
-.confirmation-actions a:hover {
-  background: #189a87;
+
+.confirmation-actions .download-btn {
+  background: #ff6b35;
+}
+
+.confirmation-actions a:hover,
+.confirmation-actions .download-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.confirmation-actions a:hover {
+  background: #189a87;
+}
+
+.confirmation-actions .download-btn:hover {
+  background: #e55a2b;
 }
 
 .confirmation-actions a:active {
@@ -124,18 +221,31 @@ body {
     margin-bottom: 20px;
     font-size: 0.9rem;
   }
+
+  .confirmation-upgrade {
+    margin-bottom: 18px;
+    padding: 14px;
+  }
+
+  .confirmation-upgrade-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
   
   .confirmation-actions {
     margin-top: 16px;
-    flex-direction: column;
-    gap: 10px;
+    gap: 6px;
   }
   
-  .confirmation-actions a {
-    padding: 14px 24px;
-    font-size: 0.95rem;
-    width: 100%;
-    justify-content: center;
+  .confirmation-actions a,
+  .confirmation-actions .download-btn {
+    padding: 11px 12px;
+    font-size: 0.85rem;
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+    gap: 4px;
+    line-height: 1.2;
   }
 }
 
@@ -174,19 +284,39 @@ body {
     font-size: 0.85rem;
     line-height: 1.5;
   }
+
+  .confirmation-upgrade {
+    margin-bottom: 16px;
+    padding: 12px;
+  }
+
+  .confirmation-upgrade-head {
+    font-size: 0.95rem;
+  }
+
+  .confirmation-upgrade-desc {
+    font-size: 0.82rem;
+  }
+
+  .confirmation-upgrade-actions a {
+    font-size: 0.78rem;
+    padding: 9px 10px;
+  }
   
   .confirmation-actions {
     margin-top: 14px;
-    flex-direction: column;
-    gap: 8px;
+    gap: 4px;
   }
   
-  .confirmation-actions a {
-    padding: 12px 20px;
-    font-size: 0.9rem;
+  .confirmation-actions a,
+  .confirmation-actions .download-btn {
+    padding: 10px 6px;
+    font-size: 0.75rem;
     border-radius: 6px;
-    width: 100%;
-    justify-content: center;
+    flex: 1;
+    min-width: 0;
+    gap: 3px;
+    line-height: 1.1;
   }
 }
 
@@ -223,10 +353,55 @@ body {
     font-size: 0.8rem;
   }
   
-  .confirmation-actions a {
-    padding: 10px 16px;
-    font-size: 0.85rem;
-    width: 100%;
-    justify-content: center;
+  .confirmation-actions {
+    gap: 4px;
+    padding: 0 4px;
+  }
+  
+  .confirmation-actions a,
+  .confirmation-actions .download-btn {
+    padding: 8px 3px;
+    font-size: 0.65rem;
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+    white-space: normal;
+    overflow: visible;
+    line-height: 1.1;
+    gap: 2px;
+  }
+  
+  .confirmation-actions a i,
+  .confirmation-actions .download-btn i {
+    font-size: 0.7rem;
+    margin-right: 2px;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 320px) {
+  .confirmation-container {
+    max-width: 280px;
+    padding: 16px 12px;
+  }
+  
+  .confirmation-actions {
+    gap: 3px;
+    padding: 0 2px;
+  }
+  
+  .confirmation-actions a,
+  .confirmation-actions .download-btn {
+    padding: 6px 2px;
+    font-size: 0.58rem;
+    border-radius: 4px;
+    line-height: 1.0;
+    gap: 1px;
+  }
+  
+  .confirmation-actions a i,
+  .confirmation-actions .download-btn i {
+    font-size: 0.65rem;
+    margin-right: 1px;
   }
 }

@@ -87,7 +87,7 @@
                 depSearch.value = today;
             }
             
-            // ret.min always at least dep
+            // ret.min can be same as dep (same-day return allowed, validated by flight times)
             retSearch.min = depISO;
             let retISO = retSearch.dataset.isoValue || retSearch.value;
             
@@ -129,7 +129,7 @@
                 depIndex.value = today;
             }
             
-            // ret.min always at least dep
+            // ret.min can be same as dep (same-day return allowed, validated by flight times)
             retIndex.min = depISO;
             let retISO = retIndex.dataset.isoValue || retIndex.value;
             
@@ -441,8 +441,8 @@
     });
 
     /**
-     * Enforce that return date is never before departure date
-     * Call this whenever departure date changes
+     * Enforce that return date is never before departure date (same-day allowed)
+     * Time-based validation happens in flight selection modal
      */
     function enforceReturnAfterDeparture() {
         const today = getTodayISO();
@@ -454,10 +454,10 @@
             const depValue = depSearch.dataset.isoValue || depSearch.value || today;
             const retValue = retSearch.dataset.isoValue || retSearch.value;
             
-            // Update min date for return
+            // Update min date for return (can be same day as departure)
             retSearch.min = depValue;
             
-            // If return date is before departure date, update it
+            // If return date is before departure date, set to same day
             if (retValue && retValue < depValue) {
                 retSearch.dataset.isoValue = depValue;
                 retSearch.value = depValue;
@@ -477,10 +477,10 @@
             const depValue = depIndex.dataset.isoValue || depIndex.value || today;
             const retValue = retIndex.dataset.isoValue || retIndex.value;
             
-            // Update min date for return
+            // Update min date for return (can be same day as departure)
             retIndex.min = depValue;
             
-            // If return date is before departure date, update it
+            // If return date is before departure date, set to same day
             if (retValue && retValue < depValue) {
                 retIndex.dataset.isoValue = depValue;
                 retIndex.value = depValue;

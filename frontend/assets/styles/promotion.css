@@ -51,7 +51,7 @@
 }
 
 
-/* tablet & mobile: banner cao hơn để không bị crop quá tay */
+/* tablet & mobile: higher banner to avoid excessive cropping */
 
 @media (max-width: 1024px) {
     .promo .promo-banner img {
@@ -111,7 +111,7 @@
 }
 
 
-/* hỗ trợ safe-area (Dynamic Island/Home bar) */
+/* support safe-area (Dynamic Island/Home bar) */
 
 @supports (padding: max(0px)) {
     .promo .promo-banner .promo-search {

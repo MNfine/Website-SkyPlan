@@ -6,6 +6,7 @@
     <title>SkyPlan - Thông Tin Hành Khách</title>
 
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate icon" href="favicon.ico" type="image/x-icon" />
 
     <!-- CSS -->
     <link
@@ -16,12 +17,17 @@
     <link rel="stylesheet" href="assets/styles/index.css" />
     <link rel="stylesheet" href="assets/styles/flags.css" />
     <link rel="stylesheet" href="assets/styles/header.css" />
+    <link rel="stylesheet" href="assets/styles/wallet.css">
     <link rel="stylesheet" href="assets/styles/footer.css" />
     <link rel="stylesheet" href="assets/styles/passenger.css" />
     <link rel="stylesheet" href="assets/styles/loader.css" />
 
     <!-- Shared translations (header/footer), then page translations, then page logic -->
+    <script src="./assets/scripts/auth-utils.js" defer></script>
     <script src="./assets/scripts/common.js" defer></script>
+    <script src="./assets/scripts/wallet-ui.js" defer></script>
+    <script src="assets/scripts/wallet_translations.js"></script>
+    <script src="assets/scripts/metamask.js"></script>
     <script src="./assets/scripts/toast.js" defer></script>
     <script src="./assets/scripts/index_translations.js" defer></script>
     <script src="./assets/scripts/passenger_translations.js" defer></script>
@@ -245,15 +251,7 @@
                   <option value="Hải Phòng">Hải Phòng</option>
                   <option value="Cần Thơ">Cần Thơ</option>
                   <option value="An Giang">An Giang</option>
-                  <option value="Bà Rịa - Vũng Tàu">Bà Rịa - Vũng Tàu</option>
-                  <option value="Bắc Giang">Bắc Giang</option>
-                  <option value="Bắc Kạn">Bắc Kạn</option>
-                  <option value="Bạc Liêu">Bạc Liêu</option>
                   <option value="Bắc Ninh">Bắc Ninh</option>
-                  <option value="Bến Tre">Bến Tre</option>
-                  <option value="Bình Định">Bình Định</option>
-                  <option value="Bình Dương">Bình Dương</option>
-                  <option value="Bình Phước">Bình Phước</option>
                   <option value="Bình Thuận">Bình Thuận</option>
                   <option value="Cà Mau">Cà Mau</option>
                   <option value="Cao Bằng">Cao Bằng</option>
@@ -263,16 +261,10 @@
                   <option value="Đồng Nai">Đồng Nai</option>
                   <option value="Đồng Tháp">Đồng Tháp</option>
                   <option value="Gia Lai">Gia Lai</option>
-                  <option value="Hà Giang">Hà Giang</option>
                   <option value="Hà Nam">Hà Nam</option>
                   <option value="Hà Tĩnh">Hà Tĩnh</option>
-                  <option value="Hải Dương">Hải Dương</option>
-                  <option value="Hậu Giang">Hậu Giang</option>
-                  <option value="Hòa Bình">Hòa Bình</option>
                   <option value="Hưng Yên">Hưng Yên</option>
                   <option value="Khánh Hòa">Khánh Hòa</option>
-                  <option value="Kiên Giang">Kiên Giang</option>
-                  <option value="Kon Tum">Kon Tum</option>
                   <option value="Lai Châu">Lai Châu</option>
                   <option value="Lâm Đồng">Lâm Đồng</option>
                   <option value="Lạng Sơn">Lạng Sơn</option>
@@ -284,24 +276,17 @@
                   <option value="Ninh Thuận">Ninh Thuận</option>
                   <option value="Phú Thọ">Phú Thọ</option>
                   <option value="Phú Yên">Phú Yên</option>
-                  <option value="Quảng Bình">Quảng Bình</option>
-                  <option value="Quảng Nam">Quảng Nam</option>
                   <option value="Quảng Ngãi">Quảng Ngãi</option>
                   <option value="Quảng Ninh">Quảng Ninh</option>
                   <option value="Quảng Trị">Quảng Trị</option>
-                  <option value="Sóc Trăng">Sóc Trăng</option>
                   <option value="Sơn La">Sơn La</option>
                   <option value="Tây Ninh">Tây Ninh</option>
-                  <option value="Thái Bình">Thái Bình</option>
                   <option value="Thái Nguyên">Thái Nguyên</option>
                   <option value="Thanh Hóa">Thanh Hóa</option>
                   <option value="Thừa Thiên Huế">Thừa Thiên Huế</option>
                   <option value="Tiền Giang">Tiền Giang</option>
-                  <option value="Trà Vinh">Trà Vinh</option>
                   <option value="Tuyên Quang">Tuyên Quang</option>
                   <option value="Vĩnh Long">Vĩnh Long</option>
-                  <option value="Vĩnh Phúc">Vĩnh Phúc</option>
-                  <option value="Yên Bái">Yên Bái</option>
                   <option value="other" data-i18n="cityOther">Khác</option>
                 </select>
                 <input
@@ -428,11 +413,10 @@
           }
         }
         function initializeApp() {
-          // Get current language from localStorage
+          // Get current language from localStorage without overriding
           let lang = "vi";
           try {
             lang = localStorage.getItem("preferredLanguage") || "vi";
-            localStorage.setItem("preferredLanguage", lang);
           } catch (e) {
             console.warn("LocalStorage not available:", e);
           }
@@ -452,6 +436,13 @@
 
               // Initialize mobile language selector toggle
               initMobileLangSelector();
+              
+              // Ensure language flag is updated after header loads
+              setTimeout(() => {
+                if (typeof window.applyPassengerLang === "function") {
+                  window.applyPassengerLang(lang);
+                }
+              }, 50);
             })
             .catch((err) => {
               console.error("Failed to load header:", err);
@@ -504,11 +495,11 @@
     </script>
     <script src="assets/scripts/loader.js"></script>
     <script>
-      // Import loader HTML vào DOM càng sớm càng tốt
+      // Import loader HTML into DOM as early as possible
       fetch('components/loader.html').then(r => r.text()).then(html => {
         document.body.insertAdjacentHTML('beforeend', html);
       });
-      // Gắn sự kiện submit form: chỉ show loader và chuyển trang nếu validateForm() trả về true
+      // Attach form submit event: only show loader and navigate if validateForm() returns true
       document.addEventListener('DOMContentLoaded', function() {
         var form = document.getElementById('passengerForm');
         if (form) {
@@ -517,10 +508,11 @@
             if (typeof validateForm === 'function' && validateForm()) {
               if (window.Loader) window.Loader.show();
               setTimeout(function() {
-                window.location.href = 'extras.html';
+                const currentParams = new URLSearchParams(window.location.search);
+                window.location.href = 'extras.html?' + currentParams.toString();
               }, 1200);
             }
-            // Nếu không hợp lệ, chỉ hiện lỗi, không show loader, không chuyển trang
+            // If not valid, only show error, don't show loader, don't navigate
           });
         }
       });

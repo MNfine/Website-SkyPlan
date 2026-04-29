@@ -1,10 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Helper to get current language from localStorage
   function getCurrentLang() {
-    try { 
-      return localStorage.getItem('preferredLanguage') || 'vi'; 
-    } catch { 
-      return 'vi'; 
+    try {
+      if (typeof window.getPersistedLanguage === 'function') {
+        return window.getPersistedLanguage();
+      }
+      var lang = (localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi').toLowerCase();
+      return lang === 'en' ? 'en' : 'vi';
+    } catch {
+      return 'vi';
     }
   }
   
@@ -84,6 +88,16 @@ document.addEventListener('DOMContentLoaded', function() {
     return date < today;
   }
 
+  function toIsoDate(dateString) {
+    if (!dateString) return null;
+    var parts = dateString.split('/');
+    if (parts.length !== 3) return null;
+    var day = parts[0].padStart(2, '0');
+    var month = parts[1].padStart(2, '0');
+    var year = parts[2];
+    return year + '-' + month + '-' + day;
+  }
+
   // Error handling functions
   function showError(fieldId, message) {
     var field = document.getElementById(fieldId);
@@ -93,6 +107,22 @@ document.addEventListener('DOMContentLoaded', function() {
       errorDiv.textContent = message;
       errorDiv.classList.add('show');
     }
+  }
+
+  function formatPoints(value) {
+    var numeric = Number(value);
+    if (!isFinite(numeric)) numeric = 0;
+    return new Intl.NumberFormat(getCurrentLang() === 'en' ? 'en-US' : 'vi-VN').format(numeric);
+  }
+
+  function getTierInfo(totalEarned) {
+    var earned = Number(totalEarned);
+    if (!isFinite(earned)) earned = 0;
+
+    if (earned >= 3000) return { tier: 'Platinum', className: 'tier-platinum' };
+    if (earned >= 1000) return { tier: 'Gold', className: 'tier-gold' };
+    if (earned >= 500) return { tier: 'Silver', className: 'tier-silver' };
+    return { tier: 'Registered', className: 'tier-registered' };
   }
 
   function clearError(fieldId) {
@@ -107,6 +137,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function clearAllErrors() {
     ['fullName', 'email', 'phone', 'dob', 'gender'].forEach(clearError);
+  }
+
+  // Helper to switch to a specific tab
+  function switchToTab(targetSel) {
+    var menu = document.getElementById('profileMenu');
+    var target = document.querySelector(targetSel);
+    var item = document.querySelector('[data-target="' + targetSel + '"]');
+    
+    if (menu && target && item) {
+      menu.querySelectorAll('.menu-item').forEach(function(m) { m.classList.remove('active'); });
+      item.classList.add('active');
+      
+      document.querySelectorAll('.profile-content .card').forEach(function(card) { card.hidden = true; });
+      target.hidden = false;
+    }
+  }
+
+  // Handle setup redirect
+  if (new URLSearchParams(window.location.search).get('setup') === 'true') {
+    setTimeout(function() {
+      switchToTab('#personalSection');
+      showToast(getTranslation('profile.notification'), getTranslation('profile.setupPrompt'), 'info');
+    }, 800);
   }
 
   // Language selector handler
@@ -161,12 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var targetSel = item.getAttribute('data-target');
       if (!targetSel) return;
       
-      menu.querySelectorAll('.menu-item').forEach(function(m) { m.classList.remove('active'); });
-      item.classList.add('active');
-      
-      document.querySelectorAll('.profile-content .card').forEach(function(card) { card.hidden = true; });
-      var target = document.querySelector(targetSel);
-      if (target) target.hidden = false;
+      switchToTab(targetSel);
     });
   }
 
@@ -223,32 +271,250 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       
       if (isValid) {
-        var lang = getCurrentLang();
-        showToast(lang === 'vi' ? 'Thành công!' : 'Success!', getTranslation('successMessage'), 'success');
+        var payload = {
+          fullname: fullName,
+          email: email,
+          phone: phone,
+          gender: gender,
+          birth_date: toIsoDate(dob)
+        };
+
+        var updateUrl = '/api/auth/update';
+        var updateRequest = (window.AuthState && typeof AuthState.fetchWithAuth === 'function')
+          ? AuthState.fetchWithAuth(updateUrl, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            })
+          : fetch(updateUrl, {
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(payload)
+            });
+
+        updateRequest
+          .then(function(response) {
+            return response.json().then(function(data) {
+              return { ok: response.ok, data: data };
+            });
+          })
+          .then(function(result) {
+            if (!result.ok || !result.data || !result.data.success) {
+              throw new Error((result.data && result.data.message) || 'Failed to update profile');
+            }
+
+            var user = result.data.user || {};
+            if (inputs.fullName && user.fullname) inputs.fullName.value = user.fullname;
+            if (inputs.email && user.email) {
+              if (user.email.endsWith('@wallet.skyplan.local')) {
+                inputs.email.value = '';
+              } else {
+                inputs.email.value = user.email;
+              }
+            }
+            if (inputs.phone && (user.phone || user.mobile)) inputs.phone.value = user.phone || user.mobile;
+            if (inputs.dob && user.dob) inputs.dob.value = user.dob;
+            if (inputs.gender && user.gender) inputs.gender.value = user.gender;
+
+            var accountEmailEl = document.getElementById('accountEmail');
+            if (accountEmailEl && user.email) {
+              accountEmailEl.textContent = user.email;
+              accountEmailEl.style.opacity = '1';
+            }
+
+            var accountPhoneEl = document.getElementById('accountPhone');
+            if (accountPhoneEl && (user.phone || user.mobile)) {
+              accountPhoneEl.textContent = user.phone || user.mobile;
+            }
+
+            var profileNameEl = document.getElementById('profile-name');
+            if (profileNameEl && user.fullname) profileNameEl.textContent = user.fullname;
+            
+            // Update AuthState so the header and reloading work
+            if (window.AuthState && typeof window.AuthState.setAuth === 'function') {
+              window.AuthState.setAuth(token, user, !!localStorage.getItem('authToken'));
+            } else {
+              localStorage.setItem('currentUser', JSON.stringify(user));
+            }
+            if (typeof window.updateHeaderUserInfo === 'function') {
+              window.updateHeaderUserInfo();
+            }
+
+            var lang = getCurrentLang();
+            showToast(lang === 'vi' ? 'Thành công!' : 'Success!', getTranslation('successMessage'), 'success');
+          })
+          .catch(function(err) {
+            var lang = getCurrentLang();
+            showToast(lang === 'vi' ? 'Thất bại' : 'Failed', err.message || 'Failed to update profile', 'error');
+          });
       }
     });
   }
   
   window.profileGetCurrentLang = getCurrentLang;
+
+  // --- ENFORCE AUTH ---
+  // Use AuthState (supports localStorage & sessionStorage) instead of reading localStorage directly
+  if (window.AuthState && typeof AuthState.requireAuth === 'function') {
+    const ok = AuthState.requireAuth(window.location.pathname + window.location.search);
+    if (!ok) return; // requireAuth will redirect if not authenticated
+  }
+
+  // Retrieve token via AuthState.getToken to support sessionStorage tokens as well
+  const token = (window.AuthState && typeof AuthState.getToken === 'function')
+    ? AuthState.getToken()
+    : (localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
+
+  if (!token) {
+    // Fallback: redirect to login
+    alert('You need to log in to view your profile.');
+    window.location.href = '/login.html';
+    return;
+  }
+
+  // Use centralized fetchWithAuth when available so 401 handling is consistent
+  const profileUrl = (typeof window !== 'undefined' && window.location && window.location.pathname && window.location.pathname.startsWith('/'))
+    ? '/api/auth/profile'
+    : '/api/auth/profile';
+
+  const doFetch = (window.AuthState && typeof AuthState.fetchWithAuth === 'function')
+    ? AuthState.fetchWithAuth(profileUrl, { method: 'GET' })
+    : fetch(profileUrl, { method: 'GET', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } });
+
+  doFetch
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch profile information.');
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data && data.success) {
+        console.debug('[profile] profile data', data.user);
+        // Fill account display fields if present
+        const accountEmailEl = document.getElementById('accountEmail');
+        const accountPhoneEl = document.getElementById('accountPhone');
+        const memberIdEl = document.getElementById('memberId');
+        const memberTierEl = document.getElementById('memberTier');
+        const memberPointsEl = document.getElementById('memberPoints');
+        const walletAddressItem = document.getElementById('walletAddressItem');
+        const accountWalletEl = document.getElementById('accountWallet');
+        
+        // Use available sky tokens as points balance
+        const totalEarned = data.user.total_available_sky ?? data.user.total_earned_sky ?? data.user.totalEarned ?? data.user.points ?? 0;
+        const tierInfo = getTierInfo(totalEarned);
+
+        if (accountEmailEl && data.user.email) {
+          if (data.user.email.endsWith('@wallet.skyplan.local')) {
+            accountEmailEl.textContent = getTranslation('profile.notUpdated');
+            accountEmailEl.style.opacity = '0.5';
+          } else {
+            accountEmailEl.textContent = data.user.email;
+          }
+        }
+        
+        if (data.user.wallet_address) {
+          if (walletAddressItem) walletAddressItem.style.display = 'flex';
+          if (accountWalletEl) {
+            accountWalletEl.textContent = data.user.wallet_address.substring(0, 6) + '...' + data.user.wallet_address.substring(data.user.wallet_address.length - 4);
+            accountWalletEl.title = data.user.wallet_address;
+          }
+        }
+        
+        if (accountPhoneEl && (data.user.phone || data.user.mobile)) {
+          const phone = data.user.phone || data.user.mobile;
+          if (phone === '0000000000') {
+            accountPhoneEl.textContent = getTranslation('profile.notUpdated');
+            accountPhoneEl.style.opacity = '0.5';
+          } else {
+            accountPhoneEl.textContent = phone;
+          }
+        }
+        if (memberIdEl && (data.user.memberId || data.user.id)) memberIdEl.textContent = data.user.memberId || data.user.id;
+        if (memberTierEl) {
+          memberTierEl.textContent = data.user.member_tier || data.user.tier || tierInfo.tier;
+          memberTierEl.classList.remove('tier-registered', 'tier-silver', 'tier-gold', 'tier-platinum');
+          memberTierEl.classList.add(tierInfo.className);
+        }
+        if (memberPointsEl) {
+          const pointsLabel = getTranslation('profile.account.pointsUnit');
+          memberPointsEl.innerHTML = formatPoints(totalEarned) + '<span data-i18n="profile.account.pointsUnit"> ' + pointsLabel + '</span>';
+        }
+
+        // Fill legacy/profile-name and profile-email if present (some templates use these ids)
+        const profileNameEl = document.getElementById('profile-name');
+        const profileEmailEl = document.getElementById('profile-email');
+        if (profileNameEl && data.user.fullname) {
+          if (data.user.fullname.startsWith('User 0x')) {
+            profileNameEl.textContent = getTranslation('profile.notUpdated');
+          } else {
+            profileNameEl.textContent = data.user.fullname;
+          }
+        }
+        if (profileEmailEl && data.user.email && !data.user.email.endsWith('@wallet.skyplan.local')) {
+          profileEmailEl.textContent = data.user.email;
+        }
+
+        // Populate form inputs if present
+        try {
+          const fullNameInput = document.getElementById('fullName');
+          const emailInput = document.getElementById('email');
+          const phoneInput = document.getElementById('phone');
+          const dobInput = document.getElementById('dob');
+          const genderSelect = document.getElementById('gender');
+
+          if (fullNameInput && data.user.fullname && !data.user.fullname.startsWith('User 0x')) fullNameInput.value = data.user.fullname;
+          if (emailInput && data.user.email && !data.user.email.endsWith('@wallet.skyplan.local')) emailInput.value = data.user.email;
+          if (phoneInput && (data.user.phone || data.user.mobile) && (data.user.phone || data.user.mobile) !== '0000000000') phoneInput.value = data.user.phone || data.user.mobile;
+          if (dobInput && (data.user.dob || data.user.dateOfBirth)) dobInput.value = data.user.dob || data.user.dateOfBirth;
+          if (genderSelect && data.user.gender) genderSelect.value = data.user.gender;
+        } catch (e) {
+          console.warn('[profile] failed to populate form inputs', e);
+        }
+
+      } else {
+        alert((data && data.message) || 'Failed to load profile.');
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching profile:', error);
+      alert('An error occurred while loading your profile.');
+    });
 });
 
 // Language switcher for profile page
 function changeProfileLanguage(lang) {
-  localStorage.setItem('preferredLanguage', lang);
-  document.documentElement.lang = lang;
+  var normalizedLang = String(lang || '').toLowerCase() === 'en' ? 'en' : 'vi';
+  if (typeof window.broadcastLanguageChange === 'function') {
+    window.broadcastLanguageChange(normalizedLang);
+  } else {
+    localStorage.setItem('preferredLanguage', normalizedLang);
+    localStorage.setItem('language', normalizedLang);
+    document.documentElement.lang = normalizedLang;
+  }
   
   // Apply profile translations first (including title)
   if (typeof applyProfileTranslations === 'function') {
-    applyProfileTranslations(lang);
+    applyProfileTranslations(normalizedLang);
   }
   
   // Update language selector display
   if (typeof updateSelectedLanguage === 'function') {
-    updateSelectedLanguage(lang);
+    updateSelectedLanguage(normalizedLang);
   }
   
   // Apply translations to header and footer using common.js function
   if (typeof applyTranslations === 'function') {
-    applyTranslations(lang);
+    applyTranslations(normalizedLang);
   }
 }
+
+document.addEventListener('languageChanged', function(e) {
+  var lang = (e && e.detail && (e.detail.lang || e.detail.language)) || getCurrentLang();
+  if (typeof applyProfileTranslations === 'function') {
+    applyProfileTranslations(lang);
+  }
+});
