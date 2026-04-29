@@ -1,0 +1,238 @@
+html,
+body,
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  background: #070f1a;
+  color: #e2e8f0;
+}
+
+.map-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.map-top-controls {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 32;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.map-back-button {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: rgba(1, 21, 42, 0.9);
+  color: #e2e8f0;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(2, 8, 23, 0.22);
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.map-back-button:hover {
+  transform: translateY(-1px);
+  background: rgba(2, 38, 73, 0.98);
+  border-color: rgba(125, 211, 252, 0.5);
+}
+
+.map-language-switch {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: rgba(1, 21, 42, 0.9);
+  color: #e2e8f0;
+  box-shadow: 0 10px 24px rgba(2, 8, 23, 0.22);
+}
+
+.map-language-label {
+  color: #cbd5e1;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.map-language-select {
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  border-radius: 999px;
+  background: rgba(2, 38, 73, 0.95);
+  color: #e2e8f0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  outline: none;
+  cursor: pointer;
+}
+
+.map-language-select:focus {
+  border-color: rgba(125, 211, 252, 0.75);
+}
+
+.esri-attribution,
+.esri-attribution__sources,
+.esri-attribution__powered-by,
+.esri-ui-bottom-container {
+  display: none !important;
+}
+
+#sidebar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(420px, 34vw);
+  height: 100%;
+  background: rgba(1, 21, 42, 0.88);
+  border-left: 1px solid rgba(56, 189, 248, 0.25);
+  backdrop-filter: blur(6px);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+#sidebar.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(100%);
+}
+
+.sidebar-header {
+  padding: 16px 16px 10px 16px;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.sidebar-title {
+  margin: 0;
+  font-size: 1rem;
+  color: #dbeafe;
+}
+
+.sidebar-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.count-pill {
+  font-size: 0.9rem;
+  color: #20B2AA;
+}
+
+.date-picker {
+  background: rgba(2, 38, 73, 0.9);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 999px;
+  color: #e2e8f0;
+  padding: 7px 12px;
+  font-size: 0.85rem;
+}
+
+#flightList {
+  flex: 1;
+  overflow: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.flight-card {
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(2, 34, 63, 0.7);
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.flight-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(56, 189, 248, 0.45);
+  background: rgba(2, 44, 80, 0.84);
+}
+
+.flight-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.route-code {
+  color: #20B2AA;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.distance {
+  color: #20B2AA;
+  font-size: 0.85rem;
+}
+
+.flight-line {
+  margin-top: 6px;
+  color: #cbd5e1;
+  font-size: 0.92rem;
+}
+
+.flight-sub {
+  margin-top: 4px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #94a3b8;
+  font-size: 0.84rem;
+}
+
+.empty {
+  margin-top: 8px;
+  color: #94a3b8;
+  font-size: 0.92rem;
+}
+
+@media (max-width: 980px) {
+  #sidebar {
+    width: min(100vw, 440px);
+  }
+
+  .map-top-controls {
+    top: 12px;
+    left: 12px;
+    gap: 8px;
+  }
+
+  .map-language-switch {
+    padding: 7px 9px;
+  }
+
+  .map-language-label {
+    display: none;
+  }
+}

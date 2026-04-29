@@ -1,0 +1,222 @@
+"""Booking model to store flight booking information."""
+from __future__ import annotations
+
+from datetime import datetime
+from sqlalchemy import Column, Integer, String, DateTime, Numeric, ForeignKey, Enum, Boolean
+from sqlalchemy.orm import relationship
+import enum
+
+from .db import Base
+
+
+class BookingStatus(enum.Enum):
+    PENDING = "PENDING"
+    CONFIRMED = "CONFIRMED"
+    PAYMENT_FAILED = "PAYMENT_FAILED"  # Thanh toán thất bại, có thể retry
+    CANCELLED = "CANCELLED"
+    EXPIRED = "EXPIRED"
+    COMPLETED = "COMPLETED"
+
+
+class TripType(enum.Enum):
+    ONE_WAY = "one-way"
+    ROUND_TRIP = "round-trip"
+
+
+class FareClass(enum.Enum):
+    ECONOMY = "economy"
+    PREMIUM_ECONOMY = "premium-economy"
+    BUSINESS = "business"
+
+
+class Booking(Base):
+    __tablename__ = "bookings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    booking_code = Column(String(32), unique=True, nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'), nullable=True, index=True)
+    status = Column(Enum(BookingStatus), nullable=False, default=BookingStatus.PENDING, index=True)
+    trip_type = Column(Enum(TripType), nullable=False)
+    fare_class = Column(Enum(FareClass), nullable=False)
+    
+    # Flight information
+    outbound_flight_id = Column(Integer, ForeignKey('flights.id'), nullable=False)
+    inbound_flight_id = Column(Integer, ForeignKey('flights.id'), nullable=True)
+    
+    # Pricing
+    total_amount = Column(Numeric(12, 2), nullable=False)
+    
+    # Blockchain fields
+    booking_hash = Column(String(66), nullable=True)  # keccak256 hash (0x + 64 hex)
+    booking_state_hash = Column(String(66), nullable=True)  # canonical hash of mutable booking state
+    wallet_address = Column(String(42), nullable=True)  # Ethereum address (0x + 40 hex)
+    onchain_recorded = Column(Boolean, nullable=False, default=False)
+    nft_minted = Column(Boolean, nullable=False, default=False)
+    nft_token_id = Column(String(100), nullable=True)  # NFT token ID from TicketNFT contract
+    nft_contract = Column(String(42), nullable=True)  # TicketNFT contract address (0x + 40 hex)
+    sky_minted = Column(Boolean, nullable=False, default=False)
+    sky_reward_amount = Column(Numeric(12, 2), nullable=True)  # SKY token reward amount
+    sky_redeemed_amount = Column(Numeric(12, 2), nullable=False, default=0)  # SKY amount already redeemed from this booking
+    onchain_record_tx_hash = Column(String(66), nullable=True)
+    nft_mint_tx_hash = Column(String(66), nullable=True)
+    sky_mint_tx_hash = Column(String(66), nullable=True)
+    
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    confirmed_at = Column(DateTime, nullable=True)
+    
+    # Relationships
+    user = relationship("User", backref="bookings")
+    outbound_flight = relationship("Flight", foreign_keys=[outbound_flight_id])
+    inbound_flight = relationship("Flight", foreign_keys=[inbound_flight_id])
+    passengers = relationship("BookingPassenger", back_populates="booking", cascade="all, delete-orphan")
+    payments = relationship("Payment", back_populates="booking", cascade="all, delete-orphan")
+    tickets = relationship("Ticket", back_populates="booking", cascade="all, delete-orphan")
+
+    def as_dict(self):
+        # Provide a richer representation expected by the frontend
+        outbound = None
+        inbound = None
+        try:
+            if self.outbound_flight:
+                # include both the flight's keys and aliases some front-end code expects
+                outbound = self.outbound_flight.as_dict()
+                outbound.setdefault('origin_code', outbound.get('departure_airport'))
+                outbound.setdefault('destination_code', outbound.get('arrival_airport'))
+            if self.inbound_flight:
+                inbound = self.inbound_flight.as_dict()
+                inbound.setdefault('origin_code', inbound.get('departure_airport'))
+                inbound.setdefault('destination_code', inbound.get('arrival_airport'))
+        except Exception:
+            # If lazy relationships are not loaded or something fails, fall back to ids
+            outbound = outbound or { 'id': self.outbound_flight_id }
+            inbound = inbound or ( { 'id': self.inbound_flight_id } if self.inbound_flight_id else None )
+
+        # Build passenger list (include passenger details and seat info when available)
+        passenger_list = []
+        try:
+            for bp in getattr(self, 'passengers') or []:
+                p = None
+                try:
+                    p = bp.passenger.as_dict() if bp.passenger else None
+                except Exception:
+                    p = { 'id': bp.passenger_id }
+                # ensure we always have a dict and include seat/name aliases
+                if p is None:
+                    p = { 'id': bp.passenger_id }
+
+                # normalize passenger fields for frontend expectations
+                # Try seat_number string column first, then fall back to seat relationship
+                seat_num = getattr(bp, 'seat_number', None)
+                if not seat_num:
+                    try:
+                        seat_obj = getattr(bp, 'seat', None)
+                        if seat_obj:
+                            seat_num = getattr(seat_obj, 'seat_number', None) or getattr(seat_obj, 'seat_code', None)
+                            # Also expose seat class/type if available
+                            if seat_obj:
+                                p['seat_class'] = getattr(seat_obj, 'seat_class', None)
+                                p['seatClass'] = p['seat_class']
+                    except Exception:
+                        pass
+                if seat_num:
+                    p['seat_number'] = seat_num
+                    p['seatNumber'] = seat_num
+
+                # provide full name aliases used across frontend
+                try:
+                    firstname = p.get('firstname') or p.get('firstName') or ''
+                    lastname = p.get('lastname') or p.get('lastName') or ''
+                    full = (firstname + ' ' + lastname).strip() if (firstname or lastname) else p.get('full_name') or p.get('fullName') or ''
+                    if full:
+                        p['full_name'] = full
+                        p['fullName'] = full
+                except Exception:
+                    pass
+
+                # phone alias
+                if 'phone_number' in p and 'phone' not in p:
+                    p['phone'] = p.get('phone_number')
+
+                passenger_list.append(p)
+        except Exception:
+            passenger_list = []
+
+        return {
+            "id": self.id,
+            "booking_code": self.booking_code,
+            "user_id": self.user_id,
+            # Use enum names so frontend that expects UPPER_CASE tokens works consistently
+            "status": (self.status.name if self.status else None),
+            # provide passenger counts in several alias forms for frontend compatibility
+            "passenger_count": len(passenger_list),
+            "total_passengers": len(passenger_list),
+            "num_passengers": len(passenger_list),
+            "trip_type": (self.trip_type.name if self.trip_type else None),
+            "fare_class": (self.fare_class.name if self.fare_class else None),
+            "outbound_flight": outbound,
+            "inbound_flight": inbound,
+            "outbound_flight_id": self.outbound_flight_id,
+            "inbound_flight_id": self.inbound_flight_id,
+            "total_amount": float(self.total_amount) if self.total_amount is not None else 0,
+            "passengers": passenger_list,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "confirmed_at": self.confirmed_at.isoformat() if self.confirmed_at else None,
+            "booking_hash": self.booking_hash,
+            "booking_state_hash": self.booking_state_hash,
+            "wallet_address": self.wallet_address,
+            "onchain_recorded": bool(self.onchain_recorded),
+            "nft_minted": bool(self.nft_minted),
+            "nft_token_id": self.nft_token_id,
+            "nft_contract": self.nft_contract,
+            "sky_minted": bool(self.sky_minted),
+            "sky_reward_amount": float(self.sky_reward_amount) if self.sky_reward_amount is not None else 0,
+            "sky_redeemed_amount": float(self.sky_redeemed_amount) if self.sky_redeemed_amount is not None else 0,
+            "onchain_record_tx_hash": self.onchain_record_tx_hash,
+            "nft_mint_tx_hash": self.nft_mint_tx_hash,
+            "sky_mint_tx_hash": self.sky_mint_tx_hash,
+            # Nested NFT info (for FE convenience)
+            "nft": {
+                "minted": bool(self.nft_minted),
+                "tokenId": self.nft_token_id,
+                "contract": self.nft_contract
+            },
+            # Blockchain verification status
+            "isVerified": bool(self.onchain_recorded),
+            # Reward amount
+            "rewardSky": float(self.sky_reward_amount) if self.sky_reward_amount is not None else 0,
+            "redeemedSky": float(self.sky_redeemed_amount) if self.sky_redeemed_amount is not None else 0,
+        }
+
+    @staticmethod
+    def generate_booking_code():
+        """Generate unique booking code like SP202610001 using cryptographically secure random"""
+        import secrets
+        year = datetime.now().year
+        # Use secrets for cryptographically secure random number (not predictable)
+        random_suffix = str(secrets.randbelow(90000) + 10000)  # Range: 10000-99999
+        return f"SP{year}{random_suffix}"
+
+
+class BookingPassenger(Base):
+    __tablename__ = "booking_passengers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    booking_id = Column(Integer, ForeignKey('bookings.id', ondelete='CASCADE'), nullable=False, index=True)
+    passenger_id = Column(Integer, ForeignKey('passengers.id', ondelete='CASCADE'), nullable=False, index=True)
+    seat_id = Column(Integer, ForeignKey('seats.id'), nullable=True, index=True)  # Link to seat table
+    seat_number = Column(String(10), nullable=True)  # Backup seat number (legacy support)
+    
+    # Relationships
+    booking = relationship("Booking", back_populates="passengers")
+    passenger = relationship("Passenger", backref="booking_passengers")
+    seat = relationship("Seat", foreign_keys=[seat_id])
+    ticket = relationship("Ticket", back_populates="passenger", uselist=False)
+
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "booking_id": self.booking_id,
+            "passenger_id": self.passenger_id,
+            "seat_number": self.seat_number,
+        }

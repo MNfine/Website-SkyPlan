@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,10 +15,12 @@
   <link rel="stylesheet" href="assets/styles/index.css">
   <link rel="stylesheet" href="assets/styles/flags.css">
   <link rel="stylesheet" href="assets/styles/header.css">
+  <link rel="stylesheet" href="assets/styles/wallet.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/fare.css">
   <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
+
 <body>
   <div id="header-container"></div>
 
@@ -123,8 +126,13 @@
 
   <div id="footer-container"></div>
 
+  <script src="assets/scripts/auth-utils.js"></script>
   <script src="assets/scripts/fare_translations.js"></script>
+  <script src="assets/scripts/fare.js"></script>
   <script src="assets/scripts/common.js"></script>
+  <script src="assets/scripts/wallet_translations.js"></script>
+  <script src="assets/scripts/metamask.js"></script>
+  <script src="assets/scripts/wallet-ui.js"></script>
   <script>
     // Persist selected fare class and price (VND) to localStorage
     document.addEventListener('DOMContentLoaded', function(){
@@ -172,12 +180,17 @@
   </script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+      // Signal that we will handle initialization manually
+      if (typeof window.setManualInit === 'function') {
+        window.setManualInit();
+      }
+
       // Function to handle component loading errors
       function handleComponentError(componentName) {
         console.error(`Failed to load ${componentName} component`);
       }
-      
+
       // Load header
       fetch('components/header.html')
         .then(response => {
@@ -197,11 +210,27 @@
             }
             // Initialize language functionality after header loads
             initializeLanguage();
+            // Initialize wallet UI after header loads
+            if (typeof initWalletUI === 'function') {
+              initWalletUI();
+            }
+            // Emit header-loaded event
+            document.dispatchEvent(new CustomEvent('header-loaded'));
+            // Initialize fare page functionality
+            if (typeof window.initializeFarePage === 'function') {
+              window.initializeFarePage();
+            }
           });
         })
         .catch(error => {
           handleComponentError('header');
-          initializeLanguage();
+          // Fallback initialization if header fails
+          if (typeof window.initializeLanguage === 'function') {
+            window.initializeLanguage();
+          }
+          if (typeof window.initializeFarePage === 'function') {
+            window.initializeFarePage();
+          }
         });
 
       // Load footer
@@ -270,4 +299,5 @@
     });
   </script>
 </body>
+
 </html>

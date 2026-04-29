@@ -9,6 +9,7 @@ import urllib.parse
 import json
 import time
 from datetime import datetime
+from decimal import Decimal
 from flask import Blueprint, request, jsonify, redirect
 import requests
 from urllib.parse import quote_plus
@@ -317,10 +318,254 @@ def test_payment():
         'endpoints': {
             'create_payment': '/api/payment/vnpay/create',
             'return_url': '/api/payment/vnpay/return',
-            'ipn_url': '/api/payment/vnpay/ipn'
+            'ipn_url': '/api/payment/vnpay/ipn',
+            'blockchain_create': '/api/payment/blockchain/create',
+            'blockchain_status': '/api/payment/blockchain/status/<tx_hash>',
+            'blockchain_confirm': '/api/payment/blockchain/confirm'
         },
         'status': 'OK'
     })
+
+
+# ==================== BLOCKCHAIN PAYMENT ENDPOINTS ====================
+
+class BlockchainService:
+    """Service class for Blockchain (Ethereum/Sepolia) payment processing"""
+    
+    # Sepolia testnet configuration
+    SEPOLIA_CHAIN_ID = '11155111'
+    SEPOLIA_RPC_URL = 'https://sepolia.infura.io/v3/'  # Can be configured via env
+    
+    @staticmethod
+    def create_blockchain_payment_record(booking_id, amount, from_address):
+        """Create a blockchain payment record in database"""
+        try:
+            from models.db import db, Payment, Booking
+            
+            # Create payment record with pending status
+            payment = Payment(
+                booking_id=booking_id,
+                payment_method='blockchain',
+                amount=amount,
+                currency='VND',
+                status='pending',
+                transaction_type='ethereum',
+                blockchain_from_address=from_address,
+                blockchain_chain_id=BlockchainService.SEPOLIA_CHAIN_ID,
+            )
+            
+            db.session.add(payment)
+            db.session.commit()
+            
+            return {
+                'success': True,
+                'payment_id': payment.id,
+                'status': 'pending'
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    @staticmethod
+    def update_transaction_status(tx_hash, status, details=None):
+        """Update blockchain transaction status"""
+        try:
+            from models.db import db, Payment
+            
+            payment = Payment.query.filter_by(blockchain_tx_hash=tx_hash).first()
+            
+            if not payment:
+                return {'success': False, 'error': 'Transaction not found'}
+            
+            # Update payment status
+            payment.status = status
+            
+            if details:
+                if 'confirmations' in details:
+                    payment.blockchain_confirmations = details['confirmations']
+                if 'block_number' in details:
+                    payment.blockchain_block_number = details['block_number']
+                if 'gas_used' in details:
+                    payment.blockchain_gas_used = details['gas_used']
+                if 'error_code' in details:
+                    payment.blockchain_error_code = details['error_code']
+                if 'error_message' in details:
+                    payment.blockchain_error_message = details['error_message']
+            
+            payment.updated_at = datetime.utcnow()
+            db.session.commit()
+            
+            # If payment successful, update booking status
+            if status == 'success' and payment.booking:
+                payment.booking.status = 'confirmed'
+                db.session.commit()
+            
+            return {
+                'success': True,
+                'status': status,
+                'payment_data': payment.to_dict()
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    @staticmethod
+    def save_transaction_hash(booking_id, tx_hash, from_address, to_address):
+        """Save transaction hash to database"""
+        try:
+            from models.db import db, Payment
+            
+            payment = Payment.query.filter_by(booking_id=booking_id, status='pending').first()
+            
+            if not payment:
+                return {'success': False, 'error': 'Payment record not found'}
+            
+            # Update with transaction hash
+            payment.blockchain_tx_hash = tx_hash
+            payment.blockchain_from_address = from_address
+            payment.blockchain_to_address = to_address
+            payment.status = 'processing'
+            payment.updated_at = datetime.utcnow()
+            
+            db.session.commit()
+            
+            return {
+                'success': True,
+                'tx_hash': tx_hash,
+                'status': 'processing'
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+
+
+# Blockchain Payment Routes
+
+@payment_bp.route('/blockchain/create', methods=['POST'])
+def create_blockchain_payment():
+    """Create a blockchain payment record"""
+    
+    try:
+        data = request.get_json()
+        
+        booking_id = data.get('bookingId')
+        amount = data.get('amount')
+        wallet_address = data.get('walletAddress')
+        
+        if not all([booking_id, amount, wallet_address]):
+            return jsonify({
+                'success': False,
+                'error': 'Missing required fields: bookingId, amount, walletAddress'
+            }), 400
+        
+        # Create payment record
+        result = BlockchainService.create_blockchain_payment_record(
+            booking_id, amount, wallet_address
+        )
+        
+        return jsonify(result), 201 if result['success'] else 400
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@payment_bp.route('/blockchain/status/<tx_hash>', methods=['GET'])
+def get_blockchain_transaction_status(tx_hash):
+    """Get blockchain transaction status"""
+    
+    try:
+        from models.db import db, Payment
+        
+        payment = Payment.query.filter_by(blockchain_tx_hash=tx_hash).first()
+        
+        if not payment:
+            return jsonify({
+                'success': False,
+                'error': 'Transaction not found'
+            }), 404
+        
+        return jsonify({
+            'success': True,
+            'status': payment.status,
+            'confirmations': payment.blockchain_confirmations or 0,
+            'tx_hash': tx_hash,
+            'payment_data': payment.to_dict()
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@payment_bp.route('/blockchain/confirm', methods=['POST'])
+def confirm_blockchain_payment():
+    """Confirm blockchain payment with transaction details"""
+    
+    try:
+        data = request.get_json()
+        
+        tx_hash = data.get('txHash')
+        status = data.get('status')  # success, failed, pending
+        details = data.get('details', {})  # confirmations, block_number, gas_used, error_code
+        
+        if not all([tx_hash, status]):
+            return jsonify({
+                'success': False,
+                'error': 'Missing required fields: txHash, status'
+            }), 400
+        
+        # Update transaction status
+        result = BlockchainService.update_transaction_status(tx_hash, status, details)
+        
+        return jsonify(result), 200 if result['success'] else 400
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@payment_bp.route('/blockchain/save-hash', methods=['POST'])
+def save_blockchain_transaction_hash():
+    """Save blockchain transaction hash"""
+    
+    try:
+        data = request.get_json()
+        
+        booking_id = data.get('bookingId')
+        tx_hash = data.get('txHash')
+        from_address = data.get('fromAddress')
+        to_address = data.get('toAddress')
+        
+        if not all([booking_id, tx_hash, from_address]):
+            return jsonify({
+                'success': False,
+                'error': 'Missing required fields'
+            }), 400
+        
+        result = BlockchainService.save_transaction_hash(
+            booking_id, tx_hash, from_address, to_address
+        )
+        
+        return jsonify(result), 200 if result['success'] else 400
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 def get_vnpay_error_message(response_code):
     """Get user-friendly error message from VNPay response code"""
@@ -359,3 +604,86 @@ def check_config():
         'environment': VNPayConfig.ENVIRONMENT,
         'payment_url': VNPayConfig.get_payment_url()
     })
+
+
+@payment_bp.route('/mark-paid', methods=['POST'])
+def mark_paid_compat():
+    """Compatibility endpoint for local card/bank demo flow.
+    Mirrors /api/payment/mark-paid behavior used by newer payment route module.
+    """
+    data = request.get_json(silent=True) or {}
+    booking_code = data.get('booking_code')
+    amount = data.get('amount')
+    transaction_id = data.get('transaction_id')
+    provider = data.get('provider', 'manual')
+
+    if not booking_code:
+        return jsonify({'success': False, 'message': 'booking_code is required'}), 400
+
+    try:
+        try:
+            from backend.models.db import session_scope
+            from backend.models.booking import Booking, BookingStatus
+            from backend.models.payments import Payment
+            from backend.models.user import User
+        except Exception:
+            from models.db import session_scope
+            from models.booking import Booking, BookingStatus
+            from models.payments import Payment
+            from models.user import User
+
+        # Resolve caller user from Bearer token (optional)
+        caller_user = None
+        auth_header = request.headers.get('Authorization')
+        if auth_header and auth_header.startswith('Bearer '):
+            token = auth_header.split(' ')[1]
+            try:
+                caller_user = User.verify_auth_token(token)
+            except Exception:
+                caller_user = None
+
+        with session_scope() as session:
+            booking = session.query(Booking).filter_by(booking_code=booking_code).first()
+            if not booking:
+                return jsonify({'success': False, 'message': 'Booking not found'}), 404
+
+            if caller_user and getattr(booking, 'user_id', None) is None:
+                booking.user_id = caller_user
+                session.add(booking)
+
+            try:
+                amount_dec = Decimal(str(amount)) if amount is not None else booking.total_amount
+            except Exception:
+                amount_dec = booking.total_amount
+
+            payment = Payment(
+                booking_id=booking.id,
+                booking_code=booking.booking_code,
+                amount=amount_dec,
+                provider=provider,
+                status='SUCCESS',
+                transaction_id=transaction_id,
+            )
+            session.add(payment)
+
+            try:
+                booking.total_amount = amount_dec
+            except Exception:
+                pass
+
+            try:
+                booking.status = BookingStatus.CONFIRMED
+            except Exception:
+                booking.status = 'CONFIRMED'
+            booking.confirmed_at = datetime.utcnow()
+            session.add(booking)
+            session.flush()
+
+            return jsonify({
+                'success': True,
+                'booking_code': booking.booking_code,
+                'payment': payment.as_dict() if hasattr(payment, 'as_dict') else {'id': payment.id}
+            }), 200
+
+    except Exception as exc:
+        return jsonify({'success': False, 'message': str(exc)}), 500

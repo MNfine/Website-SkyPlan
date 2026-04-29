@@ -9,15 +9,17 @@
   <!-- Favicon -->
   <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
   <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   
   <!-- Font Awesome CDN for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   
   <!-- CSS -->
   <link rel="stylesheet" href="assets/styles/reset.css">
   <link rel="stylesheet" href="assets/styles/index.css">
   <link rel="stylesheet" href="assets/styles/flags.css">
   <link rel="stylesheet" href="assets/styles/header.css">
+<link rel="stylesheet" href="assets/styles/wallet.css">
   <link rel="stylesheet" href="assets/styles/footer.css">
   <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
@@ -27,7 +29,7 @@
 
   <!-- Hero Section -->
   <section class="hero">
-    <img src="assets/images/hero.jpg" alt="Airplane on runway" class="hero-image">
+    <img src="assets/images/hero.jpg" alt="Airplane on runway" class="hero-image" fetchpriority="high" decoding="async">
     <div class="hero-content">
       <div class="container">
         <h1 class="hero-title" data-i18n="heroTitle">Ưu đãi tốt nhất đang chờ đón bạn</h1>
@@ -38,7 +40,7 @@
   <!-- Search Box -->
   <div class="container">
     <div class="search-container">
-      <form class="search-box" action="search.html" method="GET">
+      <form class="search-box" action="/search" method="GET">
         <div class="search-form">
           <div class="search-field">
             <label for="from" data-i18n="search.from">Từ</label>
@@ -70,13 +72,57 @@
     </div>
   </div>
 
+  <!-- Airport Map Promo -->
+  <section>
+    <div class="container">
+      <div class="airport-map-promo">
+        <div class="airport-map-card dark">
+          <div class="airport-map-preview">
+            <iframe
+              class="airport-map-embed"
+              src="/map_interact.html?embed=1"
+              title="Bản đồ sân bay tương tác"
+              loading="lazy"
+              referrerpolicy="no-referrer"
+              tabindex="-1"
+              aria-hidden="true">
+            </iframe>
+            <div class="airport-map-overlay" aria-hidden="true"></div>
+            <a class="airport-map-btn-overlay" href="/map_interact.html" data-i18n="exploreDestinations">
+              Khám phá các điểm đến
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blockchain Ticket Upgrade (low-tech CTA) -->
+  <div class="container">
+    <div class="ticket-upgrade-banner" id="ticket-upgrade-banner" role="button" tabindex="0" aria-haspopup="dialog">
+      <div class="ticket-upgrade-mark" aria-hidden="true">
+        <i class="fas fa-shield-halved"></i>
+      </div>
+      <div class="ticket-upgrade-text">
+        <div class="ticket-upgrade-title" data-i18n="ticketUpgradeTitle">Nâng cấp vé thành vé Blockchain</div>
+        <div class="ticket-upgrade-desc" data-i18n="ticketUpgradeDesc">Minh bạch, an toàn, thao tác nhanh chóng. Nhận vé NFT và ưu đãi SKY mà không cần trả gas.</div>
+        <div class="ticket-upgrade-pillars">
+          <span class="ticket-pillar" data-i18n="ticketPillarTransparent">Minh bạch</span>
+          <span class="ticket-pillar" data-i18n="ticketPillarSafe">An toàn</span>
+          <span class="ticket-pillar" data-i18n="ticketPillarFast">Nhanh chóng</span>
+        </div>
+      </div>
+      <button class="ticket-upgrade-btn" id="ticket-upgrade-cta" type="button" data-i18n="ticketUpgradeCta">Tích hợp ngay</button>
+    </div>
+  </div>
+
   <!-- Popular Routes Section -->
   <section class="popular-routes">
     <div class="container">
       <h2 class="section-title" data-i18n="popularRoutesTitle">Điểm đến phổ biến</h2>
       <div class="routes-grid" id="routes-container">
         <div class="route-card" data-lang="en" style="display: none;">
-          <img src="assets/images/Ho_Chi_Minh.avif" alt="Ho Chi Minh" class="route-img">
+          <img src="assets/images/Ho_Chi_Minh.avif" alt="Ho Chi Minh" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Ho Chi Minh</h3>
             <p class="route-price">From 799,000 VND</p>
@@ -84,7 +130,7 @@
         </div>
         
         <div class="route-card" data-lang="en" style="display: none;">
-          <img src="assets/images/Da_Nang.avif" alt="Da Nang" class="route-img">
+          <img src="assets/images/Da_Nang.avif" alt="Da Nang" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Da Nang</h3>
             <p class="route-price">From 899,000 VND</p>
@@ -92,7 +138,7 @@
         </div>
         
         <div class="route-card" data-lang="en" style="display: none;">
-          <img src="assets/images/Phu_Quoc.jpg" alt="Phu Quoc" class="route-img">
+          <img src="assets/images/Phu_Quoc.jpg" alt="Phu Quoc" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Phu Quoc</h3>
             <p class="route-price">From 1,399,000 VND</p>
@@ -100,7 +146,7 @@
         </div>
         
         <div class="route-card" data-lang="en" style="display: none;">
-          <img src="assets/images/Da_Lat.jpg" alt="Da Lat" class="route-img">
+          <img src="assets/images/Da_Lat.jpg" alt="Da Lat" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Da Lat</h3>
             <p class="route-price">From 999,000 VND</p>
@@ -109,7 +155,7 @@
         
         <!-- Vietnamese routes (default display for domestic flights) -->
         <div class="route-card" data-lang="vi">
-          <img src="assets/images/Ho_Chi_Minh.avif" alt="Hồ Chí Minh" class="route-img">
+          <img src="assets/images/Ho_Chi_Minh.avif" alt="Hồ Chí Minh" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Hồ Chí Minh</h3>
             <p class="route-price">Từ 799.000 VND</p>
@@ -117,7 +163,7 @@
         </div>
         
         <div class="route-card" data-lang="vi">
-          <img src="assets/images/Da_Nang.avif" alt="Đà Nẵng" class="route-img">
+          <img src="assets/images/Da_Nang.avif" alt="Đà Nẵng" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Đà Nẵng</h3>
             <p class="route-price">Từ 899.000 VND</p>
@@ -125,7 +171,7 @@
         </div>
         
         <div class="route-card" data-lang="vi">
-          <img src="assets/images/Phu_Quoc.jpg" alt="Phú Quốc" class="route-img">
+          <img src="assets/images/Phu_Quoc.jpg" alt="Phú Quốc" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Phú Quốc</h3>
             <p class="route-price">Từ 1.399.000 VND</p>
@@ -133,7 +179,7 @@
         </div>
         
         <div class="route-card" data-lang="vi">
-          <img src="assets/images/Da_Lat.jpg" alt="Đà Lạt" class="route-img">
+          <img src="assets/images/Da_Lat.jpg" alt="Đà Lạt" class="route-img" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Đà Lạt</h3>
             <p class="route-price">Từ 999.000 VND</p>
@@ -191,12 +237,29 @@
   <!-- Footer -->
   <div id="footer-container"></div>
 
+  <!-- Ticket Upgrade Popup -->
+  <div class="ticket-upgrade-modal" id="ticket-upgrade-modal" aria-hidden="true">
+    <div class="ticket-upgrade-dialog" role="dialog" aria-modal="true" aria-labelledby="ticket-upgrade-title">
+      <button class="ticket-upgrade-close" id="ticket-upgrade-close" type="button" aria-label="Close">
+        <i class="fas fa-times"></i>
+      </button>
+      <h3 class="ticket-upgrade-modal-title" id="ticket-upgrade-title" data-i18n="ticketUpgradeModalTitle">Tích hợp vé Blockchain</h3>
+      <p class="ticket-upgrade-modal-desc" data-i18n="ticketUpgradeModalDesc">Bạn muốn tích hợp ngay hay xem hướng dẫn trước?</p>
+      <div class="ticket-upgrade-actions">
+        <button class="ticket-upgrade-primary" id="ticket-upgrade-integrate" type="button" data-i18n="ticketUpgradeIntegrate">Tích hợp ngay</button>
+        <button class="ticket-upgrade-secondary" id="ticket-upgrade-guide" type="button" data-i18n="ticketUpgradeGuide">Xem hướng dẫn</button>
+      </div>
+    </div>
+  </div>
+
   <!-- JavaScript -->
-  <script src="assets/scripts/index_translations.js"></script>
-  <script src="assets/scripts/toast.js"></script>
-  <script src="assets/scripts/common.js"></script>
-  <script src="assets/scripts/date_format_handler.js"></script>
-  <script src="assets/scripts/index.js"></script>
+
+  <script defer src="assets/scripts/auth-utils.js"></script>
+  <script defer src="assets/scripts/index_translations.js"></script>
+  <script defer src="assets/scripts/toast.js"></script>
+  <script defer src="assets/scripts/common.js"></script>
+  <script defer src="assets/scripts/date_format_handler.js"></script>
+  <script defer src="assets/scripts/index.js"></script>
 
   <!-- Load Components -->
   <script>
@@ -207,35 +270,56 @@
     
     // Wait for translations.js to load before using functions
     function initializeApp() {
-      // Load header
-      fetch('components/header.html')
+      // Load header - Use absolute path to avoid issues
+      const headerPath = window.location.pathname.endsWith('/') ? 
+        'components/header.html' : './components/header.html';
+      
+      fetch(headerPath)
         .then(response => {
           if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error(`Network response was not ok: ${response.status}`);
           }
           return response.text();
         })
         .then(data => {
           document.getElementById('header-container').innerHTML = data;
           
-          // After header loads, initialize language functionality
-          initializeLanguage();
-          // Initialize mobile menu AFTER header is in DOM
+          // Emit header-loaded event for wallet UI
+          document.dispatchEvent(new CustomEvent('header-loaded'));
+          
+          // Initialize mobile menu after header loads
           if (typeof initializeMobileMenu === 'function') {
             initializeMobileMenu();
           }
+          
+          // Initialize wallet UI after header loads
+          if (typeof initWalletUI === 'function') {
+            initWalletUI();
+          }
+          
+          // Update header for auth status
+          if (typeof handleHeaderLoaded === 'function') {
+            handleHeaderLoaded();
+          }
+          
+          // After header loads, initialize language functionality
+          initializeLanguage();
         })
         .catch(error => {
+          console.error("Header loading error:", error);
           handleComponentError('header');
           // Still initialize language even if header fails
           initializeLanguage();
         });
       
-      // Load footer
-      fetch('components/footer.html')
+      // Load footer - Use same path determination as header
+      const footerPath = window.location.pathname.endsWith('/') ? 
+        'components/footer.html' : './components/footer.html';
+      
+      fetch(footerPath)
         .then(response => {
           if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error(`Network response was not ok: ${response.status}`);
           }
           return response.text();
         })
@@ -243,25 +327,24 @@
           document.getElementById('footer-container').innerHTML = data;
           // Re-apply translations to include freshly injected footer
           try {
-            const lang = localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+            const lang = window.getPersistedLanguage ? window.getPersistedLanguage() : (localStorage.getItem('preferredLanguage') || 'vi');
             if (typeof applyTranslations === 'function') {
               applyTranslations(lang);
             }
           } catch (e) {}
         })
         .catch(error => {
+          console.error("Footer loading error:", error);
           handleComponentError('footer');
         });
     }
     
     // Initialize language functionality
     function initializeLanguage() {
-      // Set Vietnamese as default language if not already set
-      let currentLang = localStorage.getItem('preferredLanguage');
-      if (!currentLang) {
-        currentLang = 'vi';
-        localStorage.setItem('preferredLanguage', 'vi');
-      }
+      // Restore persisted language via common canonical helper to heal key mismatches
+      let currentLang = window.getPersistedLanguage ? window.getPersistedLanguage() : ((localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi').toLowerCase() === 'en' ? 'en' : 'vi');
+      localStorage.setItem('preferredLanguage', currentLang);
+      localStorage.setItem('language', currentLang);
       
       document.documentElement.lang = currentLang;
       
@@ -270,8 +353,6 @@
         applyTranslations(currentLang);
         // emit a custom event so page parts can react
         try { document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang: currentLang } })); } catch (e) {}
-      } else {
-        console.error('applyTranslations function not found');
       }
       
       // Initialize language selector ONLY after header is loaded and language is set
@@ -288,9 +369,33 @@
     document.addEventListener('DOMContentLoaded', function() {
       initializeApp();
     });
+
+    // Final reconciliation after all assets load (guards against late overrides)
+    window.addEventListener('load', function() {
+      try {
+        const lang = window.getPersistedLanguage ? window.getPersistedLanguage() : ((localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi').toLowerCase() === 'en' ? 'en' : 'vi');
+        if (typeof applyTranslations === 'function') {
+          applyTranslations(lang);
+        }
+        if (typeof window.broadcastLanguageChange === 'function') {
+          window.broadcastLanguageChange(lang);
+        } else {
+          localStorage.setItem('preferredLanguage', lang);
+          localStorage.setItem('language', lang);
+          document.documentElement.lang = lang;
+        }
+        if (typeof updateSelectedLanguage === 'function') {
+          updateSelectedLanguage(lang);
+        }
+      } catch (e) {}
+    });
   </script>
   <!-- Loader component (JS) và logic show loader khi submit form -->
   <script src="assets/scripts/loader.js"></script>
+  <script src="assets/scripts/config.js"></script>
+  <script src="assets/scripts/metamask.js"></script>
+  <script src="assets/scripts/wallet_translations.js"></script>
+  <script src="assets/scripts/wallet-ui.js"></script>
   <script>
     // Import loader HTML vào DOM càng sớm càng tốt
     fetch('components/loader.html').then(r => r.text()).then(html => {

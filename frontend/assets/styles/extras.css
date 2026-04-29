@@ -1,3 +1,4 @@
+/* GENERAL & LAYOUT STYLES                       */
 .container.flow {
   padding-top: calc(var(--header-height, 80px) + 20px);
 }
@@ -7,22 +8,28 @@
 .steps .progress::before {
   width: 80%;
 }
+/* EXTRAS SELECTION GRID  */
 .extras-grid {
   display: grid;
+  /*create 3 columns of equal width. */
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   margin-top: 16px;
 }
 .extra-card {
+  /* --- Card Layout & Box Model --- */
   background: var(--light-color);
   border: 2px solid var(--primary-color);
   border-radius: 12px;
   padding: 18px;
   box-shadow: var(--box-shadow);
+
+  /* --- Flexbox Layout --- */
   display: flex;
   flex-direction: column;
 }
 .extra-card__img {
+  /* This is a flex container to center the image perfectly. */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -30,22 +37,27 @@
   margin-bottom: 10px;
 }
 .extra-card__img img {
+  /* Ensures the image never exceeds a certain height and fits well. */
   max-height: 140px;
   object-fit: contain;
 }
 .extra-card__title {
+  /* --- Typography & Color --- */
   font-size: 18px;
   margin: 6px 0 4px;
   color: var(--dark-color);
   font-weight: 700;
 }
 .extra-card__desc {
+  /* --- Typography & Color --- */
   color: #666;
   font-size: 14px;
   margin-bottom: 12px;
 }
 .extra-card__btn {
   margin-top: auto;
+
+  /* --- Button Appearance --- */
   padding: 12px 16px;
   border-radius: 30px;
   border: none;
@@ -61,10 +73,12 @@
   transform: translateY(-1px);
 }
 .extra-card__btn:active {
+  /* When the button is clicked, it moves down a bit to simulate a press. */
   transform: translateY(1px);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
 }
 .extras-actions {
+  /* --- Layout for Action Buttons --- */
   margin-top: 28px;
   margin-bottom: 60px;
   display: flex;
@@ -73,6 +87,7 @@
   gap: 16px;
 }
 .next-btn {
+  /* --- Layout & Appearance --- */
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -97,14 +112,20 @@
   transform: translateY(-1px);
 }
 
+/* EXTRAS DRAWER (SIDE PANEL)                    */
+
 .extras-backdrop {
+  /* --- Layout & Positioning --- */
+  /* This creates a full-screen, semi-transparent background behind the drawer. */
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.35);
+  /* Adds a slight blur effect to the content behind the backdrop. */
   backdrop-filter: blur(1px);
   z-index: 900;
 }
 .extras-drawer {
+  /* --- Layout & Positioning --- */
   position: fixed;
   top: 0;
   right: 0;
@@ -138,6 +159,7 @@
 }
 .drawer-content {
   flex: 1;
+  /* Allows scrolling if the content is too long to fit. */
   overflow: auto;
   padding: 14px 16px;
 }
@@ -157,7 +179,10 @@
 .drawer-total strong {
   font-weight: 700;
 }
-/* Meal list */
+
+/* MEAL LIST (Inside Drawer)                     */
+/* Styles for the list of selected meals.        */
+
 .meal-list {
   display: flex;
   flex-direction: column;
@@ -225,7 +250,10 @@
   text-align: center;
   font-weight: 600;
 }
-/* Baggage */
+
+/* BAGGAGE LIST (Inside Drawer)                  */
+/* Styles for the baggage selection options.     */
+
 .baggage-list {
   display: flex;
   flex-direction: column;
@@ -315,7 +343,10 @@
   color: var(--primary-color);
   font-weight: 700;
 }
-/* Services*/
+
+/* SERVICES LIST (Inside Drawer)                 */
+/* Styles for other services like insurance, etc.*/
+
 .services-list {
   display: flex;
   flex-direction: column;
@@ -377,6 +408,11 @@
 .service-card.selected {
   background: #fafefe;
 }
+
+/* RESPONSIVE DESIGN                             */
+/* These are media queries that adjust styles    */
+/* for different screen sizes (mobile, tablet).  */
+
 @media (max-width: 420px) {
   .meal-thumb {
     width: 60px;
@@ -411,11 +447,13 @@
 }
 
 @media (max-width: 1080px) {
+  /* On screens smaller than 1080px (like tablets), change the grid to 2 columns. */
   .extras-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 @media (max-width: 630px) {
+  /* On small screens (mobile phones), stack the cards in a single column. */
   .extras-grid {
     grid-template-columns: 1fr;
     gap: 14px;
@@ -427,6 +465,7 @@
   .extras-actions {
     margin-bottom: 32px;
   }
+  /* Make the drawer a bit wider on mobile to use more screen space. */
   .extras-drawer {
     width: 90%;
   }

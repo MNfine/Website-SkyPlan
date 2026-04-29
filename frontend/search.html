@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="assets/styles/index.css">
     <link rel="stylesheet" href="assets/styles/flags.css">
     <link rel="stylesheet" href="assets/styles/header.css">
+    <link rel="stylesheet" href="assets/styles/wallet.css">
     <link rel="stylesheet" href="assets/styles/footer.css">
     <link rel="stylesheet" href="assets/styles/loader.css">
 </head>
@@ -46,7 +47,19 @@
                     </div>
                 </div>
 
-                <button class="sp-btn sp-btn-secondary" type="submit">
+                <!-- Trip Type Selection - moved below dates -->
+                <div class="sp-row sp-field-group">
+                    <label class="sp-trip-option">
+                        <input type="radio" name="tripType" value="round-trip" checked>
+                        <span data-i18n="search.roundTrip">Khứ hồi</span>
+                    </label>
+                    <label class="sp-trip-option">
+                        <input type="radio" name="tripType" value="one-way">
+                        <span data-i18n="search.oneWay">Một chiều</span>
+                    </label>
+                </div>
+
+                <button class="sp-btn sp-btn-secondary" type="button" id="searchButton">
                     <i class="fa-solid fa-magnifying-glass"></i>
                     Tìm kiếm
                 </button>
@@ -74,6 +87,12 @@
 
         <section class="sp-results" aria-live="polite" aria-labelledby="results-heading">
             <h2 id="results-heading" class="sr-only">Kết quả tìm kiếm</h2>
+            <div id="spTrendToolbar" class="sp-trend-toolbar" hidden>
+                <button id="spOpenTrendBtn" type="button" class="sp-btn sp-btn-trend" onclick="if(window.openPriceTrendModal){window.openPriceTrendModal();}">
+                    <i class="fa-solid fa-chart-column"></i>
+                    <span>Biểu đồ giá</span>
+                </button>
+            </div>
             <!-- Results will be injected dynamically -->
         </section>
     </main>
@@ -91,7 +110,7 @@
                 <!-- OUTBOUND -->
                 <section class="sp-leg" aria-labelledby="outbound-heading">
                     <h3 id="outbound-heading" class="sr-only">Chiều đi</h3>
-                    <div class="sp-leg__title">To <span data-to-city>—</span></div>
+                    <div class="sp-leg__title"><span data-i18n="legTo">To</span> <span data-to-city>—</span></div>
                     <div class="sp-leg__panel">
                         <div class="sp-leg__grid">
                             <div class="sp-leg__date">
@@ -121,7 +140,7 @@
                 <!-- INBOUND -->
                 <section class="sp-leg" aria-labelledby="inbound-heading">
                     <h3 id="inbound-heading" class="sr-only">Chiều về</h3>
-                    <div class="sp-leg__title">To <span data-from-city>—</span></div>
+                    <div class="sp-leg__title"><span data-i18n="legTo">To</span> <span data-from-city>—</span></div>
                     <div class="sp-leg__panel">
                         <div class="sp-leg__grid">
                             <div class="sp-leg__date">
@@ -157,10 +176,37 @@
         </div>
     </div>
 
+    <div id="spTrendModal" class="sp-trend-modal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="sp-trend-modal__backdrop" data-trend-close></div>
+        <div class="sp-trend-modal__dialog" role="document" aria-labelledby="spTrendTitle">
+            <div class="sp-trend-modal__tabs">
+                <button type="button" class="sp-trend-tab is-active">Biểu đồ giá vé rẻ nhất trong Ngày</button>
+            </div>
+            <div class="sp-trend-modal__content">
+                <div class="sp-trend-summary" id="spTrendSummary">Đang tải dữ liệu...</div>
+                <div class="sp-trend-grid" id="spTrendGrid" aria-label="Biểu đồ xu hướng giá vé"></div>
+                <div class="sp-trend-axis" id="spTrendAxis"></div>
+            </div>
+            <div class="sp-trend-modal__footer">
+                <button id="spTrendCancel" type="button" class="sp-btn-trend-footer" data-trend-close>Hủy</button>
+                <button id="spTrendOk" type="button" class="sp-btn-trend-footer is-primary" data-trend-close>OK</button>
+            </div>
+        </div>
+    </div>
+
 
 
     <div id="footer-container"></div>
 
+    <script src="assets/scripts/auth-utils.js"></script>
+    <script src="assets/scripts/search.js"></script>
+    <script src="assets/scripts/common.js"></script>
+    <script src="assets/scripts/wallet_translations.js"></script>
+    <script src="assets/scripts/metamask.js"></script>
+    <script src="assets/scripts/wallet-ui.js"></script>
+    <script src="assets/scripts/search_translations.js"></script>
+    <script src="assets/scripts/search_filter.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const loadComponent = async (id, file) => {
@@ -176,6 +222,19 @@
             };
             await loadComponent('header-container', 'components/header.html');
             await loadComponent('footer-container', 'components/footer.html');
+            
+            // Emit header-loaded event so wallet-ui and menu can initialize
+            document.dispatchEvent(new CustomEvent('header-loaded'));
+            
+            // Initialize mobile menu after header loads
+            if (typeof initializeMobileMenu === 'function') {
+                initializeMobileMenu();
+            }
+            
+            // Initialize wallet UI after header loads
+            if (typeof initWalletUI === 'function') {
+                initWalletUI();
+            }
         });
     </script>
 
@@ -234,9 +293,6 @@
             }
         })();
     </script>
-    <script src="assets/scripts/common.js"></script>
-    <script src="assets/scripts/search_translations.js"></script>
-    <script src="assets/scripts/search_filter.js"></script>
 
 
     <script>
@@ -246,11 +302,19 @@
 
         function initializeLanguage() {
             // Get or set language
-            let currentLang = localStorage.getItem('preferredLanguage');
+            let currentLang = (typeof window.getPersistedLanguage === 'function')
+                ? window.getPersistedLanguage()
+                : (localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi');
             if (!currentLang) {
                 currentLang = 'vi';
                 localStorage.setItem('preferredLanguage', 'vi');
+                localStorage.setItem('language', 'vi');
             }
+
+            try {
+                localStorage.setItem('preferredLanguage', currentLang);
+                localStorage.setItem('language', currentLang);
+            } catch (_) {}
 
             document.documentElement.lang = currentLang;
 
@@ -290,50 +354,24 @@
             }, 200);
         }
 
+        // *** NOTE: Header loading is already handled in DOMContentLoaded async block above ***
+        // This function kept for backwards compatibility but no longer needed
         function initializeApp() {
-            // Load header
-            fetch('components/header.html')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    document.getElementById('header-container').innerHTML = data;
-                    console.log('Header loaded successfully');
-
-                    // After header loads, initialize language functionality
-                    initializeLanguage();
-                })
-                .catch(error => {
-                    handleComponentError('header');
-                    console.error('Error loading header:', error);
-                    // Still initialize language even if header fails
-                    initializeLanguage();
-                });
-
-            // Load footer
-            fetch('components/footer.html')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    document.getElementById('footer-container').innerHTML = data;
-                    console.log('Footer loaded successfully');
-                })
-                .catch(error => {
-                    handleComponentError('footer');
-                    console.error('Error loading footer:', error);
-                });
+            // Language initialization
+            initializeLanguage();
+            // Footer is already loaded in DOMContentLoaded async block
         }
 
         // Initialize when DOM is ready
         document.addEventListener('DOMContentLoaded', function () {
             initializeApp();
+            
+            // Tự động tải dữ liệu chuyến bay khi trang được tải
+            setTimeout(function() {
+                if (typeof fetchFlights === 'function') {
+                    fetchFlights();
+                }
+            }, 500);
         });
     </script>
 
@@ -341,7 +379,8 @@
         (function () {
             // Lấy ngôn ngữ hiện tại
             function getLang() {
-                return localStorage.getItem('preferredLanguage') || 'vi';
+                if (typeof window.getPersistedLanguage === 'function') return window.getPersistedLanguage();
+                return localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi';
             }
 
             // Tạo dropdown cho phần "From" và "To"
@@ -400,7 +439,9 @@
         document.getElementById('spSearchForm').addEventListener('submit', (e) => {
             e.preventDefault();
 
-            const lang = localStorage.getItem('preferredLanguage') || 'vi';
+            const lang = (typeof window.getPersistedLanguage === 'function')
+                ? window.getPersistedLanguage()
+                : (localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi');
             const dict = (window.SKYPLAN_CITY_TRANSLATIONS && window.SKYPLAN_CITY_TRANSLATIONS[lang]) || {};
 
             const fromCode = document.getElementById('fromCity').value;
@@ -436,7 +477,8 @@
             const KEY = 'skyplan:lastSearch';
 
             function getLang() {
-                return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+                if (typeof window.getPersistedLanguage === 'function') return window.getPersistedLanguage();
+                return localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
             }
 
             function formatDate(dateStr, lang) {
@@ -502,27 +544,43 @@
                     return iso || '';
                 };
 
-                // Always work with ISO values and let date_format_handler render UI and constraints
-                if (depart) {
-                    const depISO = parseToISO(state.depart) || depart.dataset.isoValue || depart.value || '';
+                // Initialize date handler first, but skip if we have URL params to preserve
+                const hasDateParams = state.depart || state.ret;
+                
+                if (window.dateFormatHandler && !hasDateParams) {
+                    // Only call ensureTodayAndMins if we don't have URL params
+                    window.dateFormatHandler.ensureTodayAndMins();
+                } else if (window.dateFormatHandler) {
+                    // Just set minimum dates without overriding values
+                    const today = new Date().toISOString().slice(0, 10);
+                    if (depart) depart.min = today;
+                    if (ret) ret.min = depart ? (depart.value || today) : today;
+                }
+
+                // Apply URL parameter values
+                if (depart && state.depart) {
+                    const depISO = parseToISO(state.depart);
                     if (depISO) {
                         depart.dataset.isoValue = depISO;
                         depart.value = depISO;
+                        if (ret) ret.min = depISO; // Update return minimum
                     }
                 }
 
-                if (ret) {
-                    const retISO = parseToISO(state.ret) || ret.dataset.isoValue || ret.value || '';
+                if (ret && state.ret) {
+                    const retISO = parseToISO(state.ret);
                     if (retISO) {
                         ret.dataset.isoValue = retISO;
                         ret.value = retISO;
                     }
                 }
 
+                // Finally update UI formatting and constraints
                 if (window.dateFormatHandler) {
-                    window.dateFormatHandler.ensureTodayAndMins();
                     window.dateFormatHandler.updateDateInputsByLang(lang);
-                    window.dateFormatHandler.enforceReturnAfterDeparture();
+                    if (!hasDateParams) {
+                        window.dateFormatHandler.enforceReturnAfterDeparture();
+                    }
                 }
             }
 
@@ -582,7 +640,8 @@
             };
 
             function getLang() {
-                return localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+                if (typeof window.getPersistedLanguage === 'function') return window.getPersistedLanguage();
+                return localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
             }
 
             // Tự bắt mã IATA trong text "(XXX)" nếu chưa có data-iata
@@ -632,7 +691,10 @@
     <script>
         // hàm phụ an toàn lấy lang
         function getLangSafe(e) {
-            return (e && e.detail && e.detail.lang) || localStorage.getItem('preferredLanguage') || 'vi';
+            return (e && e.detail && e.detail.lang)
+                || (typeof window.getPersistedLanguage === 'function'
+                    ? window.getPersistedLanguage()
+                    : (localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || 'vi'));
         }
 
         // ====== Lắng nghe đổi ngôn ngữ từ header ======
@@ -663,13 +725,22 @@
                 'Không có chuyến bay phù hợp với bộ lọc.' :
                 'No flights match your filters.';
 
-            // 5) Nút/CTA trong modal (nếu đang mở)
+            // 5) Nút/CTA trong modal + leg titles (nếu đang mở)
             if (window.MODAL_I18N && window.MODAL_I18N[lang]) {
                 const btn = document.getElementById('spBookBtn');
                 const storedPrice = btn && btn.dataset ? (btn.dataset.price || '') : '';
                 if (btn) btn.textContent = window.MODAL_I18N[lang].bookPrefix + storedPrice;
                 const titleEl = document.getElementById('spModalTitle');
                 if (titleEl) titleEl.textContent = window.MODAL_I18N[lang].title;
+            }
+
+            // 6) Update "Đến/To" trong modal leg titles
+            if (window.searchTranslations && window.searchTranslations[lang]) {
+                const legToSpans = document.querySelectorAll('.sp-leg__title [data-i18n="legTo"]');
+                const legToText = window.searchTranslations[lang].legTo || 'To';
+                legToSpans.forEach(span => {
+                    span.textContent = legToText;
+                });
             }
         });
 
@@ -690,7 +761,9 @@
                 AnGiang: 'VKG', DienBien: 'DIN', GiaLai: 'PXU', SonLa: 'SQH', ThanhHoa: 'THD'
             };
             const CITY_LABELS = window.SKYPLAN_CITY_TRANSLATIONS || { vi: {}, en: {} };
-            const getLang = () => localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi';
+            const getLang = () => (typeof window.getPersistedLanguage === 'function')
+                ? window.getPersistedLanguage()
+                : (localStorage.getItem('language') || localStorage.getItem('preferredLanguage') || document.documentElement.lang || 'vi');
 
             const fmtDate = (iso) => {
                 const h = window.dateFormatHandler;
@@ -739,6 +812,35 @@
                 return dict[code] || code;
             }
 
+            // Format airport with city name and airport name
+            function formatAirport(cityCode, lang) {
+                // Use the same logic as in search.js
+                const cityDict = CITY_LABELS[lang] || CITY_LABELS.vi || {};
+                const cityName = cityDict[cityCode] || cityCode;
+                
+                // Airport names mapping
+                const AIRPORTS = {
+                    'hanoi': { vi: 'Sân bay Nội Bài', en: 'Noi Bai Airport' },
+                    'ho-chi-minh': { vi: 'Sân bay Tân Sơn Nhất', en: 'Tan Son Nhat Airport' },
+                    'da-nang': { vi: 'Sân bay Đà Nẵng', en: 'Da Nang Airport' },
+                    'hai-phong': { vi: 'Sân bay Cát Bi', en: 'Cat Bi Airport' },
+                    'hue': { vi: 'Sân bay Phú Bài', en: 'Phu Bai Airport' },
+                    'nha-trang': { vi: 'Sân bay Cam Ranh', en: 'Cam Ranh Airport' },
+                    'da-lat': { vi: 'Sân bay Liên Khương', en: 'Lien Khuong Airport' },
+                    'phu-quoc': { vi: 'Sân bay Phú Quốc', en: 'Phu Quoc Airport' },
+                    'can-tho': { vi: 'Sân bay Cần Thơ', en: 'Can Tho Airport' },
+                    'quy-nhon': { vi: 'Sân bay Phù Cát', en: 'Phu Cat Airport' }
+                };
+                
+                const airportInfo = AIRPORTS[cityCode];
+                const airportName = airportInfo ? (airportInfo[lang] || airportInfo.vi) : '';
+                
+                if (airportName) {
+                    return `${cityName} - ${airportName}`;
+                }
+                return cityName;
+            }
+
             function ensureModalHandlers() {
                 const modal = document.getElementById('spModal');
                 if (!modal || modal.dataset.closeBound === '1') return;
@@ -782,6 +884,28 @@
                             const parseMin = (s) => { const m = /^([0-2]?\d):([0-5]\d)$/.exec(String(s)); return m ? (parseInt(m[1],10)*60 + parseInt(m[2],10)) : null; };
                             const diffMin = (a,b) => { const A=parseMin(a), B=parseMin(b); if (A==null||B==null) return null; let d=B-A; if (d<0) d+=1440; return d; };
 
+                            // Validate: if same day, return departure must be >= 2 hours after outbound arrival
+                            const departISO = state.depart || '';
+                            const returnISO = state.ret || '';
+                            if (departISO === returnISO) {
+                                const outArrMin = parseMin(outArr);
+                                const inDepMin = parseMin(inDep);
+                                if (outArrMin !== null && inDepMin !== null) {
+                                    const minGapRequired = 120; // 2 hours = 120 minutes
+                                    let minGap = inDepMin - outArrMin;
+                                    if (minGap < 0) minGap += 1440; // Handle day wrap (shouldn't happen for same-day)
+                                    
+                                    if (minGap < minGapRequired) {
+                                        const lang = getLang();
+                                        const msg = lang === 'vi' 
+                                            ? `Chuyến bay về phải khởi hành ít nhất 2 tiếng sau khi chuyến bay đi hạ cánh.\nChuyến đi hạ cánh: ${outArr}, Chuyến về khởi hành: ${inDep}` 
+                                            : `Return flight must depart at least 2 hours after outbound arrival.\nOutbound arrives: ${outArr}, Return departs: ${inDep}`;
+                                        alert(msg);
+                                        return; // Don't proceed
+                                    }
+                                }
+                            }
+
                             const priceLabel = (bookBtn.dataset && bookBtn.dataset.price) ? bookBtn.dataset.price : '';
                             const priceVND = priceLabel ? Number(priceLabel.replace(/[^0-9]/g,''))||0 : 0;
 
@@ -801,6 +925,32 @@
                                     { direction: 'inbound', departTime: inDep, arriveTime: inArr, departIATA: toIATA, arriveIATA: fromIATA, durationMin: diffMin(inDep,inArr) }
                                 ]
                             };
+                            // If modal selection stored a more complete flight object, merge flight ids and numbers
+                            try {
+                                const sel = window.currentFlightSelection;
+                                if (sel && sel.outbound) {
+                                    const out = sel.outbound;
+                                    trip.outbound_flight_id = out.id || out.flight_id || out.flightId || out._id || '';
+                                    trip.outbound_flight_number = out.flight_number || out.flightNumber || '';
+                                    trip.outbound_departure_time = out.departure_time || '';
+                                    trip.outbound_arrival_time = out.arrival_time || '';
+                                    trip.outbound_departure_airport = out.departure_airport || '';
+                                    trip.outbound_arrival_airport = out.arrival_airport || '';
+                                    trip.outbound_price = Number(out.price) || trip.priceVND || 0;
+                                }
+                                if (sel && sel.inbound) {
+                                    const inn = sel.inbound;
+                                    trip.inbound_flight_id = inn.id || inn.flight_id || inn.flightId || inn._id || '';
+                                    trip.inbound_flight_number = inn.flight_number || inn.flightNumber || '';
+                                    trip.inbound_departure_time = inn.departure_time || '';
+                                    trip.inbound_arrival_time = inn.arrival_time || '';
+                                    trip.inbound_departure_airport = inn.departure_airport || '';
+                                    trip.inbound_arrival_airport = inn.arrival_airport || '';
+                                    trip.inbound_price = Number(inn.price) || 0;
+                                }
+                            } catch (e) {
+                                // ignore merge errors
+                            }
                             try { localStorage.setItem('skyplan_trip_selection', JSON.stringify(trip)); } catch(_) {}
                             // Provide simple route hints for other pages
                             try {
@@ -835,8 +985,8 @@
                 if (!results) return;
                 const fromIATA = CITY_IATA[state.from] || 'XXX';
                 const toIATA = CITY_IATA[state.to] || 'YYY';
-                const fromName = labelFor(state.from, lang);
-                const toName = labelFor(state.to, lang);
+                const fromName = formatAirport(state.from, lang);
+                const toName = formatAirport(state.to, lang);
 
                 const flights = generateFlights(state);
                 const dict = (window.searchTranslations && (window.searchTranslations[lang] || window.searchTranslations.vi)) || {};
@@ -879,10 +1029,13 @@
                         setText(modal, '[data-out-arr-time]', times[1]?.textContent || '');
                         setText(modal, '[data-in-dep-time]', times[2]?.textContent || '');
                         setText(modal, '[data-in-arr-time]', times[3]?.textContent || '');
-                        setText(modal, '[data-out-dep-airport]', `${fromName} (${fromIATA})`);
-                        setText(modal, '[data-out-arr-airport]', `${toName} (${toIATA})`);
-                        setText(modal, '[data-in-dep-airport]', `${toName} (${toIATA})`);
-                        setText(modal, '[data-in-arr-airport]', `${fromName} (${fromIATA})`);
+                        const currentLang = getLang();
+                        const currentFromName = formatAirport(readState().from, currentLang);
+                        const currentToName = formatAirport(readState().to, currentLang);
+                        setText(modal, '[data-out-dep-airport]', `${currentFromName.split(' - ')[0]} (${fromIATA})`);
+                        setText(modal, '[data-out-arr-airport]', `${currentToName.split(' - ')[0]} (${toIATA})`);
+                        setText(modal, '[data-in-dep-airport]', `${currentToName.split(' - ')[0]} (${toIATA})`);
+                        setText(modal, '[data-in-arr-airport]', `${currentFromName.split(' - ')[0]} (${fromIATA})`);
                         const price = card.querySelector('.sp-price')?.textContent.trim() || '';
                         const langNow = getLang();
                         const lbl = (window.MODAL_I18N && window.MODAL_I18N[langNow]) ? window.MODAL_I18N[langNow].bookPrefix : (langNow==='vi'?'Đặt ngay với giá ':'Book now for ');
@@ -901,9 +1054,8 @@
                 ensureModalHandlers();
             }
 
-            // Render on load and on language change
+            // Render on load only - don't re-render on language change to preserve current flight data
             document.addEventListener('DOMContentLoaded', function(){ ensureModalHandlers(); renderResults(); });
-            document.addEventListener('languageChanged', () => setTimeout(renderResults, 0));
         })();
     </script>
 

@@ -13,14 +13,15 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <!-- CSS của dự án -->
+    <!-- Project CSS -->
     <link rel="stylesheet" href="assets/styles/reset.css">
     <link rel="stylesheet" href="assets/styles/index.css">
     <link rel="stylesheet" href="assets/styles/flags.css">
     <link rel="stylesheet" href="assets/styles/header.css">
+<link rel="stylesheet" href="assets/styles/wallet.css">
     <link rel="stylesheet" href="assets/styles/footer.css">
 
-    <!-- Trang này -->
+    <!-- This page -->
     <link rel="stylesheet" href="assets/styles/promotion.css">
 
 
@@ -78,7 +79,7 @@
                 </div>
             </section>
 
-            <!-- Phân trang -->
+            <!-- Pagination -->
             <nav class="promo-pagination" aria-label="Phân trang">
                 <button id="pg-prev" class="pg-btn" aria-label="Trang trước">‹</button>
                 <div id="pg-numbers"></div>
@@ -91,8 +92,12 @@
     <div id="footer-container"></div>
 
     <script src="assets/scripts/common.js"></script>
+    <script src="assets/scripts/wallet-ui.js"></script>
+<script src="assets/scripts/wallet_translations.js"></script>
+<script src="assets/scripts/metamask.js"></script>
     <script src="assets/scripts/promotion_translations.js"></script>
     <script src="assets/scripts/promotion.js"></script>
+    <script src="assets/scripts/auth-utils.js"></script>
 
     <script>
         // Header
@@ -102,8 +107,10 @@
                 document.getElementById('header-container').innerHTML = html;
                 if (typeof initializeLanguageSelector === 'function') initializeLanguageSelector();
                 if (typeof initializeMobileMenu === 'function') initializeMobileMenu();
+                if (typeof initWalletUI === 'function') initWalletUI();
                 if (typeof applyHeaderFooterI18n === 'function') applyHeaderFooterI18n(getLang());
                 if (typeof applyPromotionI18n === 'function') applyPromotionI18n(getLang());
+                document.dispatchEvent(new CustomEvent('header-loaded'));
                 document.dispatchEvent(new CustomEvent('componentsLoaded'));
             });
 

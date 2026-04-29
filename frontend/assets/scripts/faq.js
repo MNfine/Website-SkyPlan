@@ -2,34 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
   loadHeaderFooter().then(initFaq);
 });
 
-function loadHeaderFooter() {
-  return new Promise((resolve) => {
-    // Header
-    fetch("components/header.html")
-      .then((r) => (r.ok ? r.text() : Promise.reject()))
-      .then((html) => {
-        const hc = document.getElementById("header-container");
-        if (hc) hc.innerHTML = html;
-        if (typeof initializeMobileMenu === "function") initializeMobileMenu();
-        if (typeof initializeLanguageSelector === "function")
-          initializeLanguageSelector();
-        resolve();
-      })
-      .catch(() => resolve());
-
-    // Footer
-    fetch("components/footer.html")
-      .then((r) => (r.ok ? r.text() : Promise.reject()))
-      .then((html) => {
-        const fc = document.getElementById("footer-container");
-        if (fc) fc.innerHTML = html;
-      })
-      .catch(() => {});
-  });
-}
-
 function initFaq() {
-  const currentLang = localStorage.getItem("preferredLanguage") || "vi";
+  const currentLang = getCurrentLanguage();
   document.documentElement.lang = currentLang;
 
   try {

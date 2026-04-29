@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="metaMyTokensTitle">SkyPlan - SKY Tokens của tôi</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="./assets/styles/reset.css">
+    <link rel="stylesheet" href="./assets/styles/index.css">
+    <link rel="stylesheet" href="./assets/styles/flags.css">
+    <link rel="stylesheet" href="./assets/styles/header.css">
+    <link rel="stylesheet" href="./assets/styles/wallet.css">
+    <link rel="stylesheet" href="./assets/styles/footer.css">
+    <link rel="stylesheet" href="./assets/styles/sky-tokens.css">
+    <link rel="stylesheet" href="./assets/styles/loader.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Translations -->
+    <script src="./assets/scripts/index_translations.js"></script>
+</head>
+<body>
+    <div id="loader" class="loader"></div>
+
+    <!-- Header component -->
+    <div id="headerContainer"></div>
+
+    <!-- Main content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page header -->
+            <div class="page-header">
+                <h1 class="page-title" data-i18n="skyTokens.pageTitle">SKY Tokens</h1>
+                <p class="page-subtitle" data-i18n="skyTokens.pageSubtitle">
+                    Quản lý điểm thưởng SKY từ các chuyến bay của bạn
+                </p>
+            </div>
+
+            <!-- Token Balance Card -->
+            <div class="balance-card">
+                <div class="balance-header">
+                    <h2 data-i18n="skyTokens.yourBalance">Số dư của bạn</h2>
+                    <div class="refresh-btn" id="refreshBalance">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                </div>
+
+                <div class="balance-display">
+                    <div class="token-amount" id="tokenBalance">0</div>
+                    <div class="token-unit">SKY</div>
+                </div>
+
+                <div class="balance-info">
+                    <p class="info-text" data-i18n="skyTokens.balanceInfo">
+                        Bạn sở hữu những Token SKY này trên blockchain Sepolia
+                    </p>
+                </div>
+
+                <div class="balance-actions">
+                    <button class="btn-primary" id="viewOnExplorer" style="display: none;">
+                        <i class="fas fa-external-link-alt"></i>
+                        <span data-i18n="skyTokens.viewOnEtherscan">Xem trên Etherscan</span>
+                    </button>
+                    <button class="btn-secondary" id="redeemTokensBtn">
+                        <i class="fas fa-gift"></i>
+                        <span data-i18n="skyTokens.redeemTokens">Đổi điểm</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Token Statistics -->
+            <div class="token-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalEarned">0</div>
+                        <div class="stat-label" data-i18n="skyTokens.totalEarned">Tổng kiếm được</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="tokensRedeemed">0</div>
+                        <div class="stat-label" data-i18n="skyTokens.redeemed">Đã đổi</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-plane"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="bookingsCount">0</div>
+                        <div class="stat-label" data-i18n="skyTokens.totalBookings">Tổng booking</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Token Rewards History -->
+            <div class="rewards-section">
+                <h2 class="section-title" data-i18n="skyTokens.rewardsHistory">Lịch sử phần thưởng</h2>
+
+                <!-- Loading state -->
+                <div id="loadingState" class="loading-skeleton">
+                    <div class="skeleton-row"></div>
+                    <div class="skeleton-row"></div>
+                    <div class="skeleton-row"></div>
+                </div>
+
+                <!-- Empty state -->
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h3 class="empty-title" data-i18n="skyTokens.noRewards">Chưa có phần thưởng</h3>
+                    <p class="empty-text" data-i18n="skyTokens.noRewardsDesc">
+                        Hoàn tất các chuyến bay để kiếm SKY tokens
+                    </p>
+                </div>
+
+                <!-- Rewards table -->
+                <div id="rewardsList" class="rewards-table">
+                    <!-- Reward rows will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Redeemed Vouchers -->
+            <div class="rewards-section" id="redeemedVouchersSection">
+                <h2 class="section-title" data-i18n="skyTokens.voucherHistoryTitle">Voucher đã đổi</h2>
+
+                <div id="voucherEmptyState" class="empty-state" style="display: none; padding: 28px 20px;">
+                    <div class="empty-icon" style="font-size: 40px; margin-bottom: 12px;">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <h3 class="empty-title" data-i18n="skyTokens.noVouchers">Chưa có voucher</h3>
+                    <p class="empty-text" data-i18n="skyTokens.noVouchersDesc">
+                        Đổi SKY Tokens để nhận voucher sử dụng ở trang thanh toán
+                    </p>
+                </div>
+
+                <div id="voucherList" class="voucher-list"></div>
+            </div>
+
+            <!-- How to Use Section -->
+            <div class="info-section">
+                <h2 class="section-title" data-i18n="skyTokens.howToUse">Cách sử dụng SKY</h2>
+                
+                <div class="info-cards">
+                    <div class="info-card">
+                        <div class="info-number">1</div>
+                        <h3 data-i18n="skyTokens.step1Title">Kiếm điểm</h3>
+                        <p data-i18n="skyTokens.step1Desc">
+                            Mỗi lần đặt vé máy bay thành công, bạn sẽ nhận được SKY tokens tự động
+                        </p>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-number">2</div>
+                        <h3 data-i18n="skyTokens.step2Title">Tích lũy</h3>
+                        <p data-i18n="skyTokens.step2Desc">
+                            Các tokens được lưu trữ an toàn trên blockchain Sepolia
+                        </p>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-number">3</div>
+                        <h3 data-i18n="skyTokens.step3Title">Đổi thưởng</h3>
+                        <p data-i18n="skyTokens.step3Desc">
+                            Sử dụng tokens để đổi chiết khấu, nâng cấp hoặc những phần thưởng khác
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer component -->
+    <div id="footerContainer"></div>
+
+    <!-- Redeem Modal -->
+    <div id="redeemModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div class="modal-body">
+                <h2 class="modal-title" data-i18n="skyTokens.redeemTitle">Đổi SKY Tokens</h2>
+
+                <div class="redeem-form">
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="skyTokens.amountLabel">Số lượng muốn đổi:</label>
+                        <div class="amount-input-group">
+                            <input type="number" id="redeemAmount" min="0" step="1" placeholder="100">
+                            <span class="amount-unit">SKY</span>
+                            <button class="btn-max" id="maxRedeemBtn" data-i18n="skyTokens.maxLabel">Tối đa</button>
+                        </div>
+                        <div class="amount-info">
+                            <span data-i18n="skyTokens.available">Có sẵn:</span>
+                            <span id="availableAmount">0</span> SKY
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="skyTokens.redeemFor">Đổi lấy:</label>
+                        <div class="redeem-options">
+                            <label class="option-label">
+                                <input type="radio" name="redeemType" value="discount" checked>
+                                <span data-i18n="skyTokens.flightDiscount">Chiết khấu vé máy bay</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="redeemType" value="upgrade">
+                                <span data-i18n="skyTokens.seatUpgrade">Nâng cấp chỗ ngồi</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="redemption-preview">
+                        <div class="preview-item">
+                            <span data-i18n="skyTokens.willRedeem">Sẽ đổi:</span>
+                            <strong id="previewAmount">0</strong>
+                        </div>
+                        <div class="preview-item">
+                            <span data-i18n="skyTokens.remainingBalance">Số dư còn lại:</span>
+                            <strong id="previewRemaining">0</strong>
+                        </div>
+                    </div>
+
+                    <div class="price-disclaimer">
+                        <i class="fas fa-info-circle"></i>
+                        <p data-i18n="skyTokens.redeemDisclaimer" data-i18n-fallback="Tỷ giá hiện tại: 1 SKY = 100 VND">
+                            Tỷ giá hiện tại: 1 SKY = 100 VND
+                        </p>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="cancelRedeemBtn" data-i18n="skyTokens.cancel">Hủy</button>
+                    <button class="btn-primary" id="confirmRedeemBtn" data-i18n="skyTokens.confirmRedeem">Xác nhận đổi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./assets/scripts/config.js"></script>
+    <script src="./assets/scripts/auth-utils.js"></script>
+    <script src="./assets/scripts/common.js"></script>
+    <script src="./assets/scripts/toast.js"></script>
+    <script src="./assets/scripts/loader.js"></script>
+    <script src="./assets/scripts/wallet_translations.js"></script>
+    <script src="./assets/scripts/metamask.js"></script>
+    <script src="./assets/scripts/wallet-ui.js"></script>
+    <script src="./assets/scripts/sky-tokens.js"></script>
+</body>
+</html>

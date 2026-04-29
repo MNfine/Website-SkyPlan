@@ -21,7 +21,7 @@ const blogTranslations = {
         termsOfService: "Terms of Service",
         supportTitle: "Support",
         helpCenter: "Help Center",
-        customerService: "Customer Service",
+        blogLink: "Blog",
         bookingHelp: "Booking Help",
         faq: "FAQ",
         paymentMethodsTitle: "Payment Methods",
@@ -60,7 +60,7 @@ const blogTranslations = {
         suggestBudget: "Budget travel",
         suggestFood: "Local food",
         chatPlaceholder: "Type your question...",
-        aiNote: "Demo AI - Responses are simulated",
+        aiNote: "AI Assistant powered by Google Gemini",
         
         // Blog Posts Data
         posts: {
@@ -146,7 +146,7 @@ const blogTranslations = {
         termsOfService: "Điều khoản dịch vụ",
         supportTitle: "Hỗ trợ",
         helpCenter: "Trung tâm trợ giúp",
-        customerService: "Dịch vụ khách hàng",
+        blogLink: "Blog",
         bookingHelp: "Hỗ trợ đặt vé",
         faq: "Câu hỏi thường gặp",
         paymentMethodsTitle: "Phương thức thanh toán",
@@ -185,7 +185,7 @@ const blogTranslations = {
         suggestBudget: "Du lịch rẻ",
         suggestFood: "Ẩm thực",
         chatPlaceholder: "Nhập câu hỏi...",
-        aiNote: "Demo AI - Phản hồi được mô phỏng",
+        aiNote: "Trợ lý AI được hỗ trợ bởi Google Gemini",
         
         // Blog Posts Data
         posts: {

@@ -70,9 +70,9 @@ header .container, footer .container {
 
 .support-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr; /* Adjusted ratio */
+  grid-template-columns: 1.2fr 1fr;
   gap: 30px;
-  align-items: start;
+  align-items: stretch;
 }
 
 /* Chat Container */
@@ -82,7 +82,7 @@ header .container, footer .container {
   box-shadow: var(--box-shadow);
   border: 1px solid var(--border-color);
   overflow: hidden;
-  height: 640px; /* Increased height to match all 5 cards */
+  height: 680px;
   display: flex;
   flex-direction: column;
   transition: all var(--transition-speed) ease;
@@ -500,116 +500,131 @@ header .container, footer .container {
 .support-info {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 24px;
+  height: 680px;
+  align-content: start;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .support-card {
   background: var(--light-color);
   border-radius: 16px;
-  padding: 24px;
-  box-shadow: var(--box-shadow);
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid var(--border-color);
   text-align: center;
   transition: all var(--transition-speed) ease;
-}
-
-.support-card:first-child {
-  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  height: 320px;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .support-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(10, 150, 157, 0.15);
+  border-color: rgba(10, 150, 157, 0.3);
 }
 
 .card-icon {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 20px;
-  background: var(--primary-color);
+  width: 68px;
+  height: 68px;
+  margin: 26px auto 0;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-darker) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 28px;
   color: var(--light-color);
   transition: all var(--transition-speed) ease;
+  box-shadow: 0 4px 12px rgba(10, 150, 157, 0.25);
+  flex-shrink: 0;
 }
 
 .support-card:hover .card-icon {
-  transform: scale(1.1) rotate(15deg);
+  transform: scale(1.15) rotate(8deg);
+  box-shadow: 0 6px 18px rgba(10, 150, 157, 0.35);
+}
+
+.card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 18px 24px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card-footer {
+  padding: 0 24px 26px;
+  margin-top: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .support-card h3 {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--dark-color);
-  margin-bottom: 12px;
+  margin: 0 0 12px 0;
+  line-height: 1.3;
 }
 
 .contact-detail {
-  font-size: 1.2rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: var(--primary-color);
-  margin-bottom: 8px;
+  margin: 0;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+}
+
+.card-description {
+  font-size: 0.95rem;
+  color: #718096;
+  margin: 0;
+  line-height: 1.5;
 }
 
 .support-card small {
   color: #718096;
   font-size: 0.9rem;
-}
-
-.hours-info {
-  margin-top: 20px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 15px;
-}
-
-.hours-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #edf2f7;
-}
-
-.hours-item:last-child {
-  border-bottom: none;
-}
-
-.hours-item span {
-  color: #718096;
-  font-size: 0.95rem;
-  font-weight: 500;
-}
-
-.hours-item strong {
-  color: var(--dark-color);
-  font-weight: 600;
+  line-height: 1.5;
+  display: block;
 }
 
 /* Buttons */
 .support-page .btn-primary {
-  background: var(--primary-color);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-darker) 100%);
   color: var(--light-color);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 12px 24px;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-speed) ease;
+  box-shadow: 0 4px 12px rgba(10, 150, 157, 0.2);
+  width: 100%;
+  font-size: 0.95rem;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  margin-top: 16px;
 }
 
 .support-page .btn-primary:hover {
   transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(10, 150, 157, 0.3);
 }
 
 .support-page .btn-primary:active {
   transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(10, 150, 157, 0.2);
 }
 
 /* Scrollbar Styling */
@@ -640,10 +655,11 @@ header .container, footer .container {
   
   .support-info {
     grid-template-columns: repeat(2, 1fr);
+    height: auto;
   }
   
   .chat-container {
-    height: 600px; /* Increased for mobile to accommodate 5 cards */
+    height: auto;
   }
 }
 
@@ -658,10 +674,7 @@ header .container, footer .container {
   
   .support-info {
     grid-template-columns: 1fr;
-  }
-  
-  .support-card:first-child {
-    grid-column: auto;
+    gap: 20px;
   }
   
   .quick-replies {
@@ -704,14 +717,23 @@ header .container, footer .container {
   }
   
   .support-card {
-    padding: 20px;
+    padding: 0;
+    height: 280px;
   }
   
   .card-icon {
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
-    margin-bottom: 15px;
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+    margin: 20px auto 0;
+  }
+  
+  .card-content {
+    padding: 14px 20px 0;
+  }
+  
+  .card-footer {
+    padding: 0 20px 20px;
   }
   
   #chatInput {
@@ -724,4 +746,46 @@ header .container, footer .container {
     height: 42px;
     font-size: 16px;
   }
+}
+
+/* Blockchain ticket guide */
+.blockchain-guide {
+  margin-top: 26px;
+  padding: 18px;
+  background: var(--light-color);
+  border-radius: 16px;
+  box-shadow: var(--box-shadow);
+  border: 1px solid var(--border-color);
+}
+
+.blockchain-guide h2 {
+  margin: 0 0 8px;
+  color: var(--dark-color);
+  font-size: 1.4rem;
+}
+
+.blockchain-guide p {
+  margin: 0 0 14px;
+  color: #718096;
+  line-height: 1.6;
+}
+
+.blockchain-video-placeholder {
+  border: 1px dashed var(--border-color);
+  border-radius: 14px;
+  background: var(--gray-color);
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #666;
+  text-align: center;
+  padding: 16px;
+}
+
+.blockchain-video-placeholder i {
+  font-size: 42px;
+  color: var(--primary-color);
 }

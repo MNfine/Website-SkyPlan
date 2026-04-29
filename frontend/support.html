@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="assets/styles/flags.css">
     <link rel="stylesheet" href="assets/styles/index.css">
     <link rel="stylesheet" href="assets/styles/header.css">
+<link rel="stylesheet" href="assets/styles/wallet.css">
     <link rel="stylesheet" href="assets/styles/footer.css">
     <link rel="stylesheet" href="assets/styles/support.css">
 </head>
@@ -94,63 +95,70 @@
                     <div class="support-info">
                         <div class="support-card">
                             <div class="card-icon">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <h3 data-i18n="operatingHours">Giờ làm việc</h3>
-                            <div class="hours-info">
-                                <div class="hours-item">
-                                    <span data-i18n="liveChat">Live Chat:</span>
-                                    <strong data-i18n="allTime">24/7</strong>
-                                </div>
-                                <div class="hours-item">
-                                    <span data-i18n="phoneEmailSupport">Hotline & Email:</span>
-                                    <strong data-i18n="allTime">24/7</strong>
-                                </div>
-                                <div class="hours-item">
-                                    <span data-i18n="officialOffice">Văn phòng:</span>
-                                    <strong data-i18n="officeHours">T2-T7: 8:00-17:30</strong>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="support-card">
-                            <div class="card-icon">
                                 <i class="fas fa-map-marker-alt"></i>
                             </div>
-                            <h3 data-i18n="locationSupport">Văn phòng</h3>
-                            <p class="contact-detail">UIT, TP.HCM</p>
-                            <small data-i18n="locationSupportTime">T2-T7: 8:00-17:30</small>
+                            <div class="card-content">
+                                <h3 data-i18n="locationSupport">Văn phòng</h3>
+                                <p class="contact-detail">UIT, TP.HCM</p>
+                            </div>
+                            <div class="card-footer">
+                                <small data-i18n="locationSupportTime">T2-T7: 8:00-17:30</small>
+                            </div>
                         </div>
 
                         <div class="support-card">
                             <div class="card-icon">
                                 <i class="fas fa-phone"></i>
                             </div>
-                            <h3 data-i18n="phoneSupport">Hotline</h3>
-                            <p class="contact-detail">1900 1234</p>
-                            <small data-i18n="chatSupportTime">24/7 - Phản hồi trong 2 phút</small>
+                            <div class="card-content">
+                                <h3 data-i18n="phoneSupport">Hotline</h3>
+                                <p class="contact-detail">1900 1234</p>
+                            </div>
+                            <div class="card-footer">
+                                <small data-i18n="chatSupportTime">24/7 - Phản hồi trong 2 phút</small>
+                            </div>
                         </div>
 
                         <div class="support-card">
                             <div class="card-icon">
                                 <i class="fas fa-envelope"></i>
                             </div>
-                            <h3 data-i18n="emailSupport">Email</h3>
-                            <p class="contact-detail">support@skyplan.vn</p>
-                            <small data-i18n="ticketSupportTime">Phản hồi trong 24h</small>
+                            <div class="card-content">
+                                <h3 data-i18n="emailSupport">Email</h3>
+                                <p class="contact-detail">support@skyplan.vn</p>
+                            </div>
+                            <div class="card-footer">
+                                <small data-i18n="ticketSupportTime">Phản hồi trong 24h</small>
+                            </div>
                         </div>
 
                         <div class="support-card">
                             <div class="card-icon">
                                 <i class="fas fa-ticket-alt"></i>
                             </div>
-                            <h3 data-i18n="ticketSupport">Gửi yêu cầu</h3>
-                            <p data-i18n="ticketDescription">Tạo ticket cho vấn đề phức tạp</p>
-                            <button class="btn-primary" id="openTicketBtn">
-                                <i class="fas fa-plus"></i>
-                                <span data-i18n="createTicket">Tạo yêu cầu</span>
-                            </button>
+                            <div class="card-content">
+                                <h3 data-i18n="ticketSupport">Gửi yêu cầu</h3>
+                                <p class="card-description" data-i18n="ticketDescription">Tạo ticket cho vấn đề phức tạp</p>
+                            </div>
+                            <div class="card-footer">
+                                <button class="btn-primary" id="openTicketBtn">
+                                    <i class="fas fa-plus"></i>
+                                    <span data-i18n="createTicket">Tạo yêu cầu</span>
+                                </button>
+                            </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Blockchain Ticket Guide -->
+            <section class="blockchain-guide" id="blockchain-ticket-guide">
+                <h2 data-i18n="blockchainGuideTitle">Hướng dẫn tích hợp vé Blockchain</h2>
+                <p data-i18n="blockchainGuideDesc">Chỉ cần kết nối ví để nhận vé NFT và ưu đãi. Bạn không cần trả gas.</p>
+                <div class="blockchain-guide-video">
+                    <div class="blockchain-video-placeholder">
+                        <i class="fas fa-play-circle"></i>
+                        <div class="blockchain-video-text" data-i18n="blockchainGuideVideoPlaceholder">Video hướng dẫn sẽ được cập nhật.</div>
                     </div>
                 </div>
             </section>
@@ -208,7 +216,14 @@
     <!-- Scripts -->
     <script src="assets/scripts/config.js"></script>
     <script src="assets/scripts/common.js"></script>
+    <script src="assets/scripts/wallet-ui.js"></script>
+<script src="assets/scripts/wallet_translations.js"></script>
+<script src="assets/scripts/metamask.js"></script>
     <script src="assets/scripts/support_translations.js"></script>
+    <!-- Auth utilities must load before support.js so we can pass token to socket auth -->
+    <script src="assets/scripts/auth-utils.js"></script>
+    <!-- Always load Socket.IO client from server to guarantee compatibility and availability -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="assets/scripts/support.js"></script>
     <script src="assets/scripts/toast.js"></script>
 </body>

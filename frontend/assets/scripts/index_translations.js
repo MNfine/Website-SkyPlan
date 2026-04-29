@@ -6,10 +6,19 @@ const translations = {
     metaDescription: "Find the best flight deals with SkyPlan. Book your next trip with confidence.",
 
     // Header
+    checkinOnlineText: "Online Check-in",
     helpText: "Help",
     myTripsText: "My Trips",
     signUpText: "Sign Up",
     signInText: "Sign In",
+
+    // User dropdown
+    profileText: "Profile",
+    logoutText: "Logout",
+    
+    // Wallet
+    connectWalletText: "Connect Wallet",
+    disconnectText: "Disconnect",
 
     // Hero section
     heroTitle: "Best deals are waiting for you",
@@ -24,7 +33,20 @@ const translations = {
 
     // Popular routes
     popularRoutesTitle: "Popular Routes",
+    exploreDestinations: "Explore destinations",
     appComingSoon: "Coming soon",
+
+    // Blockchain ticket CTA
+    ticketUpgradeTitle: "Upgrade your ticket to a Blockchain ticket",
+    ticketUpgradeDesc: "Transparent, secure, and fast. Get an NFT ticket and SKY rewards with no gas fees.",
+    ticketUpgradeCta: "Integrate now",
+    ticketPillarTransparent: "Transparent",
+    ticketPillarSafe: "Secure",
+    ticketPillarFast: "Fast",
+    ticketUpgradeModalTitle: "Blockchain Ticket Integration",
+    ticketUpgradeModalDesc: "Do you want to integrate now or view the guide first?",
+    ticketUpgradeIntegrate: "Integrate now",
+    ticketUpgradeGuide: "View guide",
 
     // Features
     feature1Title: "Guarantee of the best price",
@@ -65,10 +87,19 @@ const translations = {
     metaDescription: "Tìm các chuyến bay nội địa giá tốt nhất tại Việt Nam với SkyPlan. Đặt chuyến đi tiếp theo của bạn với sự tự tin.",
 
     // Header
+    checkinOnlineText: "Check-in online",
     helpText: "Trợ giúp",
     myTripsText: "Chuyến đi của tôi",
     signUpText: "Đăng ký",
     signInText: "Đăng nhập",
+
+    // User dropdown
+    profileText: "Hồ sơ cá nhân",
+    logoutText: "Đăng xuất",
+    
+    // Wallet
+    connectWalletText: "Kết nối Ví",
+    disconnectText: "Ngắt kết nối",
 
     // Hero section
     heroTitle: "Ưu đãi tốt nhất đang chờ đón bạn",
@@ -83,7 +114,20 @@ const translations = {
 
     // Popular routes
     popularRoutesTitle: "Điểm đến phổ biến",
+    exploreDestinations: "Khám phá các điểm đến",
     appComingSoon: "Sắp ra mắt",
+
+    // Blockchain ticket CTA
+    ticketUpgradeTitle: "Nâng cấp vé thành vé Blockchain",
+    ticketUpgradeDesc: "Minh bạch, an toàn, thao tác nhanh chóng. Nhận vé NFT và ưu đãi SKY mà không cần trả gas.",
+    ticketUpgradeCta: "Tích hợp ngay",
+    ticketPillarTransparent: "Minh bạch",
+    ticketPillarSafe: "An toàn",
+    ticketPillarFast: "Nhanh chóng",
+    ticketUpgradeModalTitle: "Tích hợp vé Blockchain",
+    ticketUpgradeModalDesc: "Bạn muốn tích hợp ngay hay xem hướng dẫn trước?",
+    ticketUpgradeIntegrate: "Tích hợp ngay",
+    ticketUpgradeGuide: "Xem hướng dẫn",
 
     // Features
     feature1Title: "Đảm bảo giá tốt nhất",
@@ -216,17 +260,32 @@ function updateRouteCards(lang) {
 // Function to change language
 function changeLanguage(lang) {
   // Only change if explicitly called by user action
-  localStorage.setItem('preferredLanguage', lang);
-  document.documentElement.lang = lang;
-  applyTranslations(lang);
+  const normalizedLang = String(lang || '').toLowerCase() === 'en' ? 'en' : 'vi';
+  localStorage.setItem('preferredLanguage', normalizedLang);
+  localStorage.setItem('language', normalizedLang);
+  document.documentElement.lang = normalizedLang;
+  applyTranslations(normalizedLang);
 
   // Notify listeners (dropdowns, date inputs) about language change
   try {
-    document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
+    document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang: normalizedLang } }));
   } catch (e) { }
 }
 
+// Keep index page translated even if shared components (header/footer)
+// are injected or replaced after initial page init.
+document.addEventListener('languageChanged', (event) => {
+  try {
+    const next = (event && event.detail && (event.detail.lang || event.detail.language)) ||
+      (typeof window.getPersistedLanguage === 'function' ? window.getPersistedLanguage() : 'vi');
+    applyTranslations(next);
+  } catch (_) {
+    // ignore
+  }
+});
+
 // Ensure Vietnamese is set as default on first visit
-if (!localStorage.getItem('preferredLanguage')) {
+if (!localStorage.getItem('preferredLanguage') && !localStorage.getItem('language')) {
   localStorage.setItem('preferredLanguage', 'vi');
+  localStorage.setItem('language', 'vi');
 }

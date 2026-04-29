@@ -27,7 +27,7 @@
             termsOfService: "Terms of Service",
             supportTitle: "Support",
             helpCenter: "Help Center",
-            customerService: "Customer Service",
+            blogLink: "Blog",
             bookingHelp: "Booking Help",
             faq: "FAQ",
             promotion: "Promotions",
@@ -68,7 +68,7 @@
             termsOfService: "Điều khoản dịch vụ",
             supportTitle: "Hỗ trợ",
             helpCenter: "Trung tâm trợ giúp",
-            customerService: "Dịch vụ khách hàng",
+            blogLink: "Blog",
             bookingHelp: "Hỗ trợ đặt vé",
             faq: "Câu hỏi thường gặp",
             promotion: "Khuyến mãi",
@@ -309,7 +309,7 @@
     }
     window.getLocalizedItem = getLocalizedItem;
 
-    // ===== 4. APPLY i18n FOR PROMOTION PAGE (promotion.js gọi hàm này) =====
+    // ===== 4. APPLY i18n FOR PROMOTION PAGE (promotion.js calls this function) =====
     function applyPromotionI18n(lang) {
         lang = lang || getLang();
 

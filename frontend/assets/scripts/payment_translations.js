@@ -31,10 +31,6 @@ const paymentTranslations = {
         ticketLabel: "Flight ticket (round trip)",
         taxLabel: "Taxes and fees",
         totalLabel: "Total",
-        voucherPlaceholder: "Enter voucher code",
-        applyVoucher: "Apply",
-        discountLabel: "Discount",
-        finalTotalLabel: "Final Total",
         secure: "Transaction secured by 256-bit SSL",
         // Header 
         helpText: "Help",
@@ -50,7 +46,7 @@ const paymentTranslations = {
         termsOfService: "Terms of Service",
         supportTitle: "Support",
         helpCenter: "Help Center",
-        customerService: "Customer Service",
+        blogLink: "Blog",
         bookingHelp: "Booking Help",
         faq: "FAQ",
         promotion: "Promotions",
@@ -82,6 +78,26 @@ const paymentTranslations = {
         totalAmount: "Total Amount",
         confirmPayment: "Confirm Payment",
         backToOverview: "Back to Overview",
+        backButton: "Back",
+        // Voucher
+        voucherTitle: "Discount Code",
+        voucherPlaceholder: "Enter voucher code",
+        applyVoucher: "Apply",
+        availableVouchers: "Available codes: XMAS10, NOEL200, EARLY200",
+        discountLabel: "Discount",
+        finalTotalLabel: "Total Payment",
+        voucherSuccess: "✓ Applied successfully: Save {1}",
+        voucherInvalid: "Invalid voucher code",
+        voucherMinOrder: "Minimum order {0} required",
+        voucherAlreadyUsed: "Voucher already applied",
+        voucherApplied: "✓ Applied successfully: Save {1}",
+        voucherMinAmount: "Minimum order {0} required",
+        removeVoucher: "Remove",
+        voucherAppliedText: "Applied", 
+        voucherRemoveText: "Remove",
+        voucherCodeApplied: "Code applied successfully",
+        voucherDiscountApplied: "Discount applied",
+        redeemedSkyVouchersTitle: "Redeemed SKY vouchers:",
         vnpay: "VNPay",
         momo: "MoMo",
         cash: "Cash at counter",
@@ -99,6 +115,41 @@ const paymentTranslations = {
         // Confirm button
         toConfirmation: "Go to confirmation page",
         bankConfirm: "Go to confirmation page",
+        // Blockchain/Crypto Payment
+        cryptoPayment: "Pay with Crypto",
+        cryptoTitle: "Pay with MetaMask (Ethereum Sepolia)",
+        cryptoDesc: "Connect your MetaMask wallet to pay with cryptocurrency on the Sepolia testnet.",
+        connectWallet: "Connect Wallet",
+        walletConnected: "Wallet Connected:",
+        paymentDetails: "Payment Details:",
+        estimatedEth: "Estimated (ETH):",
+        sepoliaNetwork: "Sepolia (Testnet)",
+        transactionStatus: "Transaction Status:",
+        sendTransaction: "Send Transaction",
+        processing: "Processing...",
+        waitingConfirmation: "Waiting for confirmation...",
+        successTitle: "Success!",
+        successDesc: "Your transaction has been confirmed.",
+        failedTitle: "Failed",
+        failedDesc: "The transaction was not successful.",
+        txHash: "Hash:",
+        viewTicket: "View Ticket",
+        viewOnExplorer: "View on Explorer",
+        retryPayment: "Retry Payment",
+        // Demo UI
+        demoSimulationTitle: "Transaction Flow Simulation (no real transaction sent)",
+        demoSimSteps: "Step 1: Connect wallet. Step 2: Run transaction flow to simulate Pending -> final result.",
+        demoConnectBtn: "Connect Wallet",
+        demoRunBtn: "Run Transaction Flow",
+        demoResetBtn: "Reset",
+        demoViewStates: "View individual status UI:",
+        demoStatePending: "Pending",
+        demoStateSuccess: "Success",
+        demoStateReject: "Reject",
+        demoStateGas: "Insufficient Gas",
+        demoStateRpc: "RPC Error",
+        demoStateFail: "Failed",
+        demoConnectedMsg: "Wallet connected. Now you can run the transaction flow.",
         // ...add more as needed
     },
     vi: {
@@ -130,12 +181,28 @@ const paymentTranslations = {
         route2Class: "Phổ thông • 1 hành khách",
         ticketLabel: "Vé máy bay (2 chiều)",
         taxLabel: "Thuế và phí",
+        discountLabel: "Giảm giá",
         totalLabel: "Tổng cộng",
-        voucherPlaceholder: "Nhập mã giảm giá",
+        secure: "Giao dịch được bảo mật bằng SSL 256-bit",
+        // Voucher  
+        voucherTitle: "Mã giảm giá",
+        voucherPlaceholder: "Nhập mã voucher",
         applyVoucher: "Áp dụng",
+        availableVouchers: "Mã khả dụng: XMAS10, NOEL200, EARLY200",
         discountLabel: "Giảm giá",
         finalTotalLabel: "Tổng thanh toán",
-        secure: "Giao dịch được bảo mật bằng SSL 256-bit",
+        voucherSuccess: "✓ Áp dụng thành công: Giảm {1}",
+        voucherInvalid: "Mã voucher không hợp lệ",
+        voucherMinOrder: "Đơn hàng phải từ {0}",
+        voucherAlreadyUsed: "Mã voucher đã được sử dụng",
+        voucherApplied: "✓ Áp dụng thành công: Giảm {1}",
+        voucherMinAmount: "Đơn hàng phải từ {0} để áp dụng mã này",
+        removeVoucher: "Hủy bỏ",
+        voucherAppliedText: "Đã áp dụng",
+        voucherRemoveText: "Hủy bỏ",
+        voucherCodeApplied: "Mã đã được áp dụng thành công",
+        voucherDiscountApplied: "Đã áp dụng giảm giá",
+        redeemedSkyVouchersTitle: "Voucher từ SKY đã đổi:",
         // Header 
         helpText: "Trợ giúp",
         myTripsText: "Chuyến đi của tôi",
@@ -150,7 +217,7 @@ const paymentTranslations = {
         termsOfService: "Điều khoản dịch vụ",
         supportTitle: "Hỗ trợ",
         helpCenter: "Trung tâm trợ giúp",
-        customerService: "Dịch vụ khách hàng",
+        blogLink: "Blog",
         bookingHelp: "Hỗ trợ đặt vé",
         faq: "Câu hỏi thường gặp",
         promotion: "Khuyến mãi",
@@ -182,6 +249,7 @@ const paymentTranslations = {
         totalAmount: "Tổng số tiền",
         confirmPayment: "Xác nhận thanh toán",
         backToOverview: "Quay lại tổng quan",
+        backButton: "Quay lại",
         vnpay: "VNPay",
         momo: "MoMo",
         cash: "Thanh toán tại quầy",
@@ -199,7 +267,41 @@ const paymentTranslations = {
         // Confirm button
         toConfirmation: "Đến trang xác nhận",
         bankConfirm: "Đến trang xác nhận",
-        // ...add more as needed
+        // Blockchain/Crypto Payment
+        cryptoPayment: "Thanh toán bằng Crypto",
+        cryptoTitle: "Thanh toán qua MetaMask (Ethereum Sepolia)",
+        cryptoDesc: "Kết nối ví MetaMask của bạn để thanh toán bằng cryptocurrency trên mạng Sepolia testnet.",
+        connectWallet: "Kết nối Ví",
+        walletConnected: "Ví đã kết nối:",
+        paymentDetails: "Chi tiết thanh toán:",
+        estimatedEth: "Ước tính (ETH):",
+        sepoliaNetwork: "Sepolia (Testnet)",
+        transactionStatus: "Trạng thái Giao dịch:",
+        sendTransaction: "Gửi Giao dịch",
+        processing: "Đang xử lý...",
+        waitingConfirmation: "Chờ xác nhận giao dịch...",
+        successTitle: "Thành công!",
+        successDesc: "Giao dịch của bạn đã được xác nhận.",
+        failedTitle: "Thất bại",
+        failedDesc: "Giao dịch không thành công.",
+        txHash: "Hash:",
+        viewTicket: "Xem Vé",
+        viewOnExplorer: "Xem trên Explorer",
+        retryPayment: "Thử lại",
+        // Demo UI
+        demoSimulationTitle: "Mô phỏng luồng giao dịch (không gửi giao dịch thật)",
+        demoSimSteps: "Bước 1: Kết nối ví. Bước 2: Chạy luồng giao dịch để mô phỏng Pending -> kết quả cuối.",
+        demoConnectBtn: "Kết nối ví",
+        demoRunBtn: "Chạy luồng giao dịch",
+        demoResetBtn: "Đặt lại",
+        demoViewStates: "Xem từng trạng thái UI:",
+        demoStatePending: "Pending",
+        demoStateSuccess: "Success",
+        demoStateReject: "Từ chối",
+        demoStateGas: "Thiếu gas",
+        demoStateRpc: "RPC lỗi",
+        demoStateFail: "Thất bại",
+        demoConnectedMsg: "Đã kết nối ví. Bây giờ bạn có thể chạy luồng giao dịch."
     }
 };
 
@@ -213,9 +315,22 @@ function applyPaymentTranslations(lang) {
     if (__SKYPLAN_DEBUG__) console.debug('[i18n] applyPaymentTranslations', lang);
     const elements = document.querySelectorAll('[data-i18n]');
     elements.forEach(element => {
+        // Skip elements that have been updated by payment order script
+        if (element.classList.contains('payment-order-updated')) {
+            return;
+        }
+        
         const key = element.getAttribute('data-i18n');
         if (paymentTranslations[lang] && paymentTranslations[lang][key]) {
-            element.textContent = paymentTranslations[lang][key];
+            const translated = paymentTranslations[lang][key];
+            const tag = (element.tagName || '').toLowerCase();
+            if ((tag === 'input' || tag === 'textarea') && element.hasAttribute('placeholder')) {
+                element.setAttribute('placeholder', translated);
+            } else if (tag === 'input' && (element.type === 'button' || element.type === 'submit' || element.type === 'reset')) {
+                element.value = translated;
+            } else {
+                element.textContent = translated;
+            }
         } else {
             // Only log missing keys when debug flag is on
             if (__SKYPLAN_DEBUG__) console.warn(`Missing translation for key: '${key}' in language: '${lang}'`);
@@ -247,15 +362,6 @@ function getPaymentTranslation(key, lang) {
     return key;
 }
 
-// expose helpers for other scripts and debugging
-try {
-    window.getPaymentTranslation = getPaymentTranslation;
-    window.paymentTranslations = paymentTranslations;
-    window.applyPaymentTranslations = applyPaymentTranslations;
-} catch (e) {
-    // ignore in restricted environments
-}
-
 // Function to change language for payment page
 function changePaymentLanguage(lang) {
     if (__SKYPLAN_DEBUG__) console.debug('[i18n] changePaymentLanguage ->', lang);
@@ -268,7 +374,19 @@ function changePaymentLanguage(lang) {
     } catch (e) { /* ignore */ }
 }
 
-// Ensure Vietnamese is set as default on first visit
-if (!localStorage.getItem('preferredLanguage')) {
-    localStorage.setItem('preferredLanguage', 'vi');
+// expose helpers for other scripts and debugging (AFTER all functions are defined)
+try {
+    window.getPaymentTranslation = getPaymentTranslation;
+    window.paymentTranslations = paymentTranslations;
+    window.applyPaymentTranslations = applyPaymentTranslations;
+    window.changePaymentLanguage = changePaymentLanguage;
+} catch (e) {
+    // ignore in restricted environments
+}
+
+// Ensure Vietnamese is set as default on first visit (only in browser)
+if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    if (!localStorage.getItem('preferredLanguage')) {
+        localStorage.setItem('preferredLanguage', 'vi');
+    }
 }

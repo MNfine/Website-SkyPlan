@@ -1,0 +1,48 @@
+{
+  "_format": "hh3-artifact-1",
+  "contractName": "IBookingRegistry",
+  "sourceName": "contracts/SkyToken.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "bookingCode",
+          "type": "string"
+        }
+      ],
+      "name": "getBooking",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "bookingHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "internalType": "uint64",
+          "name": "timestamp",
+          "type": "uint64"
+        },
+        {
+          "internalType": "enum IBookingRegistry.Status",
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {},
+  "immutableReferences": {},
+  "inputSourceName": "project/contracts/SkyToken.sol",
+  "buildInfoId": "solc-0_8_24-8cb84863806342bff795affafa3ec7325b4264c3"
+}

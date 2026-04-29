@@ -3,6 +3,146 @@
   padding-top: calc(var(--header-height, 80px) + 30px);
 }
 
+/* Flight details styling */
+.flight-details {
+  background: #ffffff;
+  border: 1px solid #e1e8ed;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px 0;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.flight-details h3 {
+  color: #1a1a1a;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 16px;
+}
+
+.flight-details h3 i {
+  color: #0a969d;
+  font-size: 22px;
+}
+
+.flight-info {
+  display: grid;
+  gap: 20px;
+}
+
+.flight-segment {
+  background: #f8fafb;
+  border: 1px solid #e8f2f3;
+  border-radius: 10px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.flight-segment:hover {
+  border-color: #0a969d;
+  background: #f5fbfc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(10, 150, 157, 0.12);
+}
+
+.flight-segment h4 {
+  color: #0a969d;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.flight-segment h4 i {
+  font-size: 16px;
+  color: #0a969d;
+}
+
+.flight-data {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #333;
+}
+
+.flight-info-row {
+  margin-bottom: 12px;
+}
+
+.flight-data .flight-number {
+  font-weight: 700;
+  color: #0a969d;
+  font-size: 16px;
+}
+
+.flight-data .airline {
+  font-weight: 500;
+  color: #666;
+  margin-left: 8px;
+}
+
+.flight-data .route {
+  font-weight: 600;
+  color: #333;
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.flight-data .route i {
+  color: #0a969d;
+  font-size: 14px;
+}
+
+.flight-data .datetime {
+  color: #666;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.flight-data .datetime i {
+  color: #0a969d;
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  .flight-info {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  
+  .flight-details {
+    padding: 28px;
+  }
+}
+
+@media (max-width: 767px) {
+  .flight-details {
+    padding: 16px;
+    margin: 16px 0;
+  }
+  
+  .flight-segment {
+    padding: 16px;
+  }
+  
+  .flight-details h3 {
+    font-size: 18px;
+  }
+}
+
 .steps {
   position: relative;
   display: flex;

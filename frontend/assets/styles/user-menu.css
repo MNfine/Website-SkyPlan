@@ -1,0 +1,137 @@
+/* User menu styles */
+.user-menu {
+  position: relative;
+  cursor: pointer;
+}
+
+.user-menu-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 30px;
+  background: #f5f5f5;
+  transition: background 0.2s ease;
+}
+
+.user-menu-trigger:hover {
+  background: #eeeeee;
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--dark-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.user-menu-trigger i {
+  font-size: 10px;
+  color: #666;
+  margin-left: 2px;
+  transition: transform 0.2s ease;
+}
+
+.user-menu:hover .user-menu-trigger i {
+  transform: rotate(180deg);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 200px;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  border: 1px solid #e0e0e0;
+  z-index: 1000;
+}
+
+.user-dropdown.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #333;
+  transition: background 0.2s ease;
+}
+
+.dropdown-item i {
+  font-size: 14px;
+  color: #666;
+  width: 16px;
+  text-align: center;
+}
+
+.dropdown-item:hover {
+  background: #f5f5f5;
+}
+
+.dropdown-item:last-child {
+  border-top: 1px solid #eee;
+}
+
+/* Mobile styles for user menu */
+@media (max-width: 768px) {
+  .user-menu {
+    width: 100%;
+  }
+  
+  .user-menu-trigger {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 10px;
+  }
+  
+  .user-dropdown {
+    position: relative;
+    width: 100%;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    display: none;
+    margin-top: 10px;
+  }
+  
+  .user-dropdown.show {
+    display: block;
+  }
+  
+  .dropdown-item {
+    padding: 8px 8px 8px 46px;
+    border-radius: 6px;
+  }
+  
+  .dropdown-item:last-child {
+    border-top: none;
+  }
+}

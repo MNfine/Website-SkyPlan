@@ -1,0 +1,723 @@
+/* SKY Tokens Dashboard Styles */
+
+:root {
+  --skyplan-primary: #00a896;
+  --skyplan-primary-dark: #008b7a;
+  --skyplan-bg-lighter: #fafafa;
+  --skyplan-border: #e0e0e0;
+  --skyplan-text-dark: #333333;
+  --skyplan-text-medium: #666666;
+  --skyplan-text-light: #999999;
+  --skyplan-error: #ef4444;
+  --skyplan-success: #10b981;
+}
+
+.main-content {
+  min-height: calc(100vh - 160px);
+  padding: 90px 15px 20px;
+  background-color: #f5f7fa;
+}
+
+/* Page Header */
+.page-header {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--skyplan-text-dark);
+  margin-bottom: 8px;
+}
+
+.page-subtitle {
+  font-size: 16px;
+  color: var(--skyplan-text-medium);
+}
+
+/* Balance Card */
+.balance-card {
+  background: linear-gradient(135deg, var(--skyplan-primary) 0%, var(--skyplan-primary-dark) 100%);
+  color: white;
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 40px;
+  box-shadow: 0 8px 24px rgba(0, 168, 150, 0.2);
+}
+
+.balance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.balance-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.refresh-btn {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 18px;
+  color: white;
+}
+
+.refresh-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(180deg);
+}
+
+.balance-display {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.token-amount {
+  font-size: 56px;
+  font-weight: 700;
+  display: block;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.token-unit {
+  font-size: 20px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.balance-info {
+  text-align: center;
+  margin-bottom: 24px;
+  opacity: 0.9;
+}
+
+.info-text {
+  margin: 0;
+  font-size: 14px;
+}
+
+.balance-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.balance-actions .btn-primary,
+.balance-actions .btn-secondary {
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.balance-actions .btn-primary {
+  background: white;
+  color: var(--skyplan-primary);
+}
+
+.balance-actions .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.balance-actions .btn-secondary {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.balance-actions .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Token Statistics */
+.token-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: white;
+  border: 1px solid var(--skyplan-border);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  border-color: var(--skyplan-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, var(--skyplan-primary) 0%, var(--skyplan-primary-dark) 100%);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--skyplan-text-dark);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--skyplan-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Rewards Section */
+.rewards-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--skyplan-text-dark);
+  margin-bottom: 20px;
+}
+
+/* Loading Skeleton */
+.loading-skeleton {
+  display: grid;
+  gap: 12px;
+}
+
+.skeleton-row {
+  height: 60px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 2s infinite;
+  border-radius: 8px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 64px;
+  color: var(--skyplan-text-light);
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.empty-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--skyplan-text-dark);
+  margin-bottom: 10px;
+}
+
+.empty-text {
+  font-size: 14px;
+  color: var(--skyplan-text-medium);
+  margin-bottom: 20px;
+  max-width: 400px;
+}
+
+/* Rewards Table */
+.rewards-table-element {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rewards-table-element thead {
+  background: var(--skyplan-bg-lighter);
+  border-bottom: 2px solid var(--skyplan-border);
+}
+
+.rewards-table-element th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--skyplan-text-medium);
+  text-transform: uppercase;
+}
+
+.rewards-table-element td {
+  padding: 12px;
+  border-bottom: 1px solid var(--skyplan-border);
+  font-size: 14px;
+  color: var(--skyplan-text-dark);
+}
+
+.booking-code {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: var(--skyplan-primary);
+}
+
+.reward-amount {
+  font-weight: 600;
+  color: var(--skyplan-success);
+}
+
+.reward-date {
+  color: var(--skyplan-text-medium);
+}
+
+.reward-action {
+  text-align: center;
+}
+
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--skyplan-bg-lighter);
+  color: var(--skyplan-primary);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.link-button:hover {
+  background: var(--skyplan-primary);
+  color: white;
+}
+
+.voucher-list {
+  display: grid;
+  gap: 14px;
+}
+
+.voucher-card {
+  position: relative;
+  border: 1px solid rgba(0, 168, 150, 0.12);
+  border-left: 4px solid var(--skyplan-primary);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr auto;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfffe 100%);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.voucher-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+  border-color: rgba(0, 168, 150, 0.2);
+}
+
+.voucher-code {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  color: var(--skyplan-primary-dark);
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  word-break: break-all;
+}
+
+.voucher-meta {
+  color: var(--skyplan-text-medium);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.voucher-copy-btn {
+  border: 1px solid rgba(0, 168, 150, 0.25);
+  background: linear-gradient(180deg, #ffffff 0%, #f2fffd 100%);
+  color: var(--skyplan-primary);
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 118px;
+  box-shadow: 0 4px 12px rgba(0, 168, 150, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.voucher-copy-btn:hover {
+  background: var(--skyplan-primary);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(0, 168, 150, 0.18);
+}
+
+.voucher-expired {
+  opacity: 0.65;
+}
+
+@media (max-width: 768px) {
+  .voucher-card {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .voucher-copy-btn {
+    width: 100%;
+  }
+}
+
+/* Info Section */
+.info-section {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.info-card {
+  text-align: center;
+}
+
+.info-number {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--skyplan-primary) 0%, var(--skyplan-primary-dark) 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 auto 12px;
+}
+
+.info-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--skyplan-text-dark);
+  margin-bottom: 8px;
+}
+
+.info-card p {
+  font-size: 13px;
+  color: var(--skyplan-text-medium);
+  line-height: 1.6;
+}
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--skyplan-text-light);
+  transition: color 0.3s ease;
+  background: none;
+  border: none;
+}
+
+.modal-close:hover {
+  color: var(--skyplan-text-dark);
+}
+
+.modal-body {
+  padding: 32px 24px;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--skyplan-text-dark);
+  margin-bottom: 24px;
+}
+
+.redeem-form {
+  margin-bottom: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--skyplan-text-dark);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.amount-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.amount-input-group input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--skyplan-border);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.amount-unit {
+  font-weight: 600;
+  color: var(--skyplan-text-medium);
+  min-width: 40px;
+}
+
+.btn-max {
+  padding: 8px 12px;
+  background: var(--skyplan-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-max:hover {
+  background: var(--skyplan-primary-dark);
+}
+
+.amount-info {
+  font-size: 12px;
+  color: var(--skyplan-text-medium);
+  margin-top: 8px;
+}
+
+.redeem-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: var(--skyplan-bg-lighter);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.option-label:hover {
+  background: #f0f0f0;
+}
+
+.option-label input[type="radio"] {
+  cursor: pointer;
+}
+
+.redemption-preview {
+  background: var(--skyplan-bg-lighter);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.preview-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.preview-item:last-child {
+  margin-bottom: 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--skyplan-border);
+}
+
+.price-disclaimer {
+  background: #fef5e7;
+  border: 1px solid #f8d7a1;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 12px;
+  color: #856404;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.price-disclaimer i {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.price-disclaimer p {
+  margin: 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.modal-actions .btn-secondary {
+  background: var(--skyplan-bg-lighter);
+  color: var(--skyplan-text-dark);
+}
+
+.modal-actions .btn-primary {
+  background: var(--skyplan-primary);
+  color: white;
+}
+
+.modal-actions button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .balance-card {
+    padding: 20px;
+  }
+
+  .token-amount {
+    font-size: 40px;
+  }
+
+  .token-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .balance-actions {
+    flex-direction: column;
+  }
+
+  .balance-actions button {
+    width: 100%;
+  }
+
+  .rewards-table-element {
+    font-size: 12px;
+  }
+
+  .rewards-table-element th,
+  .rewards-table-element td {
+    padding: 8px;
+  }
+
+  .info-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-content {
+    width: 95%;
+  }
+}

@@ -6,8 +6,14 @@ VNPay payment gateway settings
 import os
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
+# Load environment variables from .env file in root directory
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+env_path = os.path.join(root_dir, '.env')
+load_dotenv(env_path, encoding='utf-8-sig')
+
+# Also load blockchain workspace env for local dev fallback (does not override existing keys).
+blockchain_env_path = os.path.join(root_dir, 'skyplan-blockchain', '.env')
+load_dotenv(blockchain_env_path, override=False, encoding='utf-8-sig')
 
 class Config:
     """Base configuration class"""
@@ -70,3 +76,36 @@ class EmailConfig:
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER') or 'noreply@skyplan.com'
+
+# Blockchain configuration
+class BlockchainConfig:
+    """Blockchain configuration for Sepolia testnet"""
+    
+    # Sepolia RPC URL (Alchemy, Infura, or other provider)
+    SEPOLIA_RPC_URL = (
+        os.environ.get('SEPOLIA_RPC_URL')
+        or os.environ.get('BLOCKCHAIN_SEPOLIA_RPC')
+        or 'https://eth-sepolia.g.alchemy.com/v2/demo'
+    )
+    
+    # BookingRegistry contract address (deployed on Sepolia)
+    BOOKING_REGISTRY_ADDRESS = os.environ.get('BOOKING_REGISTRY_ADDRESS')
+    TICKET_NFT_ADDRESS = (
+        os.environ.get('TICKET_NFT_ADDRESS')
+    )
+    SKY_TOKEN_ADDRESS = os.environ.get('SKY_TOKEN_ADDRESS')
+    PRIVATE_KEY = os.environ.get('PRIVATE_KEY') or os.environ.get('CONTRACT_PRIVATE_KEY')
+    RECEIVER_ADDRESS = os.environ.get('RECEIVER_ADDRESS') or os.environ.get('BLOCKCHAIN_RECEIVER_ADDRESS')
+    SKY_REWARD_AMOUNT = os.environ.get('SKY_REWARD_AMOUNT') or '100'
+    
+    @classmethod
+    def is_configured(cls):
+        """Check if blockchain is properly configured"""
+        required = [
+            cls.BOOKING_REGISTRY_ADDRESS,
+            cls.TICKET_NFT_ADDRESS,
+            cls.SKY_TOKEN_ADDRESS,
+            cls.PRIVATE_KEY,
+            cls.SEPOLIA_RPC_URL,
+        ]
+        return all(v is not None and str(v).strip() for v in required)

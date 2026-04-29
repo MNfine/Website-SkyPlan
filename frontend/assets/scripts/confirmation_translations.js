@@ -10,6 +10,18 @@ const confirmationTranslations = {
     amountLabel: 'Amount:',
     backHome: 'Back to Home',
     viewMyTicket: 'View my ticket',
+    downloadTicket: 'Download Ticket',
+    upgradeTitle: 'Upgrade your ticket to Blockchain Ticket',
+    upgradeDesc: 'Transparent, secure, and fast. Get an NFT ticket and SKY rewards with no gas fee.',
+    upgradePillar1: 'Transparent',
+    upgradePillar2: 'Secure',
+    upgradePillar3: 'Fast',
+    upgradeGuide: 'View guide',
+    upgradeNow: 'Integrate now',
+    ticketUpgradeModalTitle: 'Blockchain Ticket Integration',
+    ticketUpgradeModalDesc: 'Do you want to integrate now or view the guide first?',
+    ticketUpgradeIntegrate: 'Integrate now',
+    ticketUpgradeGuide: 'View guide',
     // Header
     helpText: 'Help',
     myTripsText: 'My Trips',
@@ -24,7 +36,7 @@ const confirmationTranslations = {
     termsOfService: 'Terms of Service',
     supportTitle: 'Support',
     helpCenter: 'Help Center',
-    customerService: 'Customer Service',
+    blogLink: 'Blog',
     bookingHelp: 'Booking Help',
     faq: 'FAQ',
     promotion: "Promotions",
@@ -44,6 +56,18 @@ const confirmationTranslations = {
     amountLabel: 'Số tiền:',
     backHome: 'Về trang chủ',
     viewMyTicket: 'Xem vé của tôi',
+    downloadTicket: 'Tải vé',
+    upgradeTitle: 'Nâng cấp vé thành Blockchain Ticket',
+    upgradeDesc: 'Minh bạch, an toàn, thao tác nhanh chóng. Nhận vé NFT và ưu đãi SKY, không cần trả gas.',
+    upgradePillar1: 'Minh bạch',
+    upgradePillar2: 'An toàn',
+    upgradePillar3: 'Nhanh chóng',
+    upgradeGuide: 'Xem hướng dẫn',
+    upgradeNow: 'Tích hợp ngay',
+    ticketUpgradeModalTitle: 'Tích hợp vé Blockchain',
+    ticketUpgradeModalDesc: 'Bạn muốn tích hợp ngay hay xem hướng dẫn trước?',
+    ticketUpgradeIntegrate: 'Tích hợp ngay',
+    ticketUpgradeGuide: 'Xem hướng dẫn',
     // Header
     helpText: 'Trợ giúp',
     myTripsText: 'Chuyến đi của tôi',
@@ -58,7 +82,7 @@ const confirmationTranslations = {
     termsOfService: 'Điều khoản dịch vụ',
     supportTitle: 'Hỗ trợ',
     helpCenter: 'Trung tâm trợ giúp',
-    customerService: 'Dịch vụ khách hàng',
+    blogLink: 'Blog',
     bookingHelp: 'Hỗ trợ đặt vé',
     faq: 'Câu hỏi thường gặp',
     promotion: "Khuyến mãi",
@@ -90,6 +114,7 @@ function changeConfirmationLanguage(lang) {
 }
 
 try {
+  window.confirmationTranslations = confirmationTranslations;
   window.applyConfirmationTranslations = applyConfirmationTranslations;
   window.changeConfirmationLanguage = changeConfirmationLanguage;
 } catch {}

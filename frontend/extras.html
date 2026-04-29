@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="assets/styles/index.css" />
     <link rel="stylesheet" href="assets/styles/flags.css" />
     <link rel="stylesheet" href="assets/styles/header.css" />
+    <link rel="stylesheet" href="assets/styles/wallet.css" />
     <link rel="stylesheet" href="assets/styles/footer.css" />
     <link rel="stylesheet" href="assets/styles/fare.css" />
     <link rel="stylesheet" href="assets/styles/extras.css" />
@@ -25,8 +26,12 @@
     />
   </head>
   <body>
+    <!-- HEADER SECTION -->
+    <!-- This div is a placeholder. JavaScript will load the header component into here. -->
     <div id="header-container"></div>
     <main class="container flow">
+      <!-- FLIGHT BOOKING PROGRESS STEPS -->
+      <!-- This section shows the user which step they are on in the booking process. -->
       <div class="steps">
         <div class="step completed">
           <div class="dot">1</div>
@@ -54,12 +59,18 @@
         </div>
         <div class="progress"></div>
       </div>
+
+      <!-- ROUTE TITLE -->
+      <!-- Displays the flight route.This will be updated by JavaScript. -->
       <h2 class="route-title" id="routeTitle">Từ Hà Nội tới Hồ Chí Minh</h2>
+
+      <!-- EXTRAS SELECTION GRID -->
+      <!-- This is the main area where users can choose extra services. (grid layout) -->
       <section class="extras-grid">
         <!-- Meal -->
         <article class="extra-card" data-key="meal" data-type="meal">
           <div class="extra-card__img">
-            <img src="assets/images/meal.svg" alt="Meal" />
+            <img src="assets/images/meal.svg" alt="Meal" loading="lazy" />
           </div>
           <h3 class="extra-card__title" data-i18n="mealTitle">Suất ăn</h3>
           <p class="extra-card__desc" data-i18n="mealDesc">
@@ -73,7 +84,7 @@
         <!-- Baggage -->
         <article class="extra-card" data-key="baggage" data-type="baggage">
           <div class="extra-card__img">
-            <img src="assets/images/baggage.svg" alt="Baggage" />
+            <img src="assets/images/baggage.svg" alt="Baggage" loading="lazy" />
           </div>
           <h3 class="extra-card__title" data-i18n="baggageTitle">
             Chọn hành lý
@@ -86,10 +97,14 @@
           </button>
         </article>
 
-        <!-- Services -->
+        <!-- Special Services Card -->
         <article class="extra-card" data-key="services" data-type="services">
           <div class="extra-card__img">
-            <img src="assets/images/service.svg" alt="Services" />
+            <img
+              src="assets/images/service.svg"
+              alt="Services"
+              loading="lazy"
+            />
           </div>
           <h3 class="extra-card__title" data-i18n="servicesTitle">
             Dịch vụ theo hành khách
@@ -103,10 +118,12 @@
         </article>
       </section>
 
-      <!-- Tổng & điều hướng -->
+      <!-- TOTALS & NAVIGATION -->
+      <!-- This section shows the total cost of the selected extras and has the button to proceed. -->
       <section class="extras-actions">
         <div class="extras-total">
           <span data-i18n="yourExtras">Dịch vụ đã chọn:</span>
+          <!-- The total price of selected extras will be displayed here by JavaScript. -->
           <strong id="extrasTotal">0 VND</strong>
         </div>
 
@@ -117,8 +134,13 @@
         </a>
       </section>
     </main>
+
+    <!-- FOOTER SECTION -->
+    <!-- This div is a placeholder. JavaScript will load the footer component into here. -->
     <div id="footer-container"></div>
-    <!-- Side Panels -->
+
+    <!-- SIDE PANEL (DRAWER) FOR EXTRA DETAILS -->
+    <!-- This section is hidden by default. It appears when a user clicks "View details" on a card. -->
     <div id="extras-backdrop" class="extras-backdrop" hidden></div>
     <aside
       id="extras-panel"
@@ -154,12 +176,18 @@
         </button>
       </div>
     </aside>
+    <script src="assets/scripts/auth-utils.js"></script>
     <script src="assets/scripts/config.js"></script>
     <script src="assets/scripts/index_translations.js"></script>
     <script src="assets/scripts/common.js"></script>
-    <script src="assets/scripts/extras_translations.js"></script>
+    <script src="assets/scripts/wallet_translations.js"></script>
+    <script src="assets/scripts/metamask.js"></script>
+    <script src="assets/scripts/wallet-ui.js"></script>    <script src="assets/scripts/extras_translations.js"></script>
     <script src="assets/scripts/extras.js"></script>
     <script src="assets/scripts/loader.js"></script>
+
+    <!-- INLINE SCRIPT FOR PAGE TRANSITION -->
+    <!-- This small script handles the loading animation when moving to the next page. -->
     <script>
       // Import loader HTML vào DOM càng sớm càng tốt
       fetch("components/loader.html")
