@@ -93,7 +93,8 @@ function initializeBookingSummary() {
     amount: total,
     bookingCode: localStorage.getItem('currentBookingCode') || '-',
     discount: 0,
-    discountPercent: 0
+    discountPercent: 0,
+    baseAmount: total
   };
 
   console.log('[Payment] PaymentState.amount set to:', total);
@@ -176,6 +177,7 @@ document.addEventListener('orderTotalReady', function(e) {
 
   if (!window.PaymentState) window.PaymentState = { discount: 0, discountPercent: 0, bookingCode: '-' };
   window.PaymentState.amount = total;
+  window.PaymentState.baseAmount = total;
 
   console.log('[Payment] orderTotalReady: syncing total =>', formatVND(total));
 
@@ -187,6 +189,45 @@ document.addEventListener('orderTotalReady', function(e) {
     BlockchainPayment.refreshAmount(total);
   }
 });
+
+function refreshBlockchainPaymentFromState() {
+  try {
+    const selectedPayment = document.querySelector('input[name="payment"]:checked');
+    if (!selectedPayment || selectedPayment.value !== 'blockchain') return;
+    if (typeof BlockchainPayment === 'undefined' || typeof BlockchainPayment.refreshAmount !== 'function') return;
+
+    const amount = window.PaymentState && Number(window.PaymentState.amount || 0);
+    if (amount > 0) {
+      BlockchainPayment.refreshAmount(amount);
+    }
+  } catch (_) {
+    // Non-fatal: UI can continue even if crypto preview fails to refresh.
+  }
+}
+
+function getVoucherBaseAmount() {
+  if (window.PaymentState) {
+    const baseAmount = Number(window.PaymentState.baseAmount || 0);
+    if (baseAmount > 0) return baseAmount;
+
+    const currentAmount = Number(window.PaymentState.amount || 0);
+    if (currentAmount > 0) return currentAmount;
+  }
+
+  const finalAmountEl = document.getElementById('finalAmount');
+  if (finalAmountEl) {
+    const parsedFinal = parseVND(finalAmountEl.textContent);
+    if (parsedFinal > 0) return parsedFinal;
+  }
+
+  const totalAmountEl = document.getElementById('totalAmount');
+  if (totalAmountEl) {
+    const parsedTotal = parseVND(totalAmountEl.textContent);
+    if (parsedTotal > 0) return parsedTotal;
+  }
+
+  return 0;
+}
 // ─────────────────────────────────────────────────────────────────────────────
 
 window.initPaymentUI = initPaymentUI;
@@ -940,6 +981,7 @@ async function showPaymentSuccess(provider = 'manual') {
   }
   localStorage.setItem('lastTxnRef', bookingCode);
   localStorage.setItem('lastAmount', amount);
+  localStorage.setItem('finalPaymentAmount', amount);
   try { localStorage.removeItem('pendingBookingPayload'); } catch (_) { }
 
   // Show loader before redirect
@@ -1412,9 +1454,17 @@ function initializeVoucher() {
   syncServerVouchers();
 
   let appliedVoucher = null;
-  const originalAmount = parseFloat(document.getElementById('totalAmount').textContent.replace(/[^\d]/g, ''));
+  let originalAmount = getVoucherBaseAmount();
+
+  function refreshOriginalAmount() {
+    const resolved = getVoucherBaseAmount();
+    if (resolved > 0) {
+      originalAmount = resolved;
+    }
+  }
 
   applyBtn.addEventListener('click', function () {
+    refreshOriginalAmount();
     const code = voucherInput.value.trim().toUpperCase();
 
     if (!code) {
@@ -1452,6 +1502,7 @@ function initializeVoucher() {
     document.getElementById('discountAmount').textContent = `-${formatCurrency(discount)}`;
     document.getElementById('finalAmount').textContent = formatCurrency(finalAmount);
     voucherDiscount.classList.remove('hidden');
+    refreshBlockchainPaymentFromState();
 
     showVoucherMessage(`✓ Áp dụng thành công: ${voucher.description}`, 'success');
     voucherInput.disabled = true;
@@ -1494,6 +1545,7 @@ function initializeVoucher() {
     removeBtn.className = 'remove-voucher-btn';
 
     removeBtn.addEventListener('click', function () {
+      refreshOriginalAmount();
       // Reset voucher
       appliedVoucher = null;
       window.__skyplanAppliedVoucherCode = null;
@@ -1504,10 +1556,12 @@ function initializeVoucher() {
         window.PaymentState.amount = originalAmount;
         window.PaymentState.discount = 0;
         window.PaymentState.discountPercent = 0;
+        window.PaymentState.baseAmount = originalAmount;
       }
 
       voucherDiscount.classList.add('hidden');
       document.getElementById('finalAmount').textContent = formatCurrency(originalAmount);
+      refreshBlockchainPaymentFromState();
       
       voucherInput.value = '';
       voucherInput.disabled = false;

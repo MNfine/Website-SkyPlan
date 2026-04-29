@@ -1,5 +1,10 @@
 // Confirmation page functionality for handling VNPay callbacks and payment confirmation
 
+// Enable debugging if ?debug=1 in URL
+if (new URLSearchParams(window.location.search).get('debug') === '1') {
+  window.SKYPLAN_DEBUG = true;
+}
+
 // Quiet mode: suppress non-essential console output unless debugging flag is enabled.
 // Set window.SKYPLAN_DEBUG = true in the console to re-enable logs.
 (function() {
@@ -376,13 +381,17 @@
     const bookingTotal = localStorage.getItem('bookingTotal'); // Before voucher discount
     const windowLastAmount = window.lastAmount;
     
-    console.log('💰 Confirmation amount sources:', {
-      finalPaymentAmount,
-      amountByBooking,
-      bookingTotal,
-      lastAmount,
-      windowLastAmount
-    });
+    if (window.SKYPLAN_DEBUG) {
+      console.log('💰 Confirmation amount sources:', {
+        bookingCode,
+        finalPaymentAmount,
+        amountByBooking,
+        bookingTotal,
+        lastAmount,
+        windowLastAmount
+      });
+      console.log('🔍 All localStorage keys:', Object.keys(localStorage).filter(k => k.includes('amount') || k.includes('booking') || k.includes('payment')));
+    }
 
     // Prefer non-zero sources in priority order.
     const amountCandidates = [
@@ -400,6 +409,14 @@
         parsedAmount = val;
         break;
       }
+    }
+
+    if (parsedAmount > 0 && isValidBookingCode(bookingCode)) {
+      try {
+        localStorage.setItem('lastAmount', String(parsedAmount));
+        localStorage.setItem('amount_' + bookingCode, String(parsedAmount));
+        localStorage.setItem('finalPaymentAmount', String(parsedAmount));
+      } catch (_) {}
     }
     
     console.log('💰 Parsed amount:', { candidates: amountCandidates, parsed: parsedAmount });
@@ -438,7 +455,7 @@
       console.log('💰 Display amount:', formattedAmount);
     }
 
-    // Prefer server-side booking amount when booking code is known.
+    // Prefer server-side booking amount only when we do not already have a valid paid amount.
     if (isValidBookingCode(bookingCode)) {
       try {
         const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
@@ -447,7 +464,7 @@
         });
         const data = await resp.json().catch(() => null);
 
-        if (resp.ok && data && data.success && data.booking) {
+        if (resp.ok && data && data.success && data.booking && parsedAmount <= 0) {
           const serverAmount = Number(data.booking.total_amount || 0);
           if (Number.isFinite(serverAmount) && serverAmount > 0 && amountEl) {
             amountEl.textContent = serverAmount.toLocaleString('vi-VN') + ' VND';

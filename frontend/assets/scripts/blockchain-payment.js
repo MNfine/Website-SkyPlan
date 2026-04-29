@@ -607,8 +607,22 @@ const BlockchainPayment = (function () {
             });
             notify(getMessage('transactionSuccess', lang_code), 'success', 4000);
 
-            // Countdown and auto-redirect to confirmation page
+            // Save payment amount to localStorage so confirmation page can display it correctly
             const bookingCode = currentTransaction.bookingId || '';
+            const paymentAmount = currentTransaction.amount || 0;
+            if (bookingCode && paymentAmount > 0) {
+              try {
+                localStorage.setItem('lastBookingCode', bookingCode);
+                localStorage.setItem('lastTxnRef', bookingCode);
+                localStorage.setItem('lastAmount', String(paymentAmount));
+                localStorage.setItem('amount_' + bookingCode, String(paymentAmount));
+                localStorage.setItem('finalPaymentAmount', String(paymentAmount));
+              } catch (e) {
+                console.warn('[Blockchain] Could not save amount to localStorage:', e);
+              }
+            }
+
+            // Countdown and auto-redirect to confirmation page
             const confirmUrl = `confirmation.html?booking=${bookingCode}&txHash=${encodeURIComponent(txHash)}&method=blockchain`;
             let secs = 5;
             const countdownEl = document.getElementById('redirectCountdown');
@@ -750,9 +764,22 @@ const BlockchainPayment = (function () {
 
         // Update redirect button with correct booking + tx params
         const bookingCode = currentTransaction.bookingId || '';
+        const paymentAmount = currentTransaction.amount || 0;
         const btn = document.getElementById('viewTicketBtn');
         if (btn) {
           btn.onclick = () => {
+            // Save payment amount to localStorage before redirecting
+            if (bookingCode && paymentAmount > 0) {
+              try {
+                localStorage.setItem('lastBookingCode', bookingCode);
+                localStorage.setItem('lastTxnRef', bookingCode);
+                localStorage.setItem('lastAmount', String(paymentAmount));
+                localStorage.setItem('amount_' + bookingCode, String(paymentAmount));
+                localStorage.setItem('finalPaymentAmount', String(paymentAmount));
+              } catch (e) {
+                console.warn('[Blockchain] Could not save amount to localStorage:', e);
+              }
+            }
             window.location.href = `confirmation.html?booking=${bookingCode}&txHash=${encodeURIComponent(txHash)}&method=blockchain`;
           };
         }
