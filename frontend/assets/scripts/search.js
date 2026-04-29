@@ -1465,6 +1465,12 @@ function initializeTripTypeHandlers() {
 
                 localStorage.setItem('skyplan_trip_selection', JSON.stringify(tripObj));
                 console.log('[search] Saved skyplan_trip_selection to localStorage:', tripObj);
+                
+                // Clear state from previous bookings
+                localStorage.removeItem('skyplan_extras_v2');
+                localStorage.removeItem('skyplan_fare_selection');
+                localStorage.removeItem('selectedSeats');
+                localStorage.removeItem('finalPaymentAmount');
             } catch (err) {
                 console.warn('[search] Failed to persist skyplan_trip_selection:', err);
             }

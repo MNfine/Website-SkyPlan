@@ -386,8 +386,8 @@
 
     // Prefer non-zero sources in priority order.
     const amountCandidates = [
-      finalPaymentAmount,
       amountByBooking,
+      finalPaymentAmount,
       bookingTotal,
       lastAmount,
       windowLastAmount

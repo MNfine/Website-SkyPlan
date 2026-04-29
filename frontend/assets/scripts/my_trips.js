@@ -88,7 +88,7 @@ function getMetaMaskWallet() {
   if (window.MetaMaskWallet) return window.MetaMaskWallet;
   try {
     if (typeof MetaMaskWallet !== 'undefined') return MetaMaskWallet;
-  } catch (_) {}
+  } catch (_) { }
   return null;
 }
 
@@ -190,6 +190,7 @@ function mapBookingToTrip(booking) {
   return {
     id: booking.booking_code || String(booking.id || ''),
     bookingCode: booking.booking_code || '',
+    departureIso: departureIso,
     status: mapStatus(booking.status, departureIso),
     route: origin + ' -> ' + destination,
     airline: [outbound.airline_name || outbound.airline || 'SkyPlan', outbound.flight_number].filter(Boolean).join(' - '),
@@ -251,7 +252,7 @@ async function loadUserTrips() {
           try {
             showNotification(t('bookingNotInAccount').replace('{code}', bookingCode), 'warning', 3800);
           } catch (e) {
-            showNotification('Booking ' + bookingCode + ' khong thuoc tai khoan dang dang nhap.', 'warning', 3800);
+            showNotification('Booking ' + bookingCode + ' không thuộc tài khoản đang đăng nhập.', 'warning', 3800);
           }
         }
       } catch (_) {
@@ -260,11 +261,11 @@ async function loadUserTrips() {
     }
 
     renderTrips();
-    } catch (error) {
+  } catch (error) {
     console.error('Failed to load real my-trips data:', error);
     tripsData = [];
     renderTrips();
-    const defaultMsg = t('failedToLoadTrips') || 'Khong the tai danh sach chuyen di';
+    const defaultMsg = t('failedToLoadTrips') || 'Không thể tải danh sách chuyến đi.';
     showNotification(error && error.message ? error.message : defaultMsg, 'error', 2800);
   }
 }
@@ -306,18 +307,18 @@ async function autoIntegrateFromRedirectIfNeeded() {
     try {
       showNotification(t('bookingNotFoundInAccount').replace('{code}', codeFromUrl), 'warning', 3200);
     } catch (e) {
-      showNotification('Khong tim thay booking ' + codeFromUrl + ' trong tai khoan hien tai.', 'warning', 3200);
+      showNotification('Không tìm thấy booking ' + codeFromUrl + ' trong tài khoản hiện tại.', 'warning', 3200);
     }
     return;
   }
 
   if (target.nft && target.nft.minted) {
-    showNotification(getLang() === 'vi' ? 'Booking nay da duoc integrate truoc do.' : 'This booking is already integrated.', 'success', 2500);
+    showNotification(getLang() === 'vi' ? 'Booking này đã được tích hợp.' : 'This booking is already integrated.', 'success', 2500);
     return;
   }
 
-  showNotification('Dang xu ly integrate cho booking ' + codeFromUrl + '...', 'info', 2200);
-  await integrateNftTicket(codeFromUrl);
+  showNotification('Đang xử lý tích hợp vé cho booking ' + codeFromUrl + '...', 'info', 2200);
+  await integrateNftTicket(codeFromUrl, true);
 }
 
 function buildTripCard(trip) {
@@ -333,9 +334,16 @@ function buildTripCard(trip) {
   const statusClass = escapeHtml(trip.status || 'upcoming');
   const safeId = escapeHtml(trip.id || trip.bookingCode || '');
 
-  const nftAction = nftMinted
-    ? '<button class="btn btn-outline" onclick="event.stopPropagation(); viewNftTicket(\'' + safeId + '\')"><i class="fas fa-ticket"></i><span>' + t('viewNftTicket') + '</span></button>'
-    : '<button class="btn btn-outline" onclick="event.stopPropagation(); integrateNftTicket(\'' + bookingCode + '\')"><i class="fas fa-link"></i><span>' + t('integrateNft') + '</span></button>';
+  let nftAction = '';
+  if (nftMinted) {
+    nftAction = '<button class="btn btn-outline" onclick="event.stopPropagation(); viewNftTicket(\'' + safeId + '\')"><i class="fas fa-ticket"></i><span>' + t('viewNftTicket') + '</span></button>';
+  } else if (trip.status === 'upcoming') {
+    nftAction = '<button class="btn btn-outline" onclick="event.stopPropagation(); integrateNftTicket(\'' + bookingCode + '\')"><i class="fas fa-link"></i><span>' + t('integrateNft') + '</span></button>';
+  }
+
+  const cancelAction = trip.status === 'upcoming'
+    ? '<button class="btn btn-danger" onclick="event.stopPropagation(); cancelTrip(\'' + bookingCode + '\')"><i class="fas fa-times-circle"></i><span>' + t('cancelTrip') + '</span></button>'
+    : '';
 
   return [
     '<div class="trip-card" data-trip-id="' + safeId + '" onclick="goToOverview(\'' + bookingCode + '\')">',
@@ -370,6 +378,7 @@ function buildTripCard(trip) {
     '      <button class="btn btn-outline" onclick="event.stopPropagation(); viewTicket(\'' + bookingCode + '\')"><i class="fas fa-ticket-alt"></i><span>' + t('viewTicket') + '</span></button>',
     '      ' + nftAction,
     '      <button class="btn btn-primary" onclick="event.stopPropagation(); goToOverview(\'' + bookingCode + '\')"><i class="fas fa-eye"></i><span>' + t('tripDetails') + '</span></button>',
+    '      ' + cancelAction,
     '    </div>',
     '  </div>',
     '</div>'
@@ -378,12 +387,12 @@ function buildTripCard(trip) {
 
 const _integratingBookings = new Set();
 
-async function integrateNftTicket(bookingCode) {
+async function integrateNftTicket(bookingCode, isAuto = false) {
   const code = String(bookingCode || '').trim();
   if (!code) return;
 
   // Unified UX: always confirm integration intent first.
-  if (typeof window.showBlockchainIntegrationPopup === 'function') {
+  if (!isAuto && typeof window.showBlockchainIntegrationPopup === 'function') {
     const choice = await window.showBlockchainIntegrationPopup();
     if (choice === 'guide') {
       window.location.href = 'support.html#blockchain-ticket-guide';
@@ -593,21 +602,109 @@ window.integrateNftTicket = integrateNftTicket;
 window.downloadTicket = viewTicket;
 window.modifyTrip = function () { showNotification(t('modifyFeatureDev'), 'info', 2500); };
 window.cancelTrip = function (bookingCode) {
-  showNotification(t('cancelFeatureDev'), 'info', 1200);
-  setTimeout(function () {
-    if (bookingCode) {
-      window.location.href = 'overview.html?booking_code=' + encodeURIComponent(bookingCode);
-      return;
-    }
-    window.location.href = 'overview.html';
-  }, 500);
+  const trip = tripsData.find(function (t) { return t.bookingCode === bookingCode; });
+  if (!trip) return;
+
+  const departureDate = toDate(trip.departureIso);
+  const now = new Date();
+  const hoursDiff = (departureDate - now) / (1000 * 60 * 60);
+
+  let cancelModal = document.getElementById('cancel-modal');
+  if (!cancelModal) {
+    // Inject modal dynamically if HTML is cached
+    const modalHtml = `
+      <div id="cancel-modal" class="modal-overlay" style="display: none;">
+        <div class="modal">
+          <div class="modal-header">
+            <h3 data-i18n="cancelTripTitle">Hủy vé máy bay</h3>
+            <button class="close-btn" onclick="document.getElementById('cancel-modal').style.display='none'">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="cancel-warning">
+              <i class="fas fa-exclamation-triangle" style="color: #f59e0b; font-size: 1.5rem;"></i>
+              <p id="cancel-policy-text" style="margin: 0;"></p>
+            </div>
+            <div class="policy-details" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #e5e7eb;">
+              <h4 style="margin: 0 0 10px 0; font-size: 1rem; color: #374151;">Chính sách hủy vé</h4>
+              <ul style="margin: 0 0 0 20px; padding: 0; line-height: 1.6; font-size: 0.95rem; color: #4b5563;">
+                <li data-i18n="cancelPolicy1"><strong>Trước 48h khởi hành:</strong> Hoàn 90% giá vé (phí 10%). Số tiền hoàn sẽ được quy đổi thành SKY Token.</li>
+                <li data-i18n="cancelPolicy2"><strong>Trong vòng 48h khởi hành:</strong> Không hỗ trợ hoàn vé.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline" onclick="document.getElementById('cancel-modal').style.display='none'">Đóng</button>
+            <button id="confirm-cancel-btn" class="btn btn-danger">Xác nhận hủy</button>
+          </div>
+        </div>
+      </div>
+    `;
+    const container = document.querySelector('.my-trips-page') || document.body;
+    container.insertAdjacentHTML('beforeend', modalHtml);
+    cancelModal = document.getElementById('cancel-modal');
+  }
+
+  const policyText = document.getElementById('cancel-policy-text');
+  const confirmBtn = document.getElementById('confirm-cancel-btn');
+
+  const lang = getLang();
+
+  if (hoursDiff >= 48) {
+    const refundAmount = trip.amountVnd * 0.9;
+    policyText.innerHTML = lang === 'vi'
+      ? 'Chuyến bay của bạn khởi hành sau hơn 48 giờ. Bạn sẽ bị trừ 10% phí hủy và nhận lại tương đương <strong>' + formatVnd(refundAmount) + '</strong> dưới dạng SKY Token.'
+      : 'Your flight departs in more than 48 hours. A 10% cancellation fee applies. You will receive <strong>' + formatVnd(refundAmount) + '</strong> in SKY Tokens.';
+    confirmBtn.disabled = false;
+    confirmBtn.style.opacity = '1';
+    confirmBtn.style.cursor = 'pointer';
+  } else {
+    policyText.innerHTML = lang === 'vi'
+      ? 'Chuyến bay của bạn khởi hành trong vòng 48 giờ. <strong>Không hỗ trợ hoàn vé</strong> theo quy định.'
+      : 'Your flight departs within 48 hours. <strong>No refund is supported</strong> per policy.';
+    confirmBtn.disabled = true;
+    confirmBtn.style.opacity = '0.5';
+    confirmBtn.style.cursor = 'not-allowed';
+  }
+
+  confirmBtn.onclick = function () {
+    executeCancelTrip(bookingCode);
+  };
+
+  document.getElementById('cancel-modal').style.display = 'flex';
 };
+
+async function executeCancelTrip(bookingCode) {
+  const lang = getLang();
+  document.getElementById('cancel-modal').style.display = 'none';
+
+  try {
+    showNotification(lang === 'vi' ? 'Đang hủy vé...' : 'Cancelling booking...', 'info', 2000);
+    const resp = await AuthState.fetchWithAuth('/api/bookings/' + encodeURIComponent(bookingCode) + '/cancel', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await resp.json().catch(function () { return {}; });
+    if (resp.ok && data.success) {
+      showNotification(
+        (lang === 'vi' ? 'Hủy vé ' + bookingCode + ' thành công!' : 'Booking ' + bookingCode + ' cancelled successfully!'),
+        'success', 3500
+      );
+      await loadUserTrips();
+    } else {
+      showNotification(data.message || (lang === 'vi' ? 'Hủy vé thất bại' : 'Failed to cancel booking'), 'error', 3500);
+    }
+  } catch (err) {
+    showNotification(lang === 'vi' ? 'Lỗi kết nối khi hủy vé' : 'Network error while cancelling', 'error', 3000);
+  }
+}
 window.downloadInvoice = function () { showNotification(t('downloadingInvoice'), 'info', 2200); };
 window.rebookTrip = function () { window.location.href = 'search.html'; };
 window.rebookSimilarTrip = function () { window.location.href = 'search.html'; };
 window.viewCancellationDetails = function () { showNotification(t('cancellationFeatureDev'), 'info', 2500); };
-window.closeCancelModal = function () {};
-window.confirmCancelTrip = function () {};
+window.closeCancelModal = function () { };
+window.confirmCancelTrip = function () { };
 
 // Initialize page
 window.addEventListener('DOMContentLoaded', function () {

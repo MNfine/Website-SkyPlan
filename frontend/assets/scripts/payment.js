@@ -106,29 +106,34 @@ function calculateTotal(booking, discountPercent) {
 
   // Prefer a ready-made backend total
   var backendTotal = parseVND(
-    booking.totalPrice || booking.total_price || booking.total ||
+    booking.totalCost || booking.totalPrice || booking.total_price || booking.total ||
     booking.totalAmount || booking.total_amount || 0
   );
   if (backendTotal > 0) {
-    var disc = backendTotal * (discountPercent / 100);
+    var disc = Math.round(backendTotal * (discountPercent / 100));
     return { subtotal: backendTotal, discount: disc, total: backendTotal - disc };
   }
 
   // Sum individual components with broad field-name coverage
   var ticket = parseVND(
     booking.price || booking.ticket_price || booking.ticketPrice ||
-    booking.basePrice || booking.base_price || 0
+    booking.basePrice || booking.base_price || 
+    (booking.trip ? (Number(booking.trip.outbound_price || 0) + Number(booking.trip.inbound_price || 0)) : 0) || 0
   );
-  var extras = parseVND(
-    booking.extras || booking.extraFees || booking.extra_fees || 0
-  );
+  var extrasVal = 0;
+  if (typeof booking.extras === 'object' && booking.extras !== null) {
+    extrasVal = Number(booking.extras.totalCost || booking.extras.total || 0);
+  } else {
+    extrasVal = parseVND(booking.extras || booking.extraFees || booking.extra_fees || 0);
+  }
+  var extras = extrasVal;
   var taxes = parseVND(
     booking.tax || booking.taxes || booking.taxAmount || booking.tax_amount ||
     booking.fees || 200000
   );
 
   var subtotal = ticket + extras + taxes;
-  var discount = subtotal * (discountPercent / 100);
+  var discount = Math.round(subtotal * (discountPercent / 100));
   var total = subtotal - discount;
 
   console.log('[Payment] Calculation Detail:', { ticket: ticket, extras: extras, taxes: taxes, subtotal: subtotal, discount: discount, total: total });
@@ -410,7 +415,7 @@ async function markBookingPaidOnBackend(provider) {
       amount: amount,
       provider: provider || 'manual',
       voucher_code: window.__skyplanAppliedVoucherCode || null,
-      wallet_address: getConnectedWalletAddress() || null
+      wallet_address: (typeof window.MetaMaskWallet !== 'undefined' && window.MetaMaskWallet.account) ? window.MetaMaskWallet.account : null
     };
     const headers = {
       'Content-Type': 'application/json',
@@ -1433,7 +1438,7 @@ function initializeVoucher() {
     appliedVoucher = { code, ...voucher };
     window.__skyplanAppliedVoucherCode = code;
     localStorage.setItem('skyplanAppliedVoucherCode', code);
-    const discount = calculateDiscount(originalAmount, voucher);
+    const discount = Math.round(calculateDiscount(originalAmount, voucher));
     const finalAmount = originalAmount - discount;
 
     // Update UI

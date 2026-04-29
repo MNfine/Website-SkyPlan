@@ -86,10 +86,10 @@ const BlockchainPayment = (function () {
     console.log('[Payment] FULL booking object:', JSON.stringify(booking, null, 2));
 
     // STEP 1 – prefer a ready-made backend total
-    const backendTotal = parseVND(booking.totalPrice || booking.total_price || booking.total);
+    const backendTotal = parseVND(booking.totalCost || booking.totalPrice || booking.total_price || booking.total || booking.totalAmount || booking.total_amount);
     if (backendTotal > 0) {
       console.log('[Payment] Using backend total:', backendTotal);
-      const discount = backendTotal * (discountPercent / 100);
+      const discount = Math.round(backendTotal * (discountPercent / 100));
       return { subtotal: backendTotal, discount, total: backendTotal - discount };
     }
 
@@ -100,16 +100,16 @@ const BlockchainPayment = (function () {
       booking.ticket_price ||
       booking.basePrice ||
       booking.base_price ||
-      0
+      (booking.trip ? (Number(booking.trip.outbound_price || 0) + Number(booking.trip.inbound_price || 0)) : 0) || 0
     );
 
-    const extras = parseVND(
-      booking.extras ||
-      booking.extraFees ||
-      booking.extra_fees ||
-      booking.services ||
-      0
-    );
+    let extrasVal = 0;
+    if (typeof booking.extras === 'object' && booking.extras !== null) {
+      extrasVal = Number(booking.extras.totalCost || booking.extras.total || 0);
+    } else {
+      extrasVal = parseVND(booking.extras || booking.extraFees || booking.extra_fees || booking.services || 0);
+    }
+    const extras = extrasVal;
 
     const taxes = parseVND(
       booking.tax ||   // singular — common short form
@@ -123,7 +123,7 @@ const BlockchainPayment = (function () {
     console.log('[Payment] Breakdown — ticket:', ticket, '| extras:', extras, '| taxes:', taxes);
 
     const subtotal = ticket + extras + taxes;
-    const discount = subtotal * (discountPercent / 100);
+    const discount = Math.round(subtotal * (discountPercent / 100));
     const total = subtotal - discount;
 
     console.log('[Payment] Calculated total:', total);
@@ -294,11 +294,10 @@ const BlockchainPayment = (function () {
       // Show payment details (includes real-time ETH calculation)
       await updatePaymentDetails(amountVnd);
 
-      // Show send button
+      // Ensure pay button is bound to sendTransaction, but let metamask.js handle its visibility based on wallet connection state
       const sendBtn = document.getElementById('payWithCryptoBtn');
       if (sendBtn) {
-        console.log('[Blockchain] Showing pay button for:', bookingCode);
-        sendBtn.style.display = 'block';
+        console.log('[Blockchain] Binding pay button for:', bookingCode);
         sendBtn.onclick = () => {
           console.log('[Blockchain] Pay button clicked via onclick');
           sendTransaction(bookingCode, amountVnd);

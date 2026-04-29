@@ -263,9 +263,13 @@ function initRouteTitle(langOverride) {
 function getState() {
   try {
     const storedState = localStorage.getItem(STORAGE_KEY);
-    return storedState ? JSON.parse(storedState) : { ...DEFAULT_EXTRAS };
+    const state = storedState ? JSON.parse(storedState) : { ...DEFAULT_EXTRAS };
+    state.total = calcTotal(state);
+    return state;
   } catch {
-    return { ...DEFAULT_EXTRAS };
+    const defaultState = { ...DEFAULT_EXTRAS };
+    defaultState.total = calcTotal(defaultState);
+    return defaultState;
   }
 }
 function setState(next) {

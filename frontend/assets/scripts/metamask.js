@@ -381,8 +381,12 @@ const MetaMaskWallet = (function () {
 
       // Update Header Button & Menu
       if (headerConnectBtn) {
-        headerConnectBtn.setAttribute('data-connected', isConnected ? 'true' : 'false');
-        if (isConnected) {
+        // Check if user is logged in (from localStorage/sessionStorage)
+        const isLoggedIn = !!(localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
+        const shouldShowConnected = isConnected && isLoggedIn;
+
+        headerConnectBtn.setAttribute('data-connected', shouldShowConnected ? 'true' : 'false');
+        if (shouldShowConnected) {
           headerConnectBtn.classList.add('connected');
           const spanEl = headerConnectBtn.querySelector('span');
           if (spanEl) {

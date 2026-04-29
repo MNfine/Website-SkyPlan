@@ -1672,3 +1672,31 @@ body {
       font-size: 16px;
     }
   }
+
+/* ===== Progress bar responsive + hover ===== */
+.step.completed:hover .dot {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 4px rgba(10, 150, 157, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+@media (max-width: 768px) {
+  .steps {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding: 8px 0 16px;
+    scrollbar-width: none;
+  }
+  .steps::-webkit-scrollbar { display: none; }
+  .step { flex: 0 0 auto; min-width: 44px; }
+  .step .label { display: none; }
+  .step .dot { width: 30px; height: 30px; font-size: 12px; line-height: 30px; }
+  .steps .progress { top: 20px; }
+}
+
+@media (max-width: 480px) {
+  .payment-container { padding: 0 8px; }
+  .step { min-width: 34px; }
+  .step .dot { width: 26px; height: 26px; font-size: 11px; line-height: 26px; }
+  .steps .progress { top: 18px; }
+}

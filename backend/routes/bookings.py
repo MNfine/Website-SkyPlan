@@ -999,6 +999,27 @@ def cancel_booking(booking_code):
 				'message': f'Cannot cancel booking with status {booking.status.value}'
 			}), 400
 
+		# Check 48h policy for CONFIRMED bookings
+		if booking.status == BookingStatus.CONFIRMED and booking.outbound_flight and booking.outbound_flight.departure_time:
+			from datetime import datetime, timezone
+			now = datetime.now(timezone.utc)
+			departure = booking.outbound_flight.departure_time
+			if departure.tzinfo is None:
+				departure = departure.replace(tzinfo=timezone.utc)
+			
+			hours_diff = (departure - now).total_seconds() / 3600.0
+			if hours_diff < 48:
+				return jsonify({
+					'success': False,
+					'message': 'Cannot cancel booking within 48 hours of departure'
+				}), 400
+			
+			# Record the refund amount in sky_reward_amount so it counts towards their balance
+			# (Assuming 1 SKY = 1 unit of fiat for the refund)
+			refund_amount = booking.total_amount * Decimal('0.9')
+			booking.sky_reward_amount = (booking.sky_reward_amount or Decimal('0')) + refund_amount
+			booking.sky_minted = True # Mark as "minted" so it counts in their profile balance immediately
+			
 		# Update booking status
 		booking.status = BookingStatus.CANCELLED
 

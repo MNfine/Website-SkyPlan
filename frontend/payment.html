@@ -29,23 +29,23 @@
   <!-- Progress Bar -->
   <div class="container payment-flow">
     <div class="steps">
-      <div class="step completed">
+      <div class="step completed" onclick="navigateToStep(1)" title="Tìm kiếm" style="cursor:pointer">
         <div class="dot">1</div>
         <div class="label" data-i18n="step1">Tìm kiếm</div>
       </div>
-      <div class="step completed">
+      <div class="step completed" onclick="navigateToStep(2)" title="Chọn chuyến bay" style="cursor:pointer">
         <div class="dot">2</div>
         <div class="label" data-i18n="step2">Chọn chuyến bay</div>
       </div>
-      <div class="step completed">
+      <div class="step completed" onclick="navigateToStep(3)" title="Chọn giá" style="cursor:pointer">
         <div class="dot">3</div>
         <div class="label" data-i18n="step3">Chọn giá</div>
       </div>
-      <div class="step completed">
+      <div class="step completed" onclick="navigateToStep(4)" title="Thông tin khách hàng" style="cursor:pointer">
         <div class="dot">4</div>
         <div class="label" data-i18n="step4">Thông tin khách hàng</div>
       </div>
-      <div class="step completed">
+      <div class="step completed" onclick="navigateToStep(5)" title="Dịch vụ thêm" style="cursor:pointer">
         <div class="dot">5</div>
         <div class="label" data-i18n="step5">Dịch vụ thêm</div>
       </div>
@@ -393,7 +393,9 @@
   <!-- JavaScript -->
   <script src="assets/scripts/config.js"></script>
   <script src="assets/scripts/auth-utils.js"></script>
+  <script src="assets/scripts/wallet_translations.js"></script>
   <script src="assets/scripts/metamask.js"></script>
+  <script src="assets/scripts/wallet-ui.js"></script>
   <script src="assets/scripts/payment_translations.js"></script>
   <script src="assets/scripts/blockchain-payment.js?v=5"></script>
   <script src="assets/scripts/payment.js?v=5"></script>
@@ -425,6 +427,9 @@
           await initWallet();
         } else {
           console.warn('[System] initWallet not found');
+        }
+        if (typeof initWalletUI === 'function') {
+          initWalletUI();
         }
       } catch (e) {
         console.error('[System] Wallet init failed:', e);
@@ -572,6 +577,9 @@
         if (typeof updateSelectedLanguage === 'function') {
           updateSelectedLanguage(lang);
         }
+        if (typeof initWalletUI === 'function') {
+          initWalletUI();
+        }
       });
 
     fetch('components/footer.html')
@@ -607,6 +615,36 @@
         }
       }, 500); // Delay 500ms để smooth
     });
+
+    // Progress bar step navigation
+    window.navigateToStep = function(step) {
+      const urlParams = new URLSearchParams(window.location.search);
+      let trip = {};
+      try { trip = JSON.parse(localStorage.getItem('skyplan_trip_selection') || '{}'); } catch(e) {}
+
+      const flightId = urlParams.get('outbound_flight_id') || trip.outbound_flight_id || '';
+      const fareClass = urlParams.get('class') || trip.fareClass || urlParams.get('fare') || 'economy';
+      const adults = urlParams.get('adults') || '1';
+      const tripParams = new URLSearchParams({
+        outbound_flight_id: flightId,
+        class: fareClass,
+        adults: adults,
+      }).toString();
+
+      switch(step) {
+        case 1:
+        case 2:
+          window.location.href = 'search.html';
+          break;
+        case 3:
+          window.location.href = 'fare.html?' + tripParams;
+          break;
+        case 4:
+        case 5:
+          window.location.href = 'passenger.html?' + tripParams;
+          break;
+      }
+    };
   </script>
 </body>
 </html>

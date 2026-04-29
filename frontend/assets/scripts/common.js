@@ -28,6 +28,50 @@ window.getPersistedLanguage = function() {
     return chosen;
 };
 
+// ====== PROGRESS BAR NAVIGATION ======
+window.navigateToStep = function(step) {
+    const urlParams = new URLSearchParams(window.location.search);
+    let targetUrl = '';
+    
+    switch (step) {
+        case 1:
+            targetUrl = `search.html?${urlParams.toString()}`;
+            break;
+        case 2:
+            targetUrl = `search.html?${urlParams.toString()}`;
+            break;
+        case 3:
+            targetUrl = `fare.html?${urlParams.toString()}`;
+            break;
+        case 4:
+            targetUrl = `passenger.html?${urlParams.toString()}`;
+            break;
+        case 5:
+            targetUrl = `extras.html?${urlParams.toString()}`;
+            break;
+        case 6:
+            targetUrl = `payment.html?${urlParams.toString()}`;
+            break;
+    }
+    
+    if (targetUrl) {
+        window.location.href = targetUrl;
+    }
+};
+
+// Automatically bind click events to completed progress steps
+document.addEventListener('DOMContentLoaded', function() {
+    const steps = document.querySelectorAll('.steps .step');
+    steps.forEach((step, index) => {
+        if (step.classList.contains('completed')) {
+            step.style.cursor = 'pointer';
+            step.addEventListener('click', function() {
+                window.navigateToStep(index + 1);
+            });
+        }
+    });
+});
+
 // ====== GLOBAL BLOCKCHAIN INTEGRATION POPUP ======
 window.showBlockchainIntegrationPopup = function(options) {
     const opts = options || {};

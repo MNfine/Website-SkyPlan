@@ -39,6 +39,16 @@ async function linkWalletToUser(account) {
       window.AuthState.setAuth(token, data.user, remember);
     } else {
       console.warn('Failed to link wallet:', data.message);
+      if (response.status === 409) {
+        if (typeof MetaMaskWallet !== 'undefined' && MetaMaskWallet.disconnect) {
+          MetaMaskWallet.disconnect();
+        }
+        if (typeof notify === 'function') {
+          notify(walletT('walletAlreadyLinked', 'This wallet is already linked to another account.'), 'error', 6000);
+        } else {
+          alert(walletT('walletAlreadyLinked', 'This wallet is already linked to another account.'));
+        }
+      }
     }
   } catch (err) {
     console.error('Error linking wallet to user:', err);
@@ -587,9 +597,11 @@ function initWalletUI() {
           const isConnected = connectBtn.getAttribute('data-connected') === 'true';
 
           if (isConnected) {
-            // If connected, toggle menu visibility
-            if (walletMenu) {
-              walletMenu.classList.toggle('show');
+            // If connected, toggle menu visibility dynamically
+            const currentWalletMenu = document.getElementById('wallet-menu');
+            if (currentWalletMenu) {
+              currentWalletMenu.classList.toggle('show');
+              currentWalletMenu.classList.toggle('active');
             }
           } else {
             if (typeof window.showBlockchainIntegrationPopup === 'function') {
@@ -706,8 +718,9 @@ function initWalletUI() {
           if (typeof MetaMaskWallet !== 'undefined' && MetaMaskWallet.disconnect) {
             MetaMaskWallet.disconnect();
           }
-          if (walletMenu) {
-            walletMenu.classList.remove('show');
+          const currentWalletMenu = document.getElementById('wallet-menu');
+          if (currentWalletMenu) {
+            currentWalletMenu.classList.remove('show', 'active');
           }
         });
         disconnectBtn.dataset.walletDisconnectBound = '1';
@@ -716,8 +729,9 @@ function initWalletUI() {
       // Close menu when clicking outside (with guard for document listener)
       if (!document.body.dataset.walletMenuOutsideClickBound) {
         document.addEventListener('click', (e) => {
-          if (walletMenu && !e.target.closest('.wallet-section')) {
-            walletMenu.classList.remove('show');
+          const currentWalletMenu = document.getElementById('wallet-menu');
+          if (currentWalletMenu && !e.target.closest('.wallet-section')) {
+            currentWalletMenu.classList.remove('show', 'active');
           }
         });
         document.body.dataset.walletMenuOutsideClickBound = '1';
@@ -750,14 +764,16 @@ function updateWalletUIState() {
 
   if (!connectBtn) return;
 
-  // Check if wallet is connected using MetaMask state
+  // Check if wallet is connected using MetaMask state and user is logged in
   const isConnected =
     typeof MetaMaskWallet !== 'undefined' &&
     MetaMaskWallet.isConnected === true;
+  const isLoggedIn = isUserLoggedIn();
+  const shouldShowConnected = isConnected && isLoggedIn;
 
-  connectBtn.setAttribute('data-connected', isConnected ? 'true' : 'false');
+  connectBtn.setAttribute('data-connected', shouldShowConnected ? 'true' : 'false');
 
-  if (isConnected) {
+  if (shouldShowConnected) {
     // Show as connected
     connectBtn.classList.add('connected');
     const spanEl = connectBtn.querySelector('span');
