@@ -109,8 +109,18 @@ def _booking_has_successful_payment(session, booking_id: int) -> bool:
 	).first() is not None
 
 
+def _booking_is_effectively_paid(session, booking: Booking) -> bool:
+	return (
+		_booking_has_successful_payment(session, booking.id)
+		or bool(getattr(booking, 'confirmed_at', None))
+		or bool(getattr(booking, 'onchain_recorded', False))
+		or bool(getattr(booking, 'nft_minted', False))
+		or bool(getattr(booking, 'sky_minted', False))
+	)
+
+
 def _auto_issue_missing_tickets_for_checkin(session, booking: Booking) -> list[str]:
-	has_successful_payment = _booking_has_successful_payment(session, booking.id)
+	has_successful_payment = _booking_is_effectively_paid(session, booking)
 	if booking.status not in [BookingStatus.CONFIRMED, BookingStatus.COMPLETED] and not has_successful_payment:
 		return []
 
@@ -866,7 +876,7 @@ def lookup_booking_for_checkin():
 				outbound = booking_data.get('outbound_flight') or {}
 
 		ticket_code = ticket_obj.ticket_code if ticket_obj else None
-		has_successful_payment = _booking_has_successful_payment(session, booking.id)
+		has_successful_payment = _booking_is_effectively_paid(session, booking)
 		is_checkin_status_allowed = booking.status in [BookingStatus.CONFIRMED, BookingStatus.COMPLETED] or has_successful_payment
 		can_checkin = bool(ticket_code) and is_checkin_status_allowed
 
@@ -1390,8 +1400,22 @@ def integrate_ticket_nft_no_gas():
 		if not booking:
 			return jsonify({'success': False, 'message': 'Booking not found'}), 404
 
+		has_successful_payment = session.query(Payment.id).filter(
+			Payment.booking_id == booking.id,
+			Payment.status == 'SUCCESS'
+		).first() is not None
 		if booking.status not in [BookingStatus.CONFIRMED, BookingStatus.COMPLETED]:
-			return jsonify({'success': False, 'message': 'Booking is not paid/confirmed yet'}), 400
+			if not has_successful_payment:
+				return jsonify({'success': False, 'message': 'Booking is not paid/confirmed yet'}), 400
+			booking.status = BookingStatus.CONFIRMED
+			if not booking.confirmed_at:
+				booking.confirmed_at = datetime.utcnow()
+
+		if not booking.wallet_address and getattr(booking, 'user', None) and getattr(booking.user, 'wallet_address', None):
+			try:
+				booking.wallet_address = Web3.to_checksum_address(booking.user.wallet_address)
+			except Exception:
+				pass
 
 		# Link wallet to booking if missing; otherwise enforce match.
 		wallet_norm = Web3.to_checksum_address(wallet_address)
@@ -1428,8 +1452,9 @@ def integrate_ticket_nft_no_gas():
 		session.commit()
 		return jsonify({
 			'success': False,
-			'message': 'Ticket integration is taking longer than expected. Please try again in a moment.',
-			'error_code': 'BLOCKCHAIN_INTEGRATION_FAILED'
+			'message': result.get('message') or 'Ticket integration is taking longer than expected. Please try again in a moment.',
+			'error_code': 'BLOCKCHAIN_INTEGRATION_FAILED',
+			'steps': result.get('steps')
 		}), 400
 
 

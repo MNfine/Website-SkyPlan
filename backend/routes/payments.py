@@ -725,7 +725,7 @@ def blockchain_confirm_payment():
 		try:
 			from threading import Thread
 			from backend.models.db import session_scope as _ss
-			from backend.models.booking import Booking as _B
+			from backend.models.booking import Booking as _B, BookingPassenger as _BP
 			from sqlalchemy.orm import joinedload as _jl
 
 			def _post_payment_thread(bid):
@@ -733,7 +733,7 @@ def blockchain_confirm_payment():
 					with _ss() as s:
 						b = s.query(_B).options(
 							_jl(_B.user),
-							_jl(_B.passengers).joinedload(BookingPassenger.passenger),
+							_jl(_B.passengers).joinedload(_BP.passenger),
 							_jl(_B.outbound_flight),
 						).get(bid)
 						if b:

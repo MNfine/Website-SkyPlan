@@ -453,7 +453,7 @@ async function integrateNftTicket(bookingCode, isAuto = false) {
     await loadUserTrips();
   } catch (err) {
     console.warn('Integrate ticket failed:', err && err.message ? err.message : err);
-    showNotification(toFriendlyIntegrateError(), 'error', 3200);
+    showNotification((err && err.message) ? err.message : toFriendlyIntegrateError(), 'error', 3200);
   } finally {
     hideBlockchainLoadingSafely();
     _integratingBookings.delete(code);
