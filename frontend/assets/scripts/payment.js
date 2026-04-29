@@ -1441,6 +1441,13 @@ function initializeVoucher() {
     const discount = Math.round(calculateDiscount(originalAmount, voucher));
     const finalAmount = originalAmount - discount;
 
+    // Update state so payment gets correct final amount
+    if (window.PaymentState) {
+      window.PaymentState.amount = finalAmount;
+      window.PaymentState.discount = discount;
+      window.PaymentState.discountPercent = voucher.type === 'percentage' ? voucher.value : 0;
+    }
+
     // Update UI
     document.getElementById('discountAmount').textContent = `-${formatCurrency(discount)}`;
     document.getElementById('finalAmount').textContent = formatCurrency(finalAmount);
@@ -1477,26 +1484,31 @@ function initializeVoucher() {
   }
 
   function addRemoveVoucherButton() {
+    // Check if the button already exists
+    if (document.querySelector('.remove-voucher-btn')) {
+      return;
+    }
+    
     const removeBtn = document.createElement('button');
     removeBtn.textContent = 'Hủy mã';
     removeBtn.className = 'remove-voucher-btn';
-    removeBtn.style.cssText = `
-      margin-left: 8px;
-      padding: 8px 12px;
-      background: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 12px;
-      cursor: pointer;
-    `;
 
     removeBtn.addEventListener('click', function () {
       // Reset voucher
       appliedVoucher = null;
       window.__skyplanAppliedVoucherCode = null;
       localStorage.removeItem('skyplanAppliedVoucherCode');
+      
+      // Reset state
+      if (window.PaymentState) {
+        window.PaymentState.amount = originalAmount;
+        window.PaymentState.discount = 0;
+        window.PaymentState.discountPercent = 0;
+      }
+
       voucherDiscount.classList.add('hidden');
+      document.getElementById('finalAmount').textContent = formatCurrency(originalAmount);
+      
       voucherInput.value = '';
       voucherInput.disabled = false;
       applyBtn.textContent = 'Áp dụng';
@@ -1553,68 +1565,7 @@ window.processBlockchainPayment = processBlockchainPayment;
 /**
  * Synchronize payment section UI with global wallet state
  */
-// Initialize voucher functionality
-function initializeVoucher() {
-  const applyBtn = document.getElementById('applyVoucherBtn');
-  const voucherInput = document.getElementById('voucherInput');
-  const voucherMessage = document.getElementById('voucherMessage');
 
-  if (!applyBtn || !voucherInput) return;
-
-  applyBtn.addEventListener('click', function () {
-    const code = voucherInput.value.trim().toUpperCase();
-    if (!code) return;
-
-    console.log("[Voucher] Applying code:", code);
-
-    const booking = getBookingCreatePayload();
-    if (!booking) {
-      notify('Missing booking data', 'error');
-      return;
-    }
-
-    let discountPercent = 0;
-    let message = "";
-    let isSuccess = false;
-
-    if (code === "XMAS10") {
-      discountPercent = 10;
-      message = "Applied successfully: 10% discount";
-      isSuccess = true;
-    } else {
-      message = "Invalid voucher code";
-      isSuccess = false;
-    }
-
-    if (isSuccess) {
-      const result = calculateTotal(booking, discountPercent);
-      window.PaymentState.amount = result.total;
-      window.PaymentState.discount = result.discount;
-      window.PaymentState.discountPercent = discountPercent;
-
-      console.log("Discount:", window.PaymentState.discount);
-      console.log("Total VND:", window.PaymentState.amount);
-
-      updateSummaryUI();
-
-      const voucherDiscountEl = document.getElementById('voucherDiscount');
-      if (voucherDiscountEl) voucherDiscountEl.classList.remove('hidden');
-
-      voucherMessage.textContent = message;
-      voucherMessage.className = 'voucher-message success';
-      voucherMessage.style.color = '#16a34a';
-
-      // Update blockchain UI if active
-      if (typeof updatePaymentUI === 'function') {
-        updatePaymentUI();
-      }
-    } else {
-      voucherMessage.textContent = message;
-      voucherMessage.className = 'voucher-message error';
-      voucherMessage.style.color = '#ef4444';
-    }
-  });
-}
 
 function updatePaymentUI() {
   const connectBtn = document.getElementById("connectWalletBtn");

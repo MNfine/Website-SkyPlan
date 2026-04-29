@@ -30,7 +30,55 @@ window.getPersistedLanguage = function() {
 
 // ====== PROGRESS BAR NAVIGATION ======
 window.navigateToStep = function(step) {
-    const urlParams = new URLSearchParams(window.location.search);
+    let queryStr = window.location.search;
+    
+    // If URL has no parameters, try to reconstruct them from localStorage
+    if (!queryStr || queryStr.length <= 1) {
+        try {
+            const trip = JSON.parse(localStorage.getItem('skyplan_trip_selection') || '{}');
+            const params = new URLSearchParams();
+            if (trip.trip_type) {
+                params.set('trip_type', trip.trip_type);
+                params.set('type', trip.trip_type); // for search.html
+            }
+            if (trip.departDateISO) {
+                params.set('depart_date', trip.departDateISO);
+                params.set('dep', trip.departDateISO); // for search.html
+            }
+            if (trip.returnDateISO) {
+                params.set('return_date', trip.returnDateISO);
+                params.set('ret', trip.returnDateISO); // for search.html
+            }
+            
+            if (trip.outbound_departure_airport) {
+                params.set('from', trip.outbound_departure_airport);
+            }
+            if (trip.outbound_arrival_airport) {
+                params.set('to', trip.outbound_arrival_airport);
+            }
+            if (trip.outbound_flight_id) params.set('outbound_flight_id', trip.outbound_flight_id);
+            if (trip.outbound_flight_number) params.set('outbound_flight_number', trip.outbound_flight_number);
+            if (trip.outbound_departure_airport) params.set('outbound_departure_airport', trip.outbound_departure_airport);
+            if (trip.outbound_arrival_airport) params.set('outbound_arrival_airport', trip.outbound_arrival_airport);
+            if (trip.outbound_departure_time) params.set('outbound_departure_time', trip.outbound_departure_time);
+            if (trip.outbound_arrival_time) params.set('outbound_arrival_time', trip.outbound_arrival_time);
+            if (trip.outbound_price !== undefined) params.set('outbound_price', trip.outbound_price);
+            
+            if (trip.inbound_flight_id) params.set('inbound_flight_id', trip.inbound_flight_id);
+            if (trip.inbound_flight_number) params.set('inbound_flight_number', trip.inbound_flight_number);
+            if (trip.inbound_departure_airport) params.set('inbound_departure_airport', trip.inbound_departure_airport);
+            if (trip.inbound_arrival_airport) params.set('inbound_arrival_airport', trip.inbound_arrival_airport);
+            if (trip.inbound_departure_time) params.set('inbound_departure_time', trip.inbound_departure_time);
+            if (trip.inbound_arrival_time) params.set('inbound_arrival_time', trip.inbound_arrival_time);
+            if (trip.inbound_price !== undefined) params.set('inbound_price', trip.inbound_price);
+            
+            queryStr = '?' + params.toString();
+        } catch (e) {
+            console.error('Error reconstructing URL parameters', e);
+        }
+    }
+    
+    const urlParams = new URLSearchParams(queryStr);
     let targetUrl = '';
     
     switch (step) {

@@ -1,146 +1,134 @@
+<div align="center">
+  <img src="frontend/assets/images/logo.svg" alt="SkyPlan Logo" width="150" />
+  <h1>✈️ SkyPlan</h1>
+  <p><strong>Nền tảng Đặt vé Máy bay Hiện đại tích hợp Blockchain & Trí tuệ Nhân tạo</strong></p>
+</div>
 
- # SkyPlan — Ứng dụng đặt vé máy bay
+---
 
- Đây là repository chứa toàn bộ ứng dụng SkyPlan: frontend tĩnh bằng HTML/CSS/JavaScript (vanilla) và backend bằng Python + Flask sử dụng SQLAlchemy. README này hướng dẫn cài đặt, chạy local, cấu hình và các lưu ý phát triển cho cả frontend và backend.
+SkyPlan là một hệ sinh thái đặt vé máy bay toàn diện với thiết kế giao diện cao cấp, đem lại trải nghiệm mượt mà cho người dùng. Không chỉ dừng lại ở các tính năng truyền thống như tìm kiếm, chọn ghế, thanh toán VNPay, SkyPlan còn tiên phong tích hợp công nghệ **Web3 (Blockchain)** và hệ thống quản lý **Vé NFT**, cùng phần thưởng **SKY Token**.
 
-## Nội dung chính
+## 📑 Mục lục
+- [✨ Tính năng Nổi bật](#-tính-năng-nổi-bật)
+- [📦 Cấu trúc Dự án](#-cấu-trúc-dự-án)
+- [🛠 Yêu cầu Hệ thống](#-yêu-cầu-hệ-thống)
+- [🚀 Hướng dẫn Cài đặt & Chạy Local](#-hướng-dẫn-cài-đặt--chạy-local)
+- [🔐 Biến Môi trường (Environment Variables)](#-biến-môi-trường-environment-variables)
+- [📚 Tài liệu Kiến trúc](#-tài-liệu-kiến-trúc)
+- [🤝 Hướng dẫn Đóng góp](#-hướng-dẫn-đóng-góp)
 
-- `frontend/` — Mã nguồn giao diện tĩnh (HTML, CSS, JS)
-- `backend/` — Ứng dụng Flask + API
-- `docs/architecture.md` — Tài liệu kiến trúc chi tiết (luồng booking, thiết kế DB, vận hành)
+---
 
-## Chạy nhanh (Windows PowerShell)
+## ✨ Tính năng Nổi bật
 
-Yêu cầu:
-- Python 3.10+
-- Git
-- (Tùy chọn) PostgreSQL 13+ cho môi trường gần production; SQLite có thể dùng cho chạy local nhanh.
+1. **Giao diện Tối ưu (UI/UX):** Vanilla HTML/CSS/JS được tối ưu hóa cho tốc độ phản hồi cực nhanh, hỗ trợ Responsive và đa ngôn ngữ (Tiếng Anh / Tiếng Việt).
+2. **Luồng Booking Hoàn chỉnh:** Từ tìm kiếm chuyến bay khứ hồi/một chiều, chọn ghế tương tác, mua hành lý/suất ăn đến tóm tắt thanh toán chi tiết.
+3. **Thanh toán Đa kênh:**
+   - Cổng thanh toán **VNPay**.
+   - Thanh toán qua ví điện tử.
+   - Thanh toán phi tập trung bằng **Ethereum (ETH)** thông qua MetaMask.
+4. **Tích hợp Web3 (Blockchain):**
+   - Đúc (Mint) vé máy bay dưới dạng **NFT**.
+   - Tích điểm thưởng **SKY Token** khi hoàn thành chuyến bay hoặc hủy vé theo chính sách.
+5. **Dữ liệu Thời gian thực:** Backend Flask kết hợp PostgreSQL cung cấp dữ liệu chính xác, xử lý concurrency an toàn.
 
-Các bước cơ bản:
+---
 
-```powershell
-# 1. Clone repo
+## 📦 Cấu trúc Dự án
+
+Repository được chia thành 3 phân hệ chính:
+
+- 📂 **`frontend/`**: Giao diện người dùng tĩnh. Chứa các file HTML, CSS (Tailwind/Vanilla) và thư mục `assets/scripts` chịu trách nhiệm xử lý logic phía client.
+- 📂 **`backend/`**: Hệ thống API Server viết bằng **Python Flask**. Xử lý nghiệp vụ, giao tiếp cơ sở dữ liệu (SQLAlchemy) và tích hợp các SDK (VNPay, Web3.py).
+- 📂 **`skyplan-blockchain/`**: Node và mã nguồn Smart Contract (Solidity) chạy trên môi trường **Hardhat**.
+
+---
+
+## 🛠 Yêu cầu Hệ thống
+
+Để chạy toàn bộ dự án ở môi trường Local, bạn cần:
+
+- **Python** `3.10` trở lên.
+- **Node.js** `v18.x` trở lên (Dành cho phân hệ Blockchain).
+- **PostgreSQL** `13+` (Mặc định). Có thể cấu hình dùng SQLite để test nhanh.
+- **Git**.
+
+---
+
+## 🚀 Hướng dẫn Cài đặt & Chạy Local
+
+### Bước 1: Clone Repository
+```bash
 git clone <repo-url> SkyPlan
-cd "SkyPlan"
+cd SkyPlan
+```
 
-# 2. Tạo virtualenv và cài dependency backend
+### Bước 2: Thiết lập Backend (Python)
+Mở terminal (Windows PowerShell/Command Prompt):
+```powershell
+# 1. Tạo và kích hoạt môi trường ảo (Virtual Environment)
 python -m venv .venv
 .\.venv\Scripts\Activate
+
+# 2. Cài đặt các gói phụ thuộc
 pip install --upgrade pip
 pip install -r backend/requirements.txt
 
-# 3. Tạo file cấu hình .env (copy từ template nếu có)
+# 3. Khởi tạo file biến môi trường
 copy .env.example .env
-# Sửa `.env` (ở root repo) để thiết lập DATABASE_URL, SECRET_KEY, VNPAY_*...
+```
+*(Mở file `.env` vừa tạo và cập nhật `DATABASE_URL`, `SECRET_KEY`, thông tin `VNPAY`... cho phù hợp với môi trường của bạn).*
 
-# 4. (Tuỳ chọn) Import dữ liệu demo và tạo ghế
+### Bước 3: Khởi tạo Dữ liệu (Database Seed)
+Chạy các script sau để tự động tạo bảng, tạo dữ liệu chuyến bay mẫu và sơ đồ ghế ngồi:
+```powershell
 python backend/db/import_flights.py
 python backend/db/create_all_seats.py
-
-# 5. Chạy backend (phục vụ cả frontend trong dev)
-python backend/app.py
-
-# Mở http://localhost:5000
 ```
 
-Ghi chú:
-- Backend hiện đọc `.env` ở **root repo**. Tối thiểu bạn cần đặt `DATABASE_URL` trong `.env`.
-- Lưu ý: `backend/models/db.py` hiện đang validate `DATABASE_URL` theo PostgreSQL. Nếu muốn dùng SQLite, cần nới logic này trong code.
-- Frontend tĩnh cũng có thể mở trực tiếp file HTML, nhưng để gọi API bạn nên chạy backend server.
-
-## Biến môi trường quan trọng
-
-- `SECRET_KEY` — Khóa bí mật của Flask
-- `DATABASE_URL` — DSN của SQLAlchemy (vd: `postgresql+psycopg2://user:pass@localhost:5432/skyplan`)
-- `VNPAY_TMN_CODE`, `VNPAY_HASH_SECRET`, `VNPAY_RETURN_URL` — Cấu hình VNPay (demo)
-- Cấu hình mail nếu muốn gửi email xác nhận
-
-Không commit file `.env` chứa secrets lên Git.
-
-## Tổng quan Backend
-
-Thư mục `backend/` chứa ứng dụng Flask và các model SQLAlchemy. Thành phần chính:
-
-- `backend/app.py` — Khởi tạo app, đăng ký blueprint
-- `backend/config.py` — Load cấu hình
-- `backend/models/` — Models: User, Flight, Booking, Passenger, Seat, Payment, Ticket...
-- `backend/routes/` — Blueprints: `auth.py`, `flights.py`, `bookings.py`, `payments.py`, `seats.py`, `tickets.py`
-- `backend/db/` — scripts để tạo bảng/import dữ liệu demo
-
-Lưu ý hành vi chính:
-- `POST /api/bookings/create` chấp nhận `passengers` (list id) hoặc `guest_passenger` (object). Nếu user đã đăng nhập nhưng gửi `guest_passenger`, backend sẽ tạo Passenger gán cho user rồi tiếp tục tạo booking (tránh lỗi khi frontend chưa lưu `storedPassengerId`).
-- Server sẽ recompute `total_amount` trên server khi tạo booking để tránh client tamper.
-- VNPay: các endpoint tạo giao dịch, return, IPN đã có để demo.
-
-## Tổng quan Frontend
-
-Frontend là tĩnh, nằm trong `frontend/`. Một số file/điểm quan trọng:
-
-- Trang: `index.html`, `search.html`, `seat.html`, `confirmation.html`, `my_trips.html`, ...
-- Scripts: `frontend/assets/scripts/`
-	- `overview.js`, `payment_order.js`, `payment.js` — Xây payload booking và gọi API
-	- `passenger.js` — Tạo/cập nhật passenger; lưu `storedPassengerId` vào `localStorage` khi có id
-	- `confirmation.js` — Kiểm tra txnRef với `GET /api/bookings/status/:code`, gọi claim nếu cần
-	- `my_trips.js` — Hiển thị bookings của user (GET /api/bookings/)
-
-Một vài khóa `localStorage` thường dùng:
-- `storedPassengerId` / `activePassengerId` — id passenger đã lưu
-- `currentBookingCode` / `lastBookingCode` — mã booking để hiển thị fallback
-- `selectedSeats` — danh sách ghế đã chọn
-
-Wallet login state:
-- Sau khi xác thực ví thành công, frontend phải lưu cả `authToken` và `currentUser` (qua `AuthState.setAuth`) để header nhận diện đúng trạng thái đăng nhập.
-- Nếu chỉ có `authToken` mà thiếu `currentUser`, header sẽ tiếp tục hiện nút `Sign In`/`Sign Up`.
-
-Nếu confirmation hiển thị code nhưng `my_trips` không tăng số booking, kiểm tra Network → `POST /api/bookings/create` có trả 201 không (nếu 400 thì booking không được commit).
-
-## Chạy test (gợi ý)
-
-Hiện chưa có bộ test đầy đủ. Nên bổ sung:
-- Unit test cho models, utils (pytest)
-- Integration smoke test: tạo booking → mark-paid → assert booking.status == CONFIRMED
-
-Ví dụ chạy pytest (nếu có):
-
+### Bước 4: Chạy Backend Server
+Backend Flask sẽ phục vụ cả các API và các trang Frontend tĩnh.
 ```powershell
-pytest backend/tests/
+python backend/app.py
 ```
+> 🌐 Mở trình duyệt và truy cập: **http://localhost:5000**
 
-## Debug & Troubleshooting
+---
 
-- Xem logs backend khi chạy `python backend/app.py` để biết lỗi
-- Dùng DevTools Network để kiểm tra payload gửi lên `/api/bookings/create` và `/api/payments/*`
-- Debug endpoint: `GET /api/bookings/debug/inspect` (gửi Bearer token) để xem số lượng booking của user
-- Trang confirmation:
-	- `bookingCode` chỉ được coi là hợp lệ khi match mẫu `SP...`; tránh lưu placeholder (`Đang cập nhật...`) vào localStorage.
-	- `amount` ưu tiên lấy từ `GET /api/bookings/status/<booking_code>` (authoritative từ backend), localStorage chỉ là fallback.
-- Trang payment (Order Summary):
-	- Ưu tiên `trip_type/tripType` để quyết định one-way vs round-trip; one-way phải ẩn block chuyến về ngay cả khi localStorage còn inbound data cũ.
-	- Nhãn vé (`Ticket`) phải đồng bộ theo logic trên: `(one way)` khi one-way, `(round trip)` khi round-trip.
-	- Luồng fare/overview lưu thêm `skyplan_trip_type` (`one-way` hoặc `round-trip`) và dọn inbound stale data khi là one-way để các trang sau không suy luận sai.
-	- Khi bấm xác nhận thanh toán, UI chuyển sang trạng thái processing (loader + lock button) để tránh người dùng bấm nhiều lần.
-	- Thêm guard chống tạo booking lặp do click/retry nhanh trên payment.
+## 🔐 Biến Môi trường (Environment Variables)
 
-- Backend logging / blockchain:
-	- Các log `print` bị lỗi mã hóa ở `bookings.create` đã thay bằng logger có prefix rõ ràng.
-	- Event parsing blockchain dùng chế độ discard mismatch ABI để giảm warning `MismatchedABI` không cần thiết.
-	- Blockchain flow lấy nonce mới trước mỗi tx để giảm lỗi `nonce too low` khi có giao dịch cạnh tranh.
+Hệ thống cấu hình dựa trên file `.env` đặt tại thư mục gốc của repository. Một số biến quan trọng bao gồm:
 
-## Tài liệu kiến trúc
+- `SECRET_KEY`: Khóa bảo mật của Flask (Bắt buộc).
+- `DATABASE_URL`: Chuỗi kết nối Database. Ví dụ: `postgresql+psycopg2://postgres:password@localhost:5432/skyplan`.
+- `VNPAY_TMN_CODE`, `VNPAY_HASH_SECRET`, `VNPAY_RETURN_URL`: Thông tin cấu hình thanh toán VNPay Sandbox/Production.
+- `WEB3_PROVIDER_URI`, `CONTRACT_ADDRESS`: Cấu hình kết nối node blockchain và địa chỉ Smart Contract.
 
-Tài liệu chi tiết về kiến trúc và các luồng nghiệp vụ nằm ở `docs/architecture.md` (tiếng Việt).
+⚠️ **Lưu ý:** Tuyệt đối KHÔNG commit file `.env` chứa dữ liệu thật lên Git.
 
-## Triển khai
+---
 
-- Production: dùng PostgreSQL, WSGI server (Gunicorn/uWSGI), reverse proxy (nginx)
-- Quản lý secrets bằng biến môi trường hoặc secret manager
-- Nên dùng Alembic để migrate schema khi thay đổi model
-- Hướng dẫn triển khai Render từ đầu: `docs/render-setup.md`
+## 📚 Tài liệu Kiến trúc
 
-## Contributing
+Để hiểu rõ hơn về cách các module giao tiếp với nhau, luồng xử lý thanh toán, và cấu trúc database, vui lòng tham khảo các tài liệu nội bộ:
+- 📖 [Kiến trúc Tổng thể & Dòng chảy Dữ liệu (docs/architecture.md)](docs/architecture.md)
+- 📖 [Hướng dẫn Setup Deployment lên Render (docs/render-setup.md)](docs/render-setup.md)
+- 📖 [Readme Phân hệ Blockchain (skyplan-blockchain/README.md)](skyplan-blockchain/README.md)
 
-1. Tạo branch: `git checkout -b feature/xxx`
-2. Code, test local
-3. Tạo PR vào `main`
+---
 
-Vui lòng follow coding style và thêm test khi thay đổi logic quan trọng.
+## 🤝 Hướng dẫn Đóng góp (Contributing)
+
+Chúng tôi hoan nghênh mọi đóng góp để hoàn thiện SkyPlan! Vui lòng tuân thủ quy trình sau:
+1. Cập nhật nhánh `main` mới nhất.
+2. Tạo nhánh tính năng mới: `git checkout -b feature/ten-tinh-nang`.
+3. Commit code với thông điệp rõ ràng, dễ hiểu.
+4. Push nhánh của bạn lên repository: `git push origin feature/ten-tinh-nang`.
+5. Tạo Pull Request (PR) để được review.
+
+*Vui lòng đảm bảo code của bạn tuân thủ các convention của dự án và không làm vỡ các Unit Test hiện tại.*
+
+---
+<div align="center">
+  <p>Developed with ❤️ by the SkyPlan Team.</p>
+</div>

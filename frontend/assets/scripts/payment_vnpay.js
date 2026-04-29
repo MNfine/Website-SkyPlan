@@ -50,23 +50,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get final amount from DOM - check if voucher was applied
     let amount = 1598000; // Default fallback
     
-    // Try to get finalAmount first (after voucher discount)
-    const finalAmountEl = document.getElementById('finalAmount');
-    const totalAmountEl = document.getElementById('totalAmount');
-    
-    if (finalAmountEl && finalAmountEl.textContent) {
-      // Parse amount from finalAmount (after voucher)
-      const parsedFinal = parseFloat(finalAmountEl.textContent.replace(/[^\d]/g, ''));
-      if (!isNaN(parsedFinal) && parsedFinal > 0) {
-        amount = parsedFinal;
-        console.log('VNPay using finalAmount (after voucher):', amount);
-      }
-    } else if (totalAmountEl && totalAmountEl.textContent) {
-      // Fallback to totalAmount (before voucher)
-      const parsedTotal = parseFloat(totalAmountEl.textContent.replace(/[^\d]/g, ''));
-      if (!isNaN(parsedTotal) && parsedTotal > 0) {
-        amount = parsedTotal;
-        console.log('VNPay using totalAmount (no voucher):', amount);
+    // Check global PaymentState first (synced with payment_order.js)
+    if (window.PaymentState && window.PaymentState.amount > 0) {
+      amount = Math.round(window.PaymentState.amount);
+      console.log('VNPay using PaymentState.amount:', amount);
+    } else {
+      // Fallback to DOM elements
+      const finalAmountEl = document.getElementById('finalAmount');
+      const totalAmountEl = document.getElementById('totalAmount');
+      
+      if (finalAmountEl && finalAmountEl.textContent) {
+        // Parse amount from finalAmount (after voucher). Replace removes everything except digits
+        const parsedFinal = parseInt(finalAmountEl.textContent.replace(/[^\d]/g, ''), 10);
+        if (!isNaN(parsedFinal) && parsedFinal > 0) {
+          amount = parsedFinal;
+          console.log('VNPay using finalAmount (after voucher):', amount);
+        }
+      } else if (totalAmountEl && totalAmountEl.textContent) {
+        // Fallback to totalAmount (before voucher)
+        const parsedTotal = parseInt(totalAmountEl.textContent.replace(/[^\d]/g, ''), 10);
+        if (!isNaN(parsedTotal) && parsedTotal > 0) {
+          amount = parsedTotal;
+          console.log('VNPay using totalAmount (no voucher):', amount);
+        }
       }
     }
     

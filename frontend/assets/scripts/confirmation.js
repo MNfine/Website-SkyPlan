@@ -142,7 +142,7 @@
       const paymentFromUrl = {
         booking_code: vnpTxnRef,
         transaction_id: vnpTransactionId || 'N/A',
-        amount: vnpAmount ? (parseInt(vnpAmount) / 100) : undefined
+        amount: vnpAmount ? Math.round(parseInt(vnpAmount) / 100) : undefined
       };
 
       if (vnpResponseCode === '00') {
@@ -150,7 +150,7 @@
         // persist for fallback
         localStorage.setItem('lastBookingCode', paymentFromUrl.booking_code);
         if (vnpTransactionId) localStorage.setItem('lastTxnRef', vnpTransactionId);
-        if (vnpAmount) localStorage.setItem('lastAmount', (parseInt(vnpAmount) / 100).toString());
+        if (vnpAmount) localStorage.setItem('lastAmount', Math.round(parseInt(vnpAmount) / 100).toString());
       } else {
         showPaymentFailure(vnpTransactionId || 'N/A', vnpAmount);
       }
@@ -200,7 +200,7 @@
           // Store for future reference
           localStorage.setItem('lastBookingCode', result.payment.booking_code);
           localStorage.setItem('lastTxnRef', transactionId);
-          localStorage.setItem('lastAmount', (parseInt(amount) / 100).toString()); // VNPay amount is in cents
+          localStorage.setItem('lastAmount', Math.round(parseInt(amount) / 100).toString()); // VNPay amount is in cents
           
           // Update seat status after successful payment
           updateSeatStatusAfterPayment();
@@ -233,10 +233,10 @@
     }
     
     if (amountEl) {
-      const parsedAmount = Number(payment.amount || 0);
+      const parsedAmount = Math.round(Number(payment.amount || 0));
       const displayAmount = Number.isFinite(parsedAmount) && parsedAmount > 0
         ? parsedAmount
-        : (amount ? (parseInt(amount, 10) / 100) : 0);
+        : (amount ? Math.round(parseInt(amount, 10) / 100) : 0);
       amountEl.textContent = Number(displayAmount).toLocaleString('vi-VN') + ' VND';
     }
 
@@ -307,7 +307,7 @@
     }
     
     if (amountEl) {
-      const displayAmount = amount ? (parseInt(amount) / 100) : 0;
+      const displayAmount = amount ? Math.round(parseInt(amount) / 100) : 0;
       amountEl.textContent = Number(displayAmount).toLocaleString('vi-VN') + ' VND';
     }
 
@@ -363,9 +363,9 @@
 
     function parseAmountValue(value) {
       if (value === null || value === undefined) return 0;
-      if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
-      const cleaned = String(value).replace(/[^\d.]/g, '');
-      const num = parseFloat(cleaned);
+      if (typeof value === 'number') return Number.isFinite(value) ? Math.round(value) : 0;
+      const cleaned = String(value).replace(/[^\d]/g, '');
+      const num = parseInt(cleaned, 10);
       return Number.isFinite(num) ? num : 0;
     }
     
@@ -410,7 +410,7 @@
         const currentBooking = localStorage.getItem('currentBooking');
         if (currentBooking) {
           const booking = JSON.parse(currentBooking);
-          parsedAmount = Number(booking.totalCost || booking.total_amount) || 0;
+          parsedAmount = Math.round(Number(booking.totalCost || booking.total_amount) || 0);
         }
       } catch (e) {
         console.warn('Error parsing booking data:', e);
