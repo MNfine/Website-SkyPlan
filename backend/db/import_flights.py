@@ -63,6 +63,9 @@ def import_flights():
         from sqlalchemy import text
         existing_count = session.execute(text('SELECT COUNT(*) FROM flights')).scalar()
         print(f"📊 Current flights in database: {existing_count}")
+        if existing_count and existing_count > 0:
+            print("⏭️  Flights already exist. Skipping import to avoid duplicate seed data.")
+            return
     
     skipped_duplicates = 0
     skipped_errors = 0
