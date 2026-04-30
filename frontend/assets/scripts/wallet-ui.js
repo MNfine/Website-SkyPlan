@@ -7,7 +7,6 @@
 // Guard against multiple initializations
 let walletUIInitialized = false;
 let walletLinkInFlight = false;
-let lastWalletLinkKey = null;
 
 // Listen for global wallet state changes
 window.addEventListener('walletStateChanged', function() {
@@ -162,7 +161,8 @@ async function ensureWalletLinkedToCurrentUser() {
   if (!token || !userId) return;
 
   const currentLinkKey = `${userId}:${walletAddress.toLowerCase()}`;
-  if (walletLinkInFlight || lastWalletLinkKey === currentLinkKey) return;
+  const cachedLinkKey = sessionStorage.getItem('skyplan_lastWalletLinkKey');
+  if (walletLinkInFlight || cachedLinkKey === currentLinkKey) return;
 
   walletLinkInFlight = true;
   try {
@@ -177,7 +177,7 @@ async function ensureWalletLinkedToCurrentUser() {
 
     const data = await response.json().catch(() => null);
     if (response.ok && data && data.success) {
-      lastWalletLinkKey = currentLinkKey;
+      sessionStorage.setItem('skyplan_lastWalletLinkKey', currentLinkKey);
       if (data.user) {
         const userJson = JSON.stringify(data.user);
         if (localStorage.getItem('authToken')) {

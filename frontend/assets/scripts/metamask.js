@@ -314,14 +314,24 @@ const MetaMaskWallet = (function () {
     localStorage.setItem('skyplan_wallet_account', state.account);
   }
 
-  /**
-   * Restore connection from localStorage
-   */
   function restoreConnection() {
     try {
       if (!state.provider) return;
 
-      // Always query currently authorized accounts from provider.
+      // 1. Phục hồi ngay lập tức từ localStorage để UI không bị giật/block
+      const savedAccount = localStorage.getItem('skyplan_wallet_account');
+      if (savedAccount) {
+        state.account = savedAccount;
+        state.isConnected = true;
+        window.WalletState.account = savedAccount;
+        window.WalletState.isConnected = true;
+        
+        // Render UI lập tức
+        updateWalletUI();
+        window.dispatchEvent(new CustomEvent('walletStateChanged', { detail: window.WalletState }));
+      }
+
+      // 2. Chạy ngầm (background) RPC request để verify lại trạng thái
       // This prevents stale disconnected state when the wallet was connected
       // outside this specific page flow.
       state.provider.request({
