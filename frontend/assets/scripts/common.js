@@ -1,3 +1,30 @@
+// ====== HTML COMPONENT CACHE INTERCEPTOR ======
+// Giảm dung lượng tải ban đầu bằng cách cache header/footer/loader vào sessionStorage
+(function() {
+    if (window._fetchIntercepted) return;
+    window._fetchIntercepted = true;
+    const originalFetch = window.fetch;
+    window.fetch = async function() {
+        const url = arguments[0];
+        if (typeof url === 'string' && (url.includes('components/header.html') || url.includes('components/footer.html') || url.includes('components/loader.html'))) {
+            // Chuẩn hóa key
+            const cacheKey = 'skyplan_cache_' + url.split('/').pop();
+            const cached = sessionStorage.getItem(cacheKey);
+            if (cached) {
+                return new Response(cached, { status: 200, statusText: 'OK', headers: new Headers({ 'Content-Type': 'text/html' }) });
+            }
+            const response = await originalFetch.apply(this, arguments);
+            if (response.ok) {
+                const clone = response.clone();
+                clone.text().then(text => sessionStorage.setItem(cacheKey, text)).catch(e => console.error(e));
+            }
+            return response;
+        }
+        return originalFetch.apply(this, arguments);
+    };
+})();
+// ===============================================
+
 // Common JS for SkyPlan: shared UI logic (menu, language selector, authentication, etc.)
 
 // ====== GLOBAL LANGUAGE HELPER - used by ALL scripts ======

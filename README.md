@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="frontend/assets/images/logo.svg" alt="SkyPlan Logo" width="150" />
   <h1>✈️ SkyPlan</h1>
   <p><strong>Nền tảng Đặt vé Máy bay Hiện đại tích hợp Blockchain & Trí tuệ Nhân tạo</strong></p>
 </div>
