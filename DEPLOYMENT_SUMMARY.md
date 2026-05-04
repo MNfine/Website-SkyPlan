@@ -31,7 +31,7 @@
 ---
 
 ## Deployer Account
-- **Wallet Address:** `0x78c9C1bE87afBdA2D7c1185568EE89DC26A8e72b`
+- **Wallet Address:** `...`
 - **Role:** Contract Owner / Admin
 
 ---
@@ -42,8 +42,7 @@
 Updated with all deployed contract addresses:
 ```env
 # Blockchain Configuration (Sepolia Testnet)
-SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/39ea33a435004ec799a8b5616000c3d4
-PRIVATE_KEY=f16322781ae9ccfe65df4a084503213523c84c2afd6ce3af2ca2e4031c07550c
+
 
 # Smart Contract Addresses
 BOOKING_REGISTRY_ADDRESS=0xEF41e83F277849557CAb65724ea3776Af8e70Bb4
