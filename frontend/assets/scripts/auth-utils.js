@@ -360,7 +360,24 @@ window.initAuth = async function() {
     // 3. Verify token and refresh user profile with backend
     const token = AuthState.getToken();
     if (token) {
-      console.debug('[Auth] Token found, refreshing profile...');
+      console.debug('[Auth] Token found, checking profile...');
+      const profileCacheKey = 'skyplan_profile_cache';
+      const cachedProfile = sessionStorage.getItem(profileCacheKey);
+      if (cachedProfile) {
+        try {
+          const result = JSON.parse(cachedProfile);
+          AuthState.setAuth(token, result.data, true);
+          if (typeof updateHeaderUserInfo === 'function') {
+            updateHeaderUserInfo();
+          }
+          console.log('[Auth] ✓ Profile loaded from cache');
+          return true;
+        } catch (e) {
+          sessionStorage.removeItem(profileCacheKey);
+        }
+      }
+
+      console.debug('[Auth] Fetching profile from server...');
       try {
         const response = await fetch('/api/auth/profile', {
           headers: {
@@ -371,6 +388,7 @@ window.initAuth = async function() {
         if (response.ok) {
           const result = await response.json();
           if (result.success && result.data) {
+            sessionStorage.setItem(profileCacheKey, JSON.stringify(result));
             // Update local user data
             AuthState.setAuth(token, result.data, true);
             if (typeof updateHeaderUserInfo === 'function') {

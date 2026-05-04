@@ -11,8 +11,11 @@
   <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   
-  <!-- Font Awesome CDN for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- Font Awesome CDN for icons (Non-blocking) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" media="print" onload="this.media='all'">
+  
+  <!-- LCP Preload -->
+  <link rel="preload" as="image" href="assets/images/hero.jpg">
   
   <!-- CSS -->
   <link rel="stylesheet" href="assets/styles/reset.css">
@@ -29,7 +32,7 @@
 
   <!-- Hero Section -->
   <section class="hero">
-    <img src="assets/images/hero.jpg" alt="Airplane on runway" class="hero-image" fetchpriority="high" decoding="async">
+    <img src="assets/images/hero.jpg" alt="Airplane on runway" class="hero-image" width="1920" height="1080" fetchpriority="high" decoding="async">
     <div class="hero-content">
       <div class="container">
         <h1 class="hero-title" data-i18n="heroTitle">Ưu đãi tốt nhất đang chờ đón bạn</h1>
@@ -63,8 +66,8 @@
             <input type="date" id="return" name="return" class="search-value-date">
           </div>
         </div>
-        <button type="submit" class="search-btn">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <button type="submit" class="search-btn" aria-label="Tìm kiếm chuyến bay">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
@@ -122,7 +125,7 @@
       <h2 class="section-title" data-i18n="popularRoutesTitle">Điểm đến phổ biến</h2>
       <div class="routes-grid" id="routes-container">
         <div class="route-card" data-lang="en" style="display: none;">
-          <img src="assets/images/Ho_Chi_Minh.avif" alt="Ho Chi Minh" class="route-img" loading="lazy" decoding="async">
+          <img src="assets/images/Ho_Chi_Minh.avif" alt="Ho Chi Minh" class="route-img" width="400" height="300" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Ho Chi Minh</h3>
             <p class="route-price">From 799,000 VND</p>
@@ -130,7 +133,7 @@
         </div>
         
         <div class="route-card" data-lang="en" style="display: none;">
-          <img src="assets/images/Da_Nang.avif" alt="Da Nang" class="route-img" loading="lazy" decoding="async">
+          <img src="assets/images/Da_Nang.avif" alt="Da Nang" class="route-img" width="400" height="300" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Da Nang</h3>
             <p class="route-price">From 899,000 VND</p>
@@ -138,7 +141,7 @@
         </div>
         
         <div class="route-card" data-lang="en" style="display: none;">
-          <img src="assets/images/Phu_Quoc.jpg" alt="Phu Quoc" class="route-img" loading="lazy" decoding="async">
+          <img src="assets/images/Phu_Quoc.jpg" alt="Phu Quoc" class="route-img" width="400" height="300" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Phu Quoc</h3>
             <p class="route-price">From 1,399,000 VND</p>
@@ -146,7 +149,7 @@
         </div>
         
         <div class="route-card" data-lang="en" style="display: none;">
-          <img src="assets/images/Da_Lat.jpg" alt="Da Lat" class="route-img" loading="lazy" decoding="async">
+          <img src="assets/images/Da_Lat.jpg" alt="Da Lat" class="route-img" width="400" height="300" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Da Lat</h3>
             <p class="route-price">From 999,000 VND</p>
@@ -155,7 +158,7 @@
         
         <!-- Vietnamese routes (default display for domestic flights) -->
         <div class="route-card" data-lang="vi">
-          <img src="assets/images/Ho_Chi_Minh.avif" alt="Hồ Chí Minh" class="route-img" loading="lazy" decoding="async">
+          <img src="assets/images/Ho_Chi_Minh.avif" alt="Hồ Chí Minh" class="route-img" width="400" height="300" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Hồ Chí Minh</h3>
             <p class="route-price">Từ 799.000 VND</p>
@@ -163,7 +166,7 @@
         </div>
         
         <div class="route-card" data-lang="vi">
-          <img src="assets/images/Da_Nang.avif" alt="Đà Nẵng" class="route-img" loading="lazy" decoding="async">
+          <img src="assets/images/Da_Nang.avif" alt="Đà Nẵng" class="route-img" width="400" height="300" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Đà Nẵng</h3>
             <p class="route-price">Từ 899.000 VND</p>
@@ -171,7 +174,7 @@
         </div>
         
         <div class="route-card" data-lang="vi">
-          <img src="assets/images/Phu_Quoc.jpg" alt="Phú Quốc" class="route-img" loading="lazy" decoding="async">
+          <img src="assets/images/Phu_Quoc.jpg" alt="Phú Quốc" class="route-img" width="400" height="300" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Phú Quốc</h3>
             <p class="route-price">Từ 1.399.000 VND</p>
@@ -179,7 +182,7 @@
         </div>
         
         <div class="route-card" data-lang="vi">
-          <img src="assets/images/Da_Lat.jpg" alt="Đà Lạt" class="route-img" loading="lazy" decoding="async">
+          <img src="assets/images/Da_Lat.jpg" alt="Đà Lạt" class="route-img" width="400" height="300" loading="lazy" decoding="async">
           <div class="route-info">
             <h3 class="route-name">Đà Lạt</h3>
             <p class="route-price">Từ 999.000 VND</p>

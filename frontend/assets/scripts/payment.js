@@ -1400,6 +1400,18 @@ function initializeVoucher() {
       const token = (typeof getAuthTokenForPayment === 'function') ? getAuthTokenForPayment() : '';
       if (!token) return;
 
+      const cacheKey = 'skyplan_vouchers_cache';
+      const cachedVouchers = sessionStorage.getItem(cacheKey);
+      if (cachedVouchers) {
+        try {
+          const result = JSON.parse(cachedVouchers);
+          processServerVouchers(result);
+          return;
+        } catch(e) {
+          sessionStorage.removeItem(cacheKey);
+        }
+      }
+
       const response = await fetch('/api/bookings/redeem-vouchers', {
         method: 'GET',
         headers: {
@@ -1412,22 +1424,30 @@ function initializeVoucher() {
 
       const result = await response.json();
       if (!result.success || !Array.isArray(result.vouchers)) return;
+      
+      sessionStorage.setItem('skyplan_vouchers_cache', JSON.stringify(result));
+      processServerVouchers(result);
+    } catch (e) {
+      console.warn('Could not sync server vouchers', e);
+    }
+  }
 
-      const serverMap = {};
-      const normalizedList = [];
-      result.vouchers.forEach((item) => {
-        const code = String(item?.code || '').trim().toUpperCase();
-        const value = Number(item?.value || 0);
-        const minAmount = Number(item?.min_amount || item?.minAmount || 0);
-        if (!code || !Number.isFinite(value) || value <= 0) return;
+  function processServerVouchers(result) {
+    const serverMap = {};
+    const normalizedList = [];
+    result.vouchers.forEach((item) => {
+      const code = String(item?.code || '').trim().toUpperCase();
+      const value = Number(item?.value || 0);
+      const minAmount = Number(item?.min_amount || item?.minAmount || 0);
+      if (!code || !Number.isFinite(value) || value <= 0) return;
 
-        const normalized = {
-          type: String(item?.type || 'fixed').toLowerCase() === 'percentage' ? 'percentage' : 'fixed',
-          value,
-          minAmount: Number.isFinite(minAmount) ? minAmount : 0,
-          description: item?.description || `Voucher SKY ${code}`,
-          source: 'sky_redeem_server',
-          expiresAt: item?.expires_at || item?.expiresAt || null,
+      const normalized = {
+        type: String(item?.type || 'fixed').toLowerCase() === 'percentage' ? 'percentage' : 'fixed',
+        value,
+        minAmount: Number.isFinite(minAmount) ? minAmount : 0,
+        description: item?.description || `Voucher SKY ${code}`,
+        source: 'sky_redeem_server',
+        expiresAt: item?.expires_at || item?.expiresAt || null,
         };
 
         serverMap[code] = normalized;
@@ -1446,9 +1466,6 @@ function initializeVoucher() {
       };
       updateAvailableVoucherHint(vouchers);
       renderDynamicVoucherList(vouchers);
-    } catch (_) {
-      // fallback silently to localStorage vouchers only
-    }
   }
 
   syncServerVouchers();
