@@ -124,6 +124,20 @@ def bootstrap_database_scripts() -> None:
 
     print('[DB Bootstrap] Scripts to run:', ', '.join(ordered_scripts))
 
+    def get_flight_count() -> int:
+        from sqlalchemy import text
+
+        with engine.begin() as conn:
+            result = conn.execute(text('SELECT COUNT(*) FROM flights'))
+            return int(result.scalar() or 0)
+
+    flights_existing = get_flight_count()
+    seed_flights = flights_existing == 0
+    if seed_flights:
+        print('[DB Bootstrap] flights table is empty -> seed flight data will run.')
+    else:
+        print(f'[DB Bootstrap] flights table already has {flights_existing} rows -> skip flight seeding.')
+
     def run_module(module_name: str) -> None:
         print(f'[DB Bootstrap] Running {module_name}...')
         result = subprocess.run(
@@ -142,6 +156,9 @@ def bootstrap_database_scripts() -> None:
 
     try:
         for script in ordered_scripts:
+            if script in {'generate_fake_flights', 'import_flights'} and not seed_flights:
+                print(f'[DB Bootstrap] Skipping {script} because flight data already exists.')
+                continue
             run_module(f'backend.db.{script}')
 
         print('[DB Bootstrap] Completed successfully.')
