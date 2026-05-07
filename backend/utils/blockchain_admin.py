@@ -249,6 +249,34 @@ ACCESSCONTROL_READ_ABI = [
     }
 ]
 
+PAYMENT_REGISTRY_READ_ABI = [
+    {
+        "inputs": [
+            {"internalType": "string", "name": "bookingCode", "type": "string"},
+            {"internalType": "address", "name": "payer", "type": "address"},
+            {"internalType": "uint256", "name": "amount", "type": "uint256"},
+        ],
+        "name": "isPaymentConfirmed",
+        "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+        "stateMutability": "view",
+        "type": "function",
+    }
+]
+
+PAYMENT_REGISTRY_WRITE_ABI = [
+    {
+        "inputs": [
+            {"internalType": "string", "name": "bookingCode", "type": "string"},
+            {"internalType": "address", "name": "payer", "type": "address"},
+            {"internalType": "uint256", "name": "amount", "type": "uint256"},
+        ],
+        "name": "confirmPayment",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+    }
+]
+
 
 def _check_ownable_owner(w3: Web3, contract_address: str, expected_owner: str) -> tuple[bool, str]:
     try:
@@ -299,6 +327,7 @@ def _get_env() -> Dict[str, str]:
         "rpc_url": pick("SEPOLIA_RPC_URL", "BLOCKCHAIN_SEPOLIA_RPC", default=""),
         "private_key": pick("PRIVATE_KEY", "CONTRACT_PRIVATE_KEY", default=""),
         "booking_registry": pick("BOOKING_REGISTRY_ADDRESS", default=""),
+        "payment_registry": pick("PAYMENT_REGISTRY_ADDRESS", default=""),
         "ticket_nft": pick("TICKET_NFT_ADDRESS", default=""),
         "sky_token": pick("SKY_TOKEN_ADDRESS", "SKYTOKEN_ADDRESS", default=""),
         "reward_amount": pick("SKY_REWARD_AMOUNT", default="100"),
@@ -358,9 +387,138 @@ def _safe_gas_price(w3: Web3) -> int:
     return final
 
 
-def _send_tx(w3: Web3, signer: Any, function_call, nonce: int, gas_limit: int = 500000) -> str:
+class BlockchainErrorType:
+    """Blockchain error type constants with user-friendly classifications."""
+    ACCESS_CONTROL = "access_control"      # Missing MINTER_ROLE, permission denied
+    INSUFFICIENT_GAS = "insufficient_gas"  # Out of gas, gas estimate too low
+    NETWORK_ERROR = "network_error"        # RPC timeout, connection failed
+    CONTRACT_REVERT = "contract_revert"    # Contract logic revert (e.g., require() failed)
+    INVALID_INPUT = "invalid_input"        # Invalid address, params, etc
+    UNKNOWN = "unknown"                    # Other errors
+
+
+class BlockchainError:
+    """Detailed blockchain error information."""
+    def __init__(self, error_type: str, message: str, user_message: str, retryable: bool, suggestion: str):
+        self.error_type = error_type
+        self.message = message  # Technical error message
+        self.user_message = user_message  # User-friendly message
+        self.retryable = retryable  # Can transaction be retried?
+        self.suggestion = suggestion  # Suggested action
+    
+    def __str__(self):
+        return f"[{self.error_type.upper()}] {self.user_message}"
+
+
+def classify_blockchain_error(error: Exception, context: str = "") -> BlockchainError:
+    """Classify blockchain error and provide user-friendly message with suggested action.
+    
+    Args:
+        error: The exception caught
+        context: Additional context (e.g., "mint", "transfer", "confirm")
+    
+    Returns:
+        BlockchainError with classification, messages, and retry recommendation
+    """
+    error_msg = str(error).lower()
+    tech_msg = str(error)
+    
+    # AccessControl / Permission errors
+    if any(x in error_msg for x in ["accesscontrol", "missing role", "minter_role", "unauthorized"]):
+        return BlockchainError(
+            BlockchainErrorType.ACCESS_CONTROL,
+            tech_msg,
+            f"Permission denied - Account lacks required role for {context or 'transaction'}",
+            retryable=False,
+            suggestion="Contact administrator to grant required permissions"
+        )
+    
+    # Gas-related errors
+    if any(x in error_msg for x in ["out of gas", "intrinsic gas", "gas exceeds", "gas limit"]):
+        return BlockchainError(
+            BlockchainErrorType.INSUFFICIENT_GAS,
+            tech_msg,
+            f"Insufficient gas for {context or 'transaction'}",
+            retryable=True,
+            suggestion="Retry with higher gas limit or wait for network congestion to decrease"
+        )
+    
+    # Network timeouts / Connection errors
+    if any(x in error_msg for x in ["timeout", "not in the chain", "connection", "network", "rpc"]):
+        return BlockchainError(
+            BlockchainErrorType.NETWORK_ERROR,
+            tech_msg,
+            "Network timeout - Transaction may still be processing",
+            retryable=True,
+            suggestion="Retry in a few moments. Check transaction status after retry."
+        )
+    
+    # Contract revert errors (e.g., require() failed, custom errors)
+    if any(x in error_msg for x in ["reverted", "execution reverted", "revert", "require"]):
+        return BlockchainError(
+            BlockchainErrorType.CONTRACT_REVERT,
+            tech_msg,
+            f"Transaction rejected by smart contract: {context or 'Invalid operation'}",
+            retryable=False,
+            suggestion="Check booking status, payment verification, or contract configuration"
+        )
+    
+    # Invalid input errors
+    if any(x in error_msg for x in ["invalid", "exceeds", "insufficient", "not found", "unknown"]):
+        return BlockchainError(
+            BlockchainErrorType.INVALID_INPUT,
+            tech_msg,
+            f"Invalid input for {context or 'transaction'}",
+            retryable=False,
+            suggestion="Verify all input parameters (address, amount, booking code, etc.)"
+        )
+    
+    # Unknown error
+    return BlockchainError(
+        BlockchainErrorType.UNKNOWN,
+        tech_msg,
+        "Unexpected blockchain error",
+        retryable=False,
+        suggestion="Contact support with error details"
+    )
+
+
+def _is_non_retryable_error(error_msg: str) -> bool:
+    """Check if error is non-retryable (access control, reverts, etc)."""
+    classification = classify_blockchain_error(Exception(error_msg))
+    return not classification.retryable
+
+
+def _send_tx(w3: Web3, signer: Any, function_call, nonce: int, gas_limit: int = 500000, context: str = "") -> str:
+    """Send transaction with enhanced error handling, classification, and exponential backoff.
+    
+    Args:
+        w3: Web3 instance
+        signer: Account to sign transaction
+        function_call: Contract function call
+        nonce: Transaction nonce
+        gas_limit: Gas limit (default 500k)
+        context: Operation context for error messages (e.g., "mint", "transfer")
+    
+    Returns:
+        Transaction hash as hex string
+    
+    Raises:
+        RuntimeError: If transaction fails with user-friendly error message
+    """
     import time
+    import random
+    
     gas_price = _safe_gas_price(w3)
+    
+    # Pre-flight check to catch errors early (especially AccessControl)
+    try:
+        function_call.estimate_gas({"from": signer.address})
+    except Exception as preflight_err:
+        classified = classify_blockchain_error(preflight_err, context)
+        _log_error(f"[blockchain] Pre-flight check failed: {classified}")
+        raise RuntimeError(f"{classified.user_message}: {classified.suggestion}") from preflight_err
+    
     tx = function_call.build_transaction(
         {
             "from": signer.address,
@@ -373,26 +531,67 @@ def _send_tx(w3: Web3, signer: Any, function_call, nonce: int, gas_limit: int = 
     signed = signer.sign_transaction(tx)
     tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
     
-    # Retry logic for Sepolia RPC timeout
+    # Retry logic with exponential backoff and jitter
     max_retries = 3
     for attempt in range(max_retries):
         try:
+            # Wait for receipt with 300s timeout
             receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=300)
             if receipt.get("status") != 1:
-                raise RuntimeError(f"On-chain tx failed: {tx_hash.hex()}")
+                error_msg = f"On-chain transaction failed: {tx_hash.hex()}"
+                _log_error(f"[blockchain] {error_msg}")
+                raise RuntimeError(error_msg)
+            _log_info(f"[blockchain] TX successful: {tx_hash.hex()}")
             return tx_hash.hex()
         except Exception as e:
-            if attempt < max_retries - 1 and "not in the chain" in str(e):
-                wait_time = 10 * (attempt + 1)  # 10s, 20s, 30s
-                _log_warning(f"[blockchain] TX receipt timeout (attempt {attempt + 1}/{max_retries}): retrying in {wait_time}s...")
+            classified = classify_blockchain_error(e, context or "transaction receipt")
+            
+            # Retry only if error is retryable and we have attempts left
+            if classified.retryable and attempt < max_retries - 1:
+                # Exponential backoff with jitter: base * (2 ^ attempt) + random
+                base_wait = 5  # 5 seconds base
+                exponential_wait = base_wait * (2 ** attempt)
+                jitter = random.uniform(0, exponential_wait * 0.1)  # ±10% jitter
+                wait_time = int(exponential_wait + jitter)
+                _log_warning(f"[blockchain] {classified} (attempt {attempt + 1}/{max_retries}): retrying in {wait_time}s...")
                 time.sleep(wait_time)
             else:
-                raise
+                # Non-retryable error or last attempt
+                error_msg = f"{classified.user_message} - {classified.suggestion}"
+                _log_error(f"[blockchain] Transaction failed: {error_msg}")
+                raise RuntimeError(error_msg) from e
 
 
-def _send_tx_with_receipt(w3: Web3, signer: Any, function_call, nonce: int, gas_limit: int = 500000) -> tuple[str, Any]:
+def _send_tx_with_receipt(w3: Web3, signer: Any, function_call, nonce: int, gas_limit: int = 500000, context: str = "") -> tuple[str, Any]:
+    """Send transaction and return receipt with enhanced error handling and exponential backoff.
+    
+    Args:
+        w3: Web3 instance
+        signer: Account to sign transaction
+        function_call: Contract function call
+        nonce: Transaction nonce
+        gas_limit: Gas limit (default 500k)
+        context: Operation context for error messages (e.g., "mint", "transfer")
+    
+    Returns:
+        Tuple of (transaction hash, receipt)
+    
+    Raises:
+        RuntimeError: If transaction fails with user-friendly error message
+    """
     import time
+    import random
+    
     gas_price = _safe_gas_price(w3)
+    
+    # Pre-flight check to catch errors early (especially AccessControl)
+    try:
+        function_call.estimate_gas({"from": signer.address})
+    except Exception as preflight_err:
+        classified = classify_blockchain_error(preflight_err, context)
+        _log_error(f"[blockchain] Pre-flight check failed: {classified}")
+        raise RuntimeError(f"{classified.user_message}: {classified.suggestion}") from preflight_err
+    
     tx = function_call.build_transaction(
         {
             "from": signer.address,
@@ -405,21 +604,35 @@ def _send_tx_with_receipt(w3: Web3, signer: Any, function_call, nonce: int, gas_
     signed = signer.sign_transaction(tx)
     tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
     
-    # Retry logic for Sepolia RPC timeout
+    # Retry logic with exponential backoff and jitter
     max_retries = 3
     for attempt in range(max_retries):
         try:
+            # Wait for receipt with 300s timeout
             receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=300)
             if receipt.get("status") != 1:
-                raise RuntimeError(f"On-chain tx failed: {tx_hash.hex()}")
+                error_msg = f"On-chain transaction failed: {tx_hash.hex()}"
+                _log_error(f"[blockchain] {error_msg}")
+                raise RuntimeError(error_msg)
+            _log_info(f"[blockchain] TX successful with receipt: {tx_hash.hex()}")
             return tx_hash.hex(), receipt
         except Exception as e:
-            if attempt < max_retries - 1 and "not in the chain" in str(e):
-                wait_time = 10 * (attempt + 1)  # 10s, 20s, 30s
-                _log_warning(f"[blockchain] TX receipt timeout (attempt {attempt + 1}/{max_retries}): retrying in {wait_time}s...")
+            classified = classify_blockchain_error(e, context or "transaction receipt")
+            
+            # Retry only if error is retryable and we have attempts left
+            if classified.retryable and attempt < max_retries - 1:
+                # Exponential backoff with jitter: base * (2 ^ attempt) + random
+                base_wait = 5  # 5 seconds base
+                exponential_wait = base_wait * (2 ** attempt)
+                jitter = random.uniform(0, exponential_wait * 0.1)  # ±10% jitter
+                wait_time = int(exponential_wait + jitter)
+                _log_warning(f"[blockchain] {classified} (attempt {attempt + 1}/{max_retries}): retrying in {wait_time}s...")
                 time.sleep(wait_time)
             else:
-                raise
+                # Non-retryable error or last attempt
+                error_msg = f"{classified.user_message} - {classified.suggestion}"
+                _log_error(f"[blockchain] Transaction failed: {error_msg}")
+                raise RuntimeError(error_msg) from e
 
 
 def _extract_ticket_token_id(ticket_nft, receipt: Any, wallet: str, booking_code: str) -> str | None:
@@ -452,6 +665,94 @@ def _extract_ticket_token_id(ticket_nft, receipt: Any, wallet: str, booking_code
         pass
 
     return None
+
+
+def verify_payment_confirmed_onchain(booking_code: str, payer_address: str, amount: int) -> tuple[bool, str]:
+    """
+    Verify that payment was confirmed on-chain (PaymentRegistry)
+    
+    Returns: (is_confirmed, message)
+    """
+    try:
+        config = _get_env()
+        if not config.get("payment_registry"):
+            _log_warning(f"[payment-check] No payment_registry configured, skipping on-chain verification")
+            return True, "Payment registry not configured (backward compatibility)"
+        
+        w3, _ = _get_w3_and_signer(config)
+        payment_registry = w3.eth.contract(
+            address=Web3.to_checksum_address(config["payment_registry"]),
+            abi=PAYMENT_REGISTRY_READ_ABI
+        )
+        
+        is_confirmed = payment_registry.functions.isPaymentConfirmed(
+            booking_code,
+            Web3.to_checksum_address(payer_address),
+            amount
+        ).call()
+        
+        if is_confirmed:
+            _log_info(f"[payment-check] Payment confirmed for {booking_code}: {payer_address} | {amount}")
+            return True, "Payment confirmed on-chain"
+        else:
+            _log_warning(f"[payment-check] Payment NOT confirmed for {booking_code}: {payer_address} | {amount}")
+            return False, "Payment not confirmed on-chain"
+            
+    except Exception as e:
+        _log_error(f"[payment-check] Error verifying payment: {e}")
+        return False, f"Payment verification failed: {str(e)}"
+
+
+def ensure_payment_confirmed_onchain(
+    booking_code: str,
+    payer_address: str,
+    amount: int,
+    w3: Web3,
+    signer: Any,
+    config: Dict[str, str],
+) -> tuple[bool, str]:
+    if not config.get("payment_registry"):
+        _log_warning("[payment-check] Payment registry not configured; skipping confirm")
+        return True, "Payment registry not configured"
+
+    payment_registry = w3.eth.contract(
+        address=Web3.to_checksum_address(config["payment_registry"]),
+        abi=PAYMENT_REGISTRY_READ_ABI + PAYMENT_REGISTRY_WRITE_ABI,
+    )
+
+    payer = Web3.to_checksum_address(payer_address)
+    try:
+        confirmed = payment_registry.functions.isPaymentConfirmed(
+            booking_code,
+            payer,
+            amount,
+        ).call()
+    except Exception as e:
+        return False, f"Payment confirm check failed: {e}"
+
+    if confirmed:
+        _log_info(f"[payment-check] Payment already confirmed for {booking_code}: {payer} | {amount}")
+        return True, "Payment already confirmed"
+
+    ok, msg = _check_ownable_owner(w3, config["payment_registry"], signer.address)
+    if not ok:
+        return False, f"PaymentRegistry permission error: {msg}"
+
+    try:
+        tx_hash = _send_tx(
+            w3,
+            signer,
+            payment_registry.functions.confirmPayment(booking_code, payer, amount),
+            w3.eth.get_transaction_count(signer.address, "pending"),
+            gas_limit=200000,
+            context="confirm_payment",
+        )
+        _log_info(f"[payment-check] Payment confirmed on-chain booking={booking_code} tx={tx_hash}")
+        return True, "Payment confirmed on-chain"
+    except Exception as e:
+        return False, str(e)
+
+
 
 
 def run_post_payment_blockchain_flow(booking, token_uri: str | None = None) -> Dict[str, Any]:
@@ -677,6 +978,25 @@ def run_post_payment_blockchain_flow(booking, token_uri: str | None = None) -> D
                 return result
             amount_human, member_tier = _calculate_booking_sky_reward(booking)
             amount_wei = int(amount_human * (10 ** 18))
+
+            if config.get("payment_registry"):
+                try:
+                    ok, msg = ensure_payment_confirmed_onchain(
+                        booking.booking_code,
+                        checksum_wallet,
+                        amount_wei,
+                        w3,
+                        signer,
+                        config,
+                    )
+                    if not ok:
+                        result["message"] = f"mint_sky payment confirm failed: {msg}"
+                        _log_error(f"[blockchain-flow] step failed booking={booking.booking_code}: {result['message']}")
+                        return result
+                except Exception as e:
+                    result["message"] = f"mint_sky payment confirm failed: {e}"
+                    _log_error(f"[blockchain-flow] step failed booking={booking.booking_code}: {result['message']}")
+                    return result
 
             try:
                 mint_tx = _send_tx(

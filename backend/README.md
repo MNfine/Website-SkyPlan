@@ -1,170 +1,971 @@
-# SkyPlan Backend (Flask + SQLAlchemy)
+# 📘 SkyPlan Backend - Hướng Dẫn API Đầy Đủ (Tiếng Việt)
 
-Backend của SkyPlan xây dựng bằng Flask và SQLAlchemy. Cung cấp:
+Backend của SkyPlan được xây dựng bằng Flask + SQLAlchemy. Cung cấp REST API cho chuyến bay, đặt chỗ, xác thực, thanh toán (VNPay + Blockchain), vé máy bay, và phần thưởng SKY token.
 
-- **REST API** cho flights, bookings, auth, payments (VNPay demo)
-- **Phục vụ HTML/assets** của frontend trong quá trình phát triển (server tích hợp)
-- **Model database** và script import dữ liệu demo
+**Trạng thái**: ✅ Sản xuất sẵn sàng với xác thực ví, thanh toán blockchain, và xử lý lỗi nâng cao.
 
-## Tổng quan
+---
+
+## 📋 Mục Lục
+
+1. [Công Nghệ Sử Dụng](#công-nghệ-sử-dụng)
+2. [Cài Đặt & Thiết Lập](#cài-đặt--thiết-lập)
+3. [Cấu Hình Môi Trường](#cấu-hình-môi-trường)
+4. [Xác Thực API](#xác-thực-api)
+5. [Tham Chiếu API Đầy Đủ](#tham-chiếu-api-đầy-đủ)
+6. [Luồng Thanh Toán](#luồng-thanh-toán)
+7. [Xử Lý Lỗi & Phân Loại](#xử-lý-lỗi--phân-loại)
+8. [Thiết Lập Cơ Sở Dữ Liệu](#thiết-lập-cơ-sở-dữ-liệu)
+9. [Chạy Server](#chạy-server)
+
+---
+
+## Công Nghệ Sử Dụng
+
 - **Ngôn ngữ**: Python 3.10+
-- **Framework**: Flask với CORS support
-- **Database**: PostgreSQL 13+ (production) hoặc SQLite (chạy nhanh local)
+- **Framework**: Flask 2.0+
 - **ORM**: SQLAlchemy 2.0+
-- **Payment**: VNPay integration (demo)
-- **Dependencies**: psycopg2-binary cho tester/CI
+- **Cơ sở dữ liệu**: PostgreSQL 13+ (sản xuất) hoặc SQLite (phát triển)
+- **Blockchain**: Web3.py, Sepolia testnet (Solidity 0.8.24)
+- **Thanh toán**: VNPay + Smart contract
+- **Xác thực**: JWT Bearer tokens + Chữ ký ví
 
-## Yêu cầu
+---
+
+## Cài Đặt & Thiết Lập
+
+### Yêu Cầu Tiên Quyết
+
 - Python 3.10+
-- PostgreSQL 13+ (DB thật) hoặc SQLite (chạy nhanh local)
-- Pipenv/venv khuyến nghị
+- PostgreSQL 13+ hoặc SQLite
+- Công cụ ảo môi trường (venv, virtualenv, hoặc pipenv)
 
-## Cấu trúc dự án
+### Thiết Lập Phát Triển Cục Bộ (PowerShell)
+
+```powershell
+# Tạo ảo môi trường
+python -m venv .venv
+.\.venv\Scripts\Activate
+
+# Nâng cấp pip và cài đặt phụ thuộc
+python -m pip install --upgrade pip
+pip install -r backend/requirements.txt
+
+# Tạo cơ sở dữ liệu (nếu dùng PostgreSQL, đảm bảo server đang chạy)
+# Các bảng sẽ tự tạo trong lần chạy đầu tiên
 ```
-backend/
-  app.py                # Tạo app Flask và wire routes
-  # SkyPlan Backend (Flask + SQLAlchemy)
 
-  Backend của SkyPlan được viết bằng Flask và SQLAlchemy. README này tóm tắt cách cài đặt, cấu hình, các endpoint API chính và một số lưu ý vận hành khi làm việc cùng frontend.
+### Nhập Dữ Liệu Demo
 
-  Phiên bản hiện tại hỗ trợ các tính năng chính:
-  - REST API cho flights, bookings, auth, payments (VNPay demo)
-  - Hỗ trợ guest bookings và authenticated bookings (bao gồm trường hợp authenticated user gửi guest_passenger)
-  - Claim flow: gán booking guest cho user khi cần
-  - Seat selection và cập nhật trạng thái ghế
-  - Scripts import dữ liệu demo và tạo ghế
+```powershell
+# Nhập các chuyến bay mẫu
+python backend/db/import_flights.py
 
-  ## Công nghệ & yêu cầu
-  - Python 3.10+
-  - Flask
-  - SQLAlchemy (ORM)
-  - PostgreSQL (khuyến nghị) hoặc SQLite (fallback cho local/dev)
+# Tạo ghế cho tất cả các chuyến bay
+python backend/db/create_all_seats.py
+```
 
-  ## Cấu trúc thư mục (chung)
-  ```
-  backend/
-    app.py                # App factory + wiring routes
-    config.py             # Cấu hình (VNPay, email, env)
-    requirements.txt      # Dependencies
-    models/               # SQLAlchemy models (Booking, Passenger, Flight, Payment, Seat, ...)
-    routes/               # Flask blueprints (bookings, payments, auth, flights, seats, tickets, ...)
-    db/                   # DB helper scripts (create tables, import demo data, create seats)
-  ```
+---
 
-  ## Cài đặt (local, PowerShell)
-  ```powershell
-  # Tạo ảo môi trường
-  python -m venv .venv
-  .\.venv\Scripts\Activate
-  pip install --upgrade pip
-  pip install -r backend/requirements.txt
-  ```
+## Cấu Hình Môi Trường
 
-  ## Cấu hình (.env)
-  Tạo file `.env` ở root repo hoặc thiết lập biến môi trường phù hợp.
+Tạo file `.env` ở thư mục gốc của dự án với các biến sau:
 
-  Ví dụ tối thiểu:
-  ```env
-  SECRET_KEY=your-secret
-  DATABASE_URL=postgresql+psycopg2://user:pass@localhost:5432/skyplan
-  # VNPay (nếu dùng)
-  VNPAY_TMN_CODE=...
-  VNPAY_HASH_SECRET=...
-  VNPAY_RETURN_URL=http://localhost:5000/api/payment/vnpay/return
-  ```
+### Cấu Hình Tối Thiểu
 
-  Ghi chú:
-  - Backend hiện đang đọc `.env` ở **root repo** (cùng cấp với `frontend/` và `backend/`).
-  - Không commit `.env` lên git.
+```env
+# Flask
+SECRET_KEY=your-secret-key-here
+FLASK_ENV=development
 
-  ## Tạo & import dữ liệu
-  - Tạo bảng: khi chạy `backend/app.py` trong nhiều cấu hình sẽ tự tạo bảng nếu cần.
-  - Import flight demo (CSV):
-    - `python backend/db/import_flights.py`
-    - `python backend/db/create_all_seats.py` để sinh ghế cho các chuyến bay
+# Cơ sở dữ liệu (chọn một)
+DATABASE_URL=postgresql+psycopg2://user:password@localhost:5432/skyplan
+# HOẶC SQLite:
+# DATABASE_URL=sqlite:///skyplan.db
 
-  ## Chạy server (dev)
-  ```powershell
-  python backend/app.py
-  ```
+# VNPay Cổng Thanh Toán (Lấy từ https://merchant.vnpayment.vn)
+VNPAY_TMN_CODE=YOUR_MERCHANT_CODE
+VNPAY_HASH_SECRET=YOUR_HASH_SECRET_KEY
+VNPAY_ENV=sandbox
+VNPAY_RETURN_URL=http://localhost:5000/api/payment/vnpay/return
 
-  Mặc định server sẽ lắng nghe trên `http://localhost:5000` và API base là `http://localhost:5000/api`.
+⚠️ **CẢNH BÁO BẢO MẬT**: 
+- `VNPAY_HASH_SECRET` là khóa bí mật - KHÔNG bao giờ commit hoặc chia sẻ công khai
+- Lấy từ dashboard VNPay của bạn
+- Nếu bị lộ, thay đổi ngay lập tức trên VNPay
+```
 
-  ## API chính (tóm tắt)
+### Cấu Hình Blockchain (Cần Thiết Cho Thanh Toán Tiền Điện Tử)
 
-  Authentication
-  - `POST /api/auth/register` - Đăng ký
-  - `POST /api/auth/login` - Đăng nhập (trả token)
-  - `GET /api/auth/profile` - Thông tin user (Bearer token)
-  - `POST /api/auth/wallet/nonce` - Tạo nonce để ký ví (wallet login)
-  - `POST /api/auth/wallet/verify` - Xác thực chữ ký ví và trả token
-  - `POST /api/auth/wallet/connect` - Gắn wallet vào tài khoản đã đăng nhập
+```env
+# Sepolia RPC (lấy từ Alchemy, Infura, hoặc tương tự)
+SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_KEY
 
-  Ghi chú wallet auth:
-  - `wallet/nonce` và `wallet/verify` trả cả trường top-level (`token`, `nonce`, ...) và trường `data` để tương thích frontend hiện tại.
-  - Route wallet đã được harden session handling để tránh lỗi rollback/close khi session chưa khởi tạo.
-  - Wallet routes chấp nhận cả key `wallet_address` và `walletAddress`, đồng thời parse an toàn qua `request.get_json(silent=True)` để tránh lỗi `BadRequest` ngầm.
-  - `wallet/verify` hỗ trợ payload có `nonce` từ client như lớp tương thích, nhưng vẫn kiểm tra nonce trong message đã ký.
-  - Chuẩn hóa địa chỉ ví trong utility bằng `Web3.to_checksum_address` để tương thích `eth-account` mới, tránh lỗi `Account.to_checksum_address` không tồn tại.
-  - Khi tạo tài khoản wallet mới, backend lưu một `password_hash` placeholder để tương thích các database schema cũ còn ràng buộc `NOT NULL` cho cột này.
+# Khóa Riêng Tư Ví (để ký giao dịch)
+PRIVATE_KEY=your_wallet_private_key_without_0x_prefix
 
-  Flights
-  - `GET /api/flights` - Tìm chuyến
-  - `GET /api/flights/roundtrip` - Tìm khứ hồi
+# Địa chỉ Hợp Đồng Thông Minh (triển khai trên Sepolia)
+BOOKING_REGISTRY_ADDRESS=0x05D9367Dd84bB47562767e17FdADA2EEB15fB161
+PAYMENT_REGISTRY_ADDRESS=0xC9C1CC1567C38Bcd9bCeA0797DE3B24B4824FA01
+SKY_TOKEN_ADDRESS=0x909814175F83452C78e2a7dC30ee9DE6bFBE1705
+TICKET_NFT_ADDRESS=0xfe68A216Bf66c46D085985e06ebDbAf5dc64FB2d
 
-  Bookings
-  - `POST /api/bookings/create` - Tạo booking
-    - Hỗ trợ cả hai dạng payload:
-      - `passengers`: danh sách passenger IDs (được lưu trước) hoặc
-      - `guest_passenger`: object hành khách (backend sẽ tạo Passenger và gán user nếu user đã đăng nhập)
-    - `total_amount` được kiểm toán (server recompute) trước khi commit.
-  - `POST /api/bookings/passenger` - Tạo/update passenger profile cho user
-  - `GET /api/bookings/` - Liệt kê bookings của user (Bearer token required)
-  - `GET /api/bookings/<booking_code>` - Lấy chi tiết booking (user must own booking)
-  - `GET /api/bookings/status/<booking_code>` - Lấy trạng thái booking (hỗ trợ guest lookup khi booking.user_id is None)
-  - `POST /api/bookings/<booking_code>/claim` - Gán booking guest cho user (claim)
-  - `PATCH /api/bookings/<booking_code>/cancel` - Hủy booking
+# Địa chỉ ví quản trị (nhận thanh toán)
+RECEIVER_ADDRESS=0xYourWalletAddressHere
+SKY_REWARD_AMOUNT=100
 
-  Payments (VNPay demo)
-  - `POST /api/payment/vnpay/create` - Tạo URL thanh toán VNPay
-  - `GET /api/payment/vnpay/return` - VNPay return callback
-  - `POST /api/payment/vnpay/ipn` - VNPay server-to-server notification (IPN)
-  - `POST /api/payments/confirm` - Xác nhận payment (internal flow)
+# Tùy chọn: Khóa API Etherscan để xác minh blockchain
+ETHERSCAN_API_KEY=your_key_here
+```
 
-  Seats & Tickets
-  - `/api/seats/*` - Đặt ghế / đánh dấu ghế đã booking
-  - `/api/tickets/*` - Phát hành vé và quản lý ticket
+### Cấu Hình Email (Tùy Chọn)
 
-  Debug & utilities
-  - `GET /api/bookings/debug/inspect` - debug endpoint (trả booking count cho token hiện tại)
+```env
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USE_TLS=true
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+MAIL_DEFAULT_SENDER="SkyPlan <noreply@skyplan.com>"
+```
 
-  ## Behaviour & important notes
-  - Create booking for authenticated users: backend chấp nhận cả `passengers` và `guest_passenger`. Nếu user đã đăng nhập nhưng frontend gửi `guest_passenger` (ví dụ user nhập thông tin hành khách mới thay vì chọn passenger được lưu), backend sẽ tạo Passenger gắn với user và tiếp tục tạo booking. Điều này tránh lỗi 400 khi payload thiếu `passengers`.
-  - Server recomputes `total_amount` trước khi chấp nhận booking để tránh client tampering; sai lệch lớn sẽ bị từ chối.
-  - VNPay flow: confirmation page cố gắng verify txnRef bằng `/api/bookings/status/:code`. Nếu thành công, UI dùng dữ liệu server làm nguồn đúng.
+### Google Gemini API (Tùy Chọn - cho AI chat)
 
-  ## Frontend integration hints (thực tế hay gặp)
-  - LocalStorage keys frontend dùng:
-    - `storedPassengerId` / `activePassengerId`: id passenger để gửi `passengers: [id]` khi tạo booking
-    - `currentBookingCode` / `lastBookingCode`: để hiển thị confirmation fallback khi server chưa trả dữ liệu
-    - `selectedSeats`: danh sách ghế đã chọn trước khi thanh toán
-  - Nếu bạn thấy confirmation page hiển thị booking code mà `/api/bookings/` không tăng, thường là vì `POST /api/bookings/create` không commit (ví dụ 400). Kiểm tra Network tab và response body để debug.
+```env
+GEMINI_API_KEY=your_gemini_api_key
+```
 
-  ## Troubleshooting nhanh
-  - 400 khi tạo booking: kiểm tra payload - cần `outbound_flight_id`, `trip_type`, `fare_class`, `total_amount` và (`passengers` hoặc `guest_passenger`).
-  - 401 khi gọi API bảo mật: đảm bảo `Authorization: Bearer <token>` header đúng.
-  - Không thấy flights: chắc bạn chưa import CSV hoặc query date mismatch.
+**⚠️ QUAN TRỌNG**: Không bao giờ commit file `.env` lên git. Sử dụng template `.env.example` thay thế.
 
-  ## Testing
-  - Manual: dùng curl/Postman hoặc frontend flows.
-  - Unit/integration: thêm pytest trong `backend/tests/` (chưa có sẵn trong repo mặc định). Một test quan trọng cần có: tạo booking (auth & guest), mark payment, kiểm tra trạng thái và rằng booking được gán cho user khi phù hợp.
+---
 
-  ## Deployment notes
-  - Trong production, dùng PostgreSQL và cấu hình `DATABASE_URL` tương ứng.
-  - Quản lý secrets (VNPay, mail) bằng secret manager; không commit `.env`.
+## Xác Thực API
 
-  ## Contributing
-  - Xem `backend/routes/` để biết chi tiết endpoint.
-  - Khi thay đổi model, cập nhật/migrate DB tương ứng (hiện repo không kèm Alembic; nếu cần hãy thêm hoặc dùng script `db/create_tables.py`).
+### Xác Thực Bearer Token
 
-  ---
+Tất cả các endpoint được bảo vệ đều yêu cầu token `Bearer` trong header `Authorization`:
+
+```
+Authorization: Bearer <jwt_token>
+```
+
+#### Ví Dụ Yêu Cầu
+
+```bash
+curl -H "Authorization: Bearer eyJhbGc..." \
+  http://localhost:5000/api/bookings/
+```
+
+### Cách Lấy Token
+
+1. **Đăng Ký Hoặc Đăng Nhập**:
+   ```bash
+   POST /api/auth/register
+   {
+     "email": "user@example.com",
+     "password": "secure_password",
+     "full_name": "Tên Người Dùng"
+   }
+   ```
+
+2. **Đăng Nhập**:
+   ```bash
+   POST /api/auth/login
+   {
+     "email": "user@example.com",
+     "password": "secure_password"
+   }
+   # Trả về: { "token": "eyJhbGc..." }
+   ```
+
+3. **Sử Dụng Token Trong Các Yêu Cầu Tiếp Theo**:
+   ```bash
+   GET /api/bookings/ \
+     -H "Authorization: Bearer eyJhbGc..."
+   ```
+
+### Đặt Chỗ Cho Khách
+
+- Khách có thể tạo đặt chỗ **mà không cần xác thực**
+- Xác thực là **bắt buộc** để xem/sửa thanh toán
+- Đặt chỗ của khách có thể được yêu cầu sau này
+
+---
+
+## Tham Chiếu API Đầy Đủ
+
+### Endpoint Xác Thực (6 endpoint)
+
+#### `POST /api/auth/register` - Đăng Ký
+
+**Yêu cầu**:
+```json
+{
+  "email": "user@example.com",
+  "password": "secure_password",
+  "full_name": "John Doe"
+}
+```
+
+**Phản hồi (201)**:
+```json
+{
+  "success": true,
+  "message": "Đăng ký thành công",
+  "user": {
+    "id": 1,
+    "email": "user@example.com",
+    "full_name": "John Doe",
+    "created_at": "2026-05-07T10:30:00Z"
+  }
+}
+```
+
+---
+
+#### `POST /api/auth/login` - Đăng Nhập
+
+**Yêu cầu**:
+```json
+{
+  "email": "user@example.com",
+  "password": "secure_password"
+}
+```
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "email": "user@example.com",
+    "full_name": "John Doe"
+  }
+}
+```
+
+---
+
+#### `GET /api/auth/profile` - Lấy Hồ Sơ
+
+**Yêu cầu**: Cần bearer token
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "user": {
+    "id": 1,
+    "email": "user@example.com",
+    "wallet_address": "0x78c9C1bE87afBdA2D7c1185568EE89DC26A8e72b",
+    "member_tier": "Gold",
+    "total_sky_earned": 250,
+    "total_sky_redeemed": 50
+  }
+}
+```
+
+---
+
+#### `POST /api/auth/wallet/nonce` - Tạo Nonce
+
+**Yêu cầu**:
+```json
+{
+  "wallet_address": "0x78c9C1bE87afBdA2D7c1185568EE89DC26A8e72b"
+}
+```
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "nonce": "12345",
+  "message": "Ký tên để xác thực",
+  "data": {
+    "nonce": "12345"
+  }
+}
+```
+
+---
+
+#### `POST /api/auth/wallet/verify` - Xác Minh Ví
+
+**Yêu cầu**:
+```json
+{
+  "wallet_address": "0x78c9C1bE87afBdA2D7c1185568EE89DC26A8e72b",
+  "signature": "0x1234567890abcdef...",
+  "nonce": "12345"
+}
+```
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 2,
+    "email": "wallet_user@skyplan.local",
+    "wallet_address": "0x78c9C1bE87afBdA2D7c1185568EE89DC26A8e72b"
+  }
+}
+```
+
+---
+
+#### `POST /api/auth/wallet/connect` - Kết Nối Ví
+
+**Yêu cầu**: Bearer token bắt buộc
+
+**Request**:
+```json
+{
+  "wallet_address": "0x78c9C1bE87afBdA2D7c1185568EE89DC26A8e72b",
+  "signature": "0x1234567890abcdef..."
+}
+```
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "message": "Ví được kết nối thành công",
+  "user": {
+    "id": 1,
+    "wallet_address": "0x78c9C1bE87afBdA2D7c1185568EE89DC26A8e72b"
+  }
+}
+```
+
+---
+
+### Endpoint Chuyến Bay (2 endpoint)
+
+#### `GET /api/flights` - Tìm Chuyến Bay Một Chiều
+
+**Tham số Query**:
+- `from_city`: Thành phố khởi hành
+- `to_city`: Thành phố đến
+- `departure_date`: Ngày khởi hành (YYYY-MM-DD)
+- `passenger_count`: Số hành khách (tùy chọn, mặc định 1)
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "flights": [
+    {
+      "id": 1,
+      "flight_code": "SK001",
+      "airline": "SkyPlan Air",
+      "from_airport": "SGN",
+      "to_airport": "HAN",
+      "departure_time": "2026-05-10T08:00:00Z",
+      "arrival_time": "2026-05-10T10:30:00Z",
+      "price_per_passenger": 2500000,
+      "available_seats": 45,
+      "aircraft_type": "Boeing 737",
+      "flight_duration_minutes": 150
+    }
+  ]
+}
+```
+
+---
+
+#### `GET /api/flights/roundtrip` - Tìm Chuyến Bay Khứ Hồi
+
+**Tham số Query**:
+- `from_city`: Thành phố khởi hành
+- `to_city`: Thành phố đến
+- `departure_date`: Ngày khởi hành (YYYY-MM-DD)
+- `return_date`: Ngày về (YYYY-MM-DD)
+- `passenger_count`: Số hành khách
+
+---
+
+### Endpoint Đặt Chỗ (7 endpoint)
+
+#### `POST /api/bookings/create` - Tạo Đặt Chỗ
+
+**Yêu cầu** (Khách được xác thực):
+```json
+{
+  "outbound_flight_id": 1,
+  "return_flight_id": 2,
+  "passengers": [1, 2],
+  "selected_seats": ["12A", "12B"],
+  "total_amount": 5000000
+}
+```
+
+**Phản hồi (201)**:
+```json
+{
+  "success": true,
+  "booking": {
+    "booking_code": "SP2025001",
+    "status": "PENDING",
+    "total_amount": 5000000,
+    "currency": "VND",
+    "created_at": "2026-05-07T10:00:00Z"
+  },
+  "payment": {
+    "payment_id": 1,
+    "status": "PENDING",
+    "provider": "vnpay"
+  }
+}
+```
+
+---
+
+#### `GET /api/bookings/` - Liệt Kê Đặt Chỗ
+
+**Yêu cầu**: Bearer token bắt buộc
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "bookings": [
+    {
+      "booking_code": "SP2025001",
+      "status": "CONFIRMED",
+      "total_amount": 2500000,
+      "confirmed_at": "2026-05-07T12:30:00Z"
+    }
+  ]
+}
+```
+
+---
+
+#### `GET /api/bookings/<booking_code>` - Chi Tiết Đặt Chỗ
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "booking": {
+    "booking_code": "SP2025001",
+    "status": "CONFIRMED",
+    "total_amount": 2500000,
+    "passengers": [],
+    "payment": {}
+  }
+}
+```
+
+---
+
+#### `GET /api/bookings/status/<booking_code>` - Trạng Thái Đặt Chỗ
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "booking_code": "SP2025001",
+  "status": "CONFIRMED",
+  "total_amount": 2500000,
+  "paid": true,
+  "tickets_generated": 2
+}
+```
+
+---
+
+#### `POST /api/bookings/<booking_code>/claim` - Nhận Quyền Sở Hữu
+
+**Yêu cầu**: Bearer token bắt buộc
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "message": "Nhận quyền sở hữu đặt chỗ thành công",
+  "booking": {}
+}
+```
+
+---
+
+#### `PATCH /api/bookings/<booking_code>/cancel` - Hủy Đặt Chỗ
+
+**Yêu cầu**: Bearer token bắt buộc
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "message": "Hủy đặt chỗ thành công",
+  "booking": {
+    "booking_code": "SP2025001",
+    "status": "CANCELLED"
+  }
+}
+```
+
+---
+
+### Endpoint Thanh Toán (7 endpoint)
+
+#### VNPay Thanh Toán
+
+##### `POST /api/payment/vnpay/create` - Tạo URL Thanh Toán VNPay
+
+**Yêu cầu**:
+```json
+{
+  "booking_code": "SP2025001",
+  "amount": 2500000,
+  "return_url": "http://localhost:3000/confirmation"
+}
+```
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "payment_url": "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?...",
+  "transaction_ref": "SP2025001_1620000000",
+  "amount": 2500000
+}
+```
+
+---
+
+##### `GET /api/payment/vnpay/return` - Callback VNPay
+
+Tự động chuyển hướng đến `/confirmation.html?txn_ref=...&transaction_no=...`
+
+---
+
+#### Blockchain Thanh Toán (MetaMask)
+
+##### `POST /api/payment/blockchain/save-hash` - Lưu Hash Giao Dịch
+
+**Yêu cầu**: Bearer token bắt buộc
+
+```json
+{
+  "bookingId": "SP2025001",
+  "txHash": "0x1234567890abcdef...",
+  "fromAddress": "0x78c9C1bE87afBdA2D7c1185568EE89DC26A8e72b"
+}
+```
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "txHash": "0x1234567890abcdef...",
+  "status": "processing"
+}
+```
+
+---
+
+##### `POST /api/payment/blockchain/confirm` - Xác Nhận Thanh Toán
+
+**Yêu cầu**: Bearer token bắt buộc
+
+```json
+{
+  "txHash": "0x1234567890abcdef...",
+  "status": "success"
+}
+```
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "txHash": "0x1234567890abcdef...",
+  "status": "success"
+}
+```
+
+---
+
+##### `POST /api/payment/mark-paid` - Đánh Dấu Đã Thanh Toán
+
+**Yêu cầu**: Bearer token bắt buộc
+
+```json
+{
+  "booking_code": "SP2025001",
+  "amount": 2500000,
+  "transaction_id": "TXN123456",
+  "provider": "manual",
+  "wallet_address": "0x78c9C1bE87afBdA2D7c1185568EE89DC26A8e72b"
+}
+```
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "booking_code": "SP2025001",
+  "blockchain": {
+    "message": "Phần thưởng được phát hành thành công",
+    "tickets_minted": 1,
+    "sky_minted": 100
+  }
+}
+```
+
+---
+
+### Endpoint Ghế & Vé (3 endpoint)
+
+#### `GET /api/seats/<flight_id>` - Danh Sách Ghế Trống
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "flight_id": 1,
+  "seats": [
+    {
+      "seat_id": 1,
+      "seat_number": "12A",
+      "status": "AVAILABLE",
+      "price_adjustment": 0
+    }
+  ],
+  "total_available": 45
+}
+```
+
+---
+
+#### `POST /api/seats/<flight_id>/select` - Chọn Ghế
+
+**Yêu cầu**: Bearer token bắt buộc
+
+```json
+{
+  "seat_numbers": ["12A", "12B"],
+  "passenger_ids": [1, 2]
+}
+```
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "reserved_seats": ["12A", "12B"]
+}
+```
+
+---
+
+#### `GET /api/tickets/<booking_code>` - Danh Sách Vé
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "tickets": [
+    {
+      "ticket_id": 1,
+      "ticket_number": "SK001-001",
+      "passenger_name": "John Doe",
+      "seat_number": "12A",
+      "status": "ISSUED",
+      "nft_token_id": 101,
+      "issued_at": "2026-05-07T12:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+### Endpoint SKY Token (3 endpoint)
+
+#### `GET /api/sky-tokens/balance` - Số Dư SKY
+
+**Yêu cầu**: Bearer token bắt buộc
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "balance": {
+    "earned": 350,
+    "redeemed": 50,
+    "available": 300
+  },
+  "member_tier": "Gold"
+}
+```
+
+---
+
+#### `GET /api/sky-tokens/redemptions` - Lịch Sử Quy Đổi
+
+**Yêu cầu**: Bearer token bắt buộc
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "redemptions": [
+    {
+      "redemption_id": 1,
+      "booking_code": "SP2025001",
+      "sky_amount": 50,
+      "status": "COMPLETED",
+      "redeemed_at": "2026-05-07T14:00:00Z",
+      "discount_amount": 500000
+    }
+  ]
+}
+```
+
+---
+
+#### `POST /api/sky-tokens/redeem` - Quy Đổi SKY Token
+
+**Yêu cầu**: Bearer token bắt buộc
+
+```json
+{
+  "booking_code": "SP2025001",
+  "sky_amount": 50
+}
+```
+
+**Phản hồi (200)**:
+```json
+{
+  "success": true,
+  "message": "SKY token quy đổi thành công",
+  "discount_amount": 500000,
+  "new_total": 2000000
+}
+```
+
+---
+
+## Luồng Thanh Toán
+
+### Luồng VNPay
+
+```
+1. Frontend tạo đặt chỗ → POST /api/bookings/create
+                      ↓
+2. Backend trả payment_id + booking_code
+                      ↓
+3. Frontend yêu cầu URL thanh toán → POST /api/payment/vnpay/create
+                      ↓
+4. Backend trả URL VNPay
+                      ↓
+5. Người dùng chuyển hướng đến cổng VNPay
+                      ↓
+6. Người dùng hoàn thành thanh toán
+                      ↓
+7. VNPay chuyển hướng lại → GET /api/payment/vnpay/return
+                      ↓
+8. Backend xác minh chữ ký, xác nhận thanh toán
+                      ↓
+9. Backend phát hành vé + SKY token
+                      ↓
+10. Frontend chuyển hướng đến /confirmation.html
+```
+
+---
+
+### Luồng Blockchain (MetaMask)
+
+```
+1. Frontend tạo đặt chỗ → POST /api/bookings/create
+                      ↓
+2. Backend trả booking_code + payment_id
+                      ↓
+3. Frontend yêu cầu thanh toán MetaMask (PaymentRegistry.recordPayment)
+                      ↓
+4. Người dùng phê duyệt giao dịch trong MetaMask
+                      ↓
+5. Thanh toán được ghi trên blockchain + tự động xác nhận
+                      ↓
+6. Frontend gửi tx hash → POST /api/payment/blockchain/save-hash
+                      ↓
+7. Frontend xác nhận thanh toán → POST /api/payment/blockchain/confirm
+                      ↓
+8. Backend xác minh thanh toán trên blockchain
+                      ↓
+9. Backend phát hành vé + SKY token
+                      ↓
+10. Frontend hiển thị thông báo thành công
+```
+
+---
+
+## Xử Lý Lỗi & Phân Loại
+
+Backend cung cấp phân loại lỗi chi tiết để giúp client xử lý lỗi phù hợp.
+
+### Các Loại Lỗi
+
+| Loại Lỗi | Có Thể Thử Lại | Nguyên Nhân | Hành Động Đề Xuất |
+|----------|---|---|---|
+| `access_control` | ❌ Không | Tài khoản thiếu quyền | Liên hệ quản trị viên |
+| `insufficient_gas` | ✅ Có | Hết gas | Thử lại với gas cao hơn |
+| `network_error` | ✅ Có | RPC timeout | Thử lại sau vài giây |
+| `contract_revert` | ❌ Không | Logic hợp đồng từ chối | Kiểm tra trạng thái đặt chỗ |
+| `invalid_input` | ❌ Không | Tham số sai | Xác minh tất cả đầu vào |
+| `unknown` | ❌ Không | Lỗi khác | Liên hệ hỗ trợ |
+
+### Ví Dụ Phản Hồi Lỗi
+
+**Yêu cầu**:
+```bash
+POST /api/payment/blockchain/confirm
+Authorization: Bearer eyJhbGc...
+```
+
+**Phản hồi Lỗi (402 - Lỗi Mạng Có Thể Thử Lại)**:
+```json
+{
+  "success": false,
+  "message": "Timeout mạng - Giao dịch vẫn có thể đang xử lý",
+  "suggestion": "Thử lại sau vài giây",
+  "error_type": "network_error",
+  "retryable": true
+}
+```
+
+**Phản hồi Lỗi (403 - Lỗi Quyền Hạn Không Thể Thử Lại)**:
+```json
+{
+  "success": false,
+  "message": "Từ chối quyền - Tài khoản thiếu vai trò yêu cầu",
+  "suggestion": "Liên hệ quản trị viên để được cấp quyền",
+  "error_type": "access_control",
+  "retryable": false
+}
+```
+
+---
+
+## Thiết Lập Cơ Sở Dữ Liệu
+
+### Tạo Bảng
+
+```powershell
+python backend/db/create_tables.py
+```
+
+### Nhập Dữ Liệu Demo
+
+```powershell
+# Nhập 1200 chuyến bay mẫu
+python backend/db/generate_fake_flights.py
+python backend/db/import_flights.py
+
+# Tạo ghế (1-30 mỗi máy bay)
+python backend/db/create_all_seats.py
+```
+
+### Bảng Cơ Sở Dữ Liệu Chính
+
+- `users` - Tài khoản người dùng + địa chỉ ví
+- `bookings` - Đặt chỗ chuyến bay
+- `passengers` - Thông tin hành khách
+- `flights` - Thông tin chuyến bay
+- `seats` - Trạng thái ghế
+- `payments` - Bản ghi thanh toán
+- `tickets` - Vé được phát hành
+- `sky_tokens` - Giao dịch SKY token
+- `sky_vouchers` - Mã giảm giá SKY
+
+---
+
+## Chạy Server
+
+### Server Phát Triển
+
+```powershell
+# Kích hoạt ảo môi trường (nếu chưa kích hoạt)
+.\.venv\Scripts\Activate
+
+# Chạy server
+python backend/app.py
+```
+
+**URL Mặc Định**: `http://localhost:5000`
+**API Base**: `http://localhost:5000/api`
+
+### Triển Khai Sản Xuất
+
+```powershell
+# Sử dụng Gunicorn
+gunicorn -c backend/gunicorn_config.py backend.app:app
+```
+
+### Biến Môi Trường Sản Xuất
+
+```env
+FLASK_ENV=production
+SECRET_KEY=your-secure-random-key
+DATABASE_URL=postgresql+psycopg2://user:pass@prod-db-host:5432/skyplan
+VNPAY_ENV=production
+VNPAY_RETURN_URL=https://skyplan.com/confirmation
+```
+
+---
+
+## Các Vấn Đề Thường Gặp & Khắc Phục
+
+### Lỗi Kết Nối Cơ Sở Dữ Liệu
+
+**Lỗi**: `sqlalchemy.exc.OperationalError: could not connect to server`
+
+**Giải pháp**:
+- Đảm bảo PostgreSQL đang chạy
+- Kiểm tra DATABASE_URL trong .env
+- Sử dụng SQLite cho phát triển: `DATABASE_URL=sqlite:///skyplan.db`
+
+---
+
+### Lỗi Xác Minh Chữ Ký VNPay
+
+**Lỗi**: `Invalid signature`
+
+**Giải pháp**:
+- Xác minh VNPAY_HASH_SECRET chính xác
+- Kiểm tra VNPAY_ENV được đặt đúng cách
+- Lấy thông tin từ dashboard VNPay của bạn
+
+---
+
+### Timeout Giao Dịch Blockchain
+
+**Lỗi**: `Network timeout - Transaction may still be processing`
+
+**Giải pháp**:
+- Xác minh URL Sepolia RPC có thể truy cập
+- Kiểm tra giao dịch trên Etherscan: `https://sepolia.etherscan.io/tx/<txHash>`
+- Thử lại sau vài giây (tự động thử lại với backoff lũy thừa)
+
+---
+
+## Tài Nguyên Bổ Sung
+
+- **Hợp Đồng Blockchain**: Xem `skyplan-blockchain/README.md`
+- **Frontend**: Xem `frontend/README.md`
+- **Triển Khai**: Xem `docs/render-setup.md`
+
+---
+
+**Cập Nhật Cuối**: May 7, 2026  
+**Trạng Thái**: Sản Xuất Sẵn Sàng  
+**Người Duy Trì**: SkyPlan Team

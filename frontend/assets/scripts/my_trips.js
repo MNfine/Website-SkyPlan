@@ -105,7 +105,8 @@ function t(key) {
 }
 
 function formatVnd(amount) {
-  return Number(amount || 0).toLocaleString('vi-VN') + ' VND';
+  const v = Math.round(Number(amount || 0));
+  return v.toLocaleString('vi-VN') + ' VND';
 }
 
 function statusLabel(status) {
@@ -145,7 +146,17 @@ function formatDuration(start, end) {
   const from = toDate(start);
   const to = toDate(end);
   if (!from || !to) return '--';
-  const diffMs = to.getTime() - from.getTime();
+  let diffMs = to.getTime() - from.getTime();
+  if (diffMs <= 0) {
+    // Handle overnight flights where arrival may be next day(s)
+    const oneDay = 24 * 60 * 60 * 1000;
+    let attempts = 0;
+    while (diffMs <= 0 && attempts < 3) {
+      to.setTime(to.getTime() + oneDay);
+      diffMs = to.getTime() - from.getTime();
+      attempts += 1;
+    }
+  }
   if (diffMs <= 0) return '--';
   const totalMin = Math.floor(diffMs / 60000);
   const hours = Math.floor(totalMin / 60);
@@ -200,7 +211,7 @@ function mapBookingToTrip(booking) {
     flightDate: formatDate(departureIso),
     passengerName: firstPassenger.full_name || firstPassenger.fullName || [firstPassenger.firstname, firstPassenger.lastname].filter(Boolean).join(' ') || '-',
     seat: firstPassenger.seat_number || firstPassenger.seatNumber || '-',
-    amountVnd: Number(booking.total_amount || 0),
+    amountVnd: Math.round(Number(booking.total_amount || 0)),
     isVerified: !!(booking.isVerified || booking.onchain_recorded),
     nft: {
       minted: nftMintedFlag,

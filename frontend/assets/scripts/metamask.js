@@ -446,8 +446,8 @@ const MetaMaskWallet = (function () {
         }
       }
 
-      // Wrong network warning
-      if (isConnected && !state.isCorrectNetwork) {
+      // Wrong network warning: only show when user is actively in crypto payment flow
+      if (isConnected && !state.isCorrectNetwork && window.__cryptoPaymentActive) {
         const lang = window.getPersistedLanguage();
         const msg = (lang === 'vi') ? 'Vui lòng chuyển sang mạng Sepolia' : 'Please switch to Sepolia network';
         showNotification(msg, 'warning');

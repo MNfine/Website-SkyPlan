@@ -13,6 +13,14 @@ interface IBookingRegistry {
         returns (bytes32 bookingHash, address owner, uint64 timestamp, Status status);
 }
 
+interface IPaymentRegistry {
+    function isPaymentConfirmed(
+        string calldata bookingCode,
+        address payer,
+        uint256 amount
+    ) external view returns (bool);
+}
+
 /**
  * SKY Token - Reward Points (ERC-20)
  * - Mint when booking is RECORDED (successful)
@@ -24,6 +32,7 @@ contract SkyToken is ERC20, AccessControl {
     bytes32 public constant REDEEMER_ROLE = keccak256("REDEEMER_ROLE");
 
     IBookingRegistry public registry;
+    IPaymentRegistry public paymentRegistry;
 
     // bookingCodeHash -> minted?
     mapping(bytes32 => bool) public mintedForBooking;
@@ -58,6 +67,13 @@ contract SkyToken is ERC20, AccessControl {
         registry = IBookingRegistry(bookingRegistryAddress);
     }
 
+    function setPaymentRegistry(address paymentRegistryAddress) 
+        external 
+        onlyRole(DEFAULT_ADMIN_ROLE) 
+    {
+        paymentRegistry = IPaymentRegistry(paymentRegistryAddress);
+    }
+
     function setAllowed(address account, bool isAllowed) 
         external 
         onlyRole(DEFAULT_ADMIN_ROLE) 
@@ -86,7 +102,11 @@ contract SkyToken is ERC20, AccessControl {
 
     /**
      * ✓ Mint token for user when booking RECORDED
+     * ✓ Verify payment was confirmed (if paymentRegistry is set)
      * ✓ Automatically add user to allowlist
+     * 
+     * NOTE: If paymentRegistry is not set (for backward compatibility),
+     * payment check is skipped - but this should be configured immediately
      */
     function mintForBooking(
         address to,
@@ -97,10 +117,20 @@ contract SkyToken is ERC20, AccessControl {
         require(to != address(0), "Invalid recipient");
         require(amount > 0, "Amount must be > 0");
 
-        // Verify booking exists và có status = RECORDED
+        // Verify booking exists and has status = RECORDED
         (bytes32 bookingHash, address owner, , ) = registry.getBooking(bookingCode);
         require(owner == to, "Booking owner mismatch");
         require(bookingHash != bytes32(0), "Booking not found");
+
+        // ✓ PAYMENT VERIFICATION - Check payment was confirmed by admin
+        if (address(paymentRegistry) != address(0)) {
+            bool paymentConfirmed = paymentRegistry.isPaymentConfirmed(
+                bookingCode,
+                to,
+                amount
+            );
+            require(paymentConfirmed, "Payment not confirmed on-chain");
+        }
 
         bytes32 bookingCodeHash = keccak256(abi.encodePacked(bookingCode));
         require(!mintedForBooking[bookingCodeHash], "Already minted for this booking");

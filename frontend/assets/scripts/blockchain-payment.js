@@ -530,6 +530,8 @@ const BlockchainPayment = (function () {
    */
   async function sendTransactionViaMetaMask(txParams) {
     try {
+      // Mark that crypto payment flow is active so wallet UI can show network warnings
+      try { window.__cryptoPaymentActive = true; } catch (e) {}
       if (!window.ethereum) {
         throw new Error('MetaMask not detected');
       }

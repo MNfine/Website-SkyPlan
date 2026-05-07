@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bảng điều khiển SkyPlan</title>
+
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.ico" type="image/x-icon">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/styles/reset.css">
+  <link rel="stylesheet" href="assets/styles/index.css">
+  <link rel="stylesheet" href="assets/styles/header.css">
+  <link rel="stylesheet" href="assets/styles/footer.css">
+  <link rel="stylesheet" href="assets/styles/admin.css">
+</head>
+<body>
+  <div id="header-container"></div>
+
+  <main class="admin-page">
+    <div class="admin-hero">
+      <div class="hero-content">
+        <span class="hero-kicker">Bảng điều khiển</span>
+        <h1>Bảng quản trị SkyPlan</h1>
+        <p>Chat hỗ trợ thời gian thực và xác nhận on-chain cho thanh toán ngoài tuyến.</p>
+      </div>
+      <div class="hero-orb" aria-hidden="true"></div>
+    </div>
+
+    <section class="admin-grid">
+      <div class="admin-card chat-panel">
+        <header>
+          <div>
+            <h2>Hỗ trợ trực tuyến</h2>
+            <p>Chat Socket.IO với khách hàng.</p>
+          </div>
+          <span class="status-pill" id="socketStatus">ngoài tuyến</span>
+        </header>
+
+        <div class="chat-stream" id="chatStream"></div>
+
+        <div class="chat-input">
+          <input id="chatMessage" type="text" placeholder="Nhập nội dung phản hồi..." />
+          <button id="sendChatBtn" class="btn-solid">Gửi</button>
+        </div>
+      </div>
+
+      <div class="admin-card confirm-panel">
+        <header>
+          <div>
+            <h2>Xác nhận thanh toán</h2>
+            <p>Xác nhận on-chain và tùy chọn mint.</p>
+          </div>
+          <span class="status-pill neutral" id="confirmStatus">sẵn sàng</span>
+        </header>
+
+        <div class="form-grid">
+          <label>
+            Admin token
+            <input id="adminToken" type="password" placeholder="Bearer token" />
+          </label>
+          <label>
+            Mã đặt chỗ
+            <input id="bookingCode" type="text" placeholder="SP2026XXXX" />
+          </label>
+          <label>
+            Địa chỉ ví
+            <input id="walletAddress" type="text" placeholder="0x..." />
+          </label>
+          <label>
+            Số tiền (wei)
+            <input id="amountWei" type="text" placeholder="Tùy chọn" />
+          </label>
+        </div>
+
+        <div class="confirm-actions">
+          <button id="loadBookingBtn" class="btn-outline">Tải booking</button>
+          <button id="confirmBtn" class="btn-solid">Xác nhận</button>
+          <button id="confirmMintBtn" class="btn-solid accent">Xác nhận + Mint</button>
+        </div>
+
+        <div class="log-panel" id="confirmLog"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="assets/scripts/common.js"></script>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script src="assets/scripts/admin.js"></script>
+</body>
+</html>

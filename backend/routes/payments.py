@@ -11,7 +11,15 @@ from backend.models.user import User
 from backend.models.tickets import Ticket
 from backend.models.sky_voucher import SkyVoucher
 from backend.config import VNPayConfig
-from backend.utils.blockchain_admin import run_post_payment_blockchain_flow
+from backend.utils.blockchain_admin import (
+	run_post_payment_blockchain_flow,
+	verify_payment_confirmed_onchain,
+	ensure_payment_confirmed_onchain,
+	_calculate_booking_sky_reward,
+	_get_env,
+	_get_w3_and_signer,
+)
+from backend.utils.blockchain import generate_booking_state_hash
 from web3 import Web3
 import urllib.parse
 import hashlib
@@ -21,6 +29,70 @@ import re
 
 
 payment_bp = Blueprint('payment', __name__)
+
+
+def _is_blockchain_provider(provider: str | None) -> bool:
+	"""Deprecated: Use verified_by field instead. Kept for backward compatibility."""
+	provider_name = str(provider or '').strip().lower()
+	return provider_name in {'blockchain', 'metamask', 'crypto'}
+
+
+def _is_reward_eligible(booking, verified_by: str | None, check_blockchain_specific: bool = False) -> tuple[bool, str]:
+	"""
+	Check if booking is eligible for on-chain rewards (NFT + SKY).
+	
+	Business policy:
+	- Payment must be verified by ANY channel (blockchain, vnpay, manual)
+	- Booking status must be CONFIRMED
+	- Booking must have a wallet address to receive rewards
+	- NFT/SKY not already minted
+	
+	For blockchain payments specifically:
+	- Booking must have booking_hash (required for on-chain recording)
+	
+	Returns: (eligible, reason)
+	"""
+	# 1. Payment verification
+	if not verified_by:
+		return False, "Payment not verified by any channel"
+	
+	# 2. Booking must be CONFIRMED
+	if booking.status != BookingStatus.CONFIRMED:
+		return False, f"Booking not confirmed (status={booking.status.name if booking.status else 'unknown'})"
+	
+	# 3. Check minting flags
+	if booking.nft_minted and booking.sky_minted:
+		return False, "Rewards already minted for this booking"
+	
+	# 4. Must have wallet for reward distribution
+	wallet = getattr(booking, 'wallet_address', None)
+	if not wallet:
+		return False, "Booking has no wallet address for reward distribution"
+	
+	# 5. Wallet must be valid Ethereum address
+	if not Web3.is_address(wallet):
+		return False, f"Invalid wallet address: {wallet}"
+	
+	# 6. BLOCKCHAIN-SPECIFIC: Booking must have booking_hash for on-chain recording
+	# (Only check for actual blockchain payments, not for demo bank/card)
+	if check_blockchain_specific or verified_by == 'blockchain':
+		booking_hash = getattr(booking, 'booking_hash', None)
+		if not booking_hash:
+			return False, "Booking missing booking_hash (required for on-chain recording)"
+	
+	return True, "Eligible for rewards"
+
+
+def _skipped_blockchain_result(reason: str, provider: str | None = None) -> dict:
+	message = reason
+	if provider:
+		message = f"{reason} (provider={provider})"
+	return {
+		'success': False,
+		'message': message,
+		'steps': {},
+		'skipped': True,
+	}
 
 
 def _consume_sky_voucher(session, voucher_code: str | None, user_id: int | None = None) -> bool:
@@ -232,6 +304,8 @@ def vnpay_return():
 				if payment:
 					payment.status = 'SUCCESS'
 					payment.transaction_id = vnp_transaction_no
+					payment.verified_by = 'vnpay'  # Mark as verified by VNPay
+					print(f"[payment-verified] ✓ source=vnpay for {vnp_txn_ref}")
 					session.add(payment)
 
 					# Update booking status
@@ -274,21 +348,25 @@ def vnpay_return():
 						except Exception as ticket_exc:
 							print(f"[vnpay] Ticket generation failed for {vnp_txn_ref}: {ticket_exc}")
 
-						# Trigger blockchain flow (record -> mint NFT -> mint SKY)
+						# ✓ CHECK REWARD ELIGIBILITY - separate from payment verification
+					# Policy: VNPay/Bank/Card demo payments can also receive rewards if user has wallet
+					# Note: booking_hash not required for demo (VNPay, Bank, Card)
+					is_eligible, eligibility_reason = _is_reward_eligible(payment.booking, payment.verified_by, check_blockchain_specific=False)
+					
+					if is_eligible:
+						# Mint rewards for eligible VNPay payments
 						blockchain_result = _run_blockchain_post_payment(payment.booking)
-						_consume_sky_voucher(session, payment.voucher_code, payment.booking.user_id)
-						session.add(payment.booking)
-
-					session.commit()
-					print(f"[vnpay] Payment {vnp_txn_ref} confirmed successfully")
-					if blockchain_result:
-						print(f"[vnpay] Blockchain result: {blockchain_result.get('message')}")
-				else:
-					print(f"[vnpay] Payment record not found for txn_ref: {vnp_txn_ref}")
-
-			# Redirect về trang confirmation.html (frontend) kèm mã giao dịch và booking code
-			confirmation_url = f"/confirmation.html?txn_ref={vnp_txn_ref}&transaction_no={vnp_transaction_no}"
-			return redirect(confirmation_url)
+						print(f"[reward] ✓ Minting triggered for {vnp_txn_ref}: {eligibility_reason}")
+					else:
+						# Not eligible for rewards
+						blockchain_result = _skipped_blockchain_result(
+							f'Rewards not eligible: {eligibility_reason}',
+							provider='vnpay'
+						)
+						print(f"[reward] ⚠️ Skipped for {vnp_txn_ref}: {eligibility_reason}")
+					
+					_consume_sky_voucher(session, payment.voucher_code, payment.booking.user_id)
+					session.add(payment.booking)
 		else:
 			# Payment failed
 			with session_scope() as session:
@@ -322,11 +400,102 @@ def _get_user_id_from_bearer() -> int | None:
 	return User.verify_auth_token(token)
 
 
+def _get_admin_token() -> str | None:
+	return os.getenv('ADMIN_TOKEN') or os.getenv('SKYPLAN_ADMIN_TOKEN')
+
+
+def _require_admin() -> tuple[bool, str]:
+	admin_token = _get_admin_token()
+	if not admin_token:
+		return False, 'Admin token not configured'
+
+	auth_header = request.headers.get('Authorization', '')
+	if auth_header.startswith('Bearer '):
+		token = auth_header.split(' ', 1)[1].strip()
+		if token == admin_token:
+			return True, 'ok'
+
+	alt_token = request.headers.get('X-Admin-Token', '').strip()
+	if alt_token and alt_token == admin_token:
+		return True, 'ok'
+
+	return False, 'Unauthorized'
+
+
+@payment_bp.route('/admin/confirm-onchain', methods=['POST'])
+def admin_confirm_onchain():
+	ok, msg = _require_admin()
+	if not ok:
+		return jsonify({'success': False, 'message': msg}), 401
+
+	data = request.get_json(silent=True) or {}
+	booking_code = str(data.get('booking_code') or '').strip()
+	wallet_address = str(data.get('wallet_address') or '').strip()
+	amount_wei = data.get('amount_wei')
+	mint_after = bool(data.get('mint'))
+
+	if not booking_code:
+		return jsonify({'success': False, 'message': 'booking_code is required'}), 400
+
+	with session_scope() as session:
+		booking = session.query(Booking).options(
+			joinedload(Booking.user).joinedload(User.bookings)
+		).filter_by(booking_code=booking_code).first()
+		if not booking:
+			return jsonify({'success': False, 'message': 'Booking not found'}), 404
+
+		if not wallet_address:
+			wallet_address = str(getattr(booking, 'wallet_address', '') or '').strip()
+		if not wallet_address:
+			return jsonify({'success': False, 'message': 'Booking missing wallet_address'}), 400
+
+		try:
+			amount_wei = int(amount_wei) if amount_wei is not None else None
+		except Exception:
+			return jsonify({'success': False, 'message': 'amount_wei must be numeric'}), 400
+
+		if amount_wei is None:
+			amount_human = getattr(booking, 'sky_reward_amount', None)
+			if amount_human is None:
+				amount_human, _ = _calculate_booking_sky_reward(booking)
+			amount_wei = int(Decimal(str(amount_human)) * (10 ** 18))
+
+		config = _get_env()
+		w3, signer = _get_w3_and_signer(config)
+		confirmed, confirm_msg = ensure_payment_confirmed_onchain(
+			booking_code,
+			wallet_address,
+			amount_wei,
+			w3,
+			signer,
+			config,
+		)
+		if not confirmed:
+			return jsonify({'success': False, 'message': confirm_msg}), 400
+
+		blockchain_result = None
+		if mint_after:
+			blockchain_result = _run_blockchain_post_payment(booking)
+			session.add(booking)
+
+		return jsonify({
+			'success': True,
+			'message': 'Payment confirmed on-chain',
+			'amount_wei': amount_wei,
+			'blockchain': blockchain_result,
+		}), 200
+
+
+
 @payment_bp.route('/create', methods=['POST'])
 def create_payment():
-	"""Create a payment record for a booking. Supports both authenticated users and guest bookings."""
-	user_id = _get_user_id_from_bearer()  # Optional - can be None for guest bookings
-
+	"""Create a payment record for a booking. SECURITY: Requires authentication."""
+	user_id = _get_user_id_from_bearer()
+	if not user_id:
+		return jsonify({
+			'success': False,
+			'message': 'Unauthorized - authentication required'
+		}), 401
 	data = request.get_json(silent=True) or {}
 	booking_code = data.get('booking_code')
 	amount = data.get('amount')
@@ -343,24 +512,17 @@ def create_payment():
 	except Exception:
 		return jsonify({'success': False, 'message': 'amount must be numeric'}), 400
 
+
 	with session_scope() as session:
-		# Find the booking - for guest bookings, user_id will be None
-		if user_id:
-			# Authenticated user - verify ownership
-			booking = session.query(Booking).filter_by(
-				booking_code=booking_code,
-				user_id=user_id
-			).first()
-		else:
-			# Guest booking - only match by booking_code and ensure it's a guest booking
-			booking = session.query(Booking).filter_by(
-				booking_code=booking_code,
-				user_id=None  # Guest booking has user_id=None
-			).first()
+		# ✓ REQUIRE AUTHENTICATION - only authenticated users can create payments
+		# Find the booking and verify ownership
+		booking = session.query(Booking).filter_by(
+			booking_code=booking_code,
+			user_id=user_id
+		).first()
 
 		if not booking:
-			return jsonify({'success': False, 'message': 'Booking not found'}), 404
-
+			return jsonify({'success': False, 'message': 'Booking not found or does not belong to user'}), 404
 		# Kiểm tra booking status có thể thanh toán
 		if booking.status not in [BookingStatus.PENDING, BookingStatus.PAYMENT_FAILED]:
 			return jsonify({
@@ -457,8 +619,14 @@ def confirm_payment():
 				# Don't fail the payment confirmation, just log the error
 				# Tickets can be generated manually later if needed
 
-			# Trigger blockchain flow (record -> mint NFT -> mint SKY)
-			blockchain_result = _run_blockchain_post_payment(payment.booking)
+			# Run blockchain mint flow only for on-chain payment methods.
+			if _is_blockchain_provider(payment.provider):
+				blockchain_result = _run_blockchain_post_payment(payment.booking)
+			else:
+				blockchain_result = _skipped_blockchain_result(
+					'Skipped blockchain flow for non-blockchain payment method',
+					provider=payment.provider
+				)
 			_consume_sky_voucher(session, payment.voucher_code, payment.booking.user_id)
 
 		elif status == 'FAILED':
@@ -483,24 +651,51 @@ def confirm_payment():
 
 @payment_bp.route('/<int:payment_id>', methods=['GET'])
 def get_payment(payment_id: int):
+	"""Get payment details. SECURITY: Requires authentication and ownership verification."""
+	user_id = _get_user_id_from_bearer()
+	if not user_id:
+		return jsonify({'success': False, 'message': 'Unauthorized - authentication required'}), 401
+	
 	with session_scope() as session:
-		payment = session.get(Payment, payment_id)
+		payment = session.query(Payment).options(
+			joinedload(Payment.booking).joinedload(Booking.user)
+		).get(payment_id)
+		
 		if not payment:
 			return jsonify({'error': 'Payment not found'}), 404
+		
+		# ✓ VERIFY OWNERSHIP - payment must belong to authenticated user
+		if payment.booking.user_id and payment.booking.user_id != user_id:
+			return jsonify({'error': 'Unauthorized - payment belongs to another user'}), 403
+		
 		return jsonify({'payment': payment.as_dict()})
+
 
 
 @payment_bp.route('/<int:payment_id>/status', methods=['PATCH'])
 def update_status(payment_id: int):
+	"""Update payment status. SECURITY: Requires authentication and ownership verification."""
+	user_id = _get_user_id_from_bearer()
+	if not user_id:
+		return jsonify({'success': False, 'message': 'Unauthorized - authentication required'}), 401
+	
 	data = request.get_json(silent=True) or {}
 	status = data.get('status')
 	if not status:
 		return jsonify({'error': 'status required'}), 400
 
 	with session_scope() as session:
-		payment = session.get(Payment, payment_id)
+		payment = session.query(Payment).options(
+			joinedload(Payment.booking).joinedload(Booking.user)
+		).get(payment_id)
+		
 		if not payment:
 			return jsonify({'error': 'Payment not found'}), 404
+		
+		# ✓ VERIFY OWNERSHIP - payment must belong to authenticated user
+		if payment.booking.user_id and payment.booking.user_id != user_id:
+			return jsonify({'error': 'Unauthorized - payment belongs to another user'}), 403
+		
 		payment.status = status.upper()
 		session.add(payment)
 		return jsonify({'payment': payment.as_dict()})
@@ -508,17 +703,33 @@ def update_status(payment_id: int):
 
 @payment_bp.route('/', methods=['GET'])
 def list_payments():
+	"""List user's payments. SECURITY: Requires authentication."""
+	user_id = _get_user_id_from_bearer()
+	if not user_id:
+		return jsonify({'success': False, 'message': 'Unauthorized - authentication required'}), 401
+	
 	with session_scope() as session:
-		payments = session.query(Payment).order_by(Payment.id.desc()).limit(50).all()
+		# Only return payments for bookings belonging to the authenticated user
+		payments = session.query(Payment).join(Booking).filter(
+			Booking.user_id == user_id
+		).order_by(Payment.id.desc()).limit(50).all()
 		return jsonify({'payments': [p.as_dict() for p in payments]})
-
 
 @payment_bp.route('/mark-paid', methods=['POST'])
 def mark_paid():
-	"""Quick demo endpoint to mark a booking as paid/confirmed.
+	"""Mark a booking as paid/confirmed and trigger blockchain rewards.
+	
+	SECURITY: Requires authentication. Payment MUST be verified on-chain.
 	Accepts JSON: { booking_code: str, amount?: number, transaction_id?: str, provider?: str }
-	This endpoint is intentionally permissive to allow demo flows (card/bank local simulation).
 	"""
+	# ✓ REQUIRE AUTHENTICATION
+	user_id = _get_user_id_from_bearer()
+	if not user_id:
+		return jsonify({
+			'success': False,
+			'message': 'Unauthorized - authentication required'
+		}), 401
+
 	data = request.get_json(silent=True) or {}
 	booking_code = str(data.get('booking_code') or '').strip()
 	# Normalize values like "Booking code: SP2026..." or accidental whitespace/newlines.
@@ -546,13 +757,27 @@ def mark_paid():
 			).filter(Booking.booking_code.ilike(booking_code)).first()
 		if not booking:
 			return jsonify({'success': False, 'message': 'Booking not found'}), 404
-		blockchain_result = None
 
-		# If caller provided an Authorization token, attach booking to that user (demo convenience)
-		caller_user = _get_user_id_from_bearer()
-		if caller_user and (booking.user_id is None):
-			booking.user_id = caller_user
-			session.add(booking)
+		# ✓ VERIFY OWNERSHIP - booking must belong to authenticated user
+		if booking.user_id is None:
+			# Guest booking - user can only confirm if they just created it in this session
+			# For security, require explicit wallet_address
+			wallet_input = str(data.get('wallet_address') or data.get('walletAddress') or '').strip()
+			if not wallet_input or not Web3.is_address(wallet_input):
+				return jsonify({
+					'success': False,
+					'message': 'Guest booking requires valid wallet_address'
+				}), 400
+			booking.wallet_address = Web3.to_checksum_address(wallet_input)
+			booking.user_id = user_id  # Attach to caller
+		elif booking.user_id != user_id:
+			# Booking belongs to someone else
+			return jsonify({
+				'success': False,
+				'message': 'Unauthorized - booking belongs to another user'
+			}), 403
+
+		blockchain_result = None
 
 		# Ensure wallet_address exists for blockchain flow
 		wallet_input = str(data.get('wallet_address') or data.get('walletAddress') or '').strip()
@@ -566,26 +791,76 @@ def mark_paid():
 				if owner_user and owner_user.wallet_address and Web3.is_address(owner_user.wallet_address):
 					resolved_wallet = Web3.to_checksum_address(owner_user.wallet_address)
 
-			if not resolved_wallet and caller_user:
-				caller = session.get(User, caller_user)
-				if caller and caller.wallet_address and Web3.is_address(caller.wallet_address):
-					resolved_wallet = Web3.to_checksum_address(caller.wallet_address)
-
 			if resolved_wallet:
 				booking.wallet_address = resolved_wallet
 				session.add(booking)
+			else:
+				return jsonify({
+					'success': False,
+					'message': 'Booking has no wallet address and none provided'
+				}), 400
 
-		# Create a payment record for audit
+		# Verify amount
 		try:
 			amount_dec = Decimal(str(amount)) if amount is not None else booking.total_amount
 		except Exception:
 			amount_dec = booking.total_amount
 
+		# ✓ VERIFY PAYMENT by appropriate channel
+		# Different verification for different payment methods
+		verified_by = None
+		
+		if _is_blockchain_provider(provider):
+			# BLOCKCHAIN: Verify via smart contract
+			if booking.wallet_address:
+				# Convert amount to wei for verification
+				amount_wei = int(float(amount_dec) * 1e18) if amount_dec else 0
+				payment_confirmed, payment_msg = verify_payment_confirmed_onchain(
+					booking_code,
+					booking.wallet_address,
+					amount_wei
+				)
+				
+				if not payment_confirmed:
+					print(f"[mark-paid] ✗ Blockchain verification failed for {booking_code}: {payment_msg}")
+					return jsonify({
+						'success': False,
+						'message': f'Payment verification failed: {payment_msg}',
+						'booking_code': booking_code
+					}), 402  # Payment Required
+				
+				verified_by = 'blockchain'
+				print(f"[payment-verified] ✓ source=blockchain for {booking_code}")
+			else:
+				return jsonify({
+					'success': False,
+					'message': 'Blockchain payment requires wallet_address'
+				}), 400
+		else:
+			# FIAT (VNPay/Bank/Manual): Verify via provider
+			# For /mark-paid endpoint, assume payment was already verified by:
+			# - VNPay callback (with HMAC signature)
+			# - Backend API call (with Bearer token + ownership check)
+			# This endpoint is called as final confirmation
+			provider_lower = str(provider or '').strip().lower()
+			if provider_lower in ('vnpay', 'bank', 'card'):
+				verified_by = provider_lower
+				print(f"[payment-verified] ✓ source={provider_lower} for {booking_code}")
+			elif provider_lower == 'manual':
+				verified_by = 'manual'
+				print(f"[payment-verified] ✓ source=manual for {booking_code}")
+			else:
+				# Unknown provider
+				verified_by = 'unknown'
+				print(f"[payment-verified] ⚠️ Unknown provider: {provider_lower} for {booking_code}")
+
+		# Create a payment record for audit
 		payment = Payment(
 			booking_id=booking.id,
 			booking_code=booking.booking_code,
 			amount=amount_dec,
 			provider=provider,
+			verified_by=verified_by,
 			voucher_code=str(data.get('voucher_code') or '').strip().upper() or None,
 			status='SUCCESS',
 			transaction_id=transaction_id
@@ -608,8 +883,30 @@ def mark_paid():
 		except Exception as ticket_exc:
 			print(f"[mark-paid] Ticket generation failed for {booking.booking_code}: {ticket_exc}")
 
-		# Trigger blockchain flow (record -> mint NFT -> mint SKY)
-		blockchain_result = _run_blockchain_post_payment(booking)
+		# ✓ REWARD ELIGIBILITY CHECK - separate from payment verification
+		# Ensure booking has booking_hash for on-chain recording if possible
+		try:
+			if not getattr(booking, 'booking_hash', None):
+				# Prefer any existing booking_state_hash, otherwise generate one
+				booking.booking_hash = getattr(booking, 'booking_state_hash', None) or generate_booking_state_hash(booking)
+				print(f"[mark-paid] Generated booking_hash for {booking_code}: {booking.booking_hash}")
+		except Exception as gen_exc:
+			print(f"[mark-paid] Could not generate booking_hash for {booking_code}: {gen_exc}")
+		
+		is_eligible, eligibility_reason = _is_reward_eligible(booking, verified_by)
+		
+		if is_eligible:
+			# Run blockchain post-payment flow to mint NFT/SKY
+			blockchain_result = _run_blockchain_post_payment(booking)
+			print(f"[reward] ✓ Minting triggered for {booking_code}: {eligibility_reason}")
+		else:
+			# Ineligible for rewards
+			blockchain_result = _skipped_blockchain_result(
+				f'Rewards not eligible: {eligibility_reason}',
+				provider=provider
+			)
+			print(f"[reward] ⚠️ Skipped for {booking_code}: {eligibility_reason}")
+		
 		_consume_sky_voucher(session, payment.voucher_code, booking.user_id)
 		session.add(booking)
 
@@ -622,7 +919,18 @@ def mark_paid():
 
 @payment_bp.route('/blockchain/save-hash', methods=['POST'])
 def blockchain_save_hash():
-	"""Save blockchain transaction hash after MetaMask tx is submitted."""
+	"""Save blockchain transaction hash after MetaMask tx is submitted.
+	
+	SECURITY: Requires authentication. User must own the booking.
+	"""
+	# ✓ REQUIRE AUTHENTICATION
+	user_id = _get_user_id_from_bearer()
+	if not user_id:
+		return jsonify({
+			'success': False,
+			'message': 'Unauthorized - authentication required'
+		}), 401
+
 	data = request.get_json(silent=True) or {}
 	booking_id = str(data.get('bookingId') or '').strip()
 	tx_hash = str(data.get('txHash') or '').strip()
@@ -638,26 +946,43 @@ def blockchain_save_hash():
 			booking = session.query(Booking).filter_by(booking_code=booking_id).first()
 			if not booking:
 				print(f"[blockchain] save-hash: booking {booking_id} not found")
-			else:
-				# Save wallet address
-				if from_address and not getattr(booking, 'wallet_address', None):
-					booking.wallet_address = from_address
+				return jsonify({'success': False, 'message': 'Booking not found'}), 404
+			
+			# ✓ VERIFY OWNERSHIP - booking must belong to authenticated user
+			if booking.user_id is None:
+				# Guest booking - require wallet_address for verification
+				if not from_address:
+					return jsonify({
+						'success': False,
+						'message': 'Guest booking requires fromAddress'
+					}), 403
+				booking.user_id = user_id  # Attach guest booking to user
+			elif booking.user_id != user_id:
+				# Booking belongs to someone else
+				return jsonify({
+					'success': False,
+					'message': 'Unauthorized - booking belongs to another user'
+				}), 403
+			
+			# Save wallet address
+			if from_address and not getattr(booking, 'wallet_address', None):
+				booking.wallet_address = from_address
 
-				# Find or create a PENDING payment record for this booking
-				payment = session.query(Payment).filter_by(
-					booking_code=booking_id, status='PENDING'
-				).first()
+			# Find or create a PENDING payment record for this booking
+			payment = session.query(Payment).filter_by(
+				booking_code=booking_id, status='PENDING'
+			).first()
 
-				if not payment:
-					payment = Payment(
-						booking_id=booking.id,
-						booking_code=booking_id,
-						amount=booking.total_amount or 0,
-						provider='blockchain',
-						status='PENDING',
-					)
-					session.add(payment)
-					session.flush()
+			if not payment:
+				payment = Payment(
+					booking_id=booking.id,
+					booking_code=booking_id,
+					amount=booking.total_amount or 0,
+					provider='blockchain',
+					status='PENDING',
+				)
+				session.add(payment)
+				session.flush()
 
 				payment.transaction_id = tx_hash
 				# session_scope auto-commits here
@@ -671,7 +996,18 @@ def blockchain_save_hash():
 
 @payment_bp.route('/blockchain/confirm', methods=['POST'])
 def blockchain_confirm_payment():
-	"""Confirm a blockchain payment after tx receipt is confirmed on-chain."""
+	"""Confirm a blockchain payment after tx receipt is confirmed on-chain.
+	
+	SECURITY: Requires authentication. User must own the booking.
+	"""
+	# ✓ REQUIRE AUTHENTICATION
+	user_id = _get_user_id_from_bearer()
+	if not user_id:
+		return jsonify({
+			'success': False,
+			'message': 'Unauthorized - authentication required'
+		}), 401
+
 	data = request.get_json(silent=True) or {}
 	tx_hash = str(data.get('txHash') or '').strip()
 	status = str(data.get('status') or 'failed').lower()
@@ -691,30 +1027,46 @@ def blockchain_confirm_payment():
 
 			if not payment:
 				print(f"[blockchain] confirm: no payment found for tx={tx_hash[:12]}")
-			else:
-				new_status = 'SUCCESS' if status == 'success' else 'FAILED'
-				payment.status = new_status
+				return jsonify({'success': False, 'message': 'Payment not found'}), 404
+			
+			# ✓ VERIFY OWNERSHIP - payment must belong to authenticated user
+			booking = session.query(Booking).filter_by(id=payment.booking_id).first()
+			if not booking:
+				return jsonify({'success': False, 'message': 'Booking not found'}), 404
+			
+			if booking.user_id is None:
+				# Guest booking - allow confirmation (user can complete guest booking)
+				booking.user_id = user_id
+			elif booking.user_id != user_id:
+				# Booking belongs to someone else
+				return jsonify({
+					'success': False,
+					'message': 'Unauthorized - booking belongs to another user'
+				}), 403
+			
+			# Update payment status
+			new_status = 'SUCCESS' if status == 'success' else 'FAILED'
+			payment.status = new_status
+			
+			if status == 'success':
+				payment.verified_by = 'blockchain'  # Mark as verified by blockchain
+				booking.status = BookingStatus.CONFIRMED
+				booking.confirmed_at = datetime.utcnow()
+				booking_id_for_chain = booking.id
+				print(f"[payment-verified] ✓ source=blockchain for {payment.booking_code}")
 
-				# Query booking directly by ID so SQLAlchemy tracks it as dirty
-				booking = session.query(Booking).filter_by(id=payment.booking_id).first()
-				if booking:
-					if status == 'success':
-						booking.status = BookingStatus.CONFIRMED
-						booking.confirmed_at = datetime.utcnow()
-						booking_id_for_chain = booking.id
+				# Auto-generate tickets
+				try:
+					tickets = _ensure_tickets_generated(session, booking)
+					print(f"[blockchain] confirm: tickets generated: {tickets}")
+				except Exception as te:
+					print(f"[blockchain] confirm: ticket gen failed (non-fatal): {te}")
 
-						# Auto-generate tickets
-						try:
-							tickets = _ensure_tickets_generated(session, booking)
-							print(f"[blockchain] confirm: tickets generated: {tickets}")
-						except Exception as te:
-							print(f"[blockchain] confirm: ticket gen failed (non-fatal): {te}")
+			elif status == 'failed':
+				booking.status = BookingStatus.PAYMENT_FAILED
 
-					elif status == 'failed':
-						booking.status = BookingStatus.PAYMENT_FAILED
-
-				# session_scope auto-commits when the with block exits
-				print(f"[blockchain] confirm: DB updated → {new_status}")
+			# session_scope auto-commits when the with block exits
+			print(f"[blockchain] confirm: DB updated → {new_status}")
 
 	except Exception as exc:
 		print(f"[blockchain] confirm: DB error (non-fatal): {exc}")
@@ -737,7 +1089,14 @@ def blockchain_confirm_payment():
 							_jl(_B.outbound_flight),
 						).get(bid)
 						if b:
-							_run_blockchain_post_payment(b)
+							# ✓ Check reward eligibility (blockchain requires booking_hash)
+							is_eligible, eligibility_reason = _is_reward_eligible(b, 'blockchain', check_blockchain_specific=True)
+							if is_eligible:
+								# Mint rewards for eligible blockchain payments
+								_run_blockchain_post_payment(b)
+								print(f"[reward] ✓ Minting triggered for {b.booking_code}: {eligibility_reason}")
+							else:
+								print(f"[reward] ⚠️ Skipped for {b.booking_code}: {eligibility_reason}")
 				except Exception as e:
 					print(f"[blockchain] post-payment thread error: {e}")
 					import traceback; traceback.print_exc()
