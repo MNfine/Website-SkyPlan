@@ -87,6 +87,12 @@ class BlockchainConfig:
         or os.environ.get('BLOCKCHAIN_SEPOLIA_RPC')
         or 'https://eth-sepolia.g.alchemy.com/v2/demo'
     )
+
+    # Sepolia WSS URL (Alchemy/Infura/QuickNode) for subscriptions
+    SEPOLIA_WSS_URL = (
+        os.environ.get('SEPOLIA_WSS_URL')
+        or os.environ.get('BLOCKCHAIN_SEPOLIA_WSS')
+    )
     
     # BookingRegistry contract address (deployed on Sepolia)
     BOOKING_REGISTRY_ADDRESS = os.environ.get('BOOKING_REGISTRY_ADDRESS')

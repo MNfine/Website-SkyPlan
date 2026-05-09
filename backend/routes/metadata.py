@@ -80,6 +80,7 @@ def blockchain_config():
             'ticketNFTAddress': BlockchainConfig.TICKET_NFT_ADDRESS,
             'skyTokenAddress': BlockchainConfig.SKY_TOKEN_ADDRESS,
             'receiverAddress': BlockchainConfig.RECEIVER_ADDRESS,
+            'sepoliaWssUrl': BlockchainConfig.SEPOLIA_WSS_URL,
             'sepoliaChainId': '11155111',
             'sepoliaChainIdHex': '0xaa36a7',
         },

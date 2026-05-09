@@ -11,6 +11,7 @@ const BlockchainPayment = (function () {
   let CONFIG = {
     SEPOLIA_CHAIN_ID: '11155111',
     SEPOLIA_CHAIN_ID_HEX: '0xaa36a7',
+    SEPOLIA_WSS_URL: null,
     BOOKING_REGISTRY_ADDRESS: null,
     TICKET_NFT_ADDRESS: null,
     SKY_TOKEN_ADDRESS: null,
@@ -159,6 +160,7 @@ const BlockchainPayment = (function () {
           CONFIG.TICKET_NFT_ADDRESS = blockchainConfig.ticketNFTAddress;
           CONFIG.SKY_TOKEN_ADDRESS = blockchainConfig.skyTokenAddress;
           CONFIG.RECEIVER_ADDRESS = blockchainConfig.receiverAddress;
+          CONFIG.SEPOLIA_WSS_URL = blockchainConfig.sepoliaWssUrl || null;
           CONFIG.SEPOLIA_CHAIN_ID = blockchainConfig.sepoliaChainId;
           CONFIG.SEPOLIA_CHAIN_ID_HEX = blockchainConfig.sepoliaChainIdHex;
           configLoaded = true;
@@ -580,6 +582,197 @@ const BlockchainPayment = (function () {
   async function pollTransactionStatus(txHash, lang, maxRetries = 60, pollInterval = 3000) {
     let retries = 0;
     const lang_code = lang || 'vi';
+    const maxWaitMs = Math.max(5000, maxRetries * pollInterval);
+
+    async function handleReceipt(receipt) {
+      isProcessing = false;
+      console.log('[Blockchain] Transaction receipt received:', receipt);
+
+      const isSuccess = receipt.status === '0x1' || receipt.status === 1;
+
+      if (isSuccess) {
+        currentTransaction.status = 'success';
+        showStatus('success', txHash);
+        await confirmPaymentToBackend(txHash, 'success', {
+          confirmations: 1,
+          block_number: receipt.blockNumber,
+          gas_used: receipt.gasUsed,
+        });
+        notify(getMessage('transactionSuccess', lang_code), 'success', 4000);
+
+        const bookingCode = currentTransaction.bookingId || '';
+        const paymentAmount = currentTransaction.amount || 0;
+        if (bookingCode && paymentAmount > 0) {
+          try {
+            localStorage.setItem('lastBookingCode', bookingCode);
+            localStorage.setItem('lastTxnRef', bookingCode);
+            localStorage.setItem('lastAmount', String(paymentAmount));
+            localStorage.setItem('amount_' + bookingCode, String(paymentAmount));
+            localStorage.setItem('finalPaymentAmount', String(paymentAmount));
+          } catch (e) {
+            console.warn('[Blockchain] Could not save amount to localStorage:', e);
+          }
+        }
+
+        const confirmUrl = `confirmation.html?booking=${bookingCode}&txHash=${encodeURIComponent(txHash)}&method=blockchain`;
+        let secs = 5;
+        const countdownEl = document.getElementById('redirectCountdown');
+        const countdownTpl = getMessage('redirectCountdown', lang_code);
+        const setCountdownText = (n) => {
+          if (countdownEl) countdownEl.textContent = countdownTpl.replace('{secs}', n);
+        };
+        setCountdownText(secs);
+        const tick = setInterval(() => {
+          secs--;
+          setCountdownText(secs);
+          if (secs <= 0) {
+            clearInterval(tick);
+            window.location.href = confirmUrl;
+          }
+        }, 1000);
+      } else {
+        currentTransaction.status = 'failed';
+        currentTransaction.errorCode = 'tx_reverted';
+        showStatus('failed', txHash, 'tx_reverted', getMessage('transactionFailed', lang_code));
+        await confirmPaymentToBackend(txHash, 'failed', {
+          error_code: 'tx_reverted',
+          error_message: getMessage('transactionFailed', lang_code),
+        });
+        notify(getMessage('transactionFailed', lang_code), 'error', 5000);
+      }
+
+      const sendBtn = document.getElementById('payWithCryptoBtn');
+      if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.classList.remove('loading');
+      }
+    }
+
+    function createWssRpcClient(url) {
+      let ws;
+      let id = 1;
+      const pending = new Map();
+      const subscriptions = new Map();
+
+      const ready = new Promise((resolve, reject) => {
+        ws = new WebSocket(url);
+        ws.onopen = () => resolve();
+        ws.onerror = (err) => reject(err);
+        ws.onmessage = (event) => {
+          let msg;
+          try {
+            msg = JSON.parse(event.data);
+          } catch (e) {
+            return;
+          }
+
+          if (msg && Object.prototype.hasOwnProperty.call(msg, 'id')) {
+            const handler = pending.get(msg.id);
+            if (handler) {
+              pending.delete(msg.id);
+              if (msg.error) handler.reject(msg.error);
+              else handler.resolve(msg.result);
+            }
+            return;
+          }
+
+          if (msg && msg.method === 'eth_subscription' && msg.params) {
+            const subId = msg.params.subscription;
+            const cb = subscriptions.get(subId);
+            if (cb) cb(msg.params.result);
+          }
+        };
+      });
+
+      function call(method, params) {
+        return new Promise((resolve, reject) => {
+          const requestId = id++;
+          pending.set(requestId, { resolve, reject });
+          ws.send(JSON.stringify({ jsonrpc: '2.0', id: requestId, method, params }));
+          setTimeout(() => {
+            if (pending.has(requestId)) {
+              pending.delete(requestId);
+              reject(new Error('WSS RPC timeout'));
+            }
+          }, 15000);
+        });
+      }
+
+      async function subscribe(method, params, handler) {
+        const subId = await call('eth_subscribe', params ? [method, params] : [method]);
+        subscriptions.set(subId, handler);
+        return subId;
+      }
+
+      async function unsubscribe(subId) {
+        try {
+          await call('eth_unsubscribe', [subId]);
+        } catch (e) {}
+        subscriptions.delete(subId);
+      }
+
+      function close() {
+        try { ws.close(); } catch (e) {}
+      }
+
+      return { ready, call, subscribe, unsubscribe, close };
+    }
+
+    async function waitForReceiptViaWss(txHash, waitMs) {
+      if (!CONFIG.SEPOLIA_WSS_URL) return null;
+
+      const client = createWssRpcClient(CONFIG.SEPOLIA_WSS_URL);
+      let subId = null;
+      let timeoutId = null;
+      let resolveReceipt = null;
+
+      try {
+        await client.ready;
+
+        const receiptPromise = new Promise((resolve) => {
+          timeoutId = setTimeout(() => resolve(null), waitMs);
+        });
+
+        const resolved = { done: false };
+
+        const receiptResultPromise = new Promise((resolve) => {
+          resolveReceipt = resolve;
+          receiptPromise.then(resolve);
+        });
+
+        subId = await client.subscribe('newHeads', null, async () => {
+          if (resolved.done) return;
+          try {
+            const receipt = await client.call('eth_getTransactionReceipt', [txHash]);
+            if (receipt) {
+              resolved.done = true;
+              if (resolveReceipt) resolveReceipt(receipt);
+            }
+          } catch (e) {
+          }
+        });
+
+        return await receiptResultPromise;
+      } finally {
+        if (timeoutId) clearTimeout(timeoutId);
+        if (subId) await client.unsubscribe(subId);
+        client.close();
+      }
+    }
+
+    if (CONFIG.SEPOLIA_WSS_URL) {
+      try {
+        console.log('[Blockchain] Trying WSS subscription for tx:', txHash);
+        const receipt = await waitForReceiptViaWss(txHash, maxWaitMs);
+        if (receipt) {
+          await handleReceipt(receipt);
+          return;
+        }
+        console.warn('[Blockchain] WSS timeout, fallback to polling');
+      } catch (error) {
+        console.warn('[Blockchain] WSS failed, fallback to polling:', error);
+      }
+    }
 
     console.log(`[Blockchain] Starting polling for tx: ${txHash}`);
 
@@ -593,71 +786,7 @@ const BlockchainPayment = (function () {
 
         if (receipt) {
           clearInterval(pollInterval_id);
-          isProcessing = false;
-          console.log('[Blockchain] Transaction receipt received:', receipt);
-
-          // Check transaction status
-          const isSuccess = receipt.status === '0x1';
-
-          if (isSuccess) {
-            currentTransaction.status = 'success';
-            showStatus('success', txHash);
-            await confirmPaymentToBackend(txHash, 'success', {
-              confirmations: 1,
-              block_number: receipt.blockNumber,
-              gas_used: receipt.gasUsed,
-            });
-            notify(getMessage('transactionSuccess', lang_code), 'success', 4000);
-
-            // Save payment amount to localStorage so confirmation page can display it correctly
-            const bookingCode = currentTransaction.bookingId || '';
-            const paymentAmount = currentTransaction.amount || 0;
-            if (bookingCode && paymentAmount > 0) {
-              try {
-                localStorage.setItem('lastBookingCode', bookingCode);
-                localStorage.setItem('lastTxnRef', bookingCode);
-                localStorage.setItem('lastAmount', String(paymentAmount));
-                localStorage.setItem('amount_' + bookingCode, String(paymentAmount));
-                localStorage.setItem('finalPaymentAmount', String(paymentAmount));
-              } catch (e) {
-                console.warn('[Blockchain] Could not save amount to localStorage:', e);
-              }
-            }
-
-            // Countdown and auto-redirect to confirmation page
-            const confirmUrl = `confirmation.html?booking=${bookingCode}&txHash=${encodeURIComponent(txHash)}&method=blockchain`;
-            let secs = 5;
-            const countdownEl = document.getElementById('redirectCountdown');
-            const countdownTpl = getMessage('redirectCountdown', lang_code);
-            const setCountdownText = (n) => {
-              if (countdownEl) countdownEl.textContent = countdownTpl.replace('{secs}', n);
-            };
-            setCountdownText(secs);
-            const tick = setInterval(() => {
-              secs--;
-              setCountdownText(secs);
-              if (secs <= 0) {
-                clearInterval(tick);
-                window.location.href = confirmUrl;
-              }
-            }, 1000);
-          } else {
-            currentTransaction.status = 'failed';
-            currentTransaction.errorCode = 'tx_reverted';
-            showStatus('failed', txHash, 'tx_reverted', getMessage('transactionFailed', lang_code));
-            await confirmPaymentToBackend(txHash, 'failed', {
-              error_code: 'tx_reverted',
-              error_message: getMessage('transactionFailed', lang_code),
-            });
-            notify(getMessage('transactionFailed', lang_code), 'error', 5000);
-          }
-
-          // Re-enable pay button
-          const sendBtn = document.getElementById('payWithCryptoBtn');
-          if (sendBtn) {
-            sendBtn.disabled = false;
-            sendBtn.classList.remove('loading');
-          }
+          await handleReceipt(receipt);
 
           return;
         }
