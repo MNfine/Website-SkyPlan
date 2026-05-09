@@ -760,16 +760,12 @@ def mark_paid():
 
 		# ✓ VERIFY OWNERSHIP - booking must belong to authenticated user
 		if booking.user_id is None:
-			# Guest booking - user can only confirm if they just created it in this session
-			# For security, require explicit wallet_address
+			# Guest booking - anyone can confirm if they have the booking code
 			wallet_input = str(data.get('wallet_address') or data.get('walletAddress') or '').strip()
-			if not wallet_input or not Web3.is_address(wallet_input):
-				return jsonify({
-					'success': False,
-					'message': 'Guest booking requires valid wallet_address'
-				}), 400
-			booking.wallet_address = Web3.to_checksum_address(wallet_input)
-			booking.user_id = user_id  # Attach to caller
+			if wallet_input and Web3.is_address(wallet_input):
+				booking.wallet_address = Web3.to_checksum_address(wallet_input)
+			if user_id:
+				booking.user_id = user_id  # Attach to caller if they just logged in
 		elif booking.user_id != user_id:
 			# Booking belongs to someone else
 			return jsonify({

@@ -318,6 +318,13 @@ const MetaMaskWallet = (function () {
     try {
       if (!state.provider) return;
 
+      // Ensure user is logged in before restoring wallet to prevent ghost connections
+      const isLoggedIn = !!(localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
+      if (!isLoggedIn) {
+        console.debug('[MetaMask] User not logged in, skipping wallet restore.');
+        return;
+      }
+
       // 1. Phục hồi ngay lập tức từ localStorage để UI không bị giật/block
       const savedAccount = localStorage.getItem('skyplan_wallet_account');
       if (savedAccount) {

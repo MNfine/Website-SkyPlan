@@ -192,6 +192,15 @@ async function ensureWalletLinkedToCurrentUser() {
 
     if (response.status === 409) {
       console.warn('[WalletUI] Wallet belongs to another account:', data && data.message ? data.message : 'Conflict');
+      // Disconnect the wallet since it belongs to someone else
+      if (typeof MetaMaskWallet !== 'undefined' && typeof MetaMaskWallet.disconnect === 'function') {
+        MetaMaskWallet.disconnect();
+      }
+      if (typeof notify === 'function') {
+        notify(walletT('walletAlreadyLinked', 'This wallet is already linked to another account.'), 'error', 6000);
+      } else {
+        alert(walletT('walletAlreadyLinked', 'This wallet is already linked to another account.'));
+      }
       return;
     }
 

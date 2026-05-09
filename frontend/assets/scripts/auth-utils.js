@@ -145,6 +145,11 @@ const AuthState = {
   logout: function() {
     this.clearAuth();
     
+    // Disconnect wallet if present to avoid silent sync on guest checkouts
+    if (typeof window.MetaMaskWallet !== 'undefined' && typeof window.MetaMaskWallet.disconnect === 'function') {
+      window.MetaMaskWallet.disconnect();
+    }
+    
     // Clear any booking data (optional, depends on requirements)
     try {
       localStorage.removeItem('currentPassenger');

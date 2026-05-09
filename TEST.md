@@ -699,9 +699,9 @@ Mở Sepolia Etherscan:
 - Status: **Success**
 - `To` đúng contract/payment receiver.
 
-### 3.3 Verify booking on-chain (nếu dùng BookingRegistry)
+### 3.3 Verify booking on-chain (BookingRegistry)
 
-Nếu hệ thống ghi BookingRegistry:
+Nếu hệ thống ghi BookingRegistry (khi admin xác nhận thủ công hoặc thanh toán fiat):
 - Dùng endpoint API kiểm tra:
 	- `POST {{BASE_URL}}/api/bookings/blockchain/verify`
 	- Headers: `Authorization: Bearer {{TOKEN}}`
@@ -716,6 +716,50 @@ Nếu hệ thống ghi BookingRegistry:
 **Kỳ vọng**:
 - `booking_status`: `CONFIRMED`
 - Response có `booking_hash` khớp on-chain.
+
+### 3.4 Kiểm tra PaymentRegistry (Thanh toán Crypto)
+
+Mọi khoản thanh toán bằng Crypto (MetaMask) đều được ghi nhận trực tiếp vào hợp đồng `PaymentRegistry`.
+
+**Cách kiểm tra**:
+- Mở contract `PaymentRegistry` trên Sepolia Etherscan (lấy địa chỉ từ `PAYMENT_REGISTRY_ADDRESS` trong `.env`).
+- Vào tab **Read Contract**, gọi hàm `isPaymentConfirmed(bookingCode, payer, amount)`.
+  - `amount` là số Wei (VND * 10^18 / Tỷ giá).
+- **Kỳ vọng**: Trả về `true`.
+- Kiểm tra tab **Events** của giao dịch thanh toán: phải có event `PaymentConfirmed`.
+
+### 3.5 Kiểm tra TicketNFT (Phát hành vé)
+
+Vé máy bay SkyPlan được mint dưới dạng NFT (ERC-721).
+
+**Cách kiểm tra**:
+- Mở Sepolia Etherscan của ví thanh toán: `https://sepolia.etherscan.io/address/{{WALLET_ADDRESS}}#nfttransfers`
+- **Kỳ vọng**:
+  - Xuất hiện 1 giao dịch Mint chuẩn ERC-721 (TicketNFT) chuyển vào ví.
+  - Trên trang "Chuyến đi của tôi", booking hiển thị nút **Xem vé NFT** với đúng Token ID.
+
+### 3.6 Kiểm tra SKY Token (Phần thưởng)
+
+Người dùng nhận SKY Token sau khi thanh toán thành công.
+
+**Cách kiểm tra**:
+- Mở Sepolia Etherscan của ví thanh toán: `https://sepolia.etherscan.io/address/{{WALLET_ADDRESS}}#tokentxns`
+- Hoặc dùng API: `GET {{BASE_URL}}/api/bookings/wallets/{{WALLET_ADDRESS}}/sky-balance`
+- **Kỳ vọng**:
+  - Có 1 giao dịch Mint chuẩn ERC-20 (SKY) trên Etherscan.
+  - API trả về `sky_balance` lớn hơn 0 và tương ứng với tỷ lệ cấu hình.
+
+### 3.7 Kiểm tra Data Integrity (Tính toàn vẹn dữ liệu)
+
+Đảm bảo trạng thái booking trên cơ sở dữ liệu và trên blockchain hoàn toàn đồng bộ.
+
+**Cách kiểm tra**:
+- Dùng API check mã băm:
+  - `POST {{BASE_URL}}/api/bookings/blockchain/onchain-hash`
+  - Body: `{"booking_code": "{{BOOKING_CODE}}"}`
+- **Kỳ vọng**:
+  - Response trả về `integrity.is_match: true`.
+  - Nếu cố tình sửa đổi Database (tên hành khách, mã vé), API sẽ phát hiện và báo `is_match: false`.
 
 ---
 

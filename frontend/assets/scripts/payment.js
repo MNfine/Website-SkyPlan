@@ -336,7 +336,8 @@ async function createBackendBookingFromLocalData() {
     const payload = getBookingCreatePayload();
     if (!payload) return null;
 
-    const wallet = window.MetaMaskWallet && window.MetaMaskWallet.account;
+    const isLoggedIn = !!(localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
+    const wallet = isLoggedIn && window.MetaMaskWallet && window.MetaMaskWallet.account;
     if (wallet && !payload.wallet_address && !payload.walletAddress) {
       payload.wallet_address = wallet;
     }
@@ -451,12 +452,14 @@ async function markBookingPaidOnBackend(provider) {
 
     const amount = getEffectivePaymentAmount();
     const token = getAuthTokenForPayment();
+    const isLoggedIn = !!(localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
+    const wallet = isLoggedIn && window.MetaMaskWallet && window.MetaMaskWallet.account;
     const payload = {
       booking_code: bookingCode,
       amount: amount,
       provider: provider || 'manual',
       voucher_code: window.__skyplanAppliedVoucherCode || null,
-      wallet_address: (typeof window.MetaMaskWallet !== 'undefined' && window.MetaMaskWallet.account) ? window.MetaMaskWallet.account : null
+      wallet_address: wallet || null
     };
     const headers = {
       'Content-Type': 'application/json',
@@ -492,8 +495,8 @@ async function markBookingPaidOnBackend(provider) {
 
     let { response, result } = await postMarkPaid(bookingCode);
 
-    // If stored code is stale/fake, create a real booking and retry once.
-    if ((response && !response.ok && (response.status === 404 || response.status === 400)) || !result || !result.success) {
+    // If stored code is stale/fake (404 Not Found), create a real booking and retry once.
+    if (response && response.status === 404) {
       const recreated = await createBackendBookingFromLocalData();
       if (recreated) {
         bookingCode = recreated;

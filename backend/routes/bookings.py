@@ -1121,14 +1121,10 @@ def get_my_trips():
 		}), 401
 
 	with session_scope() as session:
-		# If caller provided a booking_code and is authenticated, try to claim it first.
-		# This helps new guest bookings appear immediately after confirmation redirect.
-		if user_id and booking_code:
-			candidate = session.query(Booking).filter_by(booking_code=booking_code).first()
-			if candidate and candidate.user_id is None:
-				candidate.user_id = user_id
-				session.add(candidate)
-				session.flush()
+		# NOTE: Auto-claim of guest bookings removed.
+		# Previously, if booking_code was provided and the booking had user_id=None,
+		# the endpoint would silently assign it to the authenticated user.
+		# Claiming must now happen only via the explicit /claim endpoint.
 
 		query = session.query(Booking).options(
 			joinedload(Booking.passengers).joinedload(BookingPassenger.passenger),

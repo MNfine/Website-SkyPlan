@@ -234,9 +234,10 @@ async function loadUserTrips() {
 
   try {
     const params = new URLSearchParams(window.location.search || '');
-    const codeFromUrl = (params.get('booking_code') || '').trim();
-    const codeFromStorage = String(localStorage.getItem('lastBookingCode') || localStorage.getItem('currentBookingCode') || '').trim();
-    const bookingCode = codeFromUrl || codeFromStorage;
+    // Only use booking_code from URL params (explicit redirect), NOT from localStorage.
+    // localStorage keys (lastBookingCode, currentBookingCode) are leftovers from guest
+    // booking flows and must not be used to pull guest bookings into authenticated views.
+    const bookingCode = (params.get('booking_code') || '').trim();
     const endpoint = bookingCode
       ? '/api/bookings/my-trips?booking_code=' + encodeURIComponent(bookingCode)
       : '/api/bookings/my-trips';
@@ -282,23 +283,12 @@ async function loadUserTrips() {
 }
 
 async function claimBookingFromContextIfNeeded() {
-  if (!window.AuthState || !AuthState.isAuthenticated()) return;
-
-  const params = new URLSearchParams(window.location.search || '');
-  const fromUrl = (params.get('booking_code') || '').trim();
-  const fromStorage = String(localStorage.getItem('lastBookingCode') || localStorage.getItem('currentBookingCode') || '').trim();
-  const bookingCode = fromUrl || fromStorage;
-
-  if (!bookingCode) return;
-
-  try {
-    await AuthState.fetchWithAuth('/api/bookings/' + encodeURIComponent(bookingCode) + '/claim', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
-    });
-  } catch (_) {
-    // Ignore claim errors (already claimed / not found) and continue loading trips.
-  }
+  // Disabled: Do NOT auto-claim guest bookings when visiting My Trips.
+  // Claiming should only happen via explicit user action (e.g. the claim/integrate button).
+  // The old logic would silently grab any booking_code from localStorage (leftover from
+  // guest booking flows) and assign it to the current authenticated user, which caused
+  // guest bookings (user_id=null) to incorrectly appear in the user's trip list.
+  return;
 }
 
 async function autoIntegrateFromRedirectIfNeeded() {
