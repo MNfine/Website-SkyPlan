@@ -570,6 +570,49 @@ function initializeSearch() {
     }
 }
 
+function bindMyTripsNavigationGuard() {
+    if (document.body && document.body.dataset.myTripsNavGuardBound === 'true') {
+        return;
+    }
+
+    document.addEventListener('click', function(event) {
+        const myTripsLink = event.target.closest('header.header a[href="my_trips.html"], header.header a[href="/my_trips.html"]');
+        if (!myTripsLink) return;
+
+        const isAuthenticated = (() => {
+            if (typeof AuthState !== 'undefined' && typeof AuthState.isAuthenticated === 'function') {
+                return AuthState.isAuthenticated();
+            }
+
+            const normalize = (value) => {
+                if (!value) return null;
+                const trimmed = String(value).trim().toLowerCase();
+                return trimmed && trimmed !== 'null' && trimmed !== 'undefined' ? value : null;
+            };
+
+            return Boolean(
+                normalize(localStorage.getItem('authToken')) ||
+                normalize(sessionStorage.getItem('authToken'))
+            );
+        })();
+
+        if (isAuthenticated) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (typeof AuthState !== 'undefined' && typeof AuthState.clearAuth === 'function') {
+            AuthState.clearAuth();
+        }
+
+        window.location.href = '/login.html?returnUrl=%2Fmy_trips.html';
+    }, true);
+
+    if (document.body) {
+        document.body.dataset.myTripsNavGuardBound = 'true';
+    }
+}
+
 // Smooth scrolling for anchor links
 function enableSmoothScrolling() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -789,6 +832,7 @@ function bindUserDropdownDelegation() {
 
 // Initialize all common functionality
 document.addEventListener('DOMContentLoaded', function() {
+    bindMyTripsNavigationGuard();
     initializeUserDropdown();
     bindUserDropdownDelegation();
 
