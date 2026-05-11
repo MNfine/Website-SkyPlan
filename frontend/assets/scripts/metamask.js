@@ -97,7 +97,7 @@ const MetaMaskWallet = (function () {
   /**
    * Connect wallet
    */
-  async function connect() {
+  async function connect(silent = false) {
     try {
       // Guard against multiple simultaneous connection attempts
       if (state.connecting) {
@@ -152,9 +152,11 @@ const MetaMaskWallet = (function () {
         updateWalletUI();
 
         // Show success notification
-        const lang = window.getPersistedLanguage();
-        const msg = (lang === 'vi') ? 'Ví MetaMask đã kết nối thành công!' : 'MetaMask wallet connected successfully!';
-        showNotification(msg, 'success');
+        if (!silent) {
+          const lang = typeof window.getPersistedLanguage === 'function' ? window.getPersistedLanguage() : 'vi';
+          const msg = (lang === 'vi') ? 'Ví MetaMask đã kết nối thành công!' : 'MetaMask wallet connected successfully!';
+          showNotification(msg, 'success');
+        }
 
         state.connecting = false;
         return true;
@@ -187,7 +189,7 @@ const MetaMaskWallet = (function () {
   /**
    * Disconnect wallet
    */
-  function disconnect() {
+  function disconnect(silent = false) {
     state.isConnected = false;
     state.account = null;
     state.chainId = null;
@@ -206,9 +208,11 @@ const MetaMaskWallet = (function () {
 
     updateWalletUI();
 
-    const lang = window.getPersistedLanguage();
-    const msg = (lang === 'vi') ? 'Ví đã ngắt kết nối' : 'Wallet disconnected';
-    showNotification(msg, 'info');
+    if (!silent) {
+      const lang = window.getPersistedLanguage();
+      const msg = (lang === 'vi') ? 'Ví đã ngắt kết nối' : 'Wallet disconnected';
+      showNotification(msg, 'info');
+    }
   }
 
   /**

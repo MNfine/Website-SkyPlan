@@ -347,7 +347,7 @@
       HoChiMinh: 'Hồ Chí Minh',
       DaNang: 'Đà Nẵng',
       CanTho: 'Cần Thơ',
-      NhaTrang: 'Nha Trang',
+      NhaTrang: 'Khánh Hòa',
       DaLat: 'Đà Lạt',
       PhuQuoc: 'Phú Quốc'
     },
@@ -356,7 +356,7 @@
       HoChiMinh: 'Ho Chi Minh',
       DaNang: 'Da Nang',
       CanTho: 'Can Tho',
-      NhaTrang: 'Nha Trang',
+      NhaTrang: 'Khanh Hoa',
       DaLat: 'Da Lat',
       PhuQuoc: 'Phu Quoc'
     }

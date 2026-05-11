@@ -1,12 +1,12 @@
 // Quiet mode: suppress non-essential console output unless debugging flag is enabled.
 // Set window.SKYPLAN_DEBUG = true in the console to re-enable logs.
-(function(){
+(function () {
   try {
     if (!window.SKYPLAN_DEBUG) {
       console._orig = console._orig || {};
-      ['log','info','debug'].forEach(function(m){ if (!console._orig[m]) console._orig[m]=console[m]; console[m]=function(){}; });
+      ['log', 'info', 'debug'].forEach(function (m) { if (!console._orig[m]) console._orig[m] = console[m]; console[m] = function () { }; });
     }
-  } catch(e){}
+  } catch (e) { }
 })();
 
 // Key to save extras state
@@ -21,26 +21,26 @@ const DEFAULT_EXTRAS = {
 // Extras state management for booking flow integration
 const ExtrasState = {
   // Get current extras selection
-  getSelection: function() {
+  getSelection: function () {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : {...DEFAULT_EXTRAS};
+      return saved ? JSON.parse(saved) : { ...DEFAULT_EXTRAS };
     } catch {
-      return {...DEFAULT_EXTRAS};
+      return { ...DEFAULT_EXTRAS };
     }
   },
-  
+
   // Save extras selection
-  saveSelection: function(data) {
+  saveSelection: function (data) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch (e) {
       console.warn('Failed to save extras selection:', e);
     }
   },
-  
+
   // Get formatted summary for other pages
-  getSummary: function() {
+  getSummary: function () {
     const state = this.getSelection();
     const summary = {
       meals: [],
@@ -48,7 +48,7 @@ const ExtrasState = {
       services: [],
       totalCost: state.total || 0
     };
-    
+
     // Format meals
     const mealCatalog = MEALS.reduce((m, x) => ((m[x.id] = x), m), {});
     summary.meals = (state.meals || []).map(m => ({
@@ -57,7 +57,7 @@ const ExtrasState = {
       quantity: m.qty || 0,
       price: mealCatalog[m.id]?.price || 0
     }));
-    
+
     // Format baggage
     if (state.baggage && state.baggage.kg > 0) {
       const pkg = BAGGAGE_PKGS.find(p => p.kg === state.baggage.kg);
@@ -69,7 +69,7 @@ const ExtrasState = {
         };
       }
     }
-    
+
     // Format services
     summary.services = (state.services || []).map(serviceId => {
       const service = SERVICES.find(s => s.id === serviceId);
@@ -79,12 +79,12 @@ const ExtrasState = {
         price: service.price
       } : null;
     }).filter(Boolean);
-    
+
     return summary;
   },
-  
+
   // Validate selection (optional - all extras are optional)
-  isValid: function() {
+  isValid: function () {
     return true; // Extras are always optional
   }
 };
@@ -108,26 +108,26 @@ function setupContinueButton() {
       if (continueBtn.href && continueBtn.href.includes('overview.html')) {
         continueBtn.href = 'overview.html?' + currentParams.toString();
       }
-      
+
       // Override the onclick to ensure data is saved before navigation
       const originalOnclick = continueBtn.onclick;
-      continueBtn.onclick = function(e) {
+      continueBtn.onclick = function (e) {
         // Ensure current state is saved
         const currentState = getState();
         ExtrasState.saveSelection(currentState);
-        
+
         // Show confirmation toast if extras were selected
         if (currentState.total > 0) {
           const lang = localStorage.getItem('preferredLanguage') || 'vi';
-          const message = lang === 'vi' 
-            ? `Đã lưu dịch vụ bổ sung: ${formatVND(currentState.total)}` 
+          const message = lang === 'vi'
+            ? `Đã lưu dịch vụ bổ sung: ${formatVND(currentState.total)}`
             : `Extras saved: ${formatVND(currentState.total)}`;
-          
+
           if (typeof showToast === 'function') {
             showToast(message, { type: 'success', duration: 2000 });
           }
         }
-        
+
         // Call original onclick if exists
         if (originalOnclick) {
           return originalOnclick.call(this, e);
@@ -155,7 +155,7 @@ function loadHeaderFooter() {
       .then((html) => {
         document.getElementById("footer-container").innerHTML = html;
       })
-      .catch(() => {});
+      .catch(() => { });
   });
 }
 
@@ -165,17 +165,17 @@ function initializeLanguage() {
   if (typeof applyTranslations === "function") {
     try {
       applyTranslations(currentLang);
-    } catch (e) {}
+    } catch (e) { }
   }
   if (typeof applyExtrasTranslations === "function") {
     try {
       applyExtrasTranslations(currentLang);
-    } catch (e) {}
+    } catch (e) { }
   }
   if (typeof initRouteTitle === "function") {
     try {
       initRouteTitle(currentLang);
-    } catch (e) {}
+    } catch (e) { }
   }
   document.addEventListener("languageChanged", (ev) => {
     const lang = ev?.detail?.lang || currentLang;
@@ -187,46 +187,36 @@ function initializeLanguage() {
     initializeLanguageSelector();
 }
 
-function resolveCityLabel(raw, lang) {
+const resolveCityLabel = function(raw, lang) {
+  if (typeof window !== "undefined" && typeof window.resolveCityLabel === "function") {
+    return window.resolveCityLabel(raw, lang);
+  }
+  // Fallback: dùng trực tiếp IATA_TO_CODE map nếu window.resolveCityLabel chưa sẵn sàng
   if (!raw) return "";
-  const CITY_MAP =
-    typeof window !== "undefined" && window.SKYPLAN_CITY_TRANSLATIONS
-      ? window.SKYPLAN_CITY_TRANSLATIONS
-      : {};
-  const dict = CITY_MAP[lang] || {};
-  const viMap = CITY_MAP.vi || {};
-  const enMap = CITY_MAP.en || {};
-  const val = String(raw).trim();
-  if (!val) return "";
-  if (
-    Object.prototype.hasOwnProperty.call(viMap, val) ||
-    Object.prototype.hasOwnProperty.call(enMap, val) ||
-    Object.prototype.hasOwnProperty.call(dict, val)
-  ) {
-    return dict[val] || val;
-  }
-  const mapsToCheck = [viMap, enMap];
-  for (const m of mapsToCheck) {
-    for (const code of Object.keys(m)) {
-      const label = (m[code] || "").toString();
-      if (label && label.toLowerCase() === val.toLowerCase()) {
-        return dict[code] || m[code];
-      }
-    }
-  }
-
-  return val;
-}
+  const MAP = (typeof window !== "undefined" && window.SKYPLAN_CITY_TRANSLATIONS) || {};
+  const IATA = { HAN:"HaNoi", SGN:"HoChiMinh", DAD:"DaNang", CXR:"KhanhHoa", DLI:"DaLat", HPH:"HaiPhong", HUI:"Hue", VCA:"CanTho", PQC:"PhuQuoc", VII:"NgheAn", VDO:"QuangNinh", VDH:"QuangTri", VKG:"AnGiang", DIN:"DienBien", PXU:"GiaLai", SQH:"SonLa", THD:"ThanhHoa" };
+  const code = IATA[String(raw).trim()] || String(raw).trim();
+  const dict = (MAP[lang] || MAP["vi"] || {});
+  return dict[code] || raw;
+};
 
 function readRouteParts() {
   const usp = new URLSearchParams(window.location.search || "");
-  const fromParam = usp.get("from");
-  const toParam = usp.get("to");
-  const fromLS =
-    localStorage.getItem("booking_from") || localStorage.getItem("route_from");
-  const toLS =
-    localStorage.getItem("booking_to") || localStorage.getItem("route_to");
-  return { fromRaw: fromParam || fromLS || "", toRaw: toParam || toLS || "" };
+  let fromRaw = usp.get("from") || usp.get("outbound_departure_airport") || "";
+  let toRaw = usp.get("to") || usp.get("outbound_arrival_airport") || "";
+
+  if (!fromRaw || !toRaw) {
+    try {
+      const trip = JSON.parse(localStorage.getItem("skyplan_trip_selection") || "{}");
+      fromRaw = fromRaw || trip.outbound_departure_airport || trip.fromCode || localStorage.getItem("booking_from") || localStorage.getItem("route_from") || "";
+      toRaw = toRaw || trip.outbound_arrival_airport || trip.toCode || localStorage.getItem("booking_to") || localStorage.getItem("route_to") || "";
+    } catch (e) {
+      fromRaw = fromRaw || localStorage.getItem("booking_from") || localStorage.getItem("route_from") || "";
+      toRaw = toRaw || localStorage.getItem("booking_to") || localStorage.getItem("route_to") || "";
+    }
+  }
+
+  return { fromRaw, toRaw };
 }
 
 function initRouteTitle(langOverride) {
@@ -236,25 +226,26 @@ function initRouteTitle(langOverride) {
     document.documentElement.lang ||
     "vi";
   const { fromRaw, toRaw } = readRouteParts();
-  const CITY_MAP =
-    typeof window !== "undefined" && window.SKYPLAN_CITY_TRANSLATIONS
-      ? window.SKYPLAN_CITY_TRANSLATIONS
-      : {};
-  const dict = CITY_MAP[lang] || {};
-
-  // Fallback mặc định
-  const defaultFromCode = "HaNoi";
-  const defaultToCode = "HoChiMinh";
-  const fallbackFrom =
-    dict[defaultFromCode] || (lang === "vi" ? "Hà Nội" : "Ha Noi");
-  const fallbackTo =
-    dict[defaultToCode] || (lang === "vi" ? "Hồ Chí Minh" : "Ho Chi Minh");
-
-  const from = resolveCityLabel(fromRaw, lang) || fallbackFrom;
-  const to = resolveCityLabel(toRaw, lang) || fallbackTo;
 
   const el = document.getElementById("routeTitle");
   if (!el) return;
+
+  // Nếu chưa có dữ liệu, luôn retry (bất kể langOverride)
+  if (!fromRaw || !toRaw) {
+    if (!initRouteTitle._retries) initRouteTitle._retries = 0;
+    if (initRouteTitle._retries < 10) {
+      initRouteTitle._retries++;
+      setTimeout(() => initRouteTitle(lang), 300);
+    }
+    return;
+  }
+
+  // Reset retry counter khi thành công
+  initRouteTitle._retries = 0;
+
+  const from = resolveCityLabel(fromRaw, lang) || fromRaw;
+  const to = resolveCityLabel(toRaw, lang) || toRaw;
+
   const phrase =
     lang === "vi" ? { from: "Từ", to: "tới" } : { from: "From", to: "to" };
   el.textContent = `${phrase.from} ${from} ${phrase.to} ${to}`;
@@ -433,8 +424,8 @@ function renderDrawerContent(type) {
     typeof window !== "undefined" && window.extrasI18n
       ? window.extrasI18n
       : typeof extrasI18n !== "undefined"
-      ? extrasI18n
-      : null;
+        ? extrasI18n
+        : null;
   const t = (k) =>
     __extrasI18n && __extrasI18n[lang] && __extrasI18n[lang][k]
       ? __extrasI18n[lang][k]
@@ -462,9 +453,8 @@ function renderDrawerContent(type) {
           <div class="meal-price">${formatVND(m.price)}</div>
           <div class="meal-qty">
             <button class="qty-minus" aria-label="minus">-</button>
-            <span class="qty-val">${
-              (state.meals || []).find((x) => x.id === m.id)?.qty || 0
-            }</span>
+            <span class="qty-val">${(state.meals || []).find((x) => x.id === m.id)?.qty || 0
+        }</span>
             <button class="qty-plus" aria-label="plus">+</button>
           </div>
         </div>`;
@@ -503,29 +493,28 @@ function renderDrawerContent(type) {
     <div class="baggage-included">${t("baggageIncluded")}</div>
     <div class="baggage-list">
       ${BAGGAGE_PKGS.map((b) => {
-        const isActive = b.kg === (state.baggage?.kg || 0);
-        const title =
-          window.extrasI18n?.[lang]?.baggagePkgs?.[String(b.kg)] || b.label;
-        const desc =
-          window.extrasI18n?.[lang]?.baggageItemDescs?.[String(b.kg)] ||
-          b.desc ||
-          "";
-        const img = b.img || "assets/images/baggage_add.svg";
-        const btnText = isActive
-          ? lang === "vi"
-            ? "Đã thêm"
-            : "Added"
-          : lang === "vi"
+      const isActive = b.kg === (state.baggage?.kg || 0);
+      const title =
+        window.extrasI18n?.[lang]?.baggagePkgs?.[String(b.kg)] || b.label;
+      const desc =
+        window.extrasI18n?.[lang]?.baggageItemDescs?.[String(b.kg)] ||
+        b.desc ||
+        "";
+      const img = b.img || "assets/images/baggage_add.svg";
+      const btnText = isActive
+        ? lang === "vi"
+          ? "Đã thêm"
+          : "Added"
+        : lang === "vi"
           ? "Thêm"
           : "Add";
-        const priceText = b.price
-          ? formatVND(b.price)
-          : lang === "vi"
+      const priceText = b.price
+        ? formatVND(b.price)
+        : lang === "vi"
           ? "Miễn phí"
           : "Free";
-        return `
-          <div class="baggage-card ${isActive ? "active" : ""}" data-kg="${
-          b.kg
+      return `
+          <div class="baggage-card ${isActive ? "active" : ""}" data-kg="${b.kg
         }">
             <img class="baggage-thumb" src="${img}" alt="${title}" />
             <div class="baggage-info">
@@ -533,11 +522,10 @@ function renderDrawerContent(type) {
               <div class="baggage-desc">${desc}</div>
             </div>
             <div class="baggage-price">${priceText}</div>
-            <button class="baggage-choose ${
-              isActive ? "on" : ""
-            }" aria-pressed="${isActive}">${btnText}</button>
+            <button class="baggage-choose ${isActive ? "on" : ""
+        }" aria-pressed="${isActive}">${btnText}</button>
           </div>`;
-      }).join("")}
+    }).join("")}
     </div>
   `;
     wrap.querySelectorAll(".baggage-choose").forEach((btn) => {
@@ -554,19 +542,19 @@ function renderDrawerContent(type) {
     wrap.innerHTML = `
     <div class="services-list">
       ${SERVICES.map((s) => {
-        const title = window.extrasI18n?.[lang]?.services?.[s.id] || s.label;
-        const desc =
-          window.extrasI18n?.[lang]?.serviceItemDescs?.[s.id] || s.desc || "";
-        const img = s.img || "assets/images/service.svg";
-        const isOn = (getState().services || []).includes(s.id);
-        const btn = isOn
-          ? lang === "vi"
-            ? "Đã thêm"
-            : "Added"
-          : lang === "vi"
+      const title = window.extrasI18n?.[lang]?.services?.[s.id] || s.label;
+      const desc =
+        window.extrasI18n?.[lang]?.serviceItemDescs?.[s.id] || s.desc || "";
+      const img = s.img || "assets/images/service.svg";
+      const isOn = (getState().services || []).includes(s.id);
+      const btn = isOn
+        ? lang === "vi"
+          ? "Đã thêm"
+          : "Added"
+        : lang === "vi"
           ? "Thêm"
           : "Add";
-        return `
+      return `
           <div class="service-card ${isOn ? "selected" : ""}" data-id="${s.id}">
             <img class="service-thumb" src="${img}" alt="${title}" />
             <div class="service-info">
@@ -574,11 +562,10 @@ function renderDrawerContent(type) {
               <div class="service-desc">${desc}</div>
             </div>
             <div class="service-price">${formatVND(s.price)}</div>
-            <button class="service-add ${
-              isOn ? "on" : ""
-            }" aria-pressed="${isOn}">${btn}</button>
+            <button class="service-add ${isOn ? "on" : ""
+        }" aria-pressed="${isOn}">${btn}</button>
           </div>`;
-      }).join("")}
+    }).join("")}
     </div>
   `;
     wrap.querySelectorAll(".service-add").forEach((btn) => {

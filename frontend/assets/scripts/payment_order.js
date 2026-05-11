@@ -39,7 +39,9 @@
     function fmtDateISO(iso, lang) {
         if (!iso) return '';
         try {
-            const d = new Date(iso + 'T00:00:00');
+            const dateStr = iso.includes('T') ? iso : (iso + 'T00:00:00');
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return iso;
             if (lang === 'vi') {
                 // e.g., "Ngày 23 thg 10, 2025"
                 const day = d.getDate();
@@ -82,6 +84,12 @@
         return v !== null && v !== undefined && String(v).trim() !== '';
     }
 
+    function extractTime(val) {
+        if (!val) return '';
+        if (val.includes('T')) return val.split('T')[1].substring(0, 5);
+        return val;
+    }
+
     function render() {
         const lang = getLang();
         const trip = readJSON(TRIP_KEY, null);
@@ -89,8 +97,8 @@
         const extras = readJSON(EXTRAS_KEY, { total: 0 });
 
         // Derive names
-        const fromCode = (trip && (trip.fromCode || trip.from)) || 'HoChiMinh';
-        const toCode = (trip && (trip.toCode || trip.to)) || 'HaNoi';
+        const fromCode = (trip && (trip.outbound_departure_airport || trip.fromCode || trip.from)) || 'HoChiMinh';
+        const toCode = (trip && (trip.outbound_arrival_airport || trip.toCode || trip.to)) || 'HaNoi';
         const fromName = resolveCity(fromCode, lang);
         const toName = resolveCity(toCode, lang);
         const segOut = trip && Array.isArray(trip.segments) ? trip.segments.find(s => s.direction === 'outbound') : null;
@@ -102,6 +110,7 @@
             : (tripType === 'one-way' ? false : hasInboundData);
 
         // Update booking details (route titles and times)
+        const searchData = readJSON('searchData', {});
         const route1 = document.querySelector('.booking-details .flight-summary:nth-of-type(1)');
         const route2 = document.querySelector('.booking-details .flight-summary:nth-of-type(2)');
         if (route1) {
@@ -109,8 +118,10 @@
             const pTime = route1.querySelector('p:nth-of-type(1)');
             const pClass = route1.querySelector('p:nth-of-type(2)');
             if (h4) { h4.textContent = `${fromName} → ${toName}`; h4.removeAttribute('data-i18n'); }
-            const dateLabel = fmtDateISO(trip && trip.departDateISO, lang);
-            if (pTime) { pTime.textContent = `${dateLabel} - ${(segOut && segOut.departTime) || ''} → ${(segOut && segOut.arriveTime) || ''}`; pTime.removeAttribute('data-i18n'); }
+            const dateLabel = fmtDateISO((trip && trip.departDateISO) || searchData.depart_date, lang);
+            const depTime = (segOut && segOut.departTime) || extractTime(trip && trip.outbound_departure_time) || '';
+            const arrTime = (segOut && segOut.arriveTime) || extractTime(trip && trip.outbound_arrival_time) || '';
+            if (pTime) { pTime.textContent = `${dateLabel} - ${depTime} → ${arrTime}`; pTime.removeAttribute('data-i18n'); }
             if (pClass) { pClass.textContent = `${fareClassLabel(fare && fare.fareClass, lang)} • 1 ${lang === 'vi' ? 'hành khách' : 'passenger'}`; pClass.removeAttribute('data-i18n'); }
         }
         if (shouldShowInbound && route2) {
@@ -123,8 +134,10 @@
                 const pTime = route2.querySelector('p:nth-of-type(1)');
                 const pClass = route2.querySelector('p:nth-of-type(2)');
                 if (h4) { h4.textContent = `${toName} → ${fromName}`; h4.removeAttribute('data-i18n'); }
-                const dateLabel = fmtDateISO(trip && (trip.returnDateISO || trip.departDateISO), lang);
-                if (pTime) { pTime.textContent = `${dateLabel} - ${(segIn && segIn.departTime) || ''} → ${(segIn && segIn.arriveTime) || ''}`; pTime.removeAttribute('data-i18n'); }
+                const dateLabel = fmtDateISO((trip && (trip.returnDateISO || trip.departDateISO)) || searchData.return_date || searchData.depart_date, lang);
+                const depTime = (segIn && segIn.departTime) || extractTime(trip && trip.inbound_departure_time) || '';
+                const arrTime = (segIn && segIn.arriveTime) || extractTime(trip && trip.inbound_arrival_time) || '';
+                if (pTime) { pTime.textContent = `${dateLabel} - ${depTime} → ${arrTime}`; pTime.removeAttribute('data-i18n'); }
                 if (pClass) { pClass.textContent = `${fareClassLabel(fare && fare.fareClass, lang)} • 1 ${lang === 'vi' ? 'hành khách' : 'passenger'}`; pClass.removeAttribute('data-i18n'); }
             }
         } else {
@@ -200,8 +213,8 @@
             const code = (codeEl && codeEl.textContent && codeEl.textContent.trim()) || `SP${new Date().getFullYear()}${String(Date.now()).slice(-5)}`;
             if (codeEl) codeEl.textContent = code;
             if (contentEl) {
-                const fromIATA = (segOut && segOut.departIATA) || (trip && trip.fromIATA) || 'XXX';
-                const toIATA = (segOut && segOut.arriveIATA) || (trip && trip.toIATA) || 'YYY';
+                const fromIATA = (segOut && segOut.departIATA) || (trip && trip.outbound_departure_airport) || (trip && trip.fromIATA) || 'XXX';
+                const toIATA = (segOut && segOut.arriveIATA) || (trip && trip.outbound_arrival_airport) || (trip && trip.toIATA) || 'YYY';
                 contentEl.textContent = (lang === 'vi') ? `Ve may bay ${fromIATA}-${toIATA}` : `Flight ${fromIATA}-${toIATA}`;
             }
             // Expose for payment.js success storage

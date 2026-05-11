@@ -317,6 +317,20 @@ document.addEventListener('DOMContentLoaded', function() {
   }, 500);
 });
 
+// Intercept clicks on 'Chuyến đi của tôi' for guests
+document.addEventListener('click', function(e) {
+  const myTripsLink = e.target.closest('#nav-my-trips');
+  if (myTripsLink) {
+    if (!AuthState.isAuthenticated()) {
+      e.preventDefault();
+      const lang = getPersistedLanguage();
+      const msg = lang === 'vi' ? 'Hãy đăng nhập để xem chuyến đi của bạn' : 'Please log in to view your trips';
+      if (typeof notify === 'function') notify(msg, 'warning');
+      else alert(msg);
+    }
+  }
+});
+
 // Re-sync auth UI after pages that inject header asynchronously dispatch this event
 document.addEventListener('header-loaded', function() {
   setTimeout(() => {

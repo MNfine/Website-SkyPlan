@@ -267,8 +267,8 @@ function applyOverviewTranslations(lang) {
         if (cityArriveRet) cityArriveRet.textContent = fromName;
     } else {
         // When a selected trip exists, reflect it using current language dictionary
-        const fromCode = storedTrip.fromCode || storedTrip.from || '';
-        const toCode = storedTrip.toCode || storedTrip.to || '';
+        const fromCode = storedTrip.outbound_departure_airport || storedTrip.fromCode || storedTrip.from || '';
+        const toCode = storedTrip.outbound_arrival_airport || storedTrip.toCode || storedTrip.to || '';
         const fromName = (typeof window !== 'undefined' && typeof window.resolveCityLabel === 'function')
             ? window.resolveCityLabel(fromCode, normalizedLang)
             : ((cities && cities[fromCode]) || fromCode);

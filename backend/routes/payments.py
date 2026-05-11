@@ -490,12 +490,8 @@ def admin_confirm_onchain():
 @payment_bp.route('/create', methods=['POST'])
 def create_payment():
 	"""Create a payment record for a booking. SECURITY: Requires authentication."""
+	# Authentication is optional for guest bookings
 	user_id = _get_user_id_from_bearer()
-	if not user_id:
-		return jsonify({
-			'success': False,
-			'message': 'Unauthorized - authentication required'
-		}), 401
 	data = request.get_json(silent=True) or {}
 	booking_code = data.get('booking_code')
 	amount = data.get('amount')
@@ -512,17 +508,18 @@ def create_payment():
 	except Exception:
 		return jsonify({'success': False, 'message': 'amount must be numeric'}), 400
 
-
 	with session_scope() as session:
-		# ✓ REQUIRE AUTHENTICATION - only authenticated users can create payments
-		# Find the booking and verify ownership
+		# Find the booking
 		booking = session.query(Booking).filter_by(
-			booking_code=booking_code,
-			user_id=user_id
+			booking_code=booking_code
 		).first()
 
 		if not booking:
-			return jsonify({'success': False, 'message': 'Booking not found or does not belong to user'}), 404
+			return jsonify({'success': False, 'message': 'Booking not found'}), 404
+
+		# Verify ownership: if booking has user_id, caller must match
+		if booking.user_id is not None and booking.user_id != user_id:
+			return jsonify({'success': False, 'message': 'Booking does not belong to user'}), 403
 		# Kiểm tra booking status có thể thanh toán
 		if booking.status not in [BookingStatus.PENDING, BookingStatus.PAYMENT_FAILED]:
 			return jsonify({
@@ -560,12 +557,8 @@ def create_payment():
 @payment_bp.route('/confirm', methods=['POST'])
 def confirm_payment():
 	"""Confirm payment and update booking status."""
+	# Authentication is optional for guest bookings
 	user_id = _get_user_id_from_bearer()
-	if not user_id:
-		return jsonify({
-			'success': False,
-			'message': 'Unauthorized'
-		}), 401
 
 	data = request.get_json(silent=True) or {}
 	payment_id = data.get('payment_id')
@@ -579,16 +572,19 @@ def confirm_payment():
 		}), 400
 
 	with session_scope() as session:
-		# Find payment and verify ownership
+		# Find payment
 		payment = session.query(Payment).join(Booking).options(
 			joinedload(Payment.booking).joinedload(Booking.user).joinedload(User.bookings)
 		).filter(
-			Payment.id == payment_id,
-			Booking.user_id == user_id
+			Payment.id == payment_id
 		).first()
 
 		if not payment:
 			return jsonify({'success': False, 'message': 'Payment not found'}), 404
+
+		# Verify ownership: if booking has user_id, caller must match
+		if payment.booking.user_id is not None and payment.booking.user_id != user_id:
+			return jsonify({'success': False, 'message': 'Unauthorized - payment belongs to another user'}), 403
 
 		# Update payment status
 		payment.status = status
@@ -722,13 +718,8 @@ def mark_paid():
 	SECURITY: Requires authentication. Payment MUST be verified on-chain.
 	Accepts JSON: { booking_code: str, amount?: number, transaction_id?: str, provider?: str }
 	"""
-	# ✓ REQUIRE AUTHENTICATION
+	# Authentication is optional for guest bookings
 	user_id = _get_user_id_from_bearer()
-	if not user_id:
-		return jsonify({
-			'success': False,
-			'message': 'Unauthorized - authentication required'
-		}), 401
 
 	data = request.get_json(silent=True) or {}
 	booking_code = str(data.get('booking_code') or '').strip()
@@ -790,10 +781,10 @@ def mark_paid():
 			if resolved_wallet:
 				booking.wallet_address = resolved_wallet
 				session.add(booking)
-			else:
+			elif _is_blockchain_provider(provider):
 				return jsonify({
 					'success': False,
-					'message': 'Booking has no wallet address and none provided'
+					'message': 'Blockchain payment requires wallet_address'
 				}), 400
 
 		# Verify amount

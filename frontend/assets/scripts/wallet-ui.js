@@ -24,7 +24,7 @@ function walletT(key, fallback) {
 
 async function linkWalletToUser(account) {
   try {
-    if (!account || typeof window.AuthState === 'undefined' || !window.AuthState.isAuthenticated()) return;
+    if (!account || typeof window.AuthState === 'undefined' || !window.AuthState.isAuthenticated()) return false;
     const response = await window.AuthState.fetchWithAuth('/api/auth/wallet/connect', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -36,11 +36,12 @@ async function linkWalletToUser(account) {
       const token = window.AuthState.getToken();
       const remember = !!localStorage.getItem('authToken');
       window.AuthState.setAuth(token, data.user, remember);
+      return true;
     } else {
       console.warn('Failed to link wallet:', data.message);
       if (response.status === 409) {
         if (typeof MetaMaskWallet !== 'undefined' && MetaMaskWallet.disconnect) {
-          MetaMaskWallet.disconnect();
+          MetaMaskWallet.disconnect(true);
         }
         if (typeof notify === 'function') {
           notify(walletT('walletAlreadyLinked', 'This wallet is already linked to another account.'), 'error', 6000);
@@ -48,9 +49,11 @@ async function linkWalletToUser(account) {
           alert(walletT('walletAlreadyLinked', 'This wallet is already linked to another account.'));
         }
       }
+      return false;
     }
   } catch (err) {
     console.error('Error linking wallet to user:', err);
+    return false;
   }
 }
 
@@ -192,14 +195,9 @@ async function ensureWalletLinkedToCurrentUser() {
 
     if (response.status === 409) {
       console.warn('[WalletUI] Wallet belongs to another account:', data && data.message ? data.message : 'Conflict');
-      // Disconnect the wallet since it belongs to someone else
+      // Disconnect the wallet since it belongs to someone else (silently)
       if (typeof MetaMaskWallet !== 'undefined' && typeof MetaMaskWallet.disconnect === 'function') {
-        MetaMaskWallet.disconnect();
-      }
-      if (typeof notify === 'function') {
-        notify(walletT('walletAlreadyLinked', 'This wallet is already linked to another account.'), 'error', 6000);
-      } else {
-        alert(walletT('walletAlreadyLinked', 'This wallet is already linked to another account.'));
+        MetaMaskWallet.disconnect(true);
       }
       return;
     }
@@ -668,9 +666,18 @@ function initWalletUI() {
                   // Try MetaMask wrapper first (project-specific)
                   if (typeof MetaMaskWallet !== 'undefined' && typeof MetaMaskWallet.connect === 'function') {
                     try {
-                      const success = await MetaMaskWallet.connect();
+                      const success = await MetaMaskWallet.connect(true);
                       if (success && MetaMaskWallet.account) {
-                        await linkWalletToUser(MetaMaskWallet.account);
+                        const linked = await linkWalletToUser(MetaMaskWallet.account);
+                        if (linked) {
+                          const lang = typeof window.getPersistedLanguage === 'function' ? window.getPersistedLanguage() : 'vi';
+                          const msg = (lang === 'vi') ? 'Ví MetaMask đã kết nối thành công!' : 'MetaMask wallet connected successfully!';
+                          if (typeof window.notify === 'function') {
+                            window.notify(msg, 'success', 4000);
+                          } else if (typeof window.showToast === 'function') {
+                            window.showToast(msg, { type: 'success', duration: 4000 });
+                          }
+                        }
                       }
                       updateWalletUIState();
                       return;
@@ -687,7 +694,16 @@ function initWalletUI() {
                         window.MetaMaskWallet = window.MetaMaskWallet || {};
                         window.MetaMaskWallet.isConnected = true;
                         window.MetaMaskWallet.account = accounts[0];
-                        await linkWalletToUser(accounts[0]);
+                        const linked = await linkWalletToUser(accounts[0]);
+                        if (linked) {
+                          const lang = typeof window.getPersistedLanguage === 'function' ? window.getPersistedLanguage() : 'vi';
+                          const msg = (lang === 'vi') ? 'Ví MetaMask đã kết nối thành công!' : 'MetaMask wallet connected successfully!';
+                          if (typeof window.notify === 'function') {
+                            window.notify(msg, 'success', 4000);
+                          } else if (typeof window.showToast === 'function') {
+                            window.showToast(msg, { type: 'success', duration: 4000 });
+                          }
+                        }
                         window.MetaMaskWallet.disconnect = async () => {
                           // No standard programmatic disconnect for extension; just update UI
                           window.MetaMaskWallet.isConnected = false;

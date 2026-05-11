@@ -253,8 +253,10 @@
     }
 
     const lang = getLang();
-    const fromName = cityLabel(trip.fromCode, lang);
-    const toName = cityLabel(trip.toCode, lang);
+    const fromRaw = trip.outbound_departure_airport || trip.fromCode || '';
+    const toRaw = trip.outbound_arrival_airport || trip.toCode || '';
+    const fromName = cityLabel(fromRaw, lang);
+    const toName = cityLabel(toRaw, lang);
 
     // Route heading
     const routeEl = document.getElementById('route-heading');
@@ -444,18 +446,18 @@
       outboundData = {
         departTime: trip.outboundDepartTime || trip.departTime,
         arriveTime: trip.outboundArriveTime || trip.arriveTime,
-        departIATA: trip.fromIATA || trip.fromCode,
-        arriveIATA: trip.toIATA || trip.toCode,
+        departIATA: trip.outbound_departure_airport || trip.fromIATA || trip.fromCode,
+        arriveIATA: trip.outbound_arrival_airport || trip.toIATA || trip.toCode,
         durationMin: trip.outboundDurationMin || trip.durationMin
       };
     }
     
     if (outboundData) {
       if (outDepTimeEl) outDepTimeEl.textContent = outboundData.departTime || '';
-      if (outDepLocEl) outDepLocEl.textContent = outboundData.departIATA || trip.fromIATA || trip.fromCode || '';
+      if (outDepLocEl) outDepLocEl.textContent = outboundData.departIATA || trip.outbound_departure_airport || trip.fromIATA || trip.fromCode || '';
       if (outDepCityEl) outDepCityEl.textContent = fromName;
       if (outArrTimeEl) outArrTimeEl.textContent = outboundData.arriveTime || '';
-      if (outArrLocEl) outArrLocEl.textContent = outboundData.arriveIATA || trip.toIATA || trip.toCode || '';
+      if (outArrLocEl) outArrLocEl.textContent = outboundData.arriveIATA || trip.outbound_arrival_airport || trip.toIATA || trip.toCode || '';
       if (outArrCityEl) outArrCityEl.textContent = toName;
       const dmin = (typeof outboundData.durationMin === 'number' && outboundData.durationMin > 0) ? 
         outboundData.durationMin : 

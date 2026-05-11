@@ -1024,7 +1024,7 @@ function formatAirport(code, lang = 'vi', includeAirportName = false) {
             airport: { vi: 'Sân bay Đà Nẵng', en: 'Da Nang Airport' }
         },
         'CXR': {
-            city: { vi: 'Nha Trang', en: 'Nha Trang' },
+            city: { vi: 'Khánh Hòa', en: 'Khanh Hoa' },
             airport: { vi: 'Sân bay Cam Ranh', en: 'Cam Ranh Airport' }
         },
         'PQC': {

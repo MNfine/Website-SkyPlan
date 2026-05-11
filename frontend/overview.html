@@ -183,10 +183,10 @@
   <script src="assets/scripts/wallet-ui.js"></script>
 <script src="assets/scripts/wallet_translations.js"></script>
 <script src="assets/scripts/metamask.js"></script>
-  <script src="assets/scripts/overview_translations.js"></script>
+  <script src="assets/scripts/overview_translations.js?v=2"></script>
   <script src="assets/scripts/extras_translations.js"></script>
   <script src="assets/scripts/toast.js"></script>
-  <script src="assets/scripts/overview.js"></script>
+  <script src="assets/scripts/overview.js?v=2"></script>
   <script src="assets/scripts/auth-utils.js"></script>
 
   <!-- Load Components -->
@@ -505,8 +505,8 @@
             
             console.log('✅ Booking data saved, navigating to payment...');
             
-            // Navigate to payment page
-            window.location.href = 'payment.html';
+            // Navigate to payment page with query parameters
+            window.location.href = 'payment.html' + window.location.search;
           } catch (error) {
             console.error('Error saving booking data:', error);
             const message = 'Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.';

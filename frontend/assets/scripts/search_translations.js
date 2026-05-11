@@ -336,7 +336,7 @@ function applySearchTranslations(lang) {
                     'HAN': { vi: 'Hà Nội', en: 'Hanoi' },
                     'SGN': { vi: 'Hồ Chí Minh', en: 'Ho Chi Minh' },
                     'DAD': { vi: 'Đà Nẵng', en: 'Da Nang' },
-                    'CXR': { vi: 'Nha Trang', en: 'Nha Trang' },
+                    'CXR': { vi: 'Khánh Hòa', en: 'Khanh Hoa' },
                     'PQC': { vi: 'Phú Quốc', en: 'Phu Quoc' },
                     'VCA': { vi: 'Cần Thơ', en: 'Can Tho' },
                     'HUI': { vi: 'Huế', en: 'Hue' },
@@ -467,7 +467,7 @@ function updateAirportAndCityNames(lang) {
             airport: { vi: 'Sân bay Đà Nẵng', en: 'Da Nang Airport' }
         },
         'CXR': {
-            city: { vi: 'Nha Trang', en: 'Nha Trang' },
+            city: { vi: 'Khánh Hòa', en: 'Khanh Hoa' },
             airport: { vi: 'Sân bay Cam Ranh', en: 'Cam Ranh Airport' }
         },
         'PQC': {

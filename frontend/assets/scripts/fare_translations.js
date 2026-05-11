@@ -218,7 +218,7 @@ window.AIRPORT_NAMES = {
     VII: { vi: 'Vinh', en: 'Vinh' },
     VDO: { vi: 'Vân Đồn', en: 'Van Don' },
     SQH: { vi: 'Sơn La', en: 'Son La' },
-    CXR: { vi: 'Nha Trang', en: 'Nha Trang' },
+    CXR: { vi: 'Khánh Hòa', en: 'Khanh Hoa' },
     BMV: { vi: 'Buôn Ma Thuột', en: 'Buon Ma Thuot' },
     VDH: { vi: 'Đông Hà', en: 'Dong Ha' },
     VCL: { vi: 'Chu Lai', en: 'Chu Lai' },
