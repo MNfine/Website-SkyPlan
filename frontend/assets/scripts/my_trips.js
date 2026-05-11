@@ -213,6 +213,8 @@ function mapBookingToTrip(booking) {
     seat: firstPassenger.seat_number || firstPassenger.seatNumber || '-',
     amountVnd: Math.round(Number(booking.total_amount || 0)),
     isVerified: !!(booking.isVerified || booking.onchain_recorded),
+    onchain_recorded: !!(booking.onchain_recorded),
+    onchain_record_tx_hash: booking.onchain_record_tx_hash || null,
     nft: {
       minted: nftMintedFlag,
       tokenId: (nftInfo && nftInfo.tokenId) || booking.nft_token_id || null,
@@ -338,16 +340,27 @@ function buildTripCard(trip) {
   let nftAction = '';
   if (nftMinted) {
     nftAction = '<button class="btn btn-outline" onclick="event.stopPropagation(); viewNftTicket(\'' + safeId + '\')"><i class="fas fa-ticket"></i><span>' + t('viewNftTicket') + '</span></button>';
-  } else if (trip.status === 'upcoming') {
+   } else if (trip.status === 'upcoming' || trip.status === 'completed') {
     nftAction = '<button class="btn btn-outline" onclick="event.stopPropagation(); integrateNftTicket(\'' + bookingCode + '\')"><i class="fas fa-link"></i><span>' + t('integrateNft') + '</span></button>';
   }
+
+  // Nút "Xem Booking" chỉ hiện khi có tx hash cụ thể (onchain_record hoặc nft tx)
+  let etherscanHref = null;
+  if (trip.onchain_record_tx_hash) {
+    etherscanHref = 'https://sepolia.etherscan.io/tx/' + escapeHtml(trip.onchain_record_tx_hash);
+  } else if (trip.nft && trip.nft.txHash) {
+    etherscanHref = 'https://sepolia.etherscan.io/tx/' + escapeHtml(trip.nft.txHash);
+  }
+  const etherscanBtn = etherscanHref
+    ? '<a class="btn btn-outline" href="' + etherscanHref + '" target="_blank" rel="noopener" onclick="event.stopPropagation()"><i class="fab fa-ethereum"></i><span>' + t('viewOnEtherscan') + '</span></a>'
+    : '';
 
   const cancelAction = trip.status === 'upcoming'
     ? '<button class="btn btn-danger" onclick="event.stopPropagation(); cancelTrip(\'' + bookingCode + '\')"><i class="fas fa-times-circle"></i><span>' + t('cancelTrip') + '</span></button>'
     : '';
 
   return [
-    '<div class="trip-card" data-trip-id="' + safeId + '" onclick="goToOverview(\'' + bookingCode + '\')">',
+    '<div class="trip-card" data-trip-id="' + safeId + '">',
     '  <div class="trip-status ' + statusClass + '"><span>' + statusLabel(trip.status) + '</span></div>',
     '  <div class="trip-header">',
     '    <div class="route-info">',
@@ -376,7 +389,7 @@ function buildTripCard(trip) {
     '  </div>',
     '  <div class="trip-actions">',
     '    <div class="trip-buttons">',
-    '      <button class="btn btn-outline" onclick="event.stopPropagation(); viewTicket(\'' + bookingCode + '\')"><i class="fas fa-ticket-alt"></i><span>' + t('viewTicket') + '</span></button>',
+    '      ' + etherscanBtn,
     '      ' + nftAction,
     '      <button class="btn btn-primary" onclick="event.stopPropagation(); goToOverview(\'' + bookingCode + '\')"><i class="fas fa-eye"></i><span>' + t('tripDetails') + '</span></button>',
     '      ' + cancelAction,

@@ -86,6 +86,27 @@
     },
 
     calculateTotalCost: function (data) {
+      if (localStorage.getItem('overviewMode') === 'existing-trip') {
+        const storedTotal = localStorage.getItem('bookingTotal');
+        if (storedTotal) {
+          const parsed = Number(storedTotal);
+          if (!isNaN(parsed) && parsed > 0) {
+            console.log('Using stored bookingTotal for existing trip:', parsed);
+            return parsed;
+          }
+        }
+        try {
+          const completeData = JSON.parse(localStorage.getItem('completeBookingData'));
+          if (completeData && completeData.totalCost) {
+            const parsed = Number(completeData.totalCost);
+            if (!isNaN(parsed) && parsed > 0) {
+              console.log('Using stored completeBookingData totalCost:', parsed);
+              return parsed;
+            }
+          }
+        } catch (e) {}
+      }
+
       let total = 0;
 
       // 1. Seat costs (base ticket price from seat selection)
@@ -102,11 +123,11 @@
         total += extrasTotal;
       }
 
-  // 3. Fixed fees (taxes and other charges)
-  // Derive a base fare to compute fees (use seatTotal or flight data when available)
-  const baseFare = seatTotal || ((data.flights && ((data.flights.selectedFlight && Number(data.flights.selectedFlight.price)) || Number(data.flights.price || 0))) || 0) || 0;
-  const fixedFees = baseFare ? Math.round(baseFare * 0.1) : 0; // 10% fee if base fare present
-  total += fixedFees;
+      // 3. Fixed fees (taxes and other charges)
+      // Derive a base fare to compute fees (use seatTotal or flight data when available)
+      const baseFare = seatTotal || ((data.flights && ((data.flights.selectedFlight && Number(data.flights.selectedFlight.price)) || Number(data.flights.price || 0))) || 0) || 0;
+      const fixedFees = baseFare ? Math.round(baseFare * 0.1) : 0; // 10% fee if base fare present
+      total += fixedFees;
 
       console.log('Calculate total cost (NEW LOGIC):', {
         seatTotal: seatTotal,
@@ -292,6 +313,14 @@
       console.log('🔍 Overview: Found tripId/booking_code in URL, saved to currentBookingCode:', tripId);
       // Load booking data from backend only when needed (avoid request loops)
       if (!OVERVIEW_LOAD_STATE.inFlight && OVERVIEW_LOAD_STATE.lastLoadedCode !== tripId) {
+        // Clear stale cached details from previous bookings to prevent flash of stale content (FOSC)
+        localStorage.removeItem('skyplan_fare_selection');
+        localStorage.removeItem('skyplan_extras_v2');
+        localStorage.removeItem('bookingTotal');
+        localStorage.removeItem('completeBookingData');
+        localStorage.removeItem('selectedSeats');
+        localStorage.removeItem('currentPassenger');
+        
         loadBookingData(tripId);
       }
     } else {
@@ -708,10 +737,11 @@
             localStorage.setItem('selectedSeats', JSON.stringify(seats));
           }
         }
-        
+
         // Calculate extras from total_amount
-        // Since extras are not stored in booking, we estimate from total - (flight cost + tax)
-        const flightCost = (booking.outbound_flight?.price || 0) + (booking.inbound_flight?.price || 0);
+        // Since extras are not stored in booking, we estimate from total - (flight cost + tax) * numPassengers
+        const numPassengers = Array.isArray(booking.passengers) ? booking.passengers.length : 1;
+        const flightCost = ((booking.outbound_flight?.price || 0) + (booking.inbound_flight?.price || 0)) * numPassengers;
         const tax = Math.round(flightCost * 0.1);
         const estimatedExtras = Math.max(0, (booking.total_amount || 0) - flightCost - tax);
         
@@ -720,9 +750,25 @@
           meals: [],
           baggage: estimatedExtras > 0 ? { kg: 30, price: estimatedExtras } : null,
           services: [],
-          totalCost: estimatedExtras
+          totalCost: estimatedExtras,
+          total: estimatedExtras // SET BOTH totalCost and total to sync both external/inline scripts!
         };
         localStorage.setItem('skyplan_extras_v2', JSON.stringify(extrasData));
+
+        // Save fare selection data to sync the inline render script
+        const singleFareVND = ((booking.outbound_flight?.price || 0) + (booking.inbound_flight?.price || 0)) * 1.1; // base + 10% tax per passenger
+        const totalFareVND = Math.round(singleFareVND * numPassengers);
+        const fareData = {
+          fareClass: booking.fare_class || 'economy',
+          priceVND: totalFareVND,
+          priceLabel: formatVND(totalFareVND),
+          features: {
+            seat: booking.fare_class === 'business' ? 'businessSeat' : (booking.fare_class === 'premium-economy' ? 'premiumEconomySeat' : 'standardSeat'),
+            baggage: booking.fare_class === 'business' ? 'handBaggage2Plus2' : (booking.fare_class === 'premium-economy' ? 'handBaggage1Plus1' : 'handBaggage1'),
+            flex: booking.fare_class === 'business' ? 'fullyRefundable' : 'noRefund'
+          }
+        };
+        localStorage.setItem('skyplan_fare_selection', JSON.stringify(fareData));
         
         // Save complete booking data
         const completeData = {
@@ -738,12 +784,15 @@
           timestamp: new Date().toISOString()
         };
         localStorage.setItem('completeBookingData', JSON.stringify(completeData));
-
+        localStorage.setItem('bookingTotal', (booking.total_amount || 0).toString());
         // Re-render overview page with loaded data
         setTimeout(() => {
           if (typeof render === 'function') {
             render();
           }
+          // Dispatch languageChanged to trigger the inline render script in overview.html 
+          // and force it to re-render the summary card boxes with correct values!
+          document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang: getLang() } }));
         }, 100);
         setTimeout(() => {
           updatePaymentButton();

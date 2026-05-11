@@ -97,6 +97,7 @@
       
       // Actions
       viewTicket: "View Ticket",
+      viewOnEtherscan: "View Booking",
       downloadTicket: "Download Ticket",
       modifyTrip: "Modify",
       cancelTrip: "Cancel Trip",
@@ -265,6 +266,7 @@
       
       // Actions
       viewTicket: "Xem vé",
+      viewOnEtherscan: "Xem Booking",
       downloadTicket: "Tải vé",
       modifyTrip: "Thay đổi",
       cancelTrip: "Hủy chuyến",
