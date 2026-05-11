@@ -391,19 +391,19 @@ const BlockchainPayment = (function () {
 
       // Get wallet info
       const fromAddress = window.MetaMaskWallet.account;
-      
+
       // Determine recipient:
       //   1. RECEIVER_ADDRESS (dedicated payout wallet from server config)
       //   2. Self-transfer (safe fallback - never reverts on plain ETH sends)
       //   NOTE: BOOKING_REGISTRY_ADDRESS is a contract and may not have receive(),
       //         so we intentionally skip it as a fallback for plain ETH transfers.
       let toAddress = fromAddress; // safe default
-      
-      if (CONFIG.RECEIVER_ADDRESS && 
-          CONFIG.RECEIVER_ADDRESS !== '0x0000000000000000000000000000000000000000') {
+
+      if (CONFIG.RECEIVER_ADDRESS &&
+        CONFIG.RECEIVER_ADDRESS !== '0x0000000000000000000000000000000000000000') {
         toAddress = CONFIG.RECEIVER_ADDRESS;
       }
-      
+
       console.log('[Blockchain] toAddress resolved:', toAddress, '| RECEIVER_ADDRESS in config:', CONFIG.RECEIVER_ADDRESS);
 
       // Prepare transaction parameters
@@ -411,9 +411,9 @@ const BlockchainPayment = (function () {
       const amountWei = ethToWei(ethAmountCalculated);
 
       console.log("[Blockchain] Sending transaction for:", ethAmountCalculated, "ETH (", amountWei, "Wei ) to", toAddress);
-      
+
       // Use a slightly higher gas limit for contracts or non-standard wallets (30k instead of 21k)
-      const gasLimitHex = (toAddress.toLowerCase() === fromAddress.toLowerCase()) ? '0x5208' : '0x7530'; 
+      const gasLimitHex = (toAddress.toLowerCase() === fromAddress.toLowerCase()) ? '0x5208' : '0x7530';
       const valueHex = '0x' + BigInt(amountWei).toString(16);
 
       const txParams = {
@@ -533,7 +533,7 @@ const BlockchainPayment = (function () {
   async function sendTransactionViaMetaMask(txParams) {
     try {
       // Mark that crypto payment flow is active so wallet UI can show network warnings
-      try { window.__cryptoPaymentActive = true; } catch (e) {}
+      try { window.__cryptoPaymentActive = true; } catch (e) { }
       if (!window.ethereum) {
         throw new Error('MetaMask not detected');
       }
@@ -707,12 +707,12 @@ const BlockchainPayment = (function () {
       async function unsubscribe(subId) {
         try {
           await call('eth_unsubscribe', [subId]);
-        } catch (e) {}
+        } catch (e) { }
         subscriptions.delete(subId);
       }
 
       function close() {
-        try { ws.close(); } catch (e) {}
+        try { ws.close(); } catch (e) { }
       }
 
       return { ready, call, subscribe, unsubscribe, close };
@@ -1108,17 +1108,17 @@ const BlockchainPayment = (function () {
 
     var pending = document.getElementById('statusPending');
     var success = document.getElementById('statusSuccess');
-    var failed  = document.getElementById('statusFailed');
+    var failed = document.getElementById('statusFailed');
 
     if (pending) pending.style.display = (type === 'pending') ? 'flex' : 'none';
     if (success) success.style.display = (type === 'success') ? 'flex' : 'none';
-    if (failed)  failed.style.display  = (type === 'failed')  ? 'flex' : 'none';
+    if (failed) failed.style.display = (type === 'failed') ? 'flex' : 'none';
   }
 
   function resetStatusUI() {
     var container = document.getElementById('transactionStatusContainer');
     if (container) container.style.display = 'none';
-    ['statusPending', 'statusSuccess', 'statusFailed'].forEach(function(id) {
+    ['statusPending', 'statusSuccess', 'statusFailed'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.style.display = 'none';
     });
@@ -1138,7 +1138,7 @@ const BlockchainPayment = (function () {
     parseVND: parseVND,
     formatVND: formatVND,
     // Called by payment.js when orderTotalReady fires with the authoritative total
-    refreshAmount: function(newTotal) {
+    refreshAmount: function (newTotal) {
       if (!newTotal || newTotal <= 0) return;
       if (!window.PaymentState) window.PaymentState = { discount: 0, discountPercent: 0, bookingCode: '-' };
       window.PaymentState.amount = newTotal;
