@@ -826,11 +826,17 @@ const BlockchainPayment = (function () {
    */
   async function saveTransactionHashToBackend(bookingCode, txHash, fromAddress, toAddress) {
     try {
+      const token = window.AuthState ? window.AuthState.getToken() : (localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch('/api/payment/blockchain/save-hash', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: headers,
         body: JSON.stringify({
           bookingId: bookingCode,
           txHash: txHash,
@@ -853,11 +859,17 @@ const BlockchainPayment = (function () {
    */
   async function confirmPaymentToBackend(txHash, status, details = {}) {
     try {
+      const token = window.AuthState ? window.AuthState.getToken() : (localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch('/api/payment/blockchain/confirm', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: headers,
         body: JSON.stringify({
           txHash: txHash,
           status: status,

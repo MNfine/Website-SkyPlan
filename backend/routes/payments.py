@@ -971,9 +971,10 @@ def blockchain_save_hash():
 				session.add(payment)
 				session.flush()
 
-				payment.transaction_id = tx_hash
-				# session_scope auto-commits here
-				print(f"[blockchain] save-hash: DB updated for booking {booking_id}")
+			# Always update transaction_id (fixes case where payment existed before tx was submitted)
+			payment.transaction_id = tx_hash
+			session.add(payment)
+			print(f"[blockchain] save-hash: DB updated for booking {booking_id}, tx={tx_hash[:12]}...")
 	except Exception as exc:
 		print(f"[blockchain] save-hash: DB error (non-fatal): {exc}")
 		import traceback; traceback.print_exc()
@@ -1009,8 +1010,30 @@ def blockchain_confirm_payment():
 
 	try:
 		with session_scope() as session:
-			# Query payment directly — no joinedload to avoid dirty-tracking issues
+			# Query payment by tx_hash, with fallback to booking_code for robustness
 			payment = session.query(Payment).filter_by(transaction_id=tx_hash).first()
+
+			if not payment:
+				# Fallback: find by booking_code + PENDING status (tx_hash not saved yet)
+				print(f"[blockchain] confirm: no payment found by tx_hash, searching by user bookings...")
+				# Try to find any PENDING blockchain payment for this user's bookings
+				payment = (
+					session.query(Payment)
+					.join(Booking, Payment.booking_id == Booking.id)
+					.filter(
+						Booking.user_id == user_id,
+						Payment.status == 'PENDING',
+						Payment.provider == 'blockchain',
+					)
+					.order_by(Payment.id.desc())
+					.first()
+				)
+				if payment:
+					# Save the tx_hash now
+					payment.transaction_id = tx_hash
+					session.add(payment)
+					session.flush()
+					print(f"[blockchain] confirm: found payment via fallback, saved tx_hash for booking {payment.booking_code}")
 
 			if not payment:
 				print(f"[blockchain] confirm: no payment found for tx={tx_hash[:12]}")
@@ -1024,6 +1047,7 @@ def blockchain_confirm_payment():
 			if booking.user_id is None:
 				# Guest booking - allow confirmation (user can complete guest booking)
 				booking.user_id = user_id
+				session.add(booking)
 			elif booking.user_id != user_id:
 				# Booking belongs to someone else
 				return jsonify({
@@ -1034,32 +1058,62 @@ def blockchain_confirm_payment():
 			# Update payment status
 			new_status = 'SUCCESS' if status == 'success' else 'FAILED'
 			payment.status = new_status
-			
+
 			if status == 'success':
-				payment.verified_by = 'blockchain'  # Mark as verified by blockchain
+				payment.verified_by = 'blockchain'
 				booking.status = BookingStatus.CONFIRMED
 				booking.confirmed_at = datetime.utcnow()
-				booking_id_for_chain = booking.id
+				session.add(booking)
+				session.add(payment)
+				session.flush()
 				print(f"[payment-verified] ✓ source=blockchain for {payment.booking_code}")
 
 				# Auto-generate tickets
 				try:
 					tickets = _ensure_tickets_generated(session, booking)
-					print(f"[blockchain] confirm: tickets generated: {tickets}")
+					print(f"[mark-paid] Tickets ensured for {payment.booking_code}: {tickets}")
 				except Exception as te:
 					print(f"[blockchain] confirm: ticket gen failed (non-fatal): {te}")
 
+				# Generate booking_hash if missing (required for on-chain recording)
+				try:
+					if not getattr(booking, 'booking_hash', None):
+						from backend.utils.blockchain import generate_booking_state_hash
+						booking.booking_hash = generate_booking_state_hash(booking)
+						session.add(booking)
+						session.flush()
+						print(f"[blockchain] confirm: generated booking_hash for {payment.booking_code}")
+				except Exception as he:
+					print(f"[blockchain] confirm: booking_hash gen failed (non-fatal): {he}")
+
+				# Check reward eligibility NOW while booking is CONFIRMED in-memory
+				# (mirrors card/vnpay flow — avoids thread reading stale PENDING status)
+				is_eligible, eligibility_reason = _is_reward_eligible(
+					booking, 'blockchain', check_blockchain_specific=True
+				)
+				print(f"[blockchain] confirm: reward eligibility={is_eligible}, reason={eligibility_reason}")
+
+				if is_eligible:
+					booking_id_for_chain = booking.id
+				else:
+					booking_id_for_chain = None
+					print(f"[reward] ⚠️ Skipped for {payment.booking_code}: {eligibility_reason}")
+
 			elif status == 'failed':
 				booking.status = BookingStatus.PAYMENT_FAILED
+				session.add(booking)
 
 			# session_scope auto-commits when the with block exits
 			print(f"[blockchain] confirm: DB updated → {new_status}")
 
 	except Exception as exc:
-		print(f"[blockchain] confirm: DB error (non-fatal): {exc}")
+		# Transaction was rolled back — reset so the reward thread is NOT started
+		booking_id_for_chain = None
+		print(f"[blockchain] confirm: DB error — transaction rolled back: {exc}")
 		import traceback; traceback.print_exc()
 
-	# Run NFT/SKY flow OUTSIDE session scope, in background thread
+	# Run NFT/SKY minting in background thread
+	# Eligibility was already confirmed inside the session above
 	if booking_id_for_chain and status == 'success':
 		try:
 			from threading import Thread
@@ -1076,14 +1130,13 @@ def blockchain_confirm_payment():
 							_jl(_B.outbound_flight),
 						).get(bid)
 						if b:
-							# ✓ Check reward eligibility (blockchain requires booking_hash)
-							is_eligible, eligibility_reason = _is_reward_eligible(b, 'blockchain', check_blockchain_specific=True)
-							if is_eligible:
-								# Mint rewards for eligible blockchain payments
-								_run_blockchain_post_payment(b)
-								print(f"[reward] ✓ Minting triggered for {b.booking_code}: {eligibility_reason}")
+							# Eligibility was verified in main thread; just mint
+							result = _run_blockchain_post_payment(b)
+							if result and result.get('success'):
+								print(f"[blockchain] ✅ {b.booking_code}: Blockchain post-payment flow completed")
 							else:
-								print(f"[reward] ⚠️ Skipped for {b.booking_code}: {eligibility_reason}")
+								print(f"[blockchain] ⚠️ {b.booking_code}: {result}")
+							print(f"[reward] ✓ Minting triggered for {b.booking_code}: Eligible for rewards")
 				except Exception as e:
 					print(f"[blockchain] post-payment thread error: {e}")
 					import traceback; traceback.print_exc()
