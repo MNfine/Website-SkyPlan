@@ -4,9 +4,9 @@
   try {
     if (!window.SKYPLAN_DEBUG) {
       console._orig = console._orig || {};
-      ['log','info','debug'].forEach(function(m){ if (!console._orig[m]) console._orig[m]=console[m]; console[m]=function(){}; });
+      ['log', 'info', 'debug'].forEach(function (m) { if (!console._orig[m]) console._orig[m] = console[m]; console[m] = function () { }; });
     }
-  } catch(e){}
+  } catch (e) { }
 
   const TRIP_KEY = 'skyplan_trip_selection';
   const OVERVIEW_LOAD_STATE = {
@@ -67,7 +67,14 @@
     getSeatData: function () {
       try {
         const seats = JSON.parse(localStorage.getItem('selectedSeats')) || [];
-        const fareClass = localStorage.getItem('fareClass') || 'economy';
+        let fareClass = localStorage.getItem('fareClass');
+        if (!fareClass) {
+          const fareSelection = JSON.parse(localStorage.getItem('skyplan_fare_selection') || 'null');
+          if (fareSelection && fareSelection.fareClass) {
+            fareClass = fareSelection.fareClass;
+          }
+        }
+        fareClass = fareClass || 'economy';
         return { seats, fareClass };
       } catch {
         return { seats: [], fareClass: 'economy' };
@@ -104,7 +111,7 @@
               return parsed;
             }
           }
-        } catch (e) {}
+        } catch (e) { }
       }
 
       let total = 0;
@@ -124,14 +131,13 @@
       }
 
       // 3. Fixed fees (taxes and other charges)
-      // Derive a base fare to compute fees (use seatTotal or flight data when available)
       const baseFare = seatTotal || ((data.flights && ((data.flights.selectedFlight && Number(data.flights.selectedFlight.price)) || Number(data.flights.price || 0))) || 0) || 0;
-      const fixedFees = baseFare ? Math.round(baseFare * 0.1) : 0; // 10% fee if base fare present
+      const fixedFees = baseFare ? Math.round(baseFare * 0.1) : 0; // 10% tax/fees
       total += fixedFees;
 
       console.log('Calculate total cost (NEW LOGIC):', {
         seatTotal: seatTotal,
-        extrasTotal: extrasTotal, 
+        extrasTotal: extrasTotal,
         fixedFees: fixedFees,
         finalTotal: total,
         breakdown: {
@@ -147,7 +153,7 @@
   function readTrip() {
     try { return JSON.parse(localStorage.getItem(TRIP_KEY)) || null; } catch { return null; }
   }
-  
+
   // Read selected seats and normalize structure for payment page
   function readSeats() {
     try {
@@ -264,7 +270,7 @@
   function render() {
     // First, try to sync dates from URL parameters to localStorage
     syncDatesFromURL();
-    
+
     const bookingData = OverviewState.getBookingData();
     const trip = bookingData.flights;
 
@@ -290,7 +296,7 @@
     renderSeatDetails(bookingData.seats, lang);
     renderExtrasDetails(bookingData.extras, lang);
     renderTotalCost(bookingData.totalCost, lang);
-    
+
     // Ensure payment button is visible and properly configured
     setTimeout(() => {
       updatePaymentButton();
@@ -320,7 +326,7 @@
         localStorage.removeItem('completeBookingData');
         localStorage.removeItem('selectedSeats');
         localStorage.removeItem('currentPassenger');
-        
+
         loadBookingData(tripId);
       }
     } else {
@@ -333,7 +339,7 @@
         flowEl.style.display = '';
       }
       console.log('🔍 Overview: New booking flow - cleared currentBookingCode');
-      
+
       // FORCE show payment button for new booking
       setTimeout(() => {
         const payBtn = document.getElementById('confirmBookingBtn') || document.querySelector('.pay-btn');
@@ -345,7 +351,7 @@
         updatePaymentButton();
       }, 100);
     }
-    
+
     // Check URL parameters and save to localStorage if found
     const departDate = urlParams.get('depart_date');
     const returnDate = urlParams.get('return_date');
@@ -355,7 +361,7 @@
     if (tripType) {
       try {
         localStorage.setItem('skyplan_trip_type', tripType);
-      } catch (_) {}
+      } catch (_) { }
 
       try {
         const tripRaw = localStorage.getItem(TRIP_KEY);
@@ -369,7 +375,7 @@
             trip.inbound_flight_id = null;
             trip.returnFlightId = null;
             if (Array.isArray(trip.segments)) {
-              trip.segments = trip.segments.filter(function(seg) {
+              trip.segments = trip.segments.filter(function (seg) {
                 return seg && seg.direction === 'outbound';
               });
             }
@@ -377,9 +383,9 @@
 
           localStorage.setItem(TRIP_KEY, JSON.stringify(trip));
         }
-      } catch (_) {}
+      } catch (_) { }
     }
-    
+
     if (departDate || returnDate) {
       let searchData = JSON.parse(localStorage.getItem('searchData') || '{}');
       if (departDate) searchData.depart_date = departDate;
@@ -394,22 +400,22 @@
     console.log('trip:', trip);
     console.log('trip.departDateISO:', trip.departDateISO);
     console.log('trip.returnDateISO:', trip.returnDateISO);
-    
+
     // Check both localStorage and URL parameters for date data
     const searchData = JSON.parse(localStorage.getItem('searchData') || '{}');
     const urlParams = new URLSearchParams(window.location.search);
-    
+
     console.log('searchData from localStorage:', searchData);
     console.log('URL parameters:');
     console.log('  depart_date:', urlParams.get('depart_date'));
     console.log('  return_date:', urlParams.get('return_date'));
     console.log('  outbound_departure_date:', urlParams.get('outbound_departure_date'));
     console.log('  inbound_departure_date:', urlParams.get('inbound_departure_date'));
-    
+
     // If no dates found, try to use current date as fallback  
     const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
     console.log('Today fallback:', today);
-    
+
     // Determine if this is a round-trip or one-way (explicit trip_type has highest priority)
     const explicitTripType = String(
       (urlParams.get('trip_type') || urlParams.get('tripType') || trip.trip_type || trip.tripType || localStorage.getItem('skyplan_trip_type') || '')
@@ -442,13 +448,13 @@
     const outDateEl = document.querySelector('.flight-segment:nth-of-type(1) .flight-date .date-text');
     if (outDateEl) {
       // Try multiple sources for departure date
-      const departDate = trip.departDateISO || 
-                        searchData.depart_date || 
-                        urlParams.get('depart_date') || 
-                        urlParams.get('outbound_departure_date') ||
-                        today; // Fallback to today
+      const departDate = trip.departDateISO ||
+        searchData.depart_date ||
+        urlParams.get('depart_date') ||
+        urlParams.get('outbound_departure_date') ||
+        today; // Fallback to today
       console.log('Using departDate:', departDate);
-      
+
       if (departDate) {
         outDateEl.setAttribute('data-iso', departDate);
         outDateEl.textContent = fmtDateISO(departDate, lang);
@@ -464,12 +470,12 @@
 
     // Handle outbound flight data - try multiple data sources
     let outboundData = null;
-    
+
     // Try to get from segments array first
     if (Array.isArray(trip.segments)) {
       outboundData = trip.segments.find(s => s && s.direction === 'outbound');
     }
-    
+
     // If no segments, try to get from main trip object properties
     if (!outboundData && trip) {
       outboundData = {
@@ -480,7 +486,7 @@
         durationMin: trip.outboundDurationMin || trip.durationMin
       };
     }
-    
+
     if (outboundData) {
       if (outDepTimeEl) outDepTimeEl.textContent = outboundData.departTime || '';
       if (outDepLocEl) outDepLocEl.textContent = outboundData.departIATA || trip.outbound_departure_airport || trip.fromIATA || trip.fromCode || '';
@@ -488,8 +494,8 @@
       if (outArrTimeEl) outArrTimeEl.textContent = outboundData.arriveTime || '';
       if (outArrLocEl) outArrLocEl.textContent = outboundData.arriveIATA || trip.outbound_arrival_airport || trip.toIATA || trip.toCode || '';
       if (outArrCityEl) outArrCityEl.textContent = toName;
-      const dmin = (typeof outboundData.durationMin === 'number' && outboundData.durationMin > 0) ? 
-        outboundData.durationMin : 
+      const dmin = (typeof outboundData.durationMin === 'number' && outboundData.durationMin > 0) ?
+        outboundData.durationMin :
         diffMin(outboundData.departTime, outboundData.arriveTime);
       if (outDurEl && dmin) outDurEl.textContent = fmtDuration(dmin);
     }
@@ -498,15 +504,15 @@
     const inDateEl = document.querySelector('.flight-segment:nth-of-type(2) .flight-date .date-text');
     if (inDateEl) {
       // Try multiple sources for return date  
-      const returnDate = trip.returnDateISO || 
-                        searchData.return_date || 
-                        urlParams.get('return_date') || 
-                        urlParams.get('inbound_departure_date') ||
-                        trip.departDateISO || 
-                        searchData.depart_date ||
-                        today; // Fallback to today
+      const returnDate = trip.returnDateISO ||
+        searchData.return_date ||
+        urlParams.get('return_date') ||
+        urlParams.get('inbound_departure_date') ||
+        trip.departDateISO ||
+        searchData.depart_date ||
+        today; // Fallback to today
       console.log('Using returnDate:', returnDate);
-      
+
       if (returnDate) {
         inDateEl.setAttribute('data-iso', returnDate);
         inDateEl.textContent = fmtDateISO(returnDate, lang);
@@ -522,14 +528,14 @@
 
     // Handle inbound flight data - only for round-trip
     let inboundData = null;
-    
+
     // Only process inbound if this is a round-trip
     if (isRoundTrip || (!isOneWayByType && hasValidInboundSegment)) {
       // Try to get from segments array first
       if (Array.isArray(trip.segments)) {
         inboundData = trip.segments.find(s => s && s.direction === 'inbound');
       }
-      
+
       // If no segments, try to get from main trip object properties for return flight
       if (!inboundData && trip) {
         inboundData = {
@@ -540,7 +546,7 @@
           durationMin: trip.inboundDurationMin || trip.returnDurationMin
         };
       }
-      
+
       if (inboundData && (inboundData.departTime || inboundData.arriveTime)) {
         if (inDepTimeEl) inDepTimeEl.textContent = inboundData.departTime || '';
         if (inDepLocEl) inDepLocEl.textContent = inboundData.departIATA || trip.toIATA || trip.toCode || '';
@@ -548,8 +554,8 @@
         if (inArrTimeEl) inArrTimeEl.textContent = inboundData.arriveTime || '';
         if (inArrLocEl) inArrLocEl.textContent = inboundData.arriveIATA || trip.fromIATA || trip.fromCode || '';
         if (inArrCityEl) inArrCityEl.textContent = fromName; // Arrives at origin city
-        const dmin = (typeof inboundData.durationMin === 'number' && inboundData.durationMin > 0) ? 
-          inboundData.durationMin : 
+        const dmin = (typeof inboundData.durationMin === 'number' && inboundData.durationMin > 0) ?
+          inboundData.durationMin :
           diffMin(inboundData.departTime, inboundData.arriveTime);
         if (inDurEl && dmin) inDurEl.textContent = fmtDuration(dmin);
       }
@@ -634,13 +640,13 @@
     // Update booking data for payment - save complete data structure
     try {
       localStorage.setItem('bookingTotal', totalCost.toString());
-      
+
       // Save complete booking data for payment page
       const trip = readTrip();
       const passenger = readPassenger();
       const seats = readSeats();
       const extras = readExtras();
-      
+
       const completeBookingData = {
         totalCost: totalCost,
         trip: trip,
@@ -649,7 +655,7 @@
         extras: extras,
         timestamp: new Date().toISOString()
       };
-      
+
       localStorage.setItem('completeBookingData', JSON.stringify(completeBookingData));
       console.log('💾 Saved complete booking data for payment:', completeBookingData);
     } catch (error) {
@@ -701,7 +707,7 @@
       if (booking && booking.booking_code) {
         OVERVIEW_LOAD_STATE.lastLoadedCode = String(booking.booking_code).trim();
         console.log('🔍 Populating overview with booking:', booking);
-        
+
         // Build complete trip data from booking
         const tripData = {
           outbound_flight_id: booking.outbound_flight_id,
@@ -719,13 +725,13 @@
         };
         localStorage.setItem('skyplan_trip_selection', JSON.stringify(tripData));
         localStorage.setItem('fareClass', booking.fare_class || 'economy');
-        
+
         // Save passenger data
         if (booking.passengers && booking.passengers.length > 0) {
           const passenger = booking.passengers[0];
           localStorage.setItem('currentPassenger', JSON.stringify(passenger));
         }
-        
+
         // Save seat data
         if (booking.passengers) {
           const seats = booking.passengers.map(p => ({
@@ -738,30 +744,102 @@
           }
         }
 
-        // Calculate extras from total_amount
-        // Since extras are not stored in booking, we estimate from total - (flight cost + tax) * numPassengers
+        // Determine values from DB or fall back to calculation
         const numPassengers = Array.isArray(booking.passengers) ? booking.passengers.length : 1;
-        const flightCost = ((booking.outbound_flight?.price || 0) + (booking.inbound_flight?.price || 0)) * numPassengers;
-        const tax = Math.round(flightCost * 0.1);
-        const estimatedExtras = Math.max(0, (booking.total_amount || 0) - flightCost - tax);
-        
-        // Save extras data (estimated since not stored in booking)
-        const extrasData = {
-          meals: [],
-          baggage: estimatedExtras > 0 ? { kg: 30, price: estimatedExtras } : null,
-          services: [],
-          totalCost: estimatedExtras,
-          total: estimatedExtras // SET BOTH totalCost and total to sync both external/inline scripts!
-        };
+        const totalAmount = Number(booking.total_amount) || 0;
+        const flightBasePrice = ((booking.outbound_flight?.price || 0) + (booking.inbound_flight?.price || 0));
+        let finalTicketVND = 0;
+        let finalExtrasVND = 0;
+        let finalTaxVND = 0;
+
+        if (Number(booking.ticket_amount) > 0 || Number(booking.tax_amount) > 0) {
+          // If we have explicit prices saved in DB, use them directly!
+          finalTicketVND = Number(booking.ticket_amount) || 0;
+          finalExtrasVND = Number(booking.extras_amount) || 0;
+          finalTaxVND = Number(booking.tax_amount) || 0;
+        } else {
+          // Backward compatibility: calculate using multipliers
+          let multiplier = 1.0;
+          const fcNorm = (booking.fare_class || 'economy').toLowerCase().replace('_', '-');
+          if (fcNorm === 'business') {
+            multiplier = 2.2;
+          } else if (fcNorm === 'premium-economy' || fcNorm === 'premium') {
+            multiplier = 1.35;
+          }
+
+          const baseWithTaxAndMult = flightBasePrice * multiplier * 1.1 * numPassengers;
+
+          if (totalAmount >= baseWithTaxAndMult - 100) {
+            finalTicketVND = Math.round(flightBasePrice * multiplier * numPassengers);
+            finalTaxVND = Math.round(flightBasePrice * multiplier * 0.1 * numPassengers);
+            finalExtrasVND = Math.max(0, totalAmount - finalTicketVND - finalTaxVND);
+          } else {
+            finalTicketVND = Math.round(flightBasePrice * multiplier * numPassengers);
+            finalTaxVND = 0;
+            finalExtrasVND = Math.max(0, totalAmount - finalTicketVND);
+          }
+        }
+
+        // Dynamically detect and self-heal component sum mismatches (e.g. from legacy Bug 2 where total was paid for business but DB recorded economy fields)
+        const sumComponents = finalTicketVND + finalTaxVND + finalExtrasVND;
+        if (totalAmount > 0 && Math.abs(sumComponents - totalAmount) > 100) {
+          console.warn(`[Self-Heal] Mismatch detected: sum of components (${sumComponents}) != total_amount (${totalAmount}). Recalculating...`);
+          finalExtrasVND = Number(booking.extras_amount) || 0;
+          const remaining = totalAmount - finalExtrasVND;
+
+          // Split remaining into base ticket and 10% tax
+          finalTicketVND = Math.round(remaining / 1.1);
+          finalTaxVND = remaining - finalTicketVND;
+        }
+
+        // Infer correct fare_class based on reconstructed ticket price to fix legacy records showing "Economy" instead of "Business"
+        if (flightBasePrice > 0) {
+          const ratio = finalTicketVND / (flightBasePrice * numPassengers);
+          if (ratio >= 1.8) {
+            booking.fare_class = 'business';
+            tripData.fareClass = 'business';
+            localStorage.setItem('fareClass', 'business');
+          } else if (ratio >= 1.2 && ratio < 1.8) {
+            booking.fare_class = 'premium-economy';
+            tripData.fareClass = 'premium-economy';
+            localStorage.setItem('fareClass', 'premium-economy');
+          } else {
+            booking.fare_class = 'economy';
+            tripData.fareClass = 'economy';
+            localStorage.setItem('fareClass', 'economy');
+          }
+        }
+
+        // Save extras data
+        let extrasData = null;
+        if (booking.extras_data) {
+          try {
+            extrasData = typeof booking.extras_data === 'string' ? JSON.parse(booking.extras_data) : booking.extras_data;
+          } catch (e) {
+            console.warn('Failed to parse extras_data:', e);
+          }
+        }
+
+        if (!extrasData) {
+          extrasData = {
+            meals: [],
+            baggage: finalExtrasVND > 0 ? { kg: 30, price: finalExtrasVND } : null,
+            services: [],
+            totalCost: finalExtrasVND,
+            total: finalExtrasVND
+          };
+        } else {
+          // Sync both total and totalCost to ensure compatibility with all overview scripts
+          extrasData.total = extrasData.total || extrasData.totalCost || finalExtrasVND;
+          extrasData.totalCost = extrasData.totalCost || extrasData.total || finalExtrasVND;
+        }
         localStorage.setItem('skyplan_extras_v2', JSON.stringify(extrasData));
 
-        // Save fare selection data to sync the inline render script
-        const singleFareVND = ((booking.outbound_flight?.price || 0) + (booking.inbound_flight?.price || 0)) * 1.1; // base + 10% tax per passenger
-        const totalFareVND = Math.round(singleFareVND * numPassengers);
+        // Save fare selection data to sync the inline render script (base fare only, tax/fee is rendered dynamically)
         const fareData = {
           fareClass: booking.fare_class || 'economy',
-          priceVND: totalFareVND,
-          priceLabel: formatVND(totalFareVND),
+          priceVND: finalTicketVND,
+          priceLabel: formatVND(finalTicketVND),
           features: {
             seat: booking.fare_class === 'business' ? 'businessSeat' : (booking.fare_class === 'premium-economy' ? 'premiumEconomySeat' : 'standardSeat'),
             baggage: booking.fare_class === 'business' ? 'handBaggage2Plus2' : (booking.fare_class === 'premium-economy' ? 'handBaggage1Plus1' : 'handBaggage1'),
@@ -769,17 +847,19 @@
           }
         };
         localStorage.setItem('skyplan_fare_selection', JSON.stringify(fareData));
-        
+
         // Save complete booking data
         const completeData = {
           totalCost: booking.total_amount || 0,
           trip: tripData,
           passenger: booking.passengers && booking.passengers.length > 0 ? booking.passengers[0] : null,
-          seats: { seats: booking.passengers ? booking.passengers.map(p => ({
-            seatNumber: p.seat_number || p.seatNumber || '',
-            price: 0,
-            type: booking.fare_class || 'economy'
-          })).filter(s => s.seatNumber) : [], fareClass: booking.fare_class || 'economy' },
+          seats: {
+            seats: booking.passengers ? booking.passengers.map(p => ({
+              seatNumber: p.seat_number || p.seatNumber || '',
+              price: 0,
+              type: booking.fare_class || 'economy'
+            })).filter(s => s.seatNumber) : [], fareClass: booking.fare_class || 'economy'
+          },
           extras: extrasData,
           timestamp: new Date().toISOString()
         };
@@ -878,7 +958,7 @@
     try {
       const booking = await checkBookingStatus(bookingCode);
       const isPaid = booking && (booking.status === 'CONFIRMED' || booking.status === 'COMPLETED');
-      
+
       console.log(`💳 Booking payment status: ${isPaid ? 'PAID' : 'UNPAID/NEW'} (status: ${booking?.status || 'none'})`);
       return isPaid;
     } catch (error) {
@@ -893,7 +973,7 @@
   async function createBooking() {
     console.log('🔍 createBooking function called!');
     const token = getAuthToken();
-    console.log('🔑 Token used for booking:', token ? `${token.substring(0,20)}...` : null);
+    console.log('🔑 Token used for booking:', token ? `${token.substring(0, 20)}...` : null);
 
     const bookingData = OverviewState.getBookingData();
     const trip = bookingData.flights;
@@ -908,7 +988,7 @@
         console.log('Pending booking payload built by shared helper, clientCode:', code);
       }
     } catch (e) { console.warn('buildPendingBookingPayload invocation failed:', e); }
-    
+
     console.log('🔍 Booking data:', { trip, passenger, seats, token });
 
     if (!trip || !passenger) {
@@ -922,7 +1002,7 @@
     // Map fare class - match backend enum values  
     const fareClassMap = {
       'economy': 'economy',
-      'premium': 'premium-economy', 
+      'premium': 'premium-economy',
       'premium-economy': 'premium-economy',
       'business': 'business'
     };
@@ -965,7 +1045,7 @@
         if (c && c.length === 4) {
           // If a looks like YYYY (start with 4 digits), it's YYYY-MM-DD
           if (/^\d{4}$/.test(a)) {
-            return `${b.padStart(2,'0')}/${(a.length===4? a.split('-')[2]: a)}/${c}`; // fallback
+            return `${b.padStart(2, '0')}/${(a.length === 4 ? a.split('-')[2] : a)}/${c}`; // fallback
           }
           // Otherwise assume a=day, b=month
           return `${b.padStart(2, '0')}/${a.padStart(2, '0')}/${c}`;
@@ -994,9 +1074,9 @@
       const parts = dob.split(/[\/\-.]/);
       if (parts.length === 3) {
         // If first part is year
-        if (/^\d{4}$/.test(parts[0])) return `${parts[0]}-${parts[1].padStart(2,'0')}-${parts[2].padStart(2,'0')}`;
+        if (/^\d{4}$/.test(parts[0])) return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
         // Otherwise assume D M Y
-        return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+        return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
       }
       // Last resort: try Date parsing
       const dt = new Date(dob);
@@ -1052,7 +1132,7 @@
           seatNumber: firstSeat.seatNumber || firstSeat.seat_number || firstSeat.seat || null,
           seat_id: firstSeat.seat_id || null
         } : { id: pid };
-        
+
         requestData = {
           outbound_flight_id: parseInt(outboundFlightId),
           inbound_flight_id: inboundFlightId ? parseInt(inboundFlightId) : undefined,
@@ -1212,11 +1292,11 @@
     // The actual booking will be created on confirmation (payment page) to avoid premature PENDING bookings.
     try {
       // Persist a payload that payment.js can use to create booking on confirmation
-      try { localStorage.setItem('pendingBookingPayload', JSON.stringify(data)); } catch(_) {}
+      try { localStorage.setItem('pendingBookingPayload', JSON.stringify(data)); } catch (_) { }
       window.location.href = buildPaymentURL(null);
     } catch (err) {
       const tmp = `TMP${new Date().getFullYear()}${String(Date.now()).slice(-5)}`;
-      try { localStorage.setItem('currentBookingCode', tmp); } catch (_) {}
+      try { localStorage.setItem('currentBookingCode', tmp); } catch (_) { }
       window.location.href = buildPaymentURL(tmp);
     }
   }

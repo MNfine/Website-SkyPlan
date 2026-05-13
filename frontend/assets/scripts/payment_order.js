@@ -148,7 +148,7 @@
         // Price breakdown
         const fareVND = (fare && (Number(fare.priceVND) || parseDigits(fare.priceLabel))) || 0;
         const extrasTotal = resolveExtrasTotal(extras);
-        const tax = 200000; // demo flat tax/fees
+        const tax = Math.round(fareVND * 0.1); // 10% tax/fees
         const ticketAmount = fareVND; // only display base ticket price without extra services
         const total = fareVND + extrasTotal + tax;
 

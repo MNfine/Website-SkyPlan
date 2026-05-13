@@ -69,6 +69,8 @@
         copied: 'Đã sao chép',
         expiresAt: 'HSD',
         expired: 'Đã hết hạn',
+        voucherDiscountDesc: 'Voucher giảm giá vé máy bay từ SKY Tokens',
+        voucherUpgradeDesc: 'Voucher nâng hạng chỗ ngồi từ SKY Tokens',
         initError: 'Không thể khởi tạo trang SKY Tokens',
         loadError: 'Không thể tải dữ liệu SKY Tokens',
         na: 'N/A'
@@ -126,6 +128,8 @@
         copied: 'Copied',
         expiresAt: 'Expires',
         expired: 'Expired',
+        voucherDiscountDesc: 'Flight discount voucher from SKY Tokens',
+        voucherUpgradeDesc: 'Seat upgrade voucher from SKY Tokens',
         initError: 'Failed to initialize SKY Tokens Dashboard',
         loadError: 'Failed to load token data',
         na: 'N/A'
@@ -640,10 +644,17 @@
         ? t('skyTokens.expired', 'Expired')
         : `${t('skyTokens.expiresAt', 'Expires')}: ${formatDateTime(expiresAt)}`;
 
+      let displayDescription = voucher.description || '';
+      if (displayDescription === 'Voucher giảm giá vé máy bay từ SKY Tokens' || displayDescription === 'Flight discount voucher from SKY Tokens') {
+        displayDescription = t('skyTokens.voucherDiscountDesc', 'Flight discount voucher from SKY Tokens');
+      } else if (displayDescription === 'Voucher nâng hạng chỗ ngồi từ SKY Tokens' || displayDescription === 'Seat upgrade voucher from SKY Tokens') {
+        displayDescription = t('skyTokens.voucherUpgradeDesc', 'Seat upgrade voucher from SKY Tokens');
+      }
+
       card.innerHTML = `
         <div>
           <div class="voucher-code">${code || '-'}</div>
-          <div class="voucher-meta">${voucher.description || ''}</div>
+          <div class="voucher-meta">${displayDescription}</div>
         </div>
         <div class="voucher-meta">
           <div>${formatVnd(value)}</div>

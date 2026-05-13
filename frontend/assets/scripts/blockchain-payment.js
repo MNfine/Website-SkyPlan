@@ -118,7 +118,7 @@ const BlockchainPayment = (function () {
       booking.taxAmount ||
       booking.tax_amount ||
       booking.fees ||
-      0
+      Math.round(ticket * 0.1)
     );
 
     console.log('[Payment] Breakdown — ticket:', ticket, '| extras:', extras, '| taxes:', taxes);

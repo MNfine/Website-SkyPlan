@@ -413,6 +413,23 @@
 
     if (integrateBtn) {
       integrateBtn.addEventListener('click', () => {
+        // Check if user is logged in
+        if (!window.AuthState || !window.AuthState.isAuthenticated()) {
+          const currentLang = (typeof window.getPersistedLanguage === 'function') ? window.getPersistedLanguage() : (localStorage.getItem('preferredLanguage') || 'vi');
+          const msg = currentLang === 'vi' 
+            ? 'Hãy đăng nhập và kết nối ví để tích hợp vé NFT' 
+            : 'Please log in and connect your wallet to integrate NFT tickets';
+          
+          if (typeof window.showToast === 'function') {
+            window.showToast(msg, { type: 'error', duration: 4500 });
+          } else if (typeof window.notify === 'function') {
+            window.notify(msg, 'warning');
+          } else {
+            alert(msg);
+          }
+          return;
+        }
+
         close();
         window.location.href = 'my_trips.html';
       });

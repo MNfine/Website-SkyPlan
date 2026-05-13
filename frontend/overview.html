@@ -343,20 +343,21 @@
             }
           }
         }
+        const fareVND = fare && Number(fare.priceVND) > 0 ? Number(fare.priceVND) : 0;
+        const flatTax = Math.round(fareVND * 0.1); // 10% tax/fees
+
         // Update total price
         const totalEl = document.querySelector('.total-price .price-amount');
         if (totalEl){
-          const fareVND = fare && Number(fare.priceVND) > 0 ? Number(fare.priceVND) : 0;
           const extrasTotal = Number(extras.total)||0;
-          const total = fareVND + extrasTotal;
+          const total = fareVND + extrasTotal + flatTax;
           if (total > 0){ totalEl.textContent = formatVND(total); }
           else if (fare && fare.priceLabel){ totalEl.textContent = fare.priceLabel; }
         }
         // Render per-card price subtotals
         const fareCard = document.querySelector('.summary-card:not(.services-card)');
         if (fareCard){
-          const fareVND = fare && Number(fare.priceVND) > 0 ? Number(fare.priceVND) : 0;
-            const label = getOT(lang)?.fareLabel || (lang==='vi'?'Giá vé':'Fare');
+          const label = getOT(lang)?.fareLabel || (lang==='vi'?'Giá vé':'Fare');
           let row = fareCard.querySelector('.card-price');
           if (!row){
             row = document.createElement('div');
@@ -365,7 +366,8 @@
             fareCard.appendChild(row);
           }
           row.querySelector('.label').textContent = label;
-          row.querySelector('.amount').textContent = fareVND ? formatVND(fareVND) : (fare?.priceLabel || '');
+          const finalFareWithTax = fareVND ? (fareVND + flatTax) : 0;
+          row.querySelector('.amount').textContent = finalFareWithTax ? formatVND(finalFareWithTax) : (fare?.priceLabel || '');
         }
         // Render selected extras list
         const card = document.querySelector('.summary-card.services-card');

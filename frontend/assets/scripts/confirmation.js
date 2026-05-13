@@ -57,6 +57,23 @@ if (new URLSearchParams(window.location.search).get('debug') === '1') {
 
           if (!upgradeNowLink.dataset.popupBound) {
             upgradeNowLink.addEventListener('click', async function(e) {
+              // Check if user is logged in
+              if (!window.AuthState || !window.AuthState.isAuthenticated()) {
+                e.preventDefault();
+                const msg = getLang() === 'vi' 
+                  ? 'Hãy đăng nhập và kết nối ví để tích hợp vé NFT' 
+                  : 'Please log in and connect your wallet to integrate NFT tickets';
+                
+                if (typeof window.showToast === 'function') {
+                  window.showToast(msg, { type: 'error', duration: 4500 });
+                } else if (typeof window.notify === 'function') {
+                  window.notify(msg, 'warning');
+                } else {
+                  alert(msg);
+                }
+                return;
+              }
+
               if (typeof window.showBlockchainIntegrationPopup !== 'function') return;
               e.preventDefault();
               const choice = await window.showBlockchainIntegrationPopup();

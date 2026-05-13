@@ -348,19 +348,65 @@
     if (!citySelect) return;
 
     const L = P[lang] || P.vi;
+    const CITY_LABELS = window.SKYPLAN_CITY_TRANSLATIONS;
 
-    // Update city options
-    const options = citySelect.querySelectorAll("option");
-    options.forEach((option) => {
-      const viValue = option.value;
-      if (viValue === "" || viValue === "other") return;
+    if (!CITY_LABELS) {
+      // Fallback if translations are not available yet
+      const options = citySelect.querySelectorAll("option");
+      options.forEach((option) => {
+        const viValue = option.value;
+        if (viValue === "" || viValue === "other") return;
+        if (lang === "en" && L.cities && L.cities[viValue]) {
+          option.textContent = L.cities[viValue];
+        } else {
+          option.textContent = viValue;
+        }
+      });
+      return;
+    }
 
-      if (lang === "en" && L.cities && L.cities[viValue]) {
-        option.textContent = L.cities[viValue];
-      } else {
-        option.textContent = viValue;
+    const labels = CITY_LABELS[lang] || CITY_LABELS['vi'];
+    const codes = Object.keys(CITY_LABELS.vi);
+
+    // Sort alphabetically based on current language
+    const sorted = codes
+      .map(code => ({ code, label: labels[code] }))
+      .sort((a, b) => a.label.localeCompare(b.label, lang === 'vi' ? 'vi' : 'en', { sensitivity: 'base' }));
+
+    const currentValue = citySelect.value;
+    citySelect.innerHTML = '';
+
+    // Default option
+    const defaultOpt = document.createElement('option');
+    defaultOpt.value = '';
+    defaultOpt.setAttribute('data-i18n', 'cityDefault');
+    defaultOpt.textContent = L.cityDefault || 'Chọn tỉnh/thành phố';
+    if (currentValue === '') {
+      defaultOpt.selected = true;
+    }
+    citySelect.appendChild(defaultOpt);
+
+    // Dynamically added options
+    sorted.forEach(c => {
+      const opt = document.createElement('option');
+      const viLabel = CITY_LABELS.vi[c.code];
+      opt.value = viLabel;
+      opt.textContent = c.label;
+      if (viLabel === currentValue) {
+        opt.selected = true;
       }
+      citySelect.appendChild(opt);
     });
+
+    // "Other" option
+    const otherOpt = document.createElement('option');
+    otherOpt.value = 'other';
+    otherOpt.setAttribute('data-i18n', 'cityOther');
+    otherOpt.textContent = L.cityOther || 'Khác';
+    if (currentValue === 'other') {
+      otherOpt.selected = true;
+    }
+    citySelect.appendChild(otherOpt);
   }
 
   // Update nationality dropdown options based on language

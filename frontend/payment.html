@@ -516,13 +516,20 @@
             }
           }
           mainPayBtn.onclick = function() {
-            if (window.Loader) {
-              window.Loader.show();
-              setTimeout(function() {
-                window.location.href = 'confirmation.html';
-              }, 1500);
+            if (typeof processBankTransfer === 'function') {
+              processBankTransfer();
+            } else if (typeof window.processBankTransfer === 'function') {
+              window.processBankTransfer();
             } else {
-              window.location.href = 'confirmation.html';
+              // Fallback if script not loaded
+              if (window.Loader) {
+                window.Loader.show();
+                setTimeout(function() {
+                  window.location.href = 'confirmation.html';
+                }, 1500);
+              } else {
+                window.location.href = 'confirmation.html';
+              }
             }
           };
           return;

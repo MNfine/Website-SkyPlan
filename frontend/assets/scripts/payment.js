@@ -130,7 +130,7 @@ function calculateTotal(booking, discountPercent) {
   var extras = extrasVal;
   var taxes = parseVND(
     booking.tax || booking.taxes || booking.taxAmount || booking.tax_amount ||
-    booking.fees || 200000
+    booking.fees || Math.round(ticket * 0.1)
   );
 
   var subtotal = ticket + extras + taxes;
