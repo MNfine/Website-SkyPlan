@@ -344,7 +344,7 @@
           }
         }
         const fareVND = fare && Number(fare.priceVND) > 0 ? Number(fare.priceVND) : 0;
-        const flatTax = Math.round(fareVND * 0.1); // 10% tax/fees
+        const flatTax = (fare && typeof fare.taxVND === 'number') ? fare.taxVND : Math.round(fareVND * 0.1); // 10% tax/fees
 
         // Update total price
         const totalEl = document.querySelector('.total-price .price-amount');
@@ -358,16 +358,31 @@
         const fareCard = document.querySelector('.summary-card:not(.services-card)');
         if (fareCard){
           const label = getOT(lang)?.fareLabel || (lang==='vi'?'Giá vé':'Fare');
-          let row = fareCard.querySelector('.card-price');
-          if (!row){
-            row = document.createElement('div');
-            row.className = 'card-price';
-            row.innerHTML = '<span class="label"></span><span class="amount"></span>';
-            fareCard.appendChild(row);
+          const taxLabel = getOT(lang)?.taxLabel || getOT(lang)?.taxesAndFees || (lang==='vi'?'Thuế và phí':'Taxes & Fees');
+
+          let farePriceRow = fareCard.querySelector('.card-price.base-fare-row');
+          if (!farePriceRow){
+            // Xoá dòng giá cũ bị gộp (nếu có)
+            const oldRow = fareCard.querySelector('.card-price');
+            if (oldRow) oldRow.remove();
+
+            farePriceRow = document.createElement('div');
+            farePriceRow.className = 'card-price base-fare-row';
+            farePriceRow.innerHTML = '<span class="label"></span><span class="amount"></span>';
+            fareCard.appendChild(farePriceRow);
           }
-          row.querySelector('.label').textContent = label;
-          const finalFareWithTax = fareVND ? (fareVND + flatTax) : 0;
-          row.querySelector('.amount').textContent = finalFareWithTax ? formatVND(finalFareWithTax) : (fare?.priceLabel || '');
+          farePriceRow.querySelector('.label').textContent = label;
+          farePriceRow.querySelector('.amount').textContent = fareVND ? formatVND(fareVND) : (fare?.priceLabel || '');
+
+          let taxPriceRow = fareCard.querySelector('.card-price.tax-fee-row');
+          if (!taxPriceRow){
+            taxPriceRow = document.createElement('div');
+            taxPriceRow.className = 'card-price tax-fee-row';
+            taxPriceRow.innerHTML = '<span class="label"></span><span class="amount"></span>';
+            fareCard.appendChild(taxPriceRow);
+          }
+          taxPriceRow.querySelector('.label').textContent = taxLabel;
+          taxPriceRow.querySelector('.amount').textContent = formatVND(flatTax);
         }
         // Render selected extras list
         const card = document.querySelector('.summary-card.services-card');

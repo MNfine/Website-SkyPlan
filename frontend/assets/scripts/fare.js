@@ -267,6 +267,9 @@
       } catch (_) {}
 
       if (outboundId) {
+        // Xoá dữ liệu chọn dịch vụ/hành khách/đơn hàng từ các lần đặt trước để đảm bảo quy trình mới sạch sẽ
+        ['skyplan_extras_v2', 'skyplan_passenger_info', 'completeBookingData'].forEach(k => localStorage.removeItem(k));
+
         let trip = null;
         try { trip = JSON.parse(localStorage.getItem('skyplan_trip_selection') || 'null'); } catch(_) { trip = null; }
         trip = trip || {};

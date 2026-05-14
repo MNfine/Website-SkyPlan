@@ -656,6 +656,9 @@ function setDateInputsFromQuery() {
 
 // Gọi API backend để lấy danh sách chuyến bay
 async function fetchFlights() {
+    // Xoá dữ liệu chọn dịch vụ/hành khách/đơn hàng từ các lần đặt trước để quy trình mới hoàn toàn sạch sẽ
+    ['skyplan_extras_v2', 'skyplan_fare_selection', 'skyplan_passenger_info', 'completeBookingData'].forEach(k => localStorage.removeItem(k));
+
     // Wait a bit to ensure other scripts have finished their initialization
     await new Promise(resolve => setTimeout(resolve, 100));
     setDateInputsFromQuery();

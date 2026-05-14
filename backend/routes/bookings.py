@@ -797,11 +797,6 @@ def create_booking():
 def get_booking(booking_code):
 	"""Get booking details by booking code."""
 	user_id = _get_user_id_from_bearer()
-	if not user_id:
-		return jsonify({
-			'success': False,
-			'message': 'Unauthorized'
-		}), 401
 
 	with session_scope() as session:
 		booking = session.query(Booking).options(
@@ -810,12 +805,18 @@ def get_booking(booking_code):
 			joinedload(Booking.outbound_flight),
 			joinedload(Booking.inbound_flight)
 		).filter_by(
-			booking_code=booking_code,
-			user_id=user_id
+			booking_code=booking_code
 		).first()
 
 		if not booking:
 			return jsonify({'success': False, 'message': 'Booking not found'}), 404
+
+		# If the booking belongs to a registered user, ensure the requester is that user
+		if booking.user_id is not None and booking.user_id != user_id:
+			return jsonify({
+				'success': False,
+				'message': 'Unauthorized'
+			}), 401
 
 		_ensure_booking_tickets_if_eligible(session, booking)
 

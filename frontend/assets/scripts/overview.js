@@ -839,6 +839,7 @@
         const fareData = {
           fareClass: booking.fare_class || 'economy',
           priceVND: finalTicketVND,
+          taxVND: finalTaxVND,
           priceLabel: formatVND(finalTicketVND),
           features: {
             seat: booking.fare_class === 'business' ? 'businessSeat' : (booking.fare_class === 'premium-economy' ? 'premiumEconomySeat' : 'standardSeat'),

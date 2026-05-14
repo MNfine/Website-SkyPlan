@@ -60,7 +60,7 @@ const notFoundTranslations = {
         metaDescription: "Không tìm thấy trang bạn yêu cầu.",
         title: "Đây không phải là trang bạn đang tìm!",
         descHTML: "Liên kết có thể không chính xác hoặc trang đã được di chuyển.<br>Hãy quay lại trang chủ để tìm trang bạn cần.",
-        home: "Về trang chủ"
+        home: "Trang chủ"
     }
 };
 
