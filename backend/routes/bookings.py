@@ -606,15 +606,18 @@ def create_booking():
 			# Assumptions: Flight.price is base economy price per passenger per leg.
 			# Apply simple multipliers for fare_class when necessary (premium=+20%, business=+50%).
 			# Extras may be provided by client as 'extras_total' or 'extras' object; otherwise assume 0.
+			ticket_amount_val = Decimal('0')
+			extras_amount_val = Decimal('0')
+			tax_amount_val = Decimal('0')
 			try:
 				num_passengers = max(1, len(passengers) if passengers else 1)
 				out_price = Decimal(outbound_flight.price or 0)
 				in_price = Decimal(inbound_flight.price or 0) if inbound_flight else Decimal('0')
 				mult = Decimal('1.0')
 				if fare_class == FareClass.PREMIUM_ECONOMY:
-					mult = Decimal('1.20')
+					mult = Decimal('1.35')
 				elif fare_class == FareClass.BUSINESS:
-					mult = Decimal('1.50')
+					mult = Decimal('2.20')
 
 				legs_total = (out_price + in_price) * mult
 				base_total = (legs_total * Decimal(num_passengers))
@@ -633,6 +636,10 @@ def create_booking():
 
 				tax = (base_total * Decimal('0.10')).quantize(Decimal('1.'))
 				recomputed_total = (base_total + extras_total + tax).quantize(Decimal('0.01'))
+
+				ticket_amount_val = base_total
+				extras_amount_val = extras_total
+				tax_amount_val = tax
 
 				if total_amount == 0 or total_amount is None:
 					current_app.logger.info(
@@ -659,6 +666,9 @@ def create_booking():
 					current_app.logger.error("[bookings.create] cannot create booking: total_amount empty and recompute failed")
 					return jsonify({'success': False, 'message': 'Failed to calculate booking total'}), 500
 				final_total = total_amount
+				ticket_amount_val = final_total
+				extras_amount_val = Decimal('0')
+				tax_amount_val = Decimal('0')
 
 			# Generate unique booking code (retry if duplicate)
 			booking_code = None
@@ -692,6 +702,15 @@ def create_booking():
 			booking_hash = booking_state_hash
 			current_app.logger.info(f"[bookings.create] generated booking_hash for {booking_code}")
 
+			# Serialize extras data if present in payload
+			extras_data_str = None
+			if 'extras' in data:
+				try:
+					import json
+					extras_data_str = json.dumps(data.get('extras'))
+				except Exception as e:
+					current_app.logger.warning(f"[bookings.create] failed to serialize extras: {e}")
+
 			# Create booking
 			booking = Booking(
 				booking_code=booking_code,
@@ -702,9 +721,13 @@ def create_booking():
 				outbound_flight_id=outbound_flight_id,
 				inbound_flight_id=inbound_flight_id,
 				total_amount=final_total,
+				ticket_amount=ticket_amount_val,
+				extras_amount=extras_amount_val,
+				tax_amount=tax_amount_val,
 				booking_hash=booking_hash,
 				booking_state_hash=booking_state_hash,
-				wallet_address=wallet_address
+				wallet_address=wallet_address,
+				extras_data=extras_data_str
 			)
 			session.add(booking)
 			session.flush()  # Get booking ID

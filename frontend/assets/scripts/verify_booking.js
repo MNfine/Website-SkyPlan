@@ -25,6 +25,7 @@ const VERIFY_CONFIG = {
 let elements = {};
 let isVerifying = false;
 let verifyTimeoutHandle = null;
+let currentVerificationData = null;
 
 const VERIFY_CACHE_PREFIX = 'verify_booking_cache_';
 
@@ -42,6 +43,9 @@ document.addEventListener('DOMContentLoaded', function () {
       if (typeof applyVerifyBookingTranslations === 'function') {
         applyVerifyBookingTranslations(newLang);
       }
+      if (currentVerificationData) {
+        displayVerificationResult(currentVerificationData);
+      }
     }
   });
 
@@ -53,6 +57,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     // Update header/footer shared translations by finding all [data-i18n] elements
     updateSharedTranslations(newLang);
+
+    // Re-render dynamic results with the new language if currently displayed
+    if (currentVerificationData) {
+      displayVerificationResult(currentVerificationData);
+    }
   });
 });
 
@@ -83,7 +92,7 @@ function updateSharedTranslations(lang) {
 function updateElementTranslations(container, lang) {
   // Try to get translation object from window.translations first, then from verifyBookingTranslations
   let translations = (window.translations && window.translations[lang]) ||
-    (typeof verifyBookingTranslations !== 'undefined' && verifyBookingTranslations[lang]) ||
+    (window.verifyBookingTranslations && window.verifyBookingTranslations[lang]) ||
     {};
 
   if (!translations || Object.keys(translations).length === 0) {
@@ -414,6 +423,7 @@ function getAuthToken() {
  * Display verification result
  */
 function displayVerificationResult(data) {
+  currentVerificationData = data;
   const bookingCode = data.booking_code || data.booking?.booking_code || '-';
   const onChainStatus = data.on_chain?.status || 'UNKNOWN';
   const rawTxHash = data.booking?.tx_hash || data.tx_hash || '-';
@@ -425,7 +435,7 @@ function displayVerificationResult(data) {
   const integrityMatched = integrity.is_match !== false;
 
   const lang = localStorage.getItem('preferredLanguage') || 'vi';
-  const trans = (typeof verifyBookingTranslations !== 'undefined' && verifyBookingTranslations[lang]) || {};
+  const trans = (window.verifyBookingTranslations && window.verifyBookingTranslations[lang]) || {};
 
   // Map known backend integrity messages to translations
   let displayIntegrityMessage = integrityMessage;
@@ -488,7 +498,7 @@ function normalizeTxHash(value) {
  */
 function getStatusLabel(status) {
   const lang = localStorage.getItem('preferredLanguage') || 'vi';
-  const trans = (typeof verifyBookingTranslations !== 'undefined' && verifyBookingTranslations[lang]) || {};
+  const trans = (window.verifyBookingTranslations && window.verifyBookingTranslations[lang]) || {};
 
   if (trans[status]) {
     return trans[status];
@@ -601,6 +611,7 @@ function resetResultsDisplay() {
  * Reset form and results
  */
 function resetForm() {
+  currentVerificationData = null;
   elements.bookingCodeInput.value = '';
   elements.bookingCodeInput.focus();
   elements.verifyResults.classList.add('hidden');
@@ -636,7 +647,7 @@ function setVerifyPending(isPending) {
     } else {
       // Restore button text using current language translations
       const lang = localStorage.getItem('preferredLanguage') || 'vi';
-      const trans = (typeof verifyBookingTranslations !== 'undefined' && verifyBookingTranslations[lang]) || {};
+      const trans = (window.verifyBookingTranslations && window.verifyBookingTranslations[lang]) || {};
       buttonText.textContent = trans.verifyButton || 'Kiểm tra';
     }
   }

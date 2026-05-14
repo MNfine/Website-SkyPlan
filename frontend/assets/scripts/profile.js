@@ -403,8 +403,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const walletAddressItem = document.getElementById('walletAddressItem');
         const accountWalletEl = document.getElementById('accountWallet');
         
-        // Use available sky tokens as points balance
-        const totalEarned = data.user.total_available_sky ?? data.user.total_earned_sky ?? data.user.totalEarned ?? data.user.points ?? 0;
+        // Use total earned sky tokens as accumulated points balance
+        const totalEarned = data.user.total_earned_sky ?? data.user.totalEarned ?? data.user.points ?? data.user.total_available_sky ?? 0;
         const tierInfo = getTierInfo(totalEarned);
 
         if (accountEmailEl && data.user.email) {

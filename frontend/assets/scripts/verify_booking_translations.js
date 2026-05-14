@@ -228,4 +228,5 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Export for use
+window.verifyBookingTranslations = verifyBookingTranslations;
 window.applyVerifyBookingTranslations = applyVerifyBookingTranslations;

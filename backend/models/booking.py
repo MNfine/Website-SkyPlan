@@ -45,6 +45,10 @@ class Booking(Base):
     
     # Pricing
     total_amount = Column(Numeric(12, 2), nullable=False)
+    ticket_amount = Column(Numeric(12, 2), nullable=True, default=0)
+    extras_amount = Column(Numeric(12, 2), nullable=True, default=0)
+    tax_amount = Column(Numeric(12, 2), nullable=True, default=0)
+    extras_data = Column(String(2000), nullable=True)  # Detailed extras selection (JSON format)
     
     # Blockchain fields
     booking_hash = Column(String(66), nullable=True)  # keccak256 hash (0x + 64 hex)
@@ -142,10 +146,19 @@ class Booking(Base):
         except Exception:
             passenger_list = []
 
+        import json
+        extras_data_decoded = None
+        if self.extras_data:
+            try:
+                extras_data_decoded = json.loads(self.extras_data)
+            except Exception:
+                pass
+
         return {
             "id": self.id,
             "booking_code": self.booking_code,
             "user_id": self.user_id,
+            "extras_data": extras_data_decoded,
             # Use enum names so frontend that expects UPPER_CASE tokens works consistently
             "status": (self.status.name if self.status else None),
             # provide passenger counts in several alias forms for frontend compatibility
@@ -159,6 +172,9 @@ class Booking(Base):
             "outbound_flight_id": self.outbound_flight_id,
             "inbound_flight_id": self.inbound_flight_id,
             "total_amount": float(self.total_amount) if self.total_amount is not None else 0,
+            "ticket_amount": float(self.ticket_amount) if self.ticket_amount is not None else 0,
+            "extras_amount": float(self.extras_amount) if self.extras_amount is not None else 0,
+            "tax_amount": float(self.tax_amount) if self.tax_amount is not None else 0,
             "passengers": passenger_list,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "confirmed_at": self.confirmed_at.isoformat() if self.confirmed_at else None,

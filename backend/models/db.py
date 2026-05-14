@@ -168,6 +168,18 @@ def _apply_migrations():
 							conn.rollback()
 						except:
 							pass
+
+				if 'extras_data' not in bookings_columns:
+					try:
+						conn.execute(text("ALTER TABLE bookings ADD COLUMN extras_data TEXT"))
+						conn.commit()
+						print("[DB Migration] Added extras_data column to bookings table")
+					except Exception as e:
+						print(f"[DB Migration] extras_data column already exists or error: {e}")
+						try:
+							conn.rollback()
+						except:
+							pass
 			
 			# Add wallet_nonce column if missing
 			if 'wallet_nonce' not in users_columns:
