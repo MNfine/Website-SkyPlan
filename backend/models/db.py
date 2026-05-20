@@ -141,46 +141,6 @@ def _apply_migrations():
 					except:
 						pass
 
-			# Check if bookings table exists
-			if 'bookings' in inspector.get_table_names():
-				bookings_columns = [col['name'] for col in inspector.get_columns('bookings')]
-
-				if 'booking_state_hash' not in bookings_columns:
-					try:
-						conn.execute(text("ALTER TABLE bookings ADD COLUMN booking_state_hash VARCHAR(66)"))
-						conn.commit()
-						print("[DB Migration] Added booking_state_hash column to bookings table")
-					except Exception as e:
-						print(f"[DB Migration] booking_state_hash column already exists or error: {e}")
-						try:
-							conn.rollback()
-						except:
-							pass
-
-				if 'sky_redeemed_amount' not in bookings_columns:
-					try:
-						conn.execute(text("ALTER TABLE bookings ADD COLUMN sky_redeemed_amount NUMERIC(12,2) NOT NULL DEFAULT 0"))
-						conn.commit()
-						print("[DB Migration] Added sky_redeemed_amount column to bookings table")
-					except Exception as e:
-						print(f"[DB Migration] sky_redeemed_amount column already exists or error: {e}")
-						try:
-							conn.rollback()
-						except:
-							pass
-
-				if 'extras_data' not in bookings_columns:
-					try:
-						conn.execute(text("ALTER TABLE bookings ADD COLUMN extras_data TEXT"))
-						conn.commit()
-						print("[DB Migration] Added extras_data column to bookings table")
-					except Exception as e:
-						print(f"[DB Migration] extras_data column already exists or error: {e}")
-						try:
-							conn.rollback()
-						except:
-							pass
-			
 			# Add wallet_nonce column if missing
 			if 'wallet_nonce' not in users_columns:
 				try:
@@ -194,16 +154,56 @@ def _apply_migrations():
 					except:
 						pass
 
-		if 'payments' in inspector.get_table_names():
-			payments_columns = [col['name'] for col in inspector.get_columns('payments')]
-			if 'voucher_code' not in payments_columns:
+		# Check if bookings table exists
+		if 'bookings' in inspector.get_table_names():
+			bookings_columns_ensure = [
+				("booking_state_hash", "VARCHAR(66)"),
+				("sky_redeemed_amount", "NUMERIC(12,2) NOT NULL DEFAULT 0"),
+				("extras_data", "TEXT"),
+				("ticket_amount", "NUMERIC(12,2) DEFAULT 0"),
+				("extras_amount", "NUMERIC(12,2) DEFAULT 0"),
+				("tax_amount", "NUMERIC(12,2) DEFAULT 0"),
+				("sky_reward_amount", "NUMERIC(12,2)"),
+				("wallet_address", "VARCHAR(42)"),
+				("booking_hash", "VARCHAR(66)"),
+				("nft_token_id", "VARCHAR(100)"),
+				("nft_contract", "VARCHAR(42)"),
+				("onchain_recorded", "BOOLEAN NOT NULL DEFAULT FALSE"),
+				("nft_minted", "BOOLEAN NOT NULL DEFAULT FALSE"),
+				("sky_minted", "BOOLEAN NOT NULL DEFAULT FALSE"),
+				("onchain_record_tx_hash", "VARCHAR(66)"),
+				("nft_mint_tx_hash", "VARCHAR(66)"),
+				("sky_mint_tx_hash", "VARCHAR(66)"),
+			]
+			for col_name, col_def in bookings_columns_ensure:
 				try:
-					conn.execute(text("ALTER TABLE payments ADD COLUMN voucher_code VARCHAR(40)"))
-					conn.execute(text("CREATE INDEX IF NOT EXISTS idx_payments_voucher_code ON payments(voucher_code)"))
+					conn.execute(text(f"ALTER TABLE bookings ADD COLUMN IF NOT EXISTS {col_name} {col_def}"))
 					conn.commit()
-					print("[DB Migration] Added voucher_code column to payments table")
+					print(f"[DB Migration] Ensured column '{col_name}' in bookings table")
 				except Exception as e:
-					print(f"[DB Migration] voucher_code column already exists or error: {e}")
+					print(f"[DB Migration] Error ensuring column '{col_name}': {e}")
+					try:
+						conn.rollback()
+					except:
+						pass
+
+		# Check if payments table exists
+		if 'payments' in inspector.get_table_names():
+			payments_columns_ensure = [
+				("voucher_code", "VARCHAR(40)"),
+				("verified_by", "VARCHAR(20)"),
+			]
+			for col_name, col_def in payments_columns_ensure:
+				try:
+					conn.execute(text(f"ALTER TABLE payments ADD COLUMN IF NOT EXISTS {col_name} {col_def}"))
+					if col_name == "voucher_code":
+						conn.execute(text("CREATE INDEX IF NOT EXISTS idx_payments_voucher_code ON payments(voucher_code)"))
+					elif col_name == "verified_by":
+						conn.execute(text("CREATE INDEX IF NOT EXISTS idx_payments_verified_by ON payments(verified_by)"))
+					conn.commit()
+					print(f"[DB Migration] Ensured column '{col_name}' in payments table")
+				except Exception as e:
+					print(f"[DB Migration] Error ensuring column '{col_name}': {e}")
 					try:
 						conn.rollback()
 					except:
