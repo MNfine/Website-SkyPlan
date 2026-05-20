@@ -1,9 +1,14 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import { config as dotenvConfig } from "dotenv";
-dotenvConfig();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenvConfig({ path: path.resolve(__dirname, "../../.env") });
 
 import { ethers } from "ethers";
 import fs from "fs";
-import path from "path";
 
 async function main() {
   const rpcUrl = process.env.SEPOLIA_RPC_URL || "";

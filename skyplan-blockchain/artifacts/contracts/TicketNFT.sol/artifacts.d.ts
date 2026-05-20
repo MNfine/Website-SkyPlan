@@ -15,7 +15,7 @@ export interface IBookingRegistry$Type {
   readonly deployedLinkReferences: {};
   readonly immutableReferences: {};
   readonly inputSourceName: "project/contracts/TicketNFT.sol";
-  readonly buildInfoId: "solc-0_8_24-dadcd24c04b4d69cedda18eb2631c6b630635123";
+  readonly buildInfoId: "solc-0_8_24-be27edddda485c9cb8c4e4b8e61a3592c18775ac";
 };
 
 export interface ISkyToken$Type {
@@ -29,7 +29,7 @@ export interface ISkyToken$Type {
   readonly deployedLinkReferences: {};
   readonly immutableReferences: {};
   readonly inputSourceName: "project/contracts/TicketNFT.sol";
-  readonly buildInfoId: "solc-0_8_24-dadcd24c04b4d69cedda18eb2631c6b630635123";
+  readonly buildInfoId: "solc-0_8_24-be27edddda485c9cb8c4e4b8e61a3592c18775ac";
 };
 
 export interface TicketNFT$Type {
@@ -43,7 +43,7 @@ export interface TicketNFT$Type {
   readonly deployedLinkReferences: {};
   readonly immutableReferences: {};
   readonly inputSourceName: "project/contracts/TicketNFT.sol";
-  readonly buildInfoId: "solc-0_8_24-dadcd24c04b4d69cedda18eb2631c6b630635123";
+  readonly buildInfoId: "solc-0_8_24-be27edddda485c9cb8c4e4b8e61a3592c18775ac";
 };
 
 import "hardhat/types/artifacts";

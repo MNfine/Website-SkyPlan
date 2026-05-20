@@ -15,7 +15,7 @@ export interface BookingRegistry$Type {
   readonly deployedLinkReferences: {};
   readonly immutableReferences: {};
   readonly inputSourceName: "project/contracts/BookingRegistry.sol";
-  readonly buildInfoId: "solc-0_8_24-1497afc9ac1ec38f484e85ff7d961a56106534f2";
+  readonly buildInfoId: "solc-0_8_24-be27edddda485c9cb8c4e4b8e61a3592c18775ac";
 };
 
 import "hardhat/types/artifacts";

@@ -1,5 +1,11 @@
 import { config as dotenvConfig } from "dotenv";
-dotenvConfig();
+import * as path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenvConfig({ path: path.resolve(__dirname, "../.env") });
 
 import { defineConfig } from "hardhat/config";
 import hardhatVerify from "@nomicfoundation/hardhat-verify";
